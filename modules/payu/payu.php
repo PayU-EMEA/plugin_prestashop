@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 0.1.0
+ *	ver. 0.1.1
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -648,7 +648,7 @@ class Payu extends PaymentModule
 			$this->updateCustomerData($id_cart);
 			$cart = new Cart($id_cart);
 			$total = $cart->getOrderTotal(true, Cart::BOTH);
-			$this->validateOrder($id_cart, Configuration::get('PAYMENT_PAYU_NEW_STATE'), $total, 'payu', 'payu.pl cart ID: '.$id_cart);
+			$this->validateOrder($id_cart, Configuration::get('PAYMENT_PAYU_NEW_STATE'), $total, 'payu', 'payu.pl cart ID: '.$id_cart, null, null, false, $cart->secure_key);
 			$order = new Order((int)$this->currentOrder);
 			$ips = payu_session::existsByCartId($id_cart);
 			$payuSession = new payu_session($ips);
@@ -656,7 +656,7 @@ class Payu extends PaymentModule
 			if((int)$cookie->id_customer > 0){
 				Tools::redirectLink(__PS_BASE_URI__.'order-confirmation.php?id_order='.(int)$this->currentOrder);
 			} else {
-				Tools::redirectLink(__PS_BASE_URI__.'guest-tracking.php');
+				Tools::redirectLink(__PS_BASE_URI__.'guest-tracking.php?id_order='.$id_cart);
 			}
 		}
 	}
@@ -930,12 +930,18 @@ class Payu extends PaymentModule
 	private function updateOrderStatus($response)
 	{
 		$status = $response[0];
-		
+		$paymentStatus = $response[1];
+
 		$orderId = intval($response[2]);
 		$history = new OrderHistory();
 		$history->id_order = $orderId;
 		$orderState = OrderHistory::getLastOrderState($orderId);
-		
+
+        if($orderState->id != 2 && ($orderState->id == 13 || $orderState->id == 14) && $paymentStatus == PayU::PAYMENT_STATUS_END){
+            $history->changeIdOrderState(2, $orderId);
+            $history->addWithemail(true);
+        }
+
 		switch($status){
 			case PayU::ORDER_STATUS_COMPLETE :
 				if($orderState->id != 3){
@@ -1094,6 +1100,8 @@ class Payu extends PaymentModule
 	 */
 	private function orderCreateRequest($cart,$carriers,$isoLang)
 	{
+        global $link;
+
 		$ret = array();
 		
 		$_SESSION['sessionId'] = $cart->id.'-'.md5(rand().rand().rand().rand());
@@ -1187,13 +1195,15 @@ class Payu extends PaymentModule
 							'ShoppingCartItems' => $items
 					);
 
+
+
 		$order = array (
 					'MerchantPosId' => OpenPayU_Configuration::$merchantPosId,
 					'SessionId' => $_SESSION['sessionId'],
-					'OrderUrl' => $this->myUrl . '/payment_notify.php?order='.$cart->id,
+					'OrderUrl' => $link->getPageLink(__PS_BASE_URI__ . 'guest-tracking.php?id_order='.$cart->id),
 					'OrderCreateDate' => date("c"),
 					'ValidityTime' => $this->payu_validity_time,
-					'OrderDescription' => $this->l('Checkout from the store: ').Configuration::get('PS_SHOP_NAME'),											
+					'OrderDescription' => $this->l('Order: '.$cart->id.' from the store: ').Configuration::get('PS_SHOP_NAME'),
 					'MerchantAuthorizationKey' => OpenPayU_Configuration::$posAuthKey,
 					'OrderType' => $orderType,									
 					'ShoppingCart' => $shoppingCart
