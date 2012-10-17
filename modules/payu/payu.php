@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 0.1.1
+ *	ver. 0.1.2
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -1224,13 +1224,15 @@ class Payu extends PaymentModule
 				
 		$result = OpenPayU_Order::create($OCReq);
 		if ($result->getSuccess()) {
+            $result = OpenPayU_OAuth::accessTokenByClientCredentials();
 			$ret = array(
-				'url'=>$this->myUrl.'/validation.php',
-				'authUrl'=>OpenPayU_Configuration::getAuthUrl(),
-				'clientId'=>OpenPayU_Configuration::getClientId()
+				'summaryUrl' => OpenPayU_Configuration::getSummaryUrl(),
+				'sessionId' => $_SESSION['sessionId'],
+				'oauthToken' => $result->getAccessToken(),
+				'langCode' => $isoLang
 			);
 		} else {
-			Logger::addLog($result->getError());
+			Logger::addLog(trim($result->getError() .' ' . $result->getMessage()));
 		}
 
 		return $ret;
@@ -1260,7 +1262,7 @@ class Payu extends PaymentModule
 			ob_clean();
 			Header("Location: ".OpenPayu_Configuration::getSummaryUrl()."?sessionId=".$_SESSION['sessionId']."&oauth_token=".$result->getAccessToken());
 		} else {
-			Logger::addLog($result->getError());
+            Logger::addLog(trim($result->getError() .' ' . $result->getMessage()));
 		}
 
 		return $ret;

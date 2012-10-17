@@ -1,5 +1,5 @@
 {*
-*	ver. 0.1.0
+*	ver. 0.1.2
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -18,9 +18,9 @@
 <h3>{l s='The choice of method of payment' mod='payu'}</h3>
 
 <form action="{$authUrl}" method="get" id="payu_form">
-<input type="hidden" name="redirect_uri" value="{$url}">
-<input type="hidden" name="response_type" value="code">
-<input type="hidden" name="client_id" value="{$clientId}">
+<input type="hidden" name="sessionId" value="{$sessionId}">
+<input type="hidden" name="oauth_token" value="{$oauthToken}">
+<input type="hidden" name="lang" value="{$langCode}">
 <p class="cart_navigation">
 	<a href="{$base_dir_ssl}order.php?step=3" class="button_large">{l s='Back to payment methods' mod='payu'}</a>
 	<input type="submit" name="submit" value="{l s='Pay with PayU' mod='payu'}" class="exclusive_large" />

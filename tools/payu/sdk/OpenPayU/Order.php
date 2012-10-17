@@ -55,6 +55,10 @@ class OpenPayU_Order extends OpenPayU
         $result = new OpenPayU_Result();
         $result->setStatus($status);
         $result->setError($status['StatusCode']);
+
+        if(isset($status['StatusDesc']))
+            $result->setMessage($status['StatusDesc']);
+
         $result->setSuccess($status['StatusCode'] == 'OPENPAYU_SUCCESS' ? TRUE : FALSE);
         $result->setRequest($order);
         $result->setResponse(OpenPayU::parseOpenPayUDocument($response));
@@ -105,6 +109,10 @@ class OpenPayU_Order extends OpenPayU
         $result = new OpenPayU_Result();
         $result->setStatus($status);
         $result->setError($status['StatusCode']);
+
+        if(isset($status['StatusDesc']))
+            $result->setMessage($status['StatusDesc']);
+
         $result->setSuccess($status['StatusCode'] == 'OPENPAYU_SUCCESS' ? TRUE : FALSE);
         $result->setRequest($req);
         $result->setResponse($response);
@@ -266,6 +274,10 @@ class OpenPayU_Order extends OpenPayU
 
         $result->setStatus($status);
         $result->setError($status['StatusCode']);
+
+        if(isset($status['StatusDesc']))
+            $result->setMessage($status['StatusDesc']);
+
         $result->setSuccess($status['StatusCode'] == 'OPENPAYU_SUCCESS' ? TRUE : FALSE);
         $result->setResponse(OpenPayU::parseOpenPayUDocument($response));
 
@@ -322,6 +334,10 @@ class OpenPayU_Order extends OpenPayU
 
         $result->setStatus($status);
         $result->setError($status['StatusCode']);
+
+        if(isset($status['StatusDesc']))
+            $result->setMessage($status['StatusDesc']);
+
         $result->setSuccess($status['StatusCode'] == 'OPENPAYU_SUCCESS' ? TRUE : FALSE);
         $result->setResponse(OpenPayU::parseOpenPayUDocument($response));
 

@@ -1,5 +1,5 @@
 {*
-*	ver. 0.1.0
+*	ver. 0.1.2
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -15,15 +15,15 @@
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
 
-<form action="{$authUrl}" method="get" id="payu_form">
-<input type="hidden" name="redirect_uri" value="{$url}">
-<input type="hidden" name="response_type" value="code">
-<input type="hidden" name="client_id" value="{$clientId}">
+<form action="{$summaryUrl}" method="post" id="payu_form">
+<input type="hidden" name="sessionId" value="{$sessionId}">
+<input type="hidden" name="oauth_token" value="{$oauthToken}">
+<input type="hidden" name="lang" value="{$langCode}">
 {l s='Wybrano metodę płatności "Płacę w payu.pl". Kliknij w przycisk aby przejść do serwisu PayU.' mod='payu'}
-<p class="cart_navigation">
-	{if $id_customer > 0}
-	<a href="{$base_dir_ssl}order.php?step=3" class="button_large">{l s='Powrót do metod płatności' mod='payu'}</a>
-	{/if}
-	<input type="submit" name="submit" value="{l s='Płacę w payu.pl' mod='payu'}" class="exclusive_large" />
-</p>
+    <p class="cart_navigation">
+    {if $id_customer > 0}
+        <a href="{$base_dir_ssl}order.php?step=3" class="button_large">{l s='Powrót do metod płatności' mod='payu'}</a>
+    {/if}
+        <input type="submit" name="submit" value="{l s='Płacę w payu.pl' mod='payu'}" class="exclusive_large" />
+    </p>
 </form>
