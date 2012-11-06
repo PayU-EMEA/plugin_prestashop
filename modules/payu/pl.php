@@ -1,6 +1,6 @@
 <?php
 /**
-*	ver. 0.1.2
+*	ver. 0.1.3
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -11,7 +11,7 @@
 global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{payu}prestashop>payu_392d20492c5dff43c532695180e3b3fd'] = 'Konto PayU';
-$_MODULE['<{payu}prestashop>payu_ef037b6f74e94d395b70c69b81c6a489'] = 'Akcepuje płatności przez serwis payu.pl';
+$_MODULE['<{payu}prestashop>payu_ef037b6f74e94d395b70c69b81c6a489'] = 'Akcepuje płatności przez serwis payu.pl .';
 $_MODULE['<{payu}prestashop>payu_84471351eb61a4ae8ff6ad637eda8ab6'] = 'Konfiguracja główna';
 $_MODULE['<{payu}prestashop>payu_1e945b61f5df84a332b7a61146f72d61'] = 'Konfiguracja środowiska testowego';
 $_MODULE['<{payu}prestashop>payu_e98c26f67c1cc32c2bdd3bd06800a67a'] = 'Konfiguracja środowiska produkcyjnego';
