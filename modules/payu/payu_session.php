@@ -78,12 +78,12 @@ class payu_session extends ObjectModel
 		}
 	}
 	
-	public static function existsByOrderIdAndSID($orderId, $sid)
+	public static function existsByOrderIdAndSID($orderId, $sid, $cartId=0)
 	{
 		$result = Db::getInstance()->getRow('
 		SELECT `id_payu_session`
 		FROM `'._DB_PREFIX_.'payu_session`
-		WHERE `sid`="'.$sid.'" AND `id_order`='.(int)($orderId));
+		WHERE `sid`="'.$sid.'" ');
 		
 		if($result){
 			return (int)($result['id_payu_session']);

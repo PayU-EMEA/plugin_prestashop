@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 0.1.3
+ *	ver. 0.1.4
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -13,6 +13,6 @@ include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/../../header.php');
 ob_clean();
 $payu = new Payu();
-$payu->execNotifyOrder($_REQUEST['DOCUMENT']);
+$payu->execNotifyOrder(Tools::getValue('DOCUMENT'));
 ob_end_flush();
 exit();

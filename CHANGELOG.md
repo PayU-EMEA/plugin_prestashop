@@ -1,3 +1,8 @@
+## 0.1.4
+
+* Added customer information in orderCreateRequest
+* Fixed duplicate sessionId entries
+
 ## 0.1.3
 
 * Changed CountryCode value to default in orderCreateRequest
