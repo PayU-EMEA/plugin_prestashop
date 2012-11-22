@@ -1,6 +1,6 @@
 <?php
 /**
-*	ver. 0.1.4
+*	ver. 0.1.5
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -12,6 +12,8 @@ session_start();
 $useSSL = true;
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/../../header.php');
+
 $payu = new Payu();
 echo $payu->execPaymentCheckout($cart);
+
 include_once(dirname(__FILE__).'/../../footer.php');

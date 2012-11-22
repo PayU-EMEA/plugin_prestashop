@@ -1,0 +1,7 @@
+<p>{l s='Your order on' mod='payu'} <span class="bold">{$shop_name}</span> {l s='is complete.' mod='payu'}
+	<br /><br />
+	{l s='You have chosen the PayU method.' mod='paypal'}
+	<br /><br /><span class="bold">{l s='Your order will be sent very soon.' mod='paypal'}</span>
+	<br /><br />{l s='For any questions or for further information, please contact our' mod='payu'}
+	<a href="{$link->getPageLink('contact', true)}contact-form.php" data-ajax="false">{l s='customer support' mod='payu'}</a>.
+</p>

@@ -1,5 +1,5 @@
 {*
-*	ver. 0.1.4
+*	ver. 0.1.5
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -18,7 +18,7 @@
 <h3>{l s='Wybór metody płatności' mod='payu'}</h3>
 
 <form action="{$summaryUrl}" method="get" id="payu_form">
-<input type="hidden" name="sessionId" value="{$sessionId'}">
+<input type="hidden" name="sessionId" value="{$sessionId}">
 	<input type="hidden" name="oauth_token" value="{$accessToken}">
 <p class="cart_navigation">
 	<input type="submit" name="submit" value="{l s='Płacę w payu.pl' mod='payu'}" class="exclusive_large" />

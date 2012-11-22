@@ -1,3 +1,7 @@
+## 0.1.5
+
+* The plugin is compatible with PrestaShop 1.5
+
 ## 0.1.4
 
 * Added customer information in orderCreateRequest

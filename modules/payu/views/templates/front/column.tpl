@@ -1,15 +1,12 @@
 {*
-*	ver. 0.1.4
+*	ver. 0.1.5
 *	PayU Payment Modules
-*	
+*
 *	@copyright  Copyright 2012 by PayU
 *	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
 *	http://www.payu.com
 *	http://twitter.com/openpayu
 *}
-{capture name=path}{l s='Shipping' mod='payu'}{/capture}
-{include file="$tpl_dir./breadcrumb.tpl"}
-
-<h2>{l s='Order summary' mod='payu'}</h2>
-
-{$msg}
+<div class="payu_block" xmlns="http://www.w3.org/1999/html">
+    <a href="{$url}" target="_blank"><img src="{$image}" alt="PayU" /></a>
+</div>

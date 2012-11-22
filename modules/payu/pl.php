@@ -1,60 +1,53 @@
 <?php
-/**
-*	ver. 0.1.4
-*	PayU Payment Modules
-*	
-*	@copyright  Copyright 2012 by PayU
-*	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
-*	http://www.payu.com
-*	http://twitter.com/openpayu
-*/
+
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{payu}prestashop>payu_392d20492c5dff43c532695180e3b3fd'] = 'Konto PayU';
-$_MODULE['<{payu}prestashop>payu_ef037b6f74e94d395b70c69b81c6a489'] = 'Akcepuje płatności przez serwis payu.pl .';
-$_MODULE['<{payu}prestashop>payu_84471351eb61a4ae8ff6ad637eda8ab6'] = 'Konfiguracja główna';
-$_MODULE['<{payu}prestashop>payu_1e945b61f5df84a332b7a61146f72d61'] = 'Konfiguracja środowiska testowego';
-$_MODULE['<{payu}prestashop>payu_e98c26f67c1cc32c2bdd3bd06800a67a'] = 'Konfiguracja środowiska produkcyjnego';
-$_MODULE['<{payu}prestashop>payu_e4efc6fd25333f9a122322ebc177ebeb'] = 'Konfiguracja grafiki';
-$_MODULE['<{payu}prestashop>payu_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz zmiany';
-$_MODULE['<{payu}prestashop>payu_0ba29c6a1afacf586b03a26162c72274'] = 'Środowisko';
-$_MODULE['<{payu}prestashop>payu_eef5a32598040e075bd432fa7933cd2c'] = 'środowisko testowe';
-$_MODULE['<{payu}prestashop>payu_f90e3c4358ac6adcfe0d29c39fbc09d7'] = 'środowisko produkcyjne';
-$_MODULE['<{payu}prestashop>payu_00b750ec46512b5d6a70cd07cfd2daa0'] = 'Autoodbiór';
-$_MODULE['<{payu}prestashop>payu_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'włączone';
-$_MODULE['<{payu}prestashop>payu_b9f5c797ebbf55adccdd8539a65a0241'] = 'wyłączone';
-$_MODULE['<{payu}prestashop>payu_aedda151b367036181b4241c5649c6a4'] = 'Ważność zamówienia w PayU';
-$_MODULE['<{payu}prestashop>payu_ebee3eba1b81e7d3c06b8c92783555a5'] = 'Pozwól na wysyłkę zagranicę';
-$_MODULE['<{payu}prestashop>payu_2168bbe0aadccc8d19ae3e843cf5aa1c'] = 'Zakup w 1 kroku';
-$_MODULE['<{payu}prestashop>payu_abcd8b5a2141cdb5bc0201093c4289fd'] = 'Id Pos\'a';
-$_MODULE['<{payu}prestashop>payu_e1cf517edb8511033866a3b2a3db844b'] = 'Id punktu płatności';
-$_MODULE['<{payu}prestashop>payu_7682d133f92de5331de841c9e0ce2d1d'] = 'Klucz (MD5)';
-$_MODULE['<{payu}prestashop>payu_2112fb5f16e4ab816c4a529b3dd74d37'] = 'Klucz autoryzacji płatności';
-$_MODULE['<{payu}prestashop>payu_2032e74f38e953f43415e01cb4a91b8a'] = 'Drugi Klucz (MD5)';
-$_MODULE['<{payu}prestashop>payu_9335a2308c84c62b1fc74ab6e79e7099'] = 'Przycisk płatności';
-$_MODULE['<{payu}prestashop>payu_8fc87743f34723d06ebff41629d2fdb5'] = 'Logo płatności';
-$_MODULE['<{payu}prestashop>payu_90a1fed82253c073dd2b4dfedc630ca1'] = 'Baner reklamowy PayU';
-$_MODULE['<{payu}prestashop>payu_39249b03a2996e0bd05665cb97aa086b'] = 'Baner Akceptujemy PayU';
-$_MODULE['<{payu}prestashop>payu_60cde422396302fa14c5e466bfd05106'] = 'Aktualizacja pluginu';
-$_MODULE['<{payu}prestashop>payu_f683581d3e75f05f9d9215f9b4696cef'] = 'Aktualizuj';
-$_MODULE['<{payu}prestashop>payu_011fedf4050817b8826f95a53d9555b2'] = 'Aktualna wersja';
-$_MODULE['<{payu}prestashop>payu_9ca445b9db010a99239196af5ac3a8b9'] = 'Najnowsza wersja';
-$_MODULE['<{payu}prestashop>payu_8dd1c5ef853a646bb847e9389a7bd2e6'] = 'PayU informacje';
-$_MODULE['<{payu}prestashop>payu_d49e293c61d999b6cf31c8bcf580a804'] = 'Wystąpił błąd podczas weryfikacji zamówienia.';
-$_MODULE['<{payu}prestashop>payu_5d5cb8e8a16c652f3ef9ffdec0d4674a'] = 'Wystąpił błąd podczas przetwarzania zamówienia.';
-$_MODULE['<{payu}prestashop>payu_648dee762713f88b5ae8d303a5d64e2a'] = 'Wystąpił błąd podczas płatności. Kod błędu:';
-$_MODULE['<{payu}prestashop>payu_eae59a50519c35084d949f685a1ac382'] = 'Zamówienie oczekujące';
-$_MODULE['<{payu}prestashop>payu_ea9eb4a68427e578f4057dd094fe4478'] = 'Zamówienie anulowane';
-$_MODULE['<{payu}prestashop>payu_d13ba9b1b585d35933e4d497e9be599c'] = 'Zamówienie odrzucone';
-$_MODULE['<{payu}prestashop>payu_107f1663ef0096cf2f117916b59f5bf8'] = 'Zamówienie zakończone';
-$_MODULE['<{payu}prestashop>payu_37eb1881865a5803f3d78d44de365331'] = 'Zamówienie wysłane';
-$_MODULE['<{payu}prestashop>payu_f4ec5f57bd4d31b803312d873be40da9'] = 'Zmień';
-$_MODULE['<{payu}prestashop>payu_af5519d5b46da35f34c10fb4a6fb97b4'] = 'Zmień status na';
+$_MODULE['<{payu}prestashop>payu_abstract_6a90d0ab04a2cd28919bee487736cdeb'] = 'PayU';
+$_MODULE['<{payu}prestashop>payu_abstract_bbca1b6f13ca3032ec145ca8d759cb0f'] = 'Akceptuję płatności PayU';
+$_MODULE['<{payu}prestashop>payu_abstract_eae59a50519c35084d949f685a1ac382'] = 'Status zamówienia - oczekuje';
+$_MODULE['<{payu}prestashop>payu_abstract_37eb1881865a5803f3d78d44de365331'] = 'Status zamówienia - wysłane';
+$_MODULE['<{payu}prestashop>payu_abstract_107f1663ef0096cf2f117916b59f5bf8'] = 'Status zamówienia - zakończone';
+$_MODULE['<{payu}prestashop>payu_abstract_ea9eb4a68427e578f4057dd094fe4478'] = 'Status zamówienia - anulowane';
+$_MODULE['<{payu}prestashop>payu_abstract_d13ba9b1b585d35933e4d497e9be599c'] = 'Status zamówienia - odrzucone';
+$_MODULE['<{payu}prestashop>payu_abstract_c215d139fd5e48abb786fabd5a1bf4c3'] = 'Główne parametry';
+$_MODULE['<{payu}prestashop>payu_abstract_606f80d7a3062621e44710534c82faaa'] = 'Użyj środowiska testowego';
+$_MODULE['<{payu}prestashop>payu_abstract_93cba07454f06a4a960172bbd6e2a435'] = 'Tak';
+$_MODULE['<{payu}prestashop>payu_abstract_bafd7322c6e97d25b6299b5d6fe8920b'] = 'Nie';
+$_MODULE['<{payu}prestashop>payu_abstract_723aca7e03eda0f5ed5c0f5439e59710'] = 'Autoodbiór włączony';
+$_MODULE['<{payu}prestashop>payu_abstract_517685d8f58c02678374ce2be9621e1e'] = 'Czas ważności zamówienia';
+$_MODULE['<{payu}prestashop>payu_abstract_6f1fce542ae9f17596bbedfe37459536'] = 'Wysyłka za granicę';
+$_MODULE['<{payu}prestashop>payu_abstract_44b0eb2218c5548a4857b8f8a20a0aa0'] = 'Czy OneStepCheckout włączony';
+$_MODULE['<{payu}prestashop>payu_abstract_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Włączony';
+$_MODULE['<{payu}prestashop>payu_abstract_b9f5c797ebbf55adccdd8539a65a0241'] = 'Wyłączony';
+$_MODULE['<{payu}prestashop>payu_abstract_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz';
+$_MODULE['<{payu}prestashop>payu_abstract_8eb80b1b45ca8d0709168e9168ee022f'] = 'Parametry środowiska testowego (Sandbox)';
+$_MODULE['<{payu}prestashop>payu_abstract_80949984cb389b2b94b1c6de4a275d11'] = 'Protokół OAuth - client_id';
+$_MODULE['<{payu}prestashop>payu_abstract_ed98be8d39521e5bd8c4fb376f2ca9f0'] = 'Klucz MD5';
+$_MODULE['<{payu}prestashop>payu_abstract_3b043c5210f7e86a3e4da27eb551fce7'] = 'Protokół OAuth - client_secret';
+$_MODULE['<{payu}prestashop>payu_abstract_dbf679af91c0dcb70d6f4903907753a4'] = 'Drugi klucz MD5';
+$_MODULE['<{payu}prestashop>payu_abstract_965d8eff8b5304c699860a0ab5391c96'] = 'Symetryczny klucz do szyfrowania komunikacji';
+$_MODULE['<{payu}prestashop>payu_abstract_2112fb5f16e4ab816c4a529b3dd74d37'] = 'Klucz autoryzacji płatności';
+$_MODULE['<{payu}prestashop>payu_abstract_da73166195f2e60a4023679b265b9b7e'] = 'Parametry środowiska produkcyjnego';
+$_MODULE['<{payu}prestashop>payu_abstract_a272079ccf05f1a0825ef9fd596e675e'] = 'ID POS (Id punktu płatności)';
+$_MODULE['<{payu}prestashop>payu_abstract_ddcd34a22c18632ac91adb0c50c5a599'] = 'Ustawienia zewnętrznych zasobów';
+$_MODULE['<{payu}prestashop>payu_abstract_9335a2308c84c62b1fc74ab6e79e7099'] = 'Przycisk OneStepCheckout';
+$_MODULE['<{payu}prestashop>payu_abstract_8fc87743f34723d06ebff41629d2fdb5'] = 'Małe logo';
+$_MODULE['<{payu}prestashop>payu_abstract_90a1fed82253c073dd2b4dfedc630ca1'] = 'Reklama PayU';
+$_MODULE['<{payu}prestashop>payu_abstract_39249b03a2996e0bd05665cb97aa086b'] = 'Akceptuje PayU';
+$_MODULE['<{payu}prestashop>payu_abstract_77dbdec7a66d61c6598e0bac56e3ec49'] = 'Informacje o wtyczce';
+$_MODULE['<{payu}prestashop>payu_abstract_011fedf4050817b8826f95a53d9555b2'] = 'Aktualnie zainstowalowana';
+$_MODULE['<{payu}prestashop>payu_abstract_9ca445b9db010a99239196af5ac3a8b9'] = 'Najnowsza wydana';
+$_MODULE['<{payu}prestashop>payu_abstract_8dd1c5ef853a646bb847e9389a7bd2e6'] = 'Information';
+$_MODULE['<{payu}prestashop>payu_abstract_5d5cb8e8a16c652f3ef9ffdec0d4674a'] = 'Wystąpił błąd podczas procesowania zamówienia.';
+$_MODULE['<{payu}prestashop>payu_abstract_d49e293c61d999b6cf31c8bcf580a804'] = 'Wystąpił błąd podczas weryfikowania zamówienia.';
+$_MODULE['<{payu}prestashop>payu_abstract_648dee762713f88b5ae8d303a5d64e2a'] = 'Wystąpił błąd podczas płatności. Kod błędu:';
+$_MODULE['<{payu}prestashop>payu_abstract_ec53a8c4f07baed5d8825072c89799be'] = 'Status';
+$_MODULE['<{payu}prestashop>payu_abstract_af5519d5b46da35f34c10fb4a6fb97b4'] = 'Zmień status';
+$_MODULE['<{payu}prestashop>payu_abstract_f4ec5f57bd4d31b803312d873be40da9'] = 'Zmień';
+$_MODULE['<{payu}prestashop>payu_abstract_48f1a4001bf4a5ba591d24f70e01b098'] = 'Zamówienie dla koszyka: ';
+$_MODULE['<{payu}prestashop>payu_abstract_504036bd3c4764f64b76fabb2b15260f'] = 'ze sklepu: ';
+$_MODULE['<{payu}prestashop>confirmation_00c15b2cb0c080a872d3cc39755d5b1d'] = 'Wybrałeś płatność PayU';
+$_MODULE['<{payu}prestashop>error_a40cab5994f36d4c48103a22ca082e8f'] = 'Koszyk';
+$_MODULE['<{payu}prestashop>error_6a90d0ab04a2cd28919bee487736cdeb'] = 'PayU';
 $_MODULE['<{payu}prestashop>error_f1d3b424cd68795ecaa552883759aceb'] = 'Podsumowanie';
-$_MODULE['<{payu}prestashop>error_ea9cf7e47ff33b2be14e6dd07cbcefc6'] = 'Zamówienie';
-$_MODULE['<{payu}prestashop>payu-form_f1d3b424cd68795ecaa552883759aceb'] = 'Podsumowanie';
-$_MODULE['<{payu}prestashop>payu-form_90c5249ee3db06a18dd9fbf98269a094'] = 'Płacę z PayU';
-$_MODULE['<{payu}prestashop>payu-form_5b015351b034b5468fa54b6fc586d52d'] = 'Wybór metody płatności';
-$_MODULE['<{payu}prestashop>payu-form_ea9cf7e47ff33b2be14e6dd07cbcefc6'] = 'Zamówienie';
-$_MODULE['<{payu}prestashop>payu-form_b9398a84a65b038fb4a72e1496044151'] = 'Powrót do wyboru płatności';
-$_MODULE['<{payu}prestashop>shopping-cart_90c5249ee3db06a18dd9fbf98269a094'] = 'Płacę z PayU';
+$_MODULE['<{payu}prestashop>error_0557fa923dcee4d0f86b1409f5c2167f'] = 'Wróć';
