@@ -1,4 +1,13 @@
 <?php
+/**
+ *	ver. 0.1.5.1
+ *	PayU Payment Modules
+ *
+ *	@copyright  Copyright 2012 by PayU
+ *	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ *	http://www.payu.com
+ *	http://twitter.com/openpayu
+ */
 
 if (!defined('_PS_VERSION_'))
     exit;
@@ -58,7 +67,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '0.1.5';
+        $this->version = '0.1.5.1';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -1176,7 +1185,6 @@ class PayUAbstract extends PaymentModule
 
         $cartProducts = $cart->getProducts();
 
-
         if ($cart->isVirtualCart()) {
             $orderType = 'VIRTUAL';
         } else {
@@ -1204,8 +1212,6 @@ class PayUAbstract extends PaymentModule
         }
 
         $carrierList = array();
-
-        $cart->id_carrier = 2;
 
         $tax_rate = 0;
         $tax_amount = 0;
@@ -1237,7 +1243,6 @@ class PayUAbstract extends PaymentModule
 
         foreach ($carriers as $carrier) {
             $c = new Carrier((int)$carrier['id_carrier']);
-
 
             $shippingMethod = $c->getShippingMethod();
 

@@ -1,3 +1,7 @@
+## 0.1.5.1
+
+* Fixed static shipping methods data
+
 ## 0.1.5
 
 * The plugin is compatible with PrestaShop 1.5

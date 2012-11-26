@@ -1,13 +1,13 @@
 <?php
 /**
-*	ver. 0.1.5
-*	PayU Payment Modules
-*	
-*	@copyright  Copyright 2012 by PayU
-*	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
-*	http://www.payu.com
-*	http://twitter.com/openpayu
-*/
+ *	ver. 0.1.5.1
+ *	PayU Payment Modules
+ *
+ *	@copyright  Copyright 2012 by PayU
+ *	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ *	http://www.payu.com
+ *	http://twitter.com/openpayu
+ */
 session_start();
 $useSSL = true;
 include(dirname(__FILE__).'/../../config/config.inc.php');
