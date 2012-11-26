@@ -1,9 +1,9 @@
 # PayU plugin for Prestashop since 1.4.4  (alpha release)
 -------
+``This plugin is released under the GPL license.``
+
 PayU account is a web application designed as an e-wallet for shoppers willing to open an account, 
 define their payment options, see their purchase history, and manage personal profiles.
-
-This plugin is licensed under the GPL license.
 
 **Note:** This is an alpha release and we are still working on plugin improvements.
 
@@ -21,6 +21,8 @@ This plugin is licensed under the GPL license.
 
 
 ## Prerequisites
+
+**Important:** This plugin works only with checkout points of sales (POS).
 
 The following PHP extensions are required:
 
@@ -42,7 +44,7 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Copy folders from [plugin_prestashop][ext1] to your PrestaShop root folder on the server.
+1. Copy folders from [the plugin repository][ext1] to your PrestaShop root folder on the server.
 2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
 3. Go to **Modules** > **Payments & Gateways**.
 4. Select **PayU** and click **Install**.
