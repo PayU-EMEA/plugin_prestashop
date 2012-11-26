@@ -120,7 +120,7 @@ You can set external resources for the following:
 
 <!--external links:-->
 
-[ext1]: https://github.com/PayU/plugin_prestashop
+[ext1]: https://github.com/PayU/plugin_prestashop_144
 [ext2]: http://php.net/manual/en/book.curl.php
 [ext3]: http://php.net/manual/en/book.hash.php
 [ext4]: http://php.net/manual/en/book.xmlwriter.php
