@@ -44,7 +44,7 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Copy folders from [the plugin repository][ext1] to your PrestaShop root folder on the server.
+1. Copy the folders from [the plugin repository][ext1] to your PrestaShop root folder on the server.
 2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
 3. Go to **Modules** > **Payments & Gateways**.
 4. Select **PayU** and click **Install**.
@@ -59,10 +59,9 @@ PrestaShop allows you to install the plugin from the administration page. -->
 
 To configure the PrestaShop plugin:
 
-1. Copy folders from [plugin_prestashop][ext1] to your PrestaShop root folder on the server.
-2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-3. Go to **Modules** > **Payments & Gateways**.
-4. Select **PayU** and click **Configure**.
+1. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
+2. Go to **Modules** > **Payments & Gateways**.
+3. Select **PayU** and click **Configure**.
 
 ### Configuration Parameters
 
@@ -74,10 +73,10 @@ The main parameters for plugin configuration are as follows:
 
 | Parameter | Values | Description | 
 |:---------:|:------:|:-----------:|
-|Test Mode On|Yes/No|When you are in the test mode, the transactions are only simulated and no real payments are made. Use the test mode to see how the transactions work.|
-|Self-Return Enabled|Yes/No|When self-return is disabled, the payment must be confirmed manually.|
+|Test Mode On|Yes/No|If you are in the test mode, the transactions are only simulated and no real payments are made. Use the test mode to see how the transactions work.|
+|Self-Return Enabled|Yes/No|If self-return is disabled, the payment must be confirmed manually.|
 |Order Validity Time|24h/12h/6h/1h/30min|Specifies the time during which the order is valid in the PayU system. When validity time expires, the order is cancelled, and you are notified that the transaction failed.|
-|Ship Abroad|Enabled/Disabled|When ship abroad is disabled, you can only choose the country of the shop for shipping.|
+|Ship Abroad|Enabled/Disabled|If ship abroad is disabled, you can only choose the country of the shop for shipping.|
 |OneStepCheckout Enabled|Yes/No|Specifies whether buying from cart via Payu is enabled.|
 
 #### Parameters of test and production environments
