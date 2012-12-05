@@ -1,10 +1,10 @@
 <?php
 /**
- *	ver. 0.1.5.1
+ *	ver. 1.6
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
- *	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ *	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
  *	http://www.payu.com
  *	http://twitter.com/openpayu
  */
@@ -67,7 +67,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '0.1.5.1';
+        $this->version = '1.6';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -360,9 +360,7 @@ class PayUAbstract extends PaymentModule
     private function loadConfiguration()
     {
 
-        $dir = explode(basename(dirname(__FILE__)) . '/', $_SERVER['SCRIPT_NAME']);
-        $directory = $dir[0] . basename(dirname(__FILE__));
-        $this->myUrl = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] . ':' . (($_SERVER['SERVER_PORT'] != '80') ? '' : $_SERVER['SERVER_PORT']) . $directory;
+        $this->myUrl = $this->getModuleAddress(true, true);
 
         $this->payu_environment = Configuration::get('PAYU_ACTIVE_ENVIRONMENT');
         $this->payu_button = Configuration::get('PAYU_BUTTON');
@@ -727,7 +725,7 @@ class PayUAbstract extends PaymentModule
     public function execNotifyOrder($request)
     {
         if (isset($_GET['error'])) {
-            Tools::redirectLink($this->myUrl . '/payment_error.php?error=' . Tools::getValue('error'));
+            Tools::redirectLink($this->myUrl . 'payment_error.php?error=' . Tools::getValue('error'));
         } else {
             if (isset($request)) {
                 $this->orderNotifyRequest($request);
@@ -864,7 +862,7 @@ class PayUAbstract extends PaymentModule
 
         $smarty->assign(array(
             'image' => $img,
-            'actionUrl' => 'modules/'.$this->name.'/payment.php'
+            'actionUrl' => $this->myUrl . 'payment.php'
         ));
 
         return $this->fetchTemplate('/views/templates/front/', 'payment');
@@ -912,7 +910,7 @@ class PayUAbstract extends PaymentModule
             if (Validate::isLoadedObject($params['cart'])) {
                 $smarty->assign(array(
                     'image' => $img,
-                    'checkout_url' => 'modules/payu/payment_checkout.php'
+                    'checkout_url' => $this->myUrl . 'payment_checkout.php'
                 ));
             }
 
@@ -1034,6 +1032,7 @@ class PayUAbstract extends PaymentModule
     public function updateCustomerData($cartId)
     {
         $cart = new Cart($cartId);
+        $guest = array();
 
         if ($cart->id_customer == 0) {
 
@@ -1045,6 +1044,8 @@ class PayUAbstract extends PaymentModule
 
             $customerRecord = isset($orderRetrieveResponse['CustomerRecord']) ? $orderRetrieveResponse['CustomerRecord'] : array();
             $shipping = $orderRetrieveResponse['Shipping'];
+
+
 
             if (!empty($customerRecord) && !empty($shipping)) {
 
@@ -1296,13 +1297,13 @@ class PayUAbstract extends PaymentModule
         $OCReq = array(
             'ReqId' => md5(rand()),
             'CustomerIp' => (($_SERVER['REMOTE_ADDR'] == "::1" || $_SERVER['REMOTE_ADDR'] == "::" || !preg_match("/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m", $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']),
-            'NotifyUrl' => $this->myUrl . '/payment_notify.php?order=' . $cart->id,
-            'OrderCancelUrl' => $this->myUrl . '/payment_cancel.php?order=' . $cart->id,
-            'OrderCompleteUrl' => $this->myUrl . '/payment_succcess.php?order=' . $cart->id,
+            'NotifyUrl' => $this->myUrl . 'payment_notify.php?order=' . $cart->id,
+            'OrderCancelUrl' => $this->myUrl . 'payment_cancel.php?order=' . $cart->id,
+            'OrderCompleteUrl' => $this->myUrl . 'payment_succcess.php?order=' . $cart->id,
             'Order' => $order,
             'ShippingCost' => array(
                 'AvailableShippingCost' => $shippingCost,
-                'ShippingCostsUpdateUrl' => $this->myUrl . '/payment_shipping.php?order=' . $cart->id
+                'ShippingCostsUpdateUrl' => $this->myUrl . 'payment_shipping.php?order=' . $cart->id
             )
         );
 
@@ -1367,7 +1368,7 @@ class PayUAbstract extends PaymentModule
     private function beforeSummary()
     {
         $ret = array();
-        $result = OpenPayU_OAuth::accessTokenByCode(Tools::getValue('code'), $this->myUrl . '/validation.php');
+        $result = OpenPayU_OAuth::accessTokenByCode(Tools::getValue('code'), $this->myUrl . 'validation.php');
         $cartId = $this->getCartIdBySessionId($_SESSION['sessionId']);
         if ($result->getSuccess()) {
             $userEmail = $result->getPayuUserEmail();
@@ -1579,5 +1580,26 @@ class PayUAbstract extends PaymentModule
         $json = json_decode($content, true);
 
         return $json;
+    }
+
+    public function getModuleAddress($http = false, $entities = false)
+    {
+        return self::getShopDomainAddress($http, $entities) . (__PS_BASE_URI__.'modules/'.$this->name.'/');
+    }
+
+    public static function getShopDomainAddress($http = false, $entities = false)
+    {
+        if (method_exists('Tools', 'getShopDomainSsl'))
+            return Tools::getShopDomainSsl($http, $entities);
+        else
+        {
+            if (!($domain = Configuration::get('PS_SHOP_DOMAIN_SSL')))
+                $domain = self::getHttpHost();
+            if ($entities)
+                $domain = htmlspecialchars($domain, ENT_COMPAT, 'UTF-8');
+            if ($http)
+                $domain = (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://').$domain;
+            return $domain;
+        }
     }
 }

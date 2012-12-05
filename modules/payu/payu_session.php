@@ -1,4 +1,12 @@
 <?php
+/**
+ *	ver. 1.6
+ *
+ *	@copyright  Copyright 2012 by PayU
+ *	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
+ *	http://www.payu.com
+ *	http://twitter.com/openpayu
+ */
 class payu_session extends ObjectModel
 {
 	public 		$id;

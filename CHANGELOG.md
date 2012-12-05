@@ -1,3 +1,8 @@
+## 1.6
+
+* Changed the address of the module construction method
+* Redirect to the error page after cancelling the transaction
+
 ## 0.1.5.1
 
 * Fixed static shipping methods data
