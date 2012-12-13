@@ -21,6 +21,6 @@
 <input type="hidden" name="sessionId" value="{$sessionId}">
 	<input type="hidden" name="oauth_token" value="{$accessToken}">
 <p class="cart_navigation">
-	<input type="submit" name="submit" value="{l s='Płacę w payu.pl' mod='payu'}" class="exclusive_large" />
+	<input type="submit" name="submit" value="{l s='Pay with PayU' mod='payu'}" class="exclusive_large" />
 </p>
 </form>

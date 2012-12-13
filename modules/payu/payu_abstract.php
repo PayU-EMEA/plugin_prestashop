@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 1.6
+ *	ver. 1.7
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -67,7 +67,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.6';
+        $this->version = '1.7';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -727,7 +727,7 @@ class PayUAbstract extends PaymentModule
         if (isset($_GET['error'])) {
             Tools::redirectLink($this->myUrl . 'payment_error.php?error=' . Tools::getValue('error'));
         } else {
-            if (isset($request)) {
+            if (!empty($request)) {
                 $this->orderNotifyRequest($request);
             }
         }
@@ -1192,24 +1192,31 @@ class PayUAbstract extends PaymentModule
             $orderType = 'MATERIAL';
         }
 
-        foreach ($cartProducts as $product) {
+        foreach ($cartProducts as $product)
+        {
             $tax = explode('.', $product['rate']);
             $price_wt = $this->toAmount($product['price_wt']);
             $price = $this->toAmount($product['price']);
             $total += $this->toAmount($product['total_wt']);
-            $items[]['ShoppingCartItem'] = array(
+
+            $item = array(
                 'Quantity' => (int)$product['quantity'],
                 'Product' => array(
                     'Name' => $product['name'],
                     'UnitPrice' => array(
                         'Gross' => $price_wt,
                         'Net' => $price,
-                        'Tax' => ($price_wt - $price),
-                        'TaxRate' => $tax[0],
-                        'CurrencyCode' => $currency['iso_code']
+                        'Tax' => ($price_wt - $price)
                     )
                 )
             );
+
+            if(!empty($tax[0]))
+              $item['Product']['UnitPrice']['TaxRate'] = $tax[0];
+
+            $item['Product']['UnitPrice']['CurrencyCode'] = $currency['iso_code'];
+
+            $items[]['ShoppingCartItem'] = $item;
         }
 
         $carrierList = array();
@@ -1233,15 +1240,19 @@ class PayUAbstract extends PaymentModule
                     'Price' => array(
                         'Gross' => $this->toAmount($price),
                         'Net' => $this->toAmount($price_tax_exc),
-                        'Tax' => $tax_amount,
-                        'TaxRate' => $tax_rate,
-                        'CurrencyCode' => $currency['iso_code']
+                        'Tax' => $tax_amount
                     )
                 );
+
+                if(!empty($tax_rate))
+                    $carrierList[0]['ShippingCost']['Price']['TaxRate'] = $tax_rate;
+
+                $carrierList[0]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
             }
         }
 
 
+        $i = 0;
         foreach ($carriers as $carrier) {
             $c = new Carrier((int)$carrier['id_carrier']);
 
@@ -1254,17 +1265,22 @@ class PayUAbstract extends PaymentModule
 
             if ($carrier['id_carrier'] != $cart->id_carrier) {
                 if (intval($carrier['active']) == 1) {
-                    $carrierList[]['ShippingCost'] = array(
+                    $carrierList[$i]['ShippingCost'] = array(
                         'Type' => $carrier['name'] . ' (' . $carrier['id_carrier'] . ')',
                         'CountryCode' => $countryCode,
                         'Price' => array(
                             'Gross' => $this->toAmount($price),
                             'Net' => $this->toAmount($price_tax_exc),
-                            'Tax' => $tax_amount,
-                            'TaxRate' => $tax_rate,
-                            'CurrencyCode' => $currency['iso_code']
+                            'Tax' => $tax_amount
                         )
                     );
+
+                    if(!empty($tax_rate))
+                        $carrierList[$i]['ShippingCost']['Price']['TaxRate'] = $tax_rate;
+
+                    $carrierList[$i]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
+
+                    $i++;
                 }
             }
         }

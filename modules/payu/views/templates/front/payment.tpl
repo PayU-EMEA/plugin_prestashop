@@ -1,5 +1,5 @@
 {*
-*	ver. 1.6
+*	ver. 1.7
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -8,8 +8,8 @@
 *	http://twitter.com/openpayu
 *}
 <p class="payment_module">
-	<a href="{$actionUrl}" title="{l s='Zapłać przez payu.pl' mod='payu'}">
-		<img src="{$image}" alt="{l s='Zapłać przez payu.pl' mod='payu'}" />
+	<a href="{$actionUrl}" title="{l s='Pay with PayU' mod='payu'}">
+		<img src="{$image}" alt="{l s='Pay with PayU' mod='payu'}" />
 		{l s='Zapłać przez payu.pl' mod='payu'}
 	</a>
 </p>

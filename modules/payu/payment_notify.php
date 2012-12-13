@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 1.6
+ *	ver. 1.7
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -12,7 +12,10 @@ $useSSL = true;
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/../../header.php');
 ob_clean();
-$payu = new Payu();
-$payu->execNotifyOrder(Tools::getValue('DOCUMENT'));
+if(Tools::getValue('DOCUMENT'))
+{
+    $payu = new Payu();
+    $payu->execNotifyOrder(Tools::getValue('DOCUMENT'));
+}
 ob_end_flush();
 exit();

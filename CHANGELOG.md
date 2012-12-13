@@ -1,3 +1,9 @@
+## 1.7
+
+* Fixed translations of messages
+* Fixed null Tax rates
+* Fixed empty DOCUMENT parameter in payment_notify.php
+
 ## 1.6
 
 * Changed the address of the module construction method

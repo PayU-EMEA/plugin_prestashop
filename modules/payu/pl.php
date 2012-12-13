@@ -1,15 +1,12 @@
 <?php
-/**
- *	ver. 1.6
- *	PayU Payment Modules
- *
- *	@copyright  Copyright 2012 by PayU
- *	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
- *	http://www.payu.com
- *	http://twitter.com/openpayu
- */
+
 global $_MODULE;
 $_MODULE = array();
+$_MODULE['<{payu}prestashop>payment_ea9cf7e47ff33b2be14e6dd07cbcefc6'] = 'Wysyłka';
+$_MODULE['<{payu}prestashop>payment_f1d3b424cd68795ecaa552883759aceb'] = 'Podsumowanie zamówienia';
+$_MODULE['<{payu}prestashop>payment_737aa7ab9280028f78f4b1c72e1e0523'] = 'Wybrałeś metodę płatności \"Płacę z PayU\". Kliknij w przycisk aby przejść do serwisu PayU.';
+$_MODULE['<{payu}prestashop>payment_c1cbb23696c447bbe3389f16c412be8a'] = 'Wróć do metod płatności';
+$_MODULE['<{payu}prestashop>payment_90c5249ee3db06a18dd9fbf98269a094'] = 'Płacę z PayU';
 $_MODULE['<{payu}prestashop>payu_abstract_6a90d0ab04a2cd28919bee487736cdeb'] = 'PayU';
 $_MODULE['<{payu}prestashop>payu_abstract_bbca1b6f13ca3032ec145ca8d759cb0f'] = 'Akceptuję płatności PayU';
 $_MODULE['<{payu}prestashop>payu_abstract_eae59a50519c35084d949f685a1ac382'] = 'Status zamówienia - oczekuje';
@@ -24,11 +21,14 @@ $_MODULE['<{payu}prestashop>payu_abstract_bafd7322c6e97d25b6299b5d6fe8920b'] = '
 $_MODULE['<{payu}prestashop>payu_abstract_723aca7e03eda0f5ed5c0f5439e59710'] = 'Autoodbiór włączony';
 $_MODULE['<{payu}prestashop>payu_abstract_517685d8f58c02678374ce2be9621e1e'] = 'Czas ważności zamówienia';
 $_MODULE['<{payu}prestashop>payu_abstract_6f1fce542ae9f17596bbedfe37459536'] = 'Wysyłka za granicę';
+$_MODULE['<{payu}prestashop>payu_abstract_2faec1f9f8cc7f8f40d521c4dd574f49'] = 'Włącz';
+$_MODULE['<{payu}prestashop>payu_abstract_bcfaccebf745acfd5e75351095a5394a'] = 'Wyłącz';
 $_MODULE['<{payu}prestashop>payu_abstract_44b0eb2218c5548a4857b8f8a20a0aa0'] = 'Czy OneStepCheckout włączony';
 $_MODULE['<{payu}prestashop>payu_abstract_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Włączony';
 $_MODULE['<{payu}prestashop>payu_abstract_b9f5c797ebbf55adccdd8539a65a0241'] = 'Wyłączony';
 $_MODULE['<{payu}prestashop>payu_abstract_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz';
 $_MODULE['<{payu}prestashop>payu_abstract_8eb80b1b45ca8d0709168e9168ee022f'] = 'Parametry środowiska testowego (Sandbox)';
+$_MODULE['<{payu}prestashop>payu_abstract_e9adbbd1cd7eff7e1a588c31f79521d5'] = 'Id punktu płatności';
 $_MODULE['<{payu}prestashop>payu_abstract_80949984cb389b2b94b1c6de4a275d11'] = 'Protokół OAuth - client_id';
 $_MODULE['<{payu}prestashop>payu_abstract_ed98be8d39521e5bd8c4fb376f2ca9f0'] = 'Klucz MD5';
 $_MODULE['<{payu}prestashop>payu_abstract_3b043c5210f7e86a3e4da27eb551fce7'] = 'Protokół OAuth - client_secret';
@@ -45,6 +45,7 @@ $_MODULE['<{payu}prestashop>payu_abstract_39249b03a2996e0bd05665cb97aa086b'] = '
 $_MODULE['<{payu}prestashop>payu_abstract_77dbdec7a66d61c6598e0bac56e3ec49'] = 'Informacje o wtyczce';
 $_MODULE['<{payu}prestashop>payu_abstract_011fedf4050817b8826f95a53d9555b2'] = 'Aktualnie zainstowalowana';
 $_MODULE['<{payu}prestashop>payu_abstract_9ca445b9db010a99239196af5ac3a8b9'] = 'Najnowsza wydana';
+$_MODULE['<{payu}prestashop>payu_abstract_d3b7c913cd04ebfec0e9ec32cb6fd58c'] = 'GitHub';
 $_MODULE['<{payu}prestashop>payu_abstract_8dd1c5ef853a646bb847e9389a7bd2e6'] = 'Information';
 $_MODULE['<{payu}prestashop>payu_abstract_5d5cb8e8a16c652f3ef9ffdec0d4674a'] = 'Wystąpił błąd podczas procesowania zamówienia.';
 $_MODULE['<{payu}prestashop>payu_abstract_d49e293c61d999b6cf31c8bcf580a804'] = 'Wystąpił błąd podczas weryfikowania zamówienia.';
@@ -59,3 +60,15 @@ $_MODULE['<{payu}prestashop>error_a40cab5994f36d4c48103a22ca082e8f'] = 'Koszyk';
 $_MODULE['<{payu}prestashop>error_6a90d0ab04a2cd28919bee487736cdeb'] = 'PayU';
 $_MODULE['<{payu}prestashop>error_f1d3b424cd68795ecaa552883759aceb'] = 'Podsumowanie';
 $_MODULE['<{payu}prestashop>error_0557fa923dcee4d0f86b1409f5c2167f'] = 'Wróć';
+$_MODULE['<{payu}prestashop>order-confirmation_fb077ecba55e5552916bde26d8b9e794'] = 'Potwierdzenie zamówienia';
+$_MODULE['<{payu}prestashop>order-confirmation_a378cd7a0839cbd4ec3e45bbdeeb69be'] = 'Numer zamówienia:';
+$_MODULE['<{payu}prestashop>order-confirmation_9390390581f54c65d6acfc8da4e17362'] = 'Wróć do zamówienia';
+$_MODULE['<{payu}prestashop>order-summary_c453a4b8e8d98e82f35b67f433e3b4da'] = 'Płatność';
+$_MODULE['<{payu}prestashop>order-summary_737aa7ab9280028f78f4b1c72e1e0523'] = 'Wybrałeś metodę płatności \"Płacę z PayU\". Kliknij w przycisk aby przejść do serwisu PayU.';
+$_MODULE['<{payu}prestashop>order-summary_c1cbb23696c447bbe3389f16c412be8a'] = 'Wróć do metod płatności';
+$_MODULE['<{payu}prestashop>order-summary_90c5249ee3db06a18dd9fbf98269a094'] = 'Płacę z PayU';
+$_MODULE['<{payu}prestashop>payment_4c8c0efe5893a52fdc0ca69e625db475'] = 'Płacę z PayU';
+$_MODULE['<{payu}prestashop>payment_return_f1d3b424cd68795ecaa552883759aceb'] = 'Podsumowanie zamówienia';
+$_MODULE['<{payu}prestashop>payment_return_edadfc466174fa89ac0a925ee8d403d1'] = 'The choice of payment methods';
+$_MODULE['<{payu}prestashop>payment_return_90c5249ee3db06a18dd9fbf98269a094'] = 'Płacę z PayU';
+$_MODULE['<{payu}prestashop>express_checkout_90c5249ee3db06a18dd9fbf98269a094'] = 'Płacę z PayU';

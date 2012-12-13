@@ -1,5 +1,5 @@
 {*
-*	ver. 1.6
+*	ver. 1.7
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU

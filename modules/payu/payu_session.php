@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 1.6
+ *	ver. 1.7
  *
  *	@copyright  Copyright 2012 by PayU
  *	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
