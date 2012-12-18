@@ -24,8 +24,6 @@ define their payment options, see their purchase history, and manage personal pr
 
 **Important:** This plugin works only with checkout points of sales (POS).
 
-In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
-
 The following PHP extensions are required:
 
 * [cURL][ext2] to connect and communicate to many different types of servers with many different types of protocols.
@@ -64,6 +62,8 @@ To configure the PrestaShop plugin:
 1. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
 2. Go to **Modules** > **Payments & Gateways**.
 3. Select **PayU** and click **Configure**.
+
+**Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
 
 ### Configuration Parameters
 
