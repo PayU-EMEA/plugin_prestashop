@@ -24,6 +24,8 @@ define their payment options, see their purchase history, and manage personal pr
 
 **Important:** This plugin works only with checkout points of sales (POS).
 
+In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
+
 The following PHP extensions are required:
 
 * [cURL][ext2] to connect and communicate to many different types of servers with many different types of protocols.
@@ -77,7 +79,7 @@ The main parameters for plugin configuration are as follows:
 |Self-Return Enabled|Yes/No|If self-return is disabled, the payment must be confirmed manually.|
 |Order Validity Time|24h/12h/6h/1h/30min|Specifies the time during which the order is valid in the PayU system. When validity time expires, the order is cancelled, and you are notified that the transaction failed.|
 |Ship Abroad|Enabled/Disabled|If ship abroad is disabled, you can only choose the country of the shop for shipping.|
-|OneStepCheckout Enabled|Yes/No|Specifies whether buying from cart via Payu is enabled.|
+|OneStepCheckout Enabled|Yes/No|Specifies whether buying from cart via Payu is enabled. <br><br> **Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.|
 
 #### Parameters of test and production environments
 
