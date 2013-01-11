@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 1.7
+ *	ver. 1.8
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -27,7 +27,9 @@ class PayU extends PayUAbstract
             $ips = payu_session::existsByCartId($cart->id);
             $payuSession = new payu_session($ips);
 
-            $this->validateOrder($cart->id, Configuration::get('PAYMENT_PAYU_NEW_STATE'), $cart->getOrderTotal(true, Cart::BOTH), 'payu', 'payu.pl cart ID: ' . $cart->id . ', sessionId: ' . $payuSession->sid, null, (int)$cart->id_currency, false, $cart->secure_key, Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null);
+            $this->validateOrder($cart->id, intval(Configuration::get('PAYMENT_PAYU_NEW_STATE')), $cart->getOrderTotal(true, Cart::BOTH), 'payu',
+                'payu.pl cart ID: ' . $cart->id . ', sessionId: ' . $payuSession->sid, null, (int)$cart->id_currency, false,
+                $cart->secure_key, Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null);
 
             $this->saveSID($payuSession->sid, (int)$this->currentOrder, 'ORDER_STATUS_PENDING', $cart->id);
             

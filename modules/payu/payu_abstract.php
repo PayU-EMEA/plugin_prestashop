@@ -1,6 +1,6 @@
 <?php
 /**
- *	ver. 1.7
+ *	ver. 1.8
  *	PayU Payment Modules
  *
  *	@copyright  Copyright 2012 by PayU
@@ -20,26 +20,32 @@ class PayUAbstract extends PaymentModule
      *
      * @var string
      */
-    const     PAYMENT_STATUS_NEW = 'PAYMENT_STATUS_NEW';
-    const     PAYMENT_STATUS_CANCEL = 'PAYMENT_STATUS_CANCEL';
-    const     PAYMENT_STATUS_REJECT = 'PAYMENT_STATUS_REJECT';
-    const     PAYMENT_STATUS_INIT = 'PAYMENT_STATUS_INIT';
-    const     PAYMENT_STATUS_SENT = 'PAYMENT_STATUS_SENT';
-    const     PAYMENT_STATUS_NOAUTH = 'PAYMENT_STATUS_NOAUTH';
-    const     PAYMENT_STATUS_REJECT_DONE = 'PAYMENT_STATUS_REJECT_DONE';
-    const     PAYMENT_STATUS_END = 'PAYMENT_STATUS_END';
-    const     PAYMENT_STATUS_ERROR = 'PAYMENT_STATUS_ERROR';
+    const PAYMENT_STATUS_NEW = 'PAYMENT_STATUS_NEW';
+    const PAYMENT_STATUS_CANCEL = 'PAYMENT_STATUS_CANCEL';
+    const PAYMENT_STATUS_REJECT = 'PAYMENT_STATUS_REJECT';
+    const PAYMENT_STATUS_INIT = 'PAYMENT_STATUS_INIT';
+    const PAYMENT_STATUS_SENT = 'PAYMENT_STATUS_SENT';
+    const PAYMENT_STATUS_NOAUTH = 'PAYMENT_STATUS_NOAUTH';
+    const PAYMENT_STATUS_REJECT_DONE = 'PAYMENT_STATUS_REJECT_DONE';
+    const PAYMENT_STATUS_END = 'PAYMENT_STATUS_END';
+    const PAYMENT_STATUS_ERROR = 'PAYMENT_STATUS_ERROR';
 
     /**
      * PayU - order statuses
      *
      * @var string
      */
-    const     ORDER_STATUS_PENDING = 'ORDER_STATUS_PENDING';
-    const     ORDER_STATUS_SENT = 'ORDER_STATUS_SENT';
-    const     ORDER_STATUS_COMPLETE = 'ORDER_STATUS_COMPLETE';
-    const     ORDER_STATUS_CANCEL = 'ORDER_STATUS_CANCEL';
-    const     ORDER_STATUS_REJECT = 'ORDER_STATUS_REJECT';
+    const ORDER_STATUS_PENDING = 'ORDER_STATUS_PENDING';
+    const ORDER_STATUS_SENT = 'ORDER_STATUS_SENT';
+    const ORDER_STATUS_COMPLETE = 'ORDER_STATUS_COMPLETE';
+    const ORDER_STATUS_CANCEL = 'ORDER_STATUS_CANCEL';
+    const ORDER_STATUS_REJECT = 'ORDER_STATUS_REJECT';
+
+    private $payu_status_complete = 2;
+    private $payu_status_pending = 13;
+    private $payu_status_cancel = 6;
+    private $payu_status_reject = 7;
+    private $payu_status_sent = 14;
 
     private $payu_environment;
     private $payu_button;
@@ -67,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.7';
+        $this->version = '1.8';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -105,6 +111,11 @@ class PayUAbstract extends PaymentModule
             OR !Configuration::updateValue('PAYU_VALIDITY_TIME', '')
             OR !Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', '')
             OR !Configuration::updateValue('PAYU_SHIP_ABROAD', '')
+            OR !Configuration::updateValue('PAYMENT_PAYU_STATUS_COMPLETE', '2')
+            OR !Configuration::updateValue('PAYMENT_PAYU_STATUS_PENDING', '13')
+            OR !Configuration::updateValue('PAYMENT_PAYU_STATUS_CANCEL', '6')
+            OR !Configuration::updateValue('PAYMENT_PAYU_STATUS_REJECT', '7')
+            OR !Configuration::updateValue('PAYMENT_PAYU_STATUS_SENT', '14')
             OR (!$this->registerHook('leftColumn') OR !$this->registerHook('rightColumn'))
             OR !$this->registerHook('header')
             OR !$this->registerHook('payment')
@@ -129,7 +140,7 @@ class PayUAbstract extends PaymentModule
             $order_state_new->color = "lightblue";
             if (!$order_state_new->add())
                 return false;
-            if (!Configuration::updateValue('PAYMENT_PAYU_NEW_STATE', $order_state_new->id))
+            if (!Configuration::updateValue('PAYMENT_PAYU_NEW_STATE', $order_state_new->id) || !Configuration::updateValue('PAYU_ORDER_STATUS_PENDING', $order_state_new->id))
                 return false;
         }
 
@@ -145,7 +156,7 @@ class PayUAbstract extends PaymentModule
             $order_state_new->color = "lightblue";
             if (!$order_state_new->add())
                 return false;
-            if (!Configuration::updateValue('PAYMENT_PAYU_AWAITING_STATE', $order_state_new->id))
+            if (!Configuration::updateValue('PAYMENT_PAYU_AWAITING_STATE', $order_state_new->id) || !Configuration::updateValue('PAYMENT_PAYU_STATUS_SENT', $order_state_new->id))
                 return false;
         }
 
@@ -180,6 +191,11 @@ class PayUAbstract extends PaymentModule
             OR !Configuration::deleteByName('PAYU_VALIDITY_TIME', '')
             OR !Configuration::deleteByName('PAYU_ONE_STEP_CHECKOUT', '')
             OR !Configuration::deleteByName('PAYU_SHIP_ABROAD', '')
+            OR !Configuration::deleteByName('PAYMENT_PAYU_STATUS_COMPLETE', '')
+            OR !Configuration::deleteByName('PAYMENT_PAYU_STATUS_PENDING', '')
+            OR !Configuration::deleteByName('PAYMENT_PAYU_STATUS_CANCEL', '')
+            OR !Configuration::deleteByName('PAYMENT_PAYU_STATUS_REJECT', '')
+            OR !Configuration::deleteByName('PAYMENT_PAYU_STATUS_SENT', '')
         )
             return false;
 
@@ -382,6 +398,12 @@ class PayUAbstract extends PaymentModule
         $this->payu_one_step_checkout = Configuration::get('PAYU_ONE_STEP_CHECKOUT');
         $this->payu_ship_abroad = Configuration::get('PAYU_SHIP_ABROAD');
 
+        $this->payu_status_complete = intval(Configuration::get('PAYMENT_PAYU_STATUS_COMPLETE'));
+        $this->payu_status_pending = intval(Configuration::get('PAYMENT_PAYU_STATUS_PENDING'));
+        $this->payu_status_cancel = intval(Configuration::get('PAYMENT_PAYU_STATUS_CANCEL'));
+        $this->payu_status_reject = intval(Configuration::get('PAYMENT_PAYMENT_PAYU_STATUS_REJECT'));
+        $this->payu_status_sent = intval(Configuration::get('PAYMENT_PAYU_STATUS_SENT'));
+
     }
 
     public function fetchTemplate($path, $name, $extension = false)
@@ -428,8 +450,13 @@ class PayUAbstract extends PaymentModule
             Configuration::updateValue('PAYU_SHIP_ABROAD', $ship_abroad);
             Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', $one_step);
 
+            Configuration::updateValue('PAYMENT_PAYU_STATUS_PENDING', Tools::getValue('payu_status_pending'));
+            Configuration::updateValue('PAYMENT_PAYU_STATUS_SENT', Tools::getValue('payu_status_sent'));
+            Configuration::updateValue('PAYMENT_PAYU_STATUS_COMPLETE', Tools::getValue('payu_status_complete'));
+            Configuration::updateValue('PAYMENT_PAYU_STATUS_CANCEL', Tools::getValue('payu_status_cancel'));
+            Configuration::updateValue('PAYMENT_PAYU_STATUS_REJECT', Tools::getValue('payu_status_reject'));
 
-            $oauth_client_name_sandbox = (Tools::getValue('oauth_client_name_sandbox'));
+            $oauth_client_name_sandbox = Tools::getValue('oauth_client_name_sandbox');
             $oauth_client_secret_sandbox = Tools::getValue('oauth_client_secret_sandbox');
             $pos_auth_key_sandbox = Tools::getValue('pos_auth_key_sandbox');
             $signature_key_sandbox = Tools::getValue('signature_key_sandbox');
@@ -440,7 +467,7 @@ class PayUAbstract extends PaymentModule
             Configuration::updateValue('PAYU_SIGNATURE_KEY_SANDBOX', $signature_key_sandbox);
 
 
-            $oauth_client_name = (Tools::getValue('oauth_client_name'));
+            $oauth_client_name = Tools::getValue('oauth_client_name');
             $oauth_client_secret = Tools::getValue('oauth_client_secret');
             $pos_auth_key = Tools::getValue('pos_auth_key');
             $signature_key = Tools::getValue('signature_key');
@@ -486,6 +513,18 @@ class PayUAbstract extends PaymentModule
         $media = $this->mediaOpenPayU($lang);
         $upgrade = $this->upgradeOpenPayU($lang);
         $upgradeInfo = $this->upgradeOpenPayUInfo($upgrade['prestashop']['1.4.4']['info']);
+
+        $statuses_array = array();
+
+        if (_PS_VERSION_ < '1.5')
+            $lang_id = (int)($cookie->id_lang);
+        else
+            $lang_id = (int)$this->context->language->id;
+
+        $statuses = OrderState::getOrderStates($lang_id);
+
+        foreach ($statuses as $status)
+            $statuses_array[$status['id_order_state']] = $status['name'];
 
         $output = '';
 
@@ -546,6 +585,84 @@ class PayUAbstract extends PaymentModule
                             </tr>
                         </table>
 					</fieldset>
+                    <br class="clear"/>
+					<fieldset>
+					    <legend>' . $this->l('Payment statuses') . '</legend>
+                        <table>
+                            <tr>
+                                <td valign="top"><label for="payu_status_pending">' . $this->l('Pending status') . '</label></td>
+                                <td>
+                                <select name="payu_status_pending" id="payu_status_pending">
+                    ';
+
+                                foreach($statuses_array as $id => $name)
+                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_pending ? 'selected="selected"' : '') . '>' . $name . '</option>';
+
+                    $output .= '
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top"><label for="payu_status_sent">' . $this->l('Sent status') . '</label></td>
+                                <td>
+                                <select name="payu_status_sent" id="payu_status_sent">
+                    ';
+
+                                foreach($statuses_array as $id => $name)
+                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_sent ? 'selected="selected"' : '') . '>' . $name . '</option>';
+
+                    $output .= '
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top"><label for="payu_status_complete">' . $this->l('Complete status') . '</label></td>
+                                <td>
+                                <select name="payu_status_complete" id="payu_status_complete">
+                    ';
+
+                                foreach($statuses_array as $id => $name)
+                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_complete ? 'selected="selected"' : '') . '>' . $name . '</option>';
+
+                    $output .= '
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top"><label for="payu_status_cancel">' . $this->l('Cancel status') . '</label></td>
+                                <td>
+                                <select name="payu_status_cancel" id="payu_status_cancel">
+                    ';
+
+                                foreach($statuses_array as $id => $name)
+                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_cancel ? 'selected="selected"' : '') . '>' . $name . '</option>';
+
+                    $output .= '
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td valign="top"><label for="payu_status_reject">' . $this->l('Reject status') . '</label></td>
+                                <td>
+                                <select name="payu_status_reject" id="payu_status_reject">
+                    ';
+
+                                foreach($statuses_array as $id => $name)
+                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_reject ? 'selected="selected"' : '') . '>' . $name . '</option>';
+
+                    $output .= '
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <br class="clear"/>
+                                    <input class="button" type="submit" name="submitPayU" value="' . $this->l('Save') . '" />
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
                     <br class="clear"/>
 					<fieldset>
 					    <legend>' . $this->l('Parameters of test environment (Sandbox)') . '</legend>
@@ -999,32 +1116,59 @@ class PayUAbstract extends PaymentModule
         $orderId = intval($response[2]);
         $history = new OrderHistory();
         $history->id_order = $orderId;
-        $orderState = OrderHistory::getLastOrderState($orderId);
 
-        if ($orderState->id != 2 && ($orderState->id == 13 || $orderState->id == 14) && $paymentStatus == PayU::PAYMENT_STATUS_END) {
-            $history->changeIdOrderState(2, $orderId);
-            $history->addWithemail(true);
+        if (_PS_VERSION_ < '1.5')
+        {
+            $orderState = OrderHistory::getLastOrderState($orderId);
+            $orderStateId = $orderState->id;
+        }
+        else
+        {
+            $order = new Order($orderId);
+            $orderStateId = $order->current_state;
         }
 
-        switch ($status) {
-            case PayU::ORDER_STATUS_COMPLETE :
-                if ($orderState->id != 3) {
-                    $history->changeIdOrderState(3, $orderId);
-                    $history->addWithemail(true);
-                }
+        if (in_array($orderStateId, array($this->payu_status_pending, $this->payu_status_sent)) && $paymentStatus == PayU::PAYMENT_STATUS_END && $status == PayU::ORDER_STATUS_COMPLETE) {
+            if ($orderStateId != $this->payu_status_complete) {
+                $history->changeIdOrderState($this->payu_status_complete, $orderId, false);
+                $history->addWithemail(true);
+            }
+        }
+        elseif($orderStateId == $this->payu_status_pending && $status == PayU::ORDER_STATUS_PENDING && $paymentStatus == PayU::PAYMENT_STATUS_SENT)
+        {
+            if ($orderStateId != $this->payu_status_sent) {
+                $history->changeIdOrderState($this->payu_status_sent, $orderId, false);
+                $history->addWithemail(true);
+            }
+        }
+        else
+        {
+            switch ($status) {
+                case PayU::ORDER_STATUS_COMPLETE :
+                    if ($orderStateId!= $this->payu_status_complete) {
+                        $history->changeIdOrderState($this->payu_status_complete, $orderId);
+                        $history->addWithemail(true);
+                    }
                 break;
-            case PayU::ORDER_STATUS_CANCEL :
-                if ($orderState->id != 6) {
-                    $history->changeIdOrderState(6, $orderId);
-                    $history->addWithemail(true);
-                }
+                case PayU::ORDER_STATUS_CANCEL :
+                    if ($orderStateId != $this->payu_status_cancel) {
+                        $history->changeIdOrderState($this->payu_status_cancel, $orderId);
+                        $history->addWithemail(true);
+                    }
                 break;
-            case PayU::ORDER_STATUS_REJECT :
-                if ($orderState->id != 8) {
-                    $history->changeIdOrderState(8, $orderId);
-                    $history->addWithemail(true);
-                }
+                case PayU::ORDER_STATUS_REJECT :
+                    if ($orderStateId != $this->payu_status_reject) {
+                        $history->changeIdOrderState($this->payu_status_reject, $orderId);
+                        $history->addWithemail(true);
+                    }
                 break;
+                case PayU::ORDER_STATUS_SENT :
+                    if ($orderStateId != $this->payu_status_sent) {
+                        $history->changeIdOrderState($this->payu_status_sent, $orderId);
+                        $history->addWithemail(false);
+                    }
+                break;
+            }
         }
     }
 
@@ -1032,104 +1176,166 @@ class PayUAbstract extends PaymentModule
     public function updateCustomerData($cartId)
     {
         $cart = new Cart($cartId);
-        $guest = array();
 
-        if ($cart->id_customer == 0) {
+        $customerId = $cart->id_customer;
+        $invoiceAddressId = $cart->id_address_invoice;
+        $deliveryAddressId = $cart->id_address_delivery;
 
-            $ips = payu_session::existsByCartId($cartId);
-            $payuSession = new payu_session($ips);
-            $result = OpenPayU_Order::retrieve($payuSession->sid);
-            $response = $result->getResponse();
-            $orderRetrieveResponse = $response['OpenPayU']['OrderDomainResponse']['OrderRetrieveResponse'];
+        $ips = payu_session::existsByCartId($cartId);
+        $payuSession = new payu_session($ips);
 
-            $customerRecord = isset($orderRetrieveResponse['CustomerRecord']) ? $orderRetrieveResponse['CustomerRecord'] : array();
-            $shipping = $orderRetrieveResponse['Shipping'];
+        $result = OpenPayU_Order::retrieve($payuSession->sid);
+        $response = $result->getResponse();
 
+        $orderRetrieveResponse = $response['OpenPayU']['OrderDomainResponse']['OrderRetrieveResponse'];
 
+        $customerRecord = isset($orderRetrieveResponse['CustomerRecord']) ? $orderRetrieveResponse['CustomerRecord'] : array();
+        $shipping = isset($orderRetrieveResponse['Shipping']) ? $orderRetrieveResponse['Shipping'] : array();
+        $invoice = isset($orderRetrieveResponse['Invoice']) ? $orderRetrieveResponse['Invoice'] : array();
 
-            if (!empty($customerRecord) && !empty($shipping)) {
+        if (!empty($customerRecord) || !empty($shipping) || !empty($invoice) ) {
 
-                preg_match_all("'([0-9])'si", trim($orderRetrieveResponse['Shipping']['ShippingType'], ')'), $carrier);
-                $carrierId = ($carrier[0][count($carrier[0]) - 1]);
+            preg_match_all("'([0-9])'si", trim($shipping['ShippingType'], ')'), $carrier);
+            $carrierId = ($carrier[0][count($carrier[0]) - 1]);
 
-                $Email = $customerRecord['Email'];
-                $Phone = $customerRecord['Phone'];
-                $FirstName = $customerRecord['FirstName'];
-                $LastName = $customerRecord['LastName'];
-                $Language = $customerRecord['Language'];
+            $Email = $customerRecord['Email'];
+            $Phone = $customerRecord['Phone'];
+            $FirstName = $customerRecord['FirstName'];
+            $LastName = $customerRecord['LastName'];
+            $Language = $customerRecord['Language'];
 
-                $countryId = (Country::getByIso($shipping['Address']['CountryCode'])) ? Country::getByIso($shipping['Address']['CountryCode']) : 1;
+            $customerId = Customer::customerExists($Email, true);
 
-                $customerId = Customer::customerExists($Email, true);
-
-                if ($customerId == false) {
-                    $customer = new Customer();
-                    $customer->lastname = $FirstName;
-                    $customer->firstname = $LastName;
-                    $customer->email = $Email;
-                    $customer->newsletter = 0;
-                    $customer->passwd = Tools::passwdGen(10);
-                    $customer->is_guest = 1;
-                    $customer->add();
-                    $customerId = $customer->id;
-                }
-
-                $address = new Address();
-                $address->id_customer = $customerId;
-                $address->id_country = $countryId;
-                $address->id_state = 0;
-                $address->alias = 'Payu_invoice_(' . $cartId . ')_' . time();
-                $address->lastname = $LastName;
-                $address->firstname = $FirstName;
-                $address->address1 = $shipping['Address']['Street'] . ' ' . $shipping['Address']['HouseNumber'] . (isset($shipping['Address']['ApartmentNumber']) ? '/' . $shipping['Address']['ApartmentNumber'] : '');
-                $address->postcode = $shipping['Address']['PostalCode'];
-                $address->city = $shipping['Address']['City'];
-                $address->phone = $Phone;
-                $address->add();
-                $invoiceAddressId = $address->id;
-                $address = null;
-
-                $first_last_name = explode(' ', $shipping['Address']['RecipientName']);
-
-                $address = new Address();
-                $address->id_customer = $customerId;
-                $address->id_country = $countryId;
-                $address->id_state = 0;
-                $address->alias = 'Payu_delivery_(' . $cartId . ')_' . time();
-                $address->lastname = $first_last_name[1];
-                $address->firstname = $first_last_name[0];
-                $address->address1 = $shipping['Address']['Street'] . ' ' . $shipping['Address']['HouseNumber'] . (isset($shipping['Address']['ApartmentNumber']) ? '/' . $shipping['Address']['ApartmentNumber'] : '');
-                $address->postcode = $shipping['Address']['PostalCode'];
-                $address->city = $shipping['Address']['City'];
-                $address->phone = $Phone;
-                $address->add();
-                $deliveryAddressId = $address->id;
-
-                $guest = array($customerId, $invoiceAddressId, $deliveryAddressId);
+            if ($customerId == false) {
+                $customer = new Customer();
+                $customer->lastname = $FirstName;
+                $customer->firstname = $LastName;
+                $customer->email = $Email;
+                $customer->newsletter = 0;
+                $customer->passwd = Tools::passwdGen(10);
+                $customer->is_guest = 1;
+                $customer->add();
+                $customerId = $customer->id;
             }
-        }
 
-        $cart->id_customer = $guest[0];
-        $cart->id_address_invoice = $guest[1];
-        $cart->id_address_delivery = $guest[2];
-        $cart->id_carrier = $carrierId;
-        $cart->update();
+            if(!empty($invoice))
+            {
+                $invoiceCountryId = (Country::getByIso($invoice['Billing']['CountryCode'])) ? Country::getByIso($invoice['Billing']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT');
+
+                $invoiceRecipientName = explode(' ', $invoice['Billing']['RecipientName']);
+
+                $invoiceAddress = new Address();
+                $invoiceAddress->id_customer = $customerId;
+                $invoiceAddress->id_country = $invoiceCountryId;
+                $invoiceAddress->id_state = 0;
+                $invoiceAddress->alias = 'PayU_delivery_(' . $cartId . ')_' . time();
+                $invoiceAddress->firstname = !empty($invoiceRecipientName[0]) ? $invoiceRecipientName[0] : ' ';
+                $invoiceAddress->lastname = !empty($invoiceRecipientName[1]) ? $invoiceRecipientName[1] : ' ';
+                $invoiceAddress->address1 = $invoice['Billing']['Street'] . ' ' . $invoice['Billing']['HouseNumber'] . (isset($invoice['Billing']['ApartmentNumber']) ? '/' . $invoice['Billing']['ApartmentNumber'] : '');
+                $invoiceAddress->postcode = $invoice['Billing']['PostalCode'];
+                $invoiceAddress->city = $invoice['Billing']['City'];
+                $invoiceAddress->phone = $invoice['Billing']['RecipientPhone'];
+                $invoiceAddress->vat_number = $invoice['Billing']['TIN'];
+                $invoiceAddress->deleted = 0;
+                $invoiceAddress->add();
+
+                $invoiceAddressId = $invoiceAddress->id;
+            }
+
+            if(!empty($shipping))
+            {
+                $countryId = intval(Country::getByIso($shipping['Address']['CountryCode']) ? Country::getByIso($shipping['Address']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT'));
+                $deliveryRecipientName = explode(' ', $shipping['Address']['RecipientName']);
+
+                $deliveryAddress = new Address();
+                $deliveryAddress->id_customer = $customerId;
+                $deliveryAddress->id_country = $countryId;
+                $deliveryAddress->id_state = 0;
+                $deliveryAddress->alias = 'PayU_delivery_(' . $cartId . ')_' . time();
+                $deliveryAddress->firstname = !empty($deliveryRecipientName[0]) ? $deliveryRecipientName[0] : ' ';
+                $deliveryAddress->lastname = !empty($deliveryRecipientName[1]) ? $deliveryRecipientName[1] : ' ';
+                $deliveryAddress->address1 = $shipping['Address']['Street'] . ' ' . $shipping['Address']['HouseNumber'] . (isset($shipping['Address']['ApartmentNumber']) ? '/' . $shipping['Address']['ApartmentNumber'] : '');
+                $deliveryAddress->postcode = $shipping['Address']['PostalCode'];
+                $deliveryAddress->city = $shipping['Address']['City'];
+                $deliveryAddress->phone = $Phone;
+                $deliveryAddress->deleted = 0;
+                $deliveryAddress->add();
+
+                $deliveryAddressId = $deliveryAddress->id;
+            }
+
+            $cart->id_customer = $customerId;
+            $cart->id_address_invoice = $invoiceAddressId;
+            $cart->id_address_delivery = $deliveryAddressId;
+            $cart->id_carrier = $carrierId;
+            $cart->update();
+        }
 
     }
 
     /* Update order data (clear address and customer guest) */
-    private function updateOrderData($orderId)
+    private function updateOrderData($orderId, $orderRetrieveResponse)
     {
         $order = new Order($orderId);
-        $add1 = new Address($order->id_address_delivery);
-        $add1->delete();
-        $add2 = new Address($order->id_address_invoice);
-        $add2->delete();
+
+        $customerRecord = isset($orderRetrieveResponse['CustomerRecord']) ? $orderRetrieveResponse['CustomerRecord'] : array();
+        $shipping = isset($orderRetrieveResponse['Shipping']) ? $orderRetrieveResponse['Shipping'] : array();
+        $invoice = isset($orderRetrieveResponse['Invoice']) ? $orderRetrieveResponse['Invoice'] : array();
+
+        $customerId = $order->id_customer;
+
+        if(!empty($shipping))
+        {
+            $countryId = intval(Country::getByIso($shipping['Address']['CountryCode']) ? Country::getByIso($shipping['Address']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT'));
+            $shippingRecipientName = explode(' ', $shipping['Address']['RecipientName']);
+
+            $deliveryAddress = new Address();
+            $deliveryAddress->id_customer = $customerId;
+            $deliveryAddress->id_country = $countryId;
+            $deliveryAddress->id_state = 0;
+            $deliveryAddress->alias = 'PayU_delivery_(' . $orderId . ')_' . time();
+            $deliveryAddress->firstname = $shippingRecipientName[0];
+            $deliveryAddress->lastname = $shippingRecipientName[1];
+            $deliveryAddress->address1 = $shipping['Address']['Street'] . ' ' . $shipping['Address']['HouseNumber'] . (isset($shipping['Address']['ApartmentNumber']) ? '/' . $shipping['Address']['ApartmentNumber'] : '');
+            $deliveryAddress->postcode = $shipping['Address']['PostalCode'];
+            $deliveryAddress->city = $shipping['Address']['City'];
+            $deliveryAddress->deleted = 0;
+            $deliveryAddress->add();
+
+            $order->id_address_delivery = $deliveryAddress->id;
+        }
+
+
+        if(!empty($invoice))
+        {
+            $invoiceCountryId = (Country::getByIso($invoice['Billing']['CountryCode'])) ? Country::getByIso($invoice['Billing']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT');
+            $invoiceRecipientName = explode(' ', $invoice['Billing']['RecipientName']);
+
+            $invoiceAddress = new Address();
+            $invoiceAddress->id_customer = $order->id_customer;
+            $invoiceAddress->id_country = $invoiceCountryId;
+            $invoiceAddress->id_state = 0;
+            $invoiceAddress->alias = 'PayU_invoice_(' . $orderId . ')_' . time();
+            $invoiceAddress->firstname = $invoiceRecipientName[0];
+            $invoiceAddress->lastname = $invoiceRecipientName[1];
+            $invoiceAddress->address1 = $invoice['Billing']['Street'] . ' ' . $invoice['Billing']['HouseNumber'] . (isset($invoice['Billing']['ApartmentNumber']) ? '/' . $invoice['Billing']['ApartmentNumber'] : '');
+            $invoiceAddress->postcode = $invoice['Billing']['PostalCode'];
+            $invoiceAddress->city = $invoice['Billing']['City'];
+            $invoiceAddress->phone = $invoice['Billing']['RecipientPhone'];
+            $invoiceAddress->vat_number = $invoice['Billing']['TIN'];
+            $invoiceAddress->deleted = 0;
+            $invoiceAddress->add();
+
+            $order->id_address_invoice = $invoiceAddress->id;
+        }
+
         $customer = new Customer($order->id_customer);
         if ($customer->isGuest()) {
             $customer->deleted = 1;
             $customer->update();
         }
+
+        $order->update();
     }
 
     /**
@@ -1228,8 +1434,8 @@ class PayUAbstract extends PaymentModule
             $selectedCarrier = new Carrier($cart->id_carrier);
             $shippingMethod = $selectedCarrier->getShippingMethod();
 
-            $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier));
-            $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, false));
+            $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, true, $country, $cartProducts));
+            $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, false, $country, $cartProducts));
 
             $tax_amount = intval(($price - $price_tax_exc) * 100);
 
@@ -1250,41 +1456,44 @@ class PayUAbstract extends PaymentModule
                 $carrierList[0]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
             }
         }
+        else
+        {
+            $i = 0;
+            if($carriers)
+            {
+                foreach ($carriers as $carrier) {
+                    $c = new Carrier((int)$carrier['id_carrier']);
 
+                    $shippingMethod = $c->getShippingMethod();
 
-        $i = 0;
-        foreach ($carriers as $carrier) {
-            $c = new Carrier((int)$carrier['id_carrier']);
+                    $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cartProducts));
+                    $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cartProducts));
 
-            $shippingMethod = $c->getShippingMethod();
+                    $tax_amount = intval(($price - $price_tax_exc) * 100);
 
-            $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cartProducts));
-            $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cartProducts));
+                    if ($carrier['id_carrier'] != $cart->id_carrier) {
+                        if (intval($carrier['active']) == 1) {
+                            $carrierList[$i]['ShippingCost'] = array(
+                                'Type' => $carrier['name'] . ' (' . $carrier['id_carrier'] . ')',
+                                'CountryCode' => $countryCode,
+                                'Price' => array(
+                                    'Gross' => $this->toAmount($price),
+                                    'Net' => $this->toAmount($price_tax_exc),
+                                    'Tax' => $tax_amount
+                                )
+                            );
 
-            $tax_amount = intval(($price - $price_tax_exc) * 100);
+                            if(!empty($tax_rate))
+                                $carrierList[$i]['ShippingCost']['Price']['TaxRate'] = $tax_rate;
 
-            if ($carrier['id_carrier'] != $cart->id_carrier) {
-                if (intval($carrier['active']) == 1) {
-                    $carrierList[$i]['ShippingCost'] = array(
-                        'Type' => $carrier['name'] . ' (' . $carrier['id_carrier'] . ')',
-                        'CountryCode' => $countryCode,
-                        'Price' => array(
-                            'Gross' => $this->toAmount($price),
-                            'Net' => $this->toAmount($price_tax_exc),
-                            'Tax' => $tax_amount
-                        )
-                    );
+                            $carrierList[$i]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
 
-                    if(!empty($tax_rate))
-                        $carrierList[$i]['ShippingCost']['Price']['TaxRate'] = $tax_rate;
-
-                    $carrierList[$i]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
-
-                    $i++;
+                            $i++;
+                        }
+                    }
                 }
             }
         }
-
 
         $shippingCost = array(
             'CountryCode' => $countryCode,
@@ -1350,6 +1559,21 @@ class PayUAbstract extends PaymentModule
                         'RecipientName' => trim($address->firstname . ' ' . $address->lastname),
                         'RecipientPhone' => $address->phone,
                         'RecipientEmail' => $customer->email
+                    );
+                }
+
+                if (!empty($cart->id_address_invoice)) {
+                    $address = new Address((int)$cart->id_address_invoice);
+                    $country = new Country((int)$address->id_country);
+
+                    $customer_sheet['Invoice'] = array(
+                        'Street' => $address->address1,
+                        'PostalCode' => $address->postcode,
+                        'City' => $address->city,
+                        'CountryCode' => $country->iso_code,
+                        'AddressType' => 'BILLING',
+                        'RecipientName' => trim($address->firstname . ' ' . $address->lastname),
+                        'TIN' => $address->vat_number
                     );
                 }
 
@@ -1477,9 +1701,11 @@ class PayUAbstract extends PaymentModule
     private function orderNotifyRequest($request)
     {
         $result = OpenPayU_Order::consumeMessage($request);
+
         ob_start();
         if ($result->getMessage() == 'OrderNotifyRequest') {
             $sessionId = $result->getSessionId();
+
             if (!$sessionId)
                 return false;
 
@@ -1488,7 +1714,7 @@ class PayUAbstract extends PaymentModule
             if (!$cartId)
                 return false;
 
-            $orderId = Order::getOrderByCartId($cartId);
+            $orderId = intval(Order::getOrderByCartId($cartId));
 
             if (!$orderId)
                 return false;
@@ -1503,7 +1729,7 @@ class PayUAbstract extends PaymentModule
             $this->saveSID($sessionId, $orderId, $payUOrderStatus, $cartId);
 
             if ($payUOrderStatus == 'ORDER_STATUS_COMPLETE' && $payUPaymentStatus == 'PAYMENT_STATUS_END') {
-                $this->updateOrderData($orderId);
+                $this->updateOrderData($orderId, $orderRetrieveResponse);
             }
 
             $this->updateOrderStatus(array($payUOrderStatus, $payUPaymentStatus, $orderId));
@@ -1527,7 +1753,7 @@ class PayUAbstract extends PaymentModule
                 $result = OpenPayU_Order::retrieve($sessionId);
                 $response = $result->getResponse();
                 $orderRetrieveResponse = $response['OpenPayU']['OrderDomainResponse']['OrderRetrieveResponse'];
-                $this->updateOrderData($orderId);
+                $this->updateOrderData($orderId, $orderRetrieveResponse);
             }
             $this->updateOrderStatus(array($status, 'PAYMENT_STATUS_END', $orderId));
             return $result;

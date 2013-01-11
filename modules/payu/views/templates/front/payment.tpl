@@ -1,9 +1,9 @@
 {*
-*	ver. 1.7
+*	ver. 1.8
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
-*	@license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+*	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
 *	http://www.payu.com
 *	http://twitter.com/openpayu
 *}

@@ -1,3 +1,11 @@
+## 1.8
+
+* Fixed order data update
+* Fixed tax value of shipping methods
+* Added invoices billing information in OrderCreateRequest
+* Fixed status changing in Self-Returns
+* Added manage payment statuses in configuration page
+
 ## 1.7
 
 * Fixed translations of messages
