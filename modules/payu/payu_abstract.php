@@ -401,7 +401,7 @@ class PayUAbstract extends PaymentModule
         $this->payu_status_complete = intval(Configuration::get('PAYMENT_PAYU_STATUS_COMPLETE'));
         $this->payu_status_pending = intval(Configuration::get('PAYMENT_PAYU_STATUS_PENDING'));
         $this->payu_status_cancel = intval(Configuration::get('PAYMENT_PAYU_STATUS_CANCEL'));
-        $this->payu_status_reject = intval(Configuration::get('PAYMENT_PAYMENT_PAYU_STATUS_REJECT'));
+        $this->payu_status_reject = intval(Configuration::get('PAYMENT_PAYU_STATUS_REJECT'));
         $this->payu_status_sent = intval(Configuration::get('PAYMENT_PAYU_STATUS_SENT'));
 
     }
@@ -1502,7 +1502,8 @@ class PayUAbstract extends PaymentModule
         );
 
         $shoppingCart = array(
-            'GrandTotal' => $total,
+            'GrandTotal' => ($this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total ? $total   : $this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))),
+            'DiscountTotal' => ($this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total ? $total - $this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))   : 0),
             'CurrencyCode' => $currency['iso_code'],
             'ShoppingCartItems' => $items
         );
@@ -1580,7 +1581,7 @@ class PayUAbstract extends PaymentModule
                 $OCReq['Customer'] = $customer_sheet;
             }
         }
-
+        
         $result = OpenPayU_Order::create($OCReq);
 
         if ($result->getSuccess()) {

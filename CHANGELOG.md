@@ -1,3 +1,9 @@
+## 1.8.1
+
+* Fixed setting reject payment status
+* Added statuses translation for polish language
+* Fixed discounts for orders
+
 ## 1.8
 
 * Fixed order data update
