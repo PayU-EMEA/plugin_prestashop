@@ -1,3 +1,8 @@
+## 1.9
+
+* Added creating order's statement before redirect to PayU
+* Removed creating order's statement after redirect from PayU
+
 ## 1.8.1
 
 * Fixed setting reject payment status

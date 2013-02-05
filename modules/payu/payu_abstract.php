@@ -1,12 +1,12 @@
 <?php
 /**
- *	ver. 1.8
- *	PayU Payment Modules
+ *  ver. 1.9
+ *  PayU Payment Modules
  *
- *	@copyright  Copyright 2012 by PayU
- *	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
- *	http://www.payu.com
- *	http://twitter.com/openpayu
+ *  @copyright  Copyright 2012 by PayU
+ *  @license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
+ *  http://www.payu.com
+ *  http://twitter.com/openpayu
  */
 
 if (!defined('_PS_VERSION_'))
@@ -73,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.8';
+        $this->version = '1.9';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -127,7 +127,7 @@ class PayUAbstract extends PaymentModule
 
         if ((_PS_VERSION_ >= '1.5') && !$this->registerHook('shoppingCartExtra'))
             return false;
-        elseif((_PS_VERSION_ < '1.5') && !$this->registerHook('shoppingCart'))
+        elseif ((_PS_VERSION_ < '1.5') && !$this->registerHook('shoppingCart'))
             return false;
 
         if (Validate::isInt(Configuration::get('PAYMENT_PAYU_NEW_STATE')) XOR (Validate::isLoadedObject($order_state_new = new OrderState(Configuration::get('PAYMENT_PAYU_NEW_STATE'))))) {
@@ -410,7 +410,7 @@ class PayUAbstract extends PaymentModule
     {
         global $smarty;
 
-        return $smarty->fetch(_PS_MODULE_DIR_.$this->name.$path.$name.'.'.($extension ? $extension : 'tpl'));
+        return $smarty->fetch(_PS_MODULE_DIR_ . $this->name . $path . $name . '.' . ($extension ? $extension : 'tpl'));
     }
 
     /**
@@ -488,7 +488,6 @@ class PayUAbstract extends PaymentModule
             Configuration::updateValue('PAYU_IMG_ADVERT', $payment_advert);
             $update = true;
         }
-
 
 
         if ($errors) {
@@ -595,10 +594,10 @@ class PayUAbstract extends PaymentModule
                                 <select name="payu_status_pending" id="payu_status_pending">
                     ';
 
-                                foreach($statuses_array as $id => $name)
-                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_pending ? 'selected="selected"' : '') . '>' . $name . '</option>';
+        foreach ($statuses_array as $id => $name)
+            $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_pending ? 'selected="selected"' : '') . '>' . $name . '</option>';
 
-                    $output .= '
+        $output .= '
                                     </select>
                                 </td>
                             </tr>
@@ -608,10 +607,10 @@ class PayUAbstract extends PaymentModule
                                 <select name="payu_status_sent" id="payu_status_sent">
                     ';
 
-                                foreach($statuses_array as $id => $name)
-                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_sent ? 'selected="selected"' : '') . '>' . $name . '</option>';
+        foreach ($statuses_array as $id => $name)
+            $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_sent ? 'selected="selected"' : '') . '>' . $name . '</option>';
 
-                    $output .= '
+        $output .= '
                                     </select>
                                 </td>
                             </tr>
@@ -621,10 +620,10 @@ class PayUAbstract extends PaymentModule
                                 <select name="payu_status_complete" id="payu_status_complete">
                     ';
 
-                                foreach($statuses_array as $id => $name)
-                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_complete ? 'selected="selected"' : '') . '>' . $name . '</option>';
+        foreach ($statuses_array as $id => $name)
+            $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_complete ? 'selected="selected"' : '') . '>' . $name . '</option>';
 
-                    $output .= '
+        $output .= '
                                     </select>
                                 </td>
                             </tr>
@@ -634,10 +633,10 @@ class PayUAbstract extends PaymentModule
                                 <select name="payu_status_cancel" id="payu_status_cancel">
                     ';
 
-                                foreach($statuses_array as $id => $name)
-                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_cancel ? 'selected="selected"' : '') . '>' . $name . '</option>';
+        foreach ($statuses_array as $id => $name)
+            $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_cancel ? 'selected="selected"' : '') . '>' . $name . '</option>';
 
-                    $output .= '
+        $output .= '
                                     </select>
                                 </td>
                             </tr>
@@ -647,10 +646,10 @@ class PayUAbstract extends PaymentModule
                                 <select name="payu_status_reject" id="payu_status_reject">
                     ';
 
-                                foreach($statuses_array as $id => $name)
-                                    $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_reject ? 'selected="selected"' : '') . '>' . $name . '</option>';
+        foreach ($statuses_array as $id => $name)
+            $output .= '<option value="' . $id . '" ' . ($id == $this->payu_status_reject ? 'selected="selected"' : '') . '>' . $name . '</option>';
 
-                    $output .= '
+        $output .= '
                                     </select>
                                 </td>
                             </tr>
@@ -671,21 +670,21 @@ class PayUAbstract extends PaymentModule
                                 <td valign="top"><label for="oauth_client_name_sandbox">' . $this->l('POS ID') . '</label></td>
                                 <td>
                                     <input size="120" id="oauth_client_name_sandbox" type="text" name="oauth_client_name_sandbox" value="' . $this->payu_oauth_client_name_sandbox . '" />
-                                    <br /><em>'.$this->l('OAuth protocol - client_id').'</em>
+                                    <br /><em>' . $this->l('OAuth protocol - client_id') . '</em>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign="top"><label for="oauth_client_secret_sandbox">' . $this->l('Key (MD5)') . '</label></td>
                                 <td>
                                     <input size="120" id="oauth_client_secret_sandbox" type="text" name="oauth_client_secret_sandbox" value="' . $this->payu_oauth_client_secret_sandbox . '" />
-                                    <br /><em>'.$this->l('OAuth protocol - client_secret').'</em>
+                                    <br /><em>' . $this->l('OAuth protocol - client_secret') . '</em>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign="top"><label for="signature_key_sandbox">' . $this->l('Second key (MD5)') . '</label></td>
                                 <td>
                                     <input size="120" id="signature_key_sandbox" type="text" name="signature_key_sandbox" value="' . $this->payu_signature_key_sandbox . '" />
-                                    <br /><em>'.$this->l('Symmetrical key for encrypting communication').'</em>
+                                    <br /><em>' . $this->l('Symmetrical key for encrypting communication') . '</em>
                                 </td>
                             </tr>
                             <tr>
@@ -711,21 +710,21 @@ class PayUAbstract extends PaymentModule
                                 <td valign="top"><label for="oauth_client_name">' . $this->l('ID POS') . '</label></td>
                                 <td>
                                     <input size="120" id="oauth_client_name" type="text" name="oauth_client_name" value="' . $this->payu_oauth_client_name . '" />
-                                    <br /><em>'.$this->l('OAuth protocol - client_id').'</em>
+                                    <br /><em>' . $this->l('OAuth protocol - client_id') . '</em>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign="top"><label for="oauth_client_secret">' . $this->l('Key (MD5)') . '</label></td>
                                 <td>
                                     <input size="120" id="oauth_client_secret" type="text" name="oauth_client_secret" value="' . $this->payu_oauth_client_secret . '" />
-                                    <br /><em>'.$this->l('OAuth protocol - client_secret').'</em>
+                                    <br /><em>' . $this->l('OAuth protocol - client_secret') . '</em>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign="top"><label for="signature_key">' . $this->l('Second key (MD5)') . '</label></td>
                                 <td>
                                     <input size="120" id="signature_key" type="text" name="signature_key" value="' . $this->payu_signature_key . '" />
-                                    <br /><em>'.$this->l('Symmetrical key for encrypting communication').'</em>
+                                    <br /><em>' . $this->l('Symmetrical key for encrypting communication') . '</em>
                                 </td>
                             </tr>
                             <tr>
@@ -865,35 +864,6 @@ class PayUAbstract extends PaymentModule
     public function execPaymentCheckout($cart)
     {
         return $this->execPayment($cart);
-    }
-
-    /**
-     * Payment handling
-     */
-    public function execPayment($cart)
-    {
-        global $smarty, $_SESSION, $cookie;
-
-        $carriers = array();
-
-        if ((int)$cookie->id_customer > 0) {
-            $customer = new Customer((int)($cookie->id_customer));
-            $address = new Address((int)($cart->id_address_delivery));
-            $id_zone = Address::getZoneById((int)($address->id));
-            $carriers = Carrier::getCarriersForOrder($id_zone, $customer->getGroups());
-        } else {
-            $carriers = Carrier::getCarriers((int)($cart->id_lang), true);
-        }
-
-        $result = $this->orderCreateRequest($cart, $carriers);
-
-        if (!empty($result)) {
-            $smarty->assign($result + array('id_customer' => $cookie->id_customer));
-            return $this->fetchTemplate('/views/templates/front/', 'order-summary');
-        } else {
-            $smarty->assign(array('message' => $this->l('An error occurred while processing your order.')));
-            return $this->fetchTemplate('/views/templates/front/', 'error');
-        }
     }
 
     /**
@@ -1117,13 +1087,10 @@ class PayUAbstract extends PaymentModule
         $history = new OrderHistory();
         $history->id_order = $orderId;
 
-        if (_PS_VERSION_ < '1.5')
-        {
+        if (_PS_VERSION_ < '1.5') {
             $orderState = OrderHistory::getLastOrderState($orderId);
             $orderStateId = $orderState->id;
-        }
-        else
-        {
+        } else {
             $order = new Order($orderId);
             $orderStateId = $order->current_state;
         }
@@ -1133,41 +1100,37 @@ class PayUAbstract extends PaymentModule
                 $history->changeIdOrderState($this->payu_status_complete, $orderId, false);
                 $history->addWithemail(true);
             }
-        }
-        elseif($orderStateId == $this->payu_status_pending && $status == PayU::ORDER_STATUS_PENDING && $paymentStatus == PayU::PAYMENT_STATUS_SENT)
-        {
+        } elseif ($orderStateId == $this->payu_status_pending && $status == PayU::ORDER_STATUS_PENDING && $paymentStatus == PayU::PAYMENT_STATUS_SENT) {
             if ($orderStateId != $this->payu_status_sent) {
                 $history->changeIdOrderState($this->payu_status_sent, $orderId, false);
                 $history->addWithemail(true);
             }
-        }
-        else
-        {
+        } else {
             switch ($status) {
                 case PayU::ORDER_STATUS_COMPLETE :
-                    if ($orderStateId!= $this->payu_status_complete) {
+                    if ($orderStateId != $this->payu_status_complete) {
                         $history->changeIdOrderState($this->payu_status_complete, $orderId);
                         $history->addWithemail(true);
                     }
-                break;
+                    break;
                 case PayU::ORDER_STATUS_CANCEL :
                     if ($orderStateId != $this->payu_status_cancel) {
                         $history->changeIdOrderState($this->payu_status_cancel, $orderId);
                         $history->addWithemail(true);
                     }
-                break;
+                    break;
                 case PayU::ORDER_STATUS_REJECT :
                     if ($orderStateId != $this->payu_status_reject) {
                         $history->changeIdOrderState($this->payu_status_reject, $orderId);
                         $history->addWithemail(true);
                     }
-                break;
+                    break;
                 case PayU::ORDER_STATUS_SENT :
                     if ($orderStateId != $this->payu_status_sent) {
                         $history->changeIdOrderState($this->payu_status_sent, $orderId);
                         $history->addWithemail(false);
                     }
-                break;
+                    break;
             }
         }
     }
@@ -1189,88 +1152,7 @@ class PayUAbstract extends PaymentModule
 
         $orderRetrieveResponse = $response['OpenPayU']['OrderDomainResponse']['OrderRetrieveResponse'];
 
-        $customerRecord = isset($orderRetrieveResponse['CustomerRecord']) ? $orderRetrieveResponse['CustomerRecord'] : array();
-        $shipping = isset($orderRetrieveResponse['Shipping']) ? $orderRetrieveResponse['Shipping'] : array();
-        $invoice = isset($orderRetrieveResponse['Invoice']) ? $orderRetrieveResponse['Invoice'] : array();
-
-        if (!empty($customerRecord) || !empty($shipping) || !empty($invoice) ) {
-
-            preg_match_all("'([0-9])'si", trim($shipping['ShippingType'], ')'), $carrier);
-            $carrierId = ($carrier[0][count($carrier[0]) - 1]);
-
-            $Email = $customerRecord['Email'];
-            $Phone = $customerRecord['Phone'];
-            $FirstName = $customerRecord['FirstName'];
-            $LastName = $customerRecord['LastName'];
-            $Language = $customerRecord['Language'];
-
-            $customerId = Customer::customerExists($Email, true);
-
-            if ($customerId == false) {
-                $customer = new Customer();
-                $customer->lastname = $FirstName;
-                $customer->firstname = $LastName;
-                $customer->email = $Email;
-                $customer->newsletter = 0;
-                $customer->passwd = Tools::passwdGen(10);
-                $customer->is_guest = 1;
-                $customer->add();
-                $customerId = $customer->id;
-            }
-
-            if(!empty($invoice))
-            {
-                $invoiceCountryId = (Country::getByIso($invoice['Billing']['CountryCode'])) ? Country::getByIso($invoice['Billing']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT');
-
-                $invoiceRecipientName = explode(' ', $invoice['Billing']['RecipientName']);
-
-                $invoiceAddress = new Address();
-                $invoiceAddress->id_customer = $customerId;
-                $invoiceAddress->id_country = $invoiceCountryId;
-                $invoiceAddress->id_state = 0;
-                $invoiceAddress->alias = 'PayU_delivery_(' . $cartId . ')_' . time();
-                $invoiceAddress->firstname = !empty($invoiceRecipientName[0]) ? $invoiceRecipientName[0] : ' ';
-                $invoiceAddress->lastname = !empty($invoiceRecipientName[1]) ? $invoiceRecipientName[1] : ' ';
-                $invoiceAddress->address1 = $invoice['Billing']['Street'] . ' ' . $invoice['Billing']['HouseNumber'] . (isset($invoice['Billing']['ApartmentNumber']) ? '/' . $invoice['Billing']['ApartmentNumber'] : '');
-                $invoiceAddress->postcode = $invoice['Billing']['PostalCode'];
-                $invoiceAddress->city = $invoice['Billing']['City'];
-                $invoiceAddress->phone = $invoice['Billing']['RecipientPhone'];
-                $invoiceAddress->vat_number = $invoice['Billing']['TIN'];
-                $invoiceAddress->deleted = 0;
-                $invoiceAddress->add();
-
-                $invoiceAddressId = $invoiceAddress->id;
-            }
-
-            if(!empty($shipping))
-            {
-                $countryId = intval(Country::getByIso($shipping['Address']['CountryCode']) ? Country::getByIso($shipping['Address']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT'));
-                $deliveryRecipientName = explode(' ', $shipping['Address']['RecipientName']);
-
-                $deliveryAddress = new Address();
-                $deliveryAddress->id_customer = $customerId;
-                $deliveryAddress->id_country = $countryId;
-                $deliveryAddress->id_state = 0;
-                $deliveryAddress->alias = 'PayU_delivery_(' . $cartId . ')_' . time();
-                $deliveryAddress->firstname = !empty($deliveryRecipientName[0]) ? $deliveryRecipientName[0] : ' ';
-                $deliveryAddress->lastname = !empty($deliveryRecipientName[1]) ? $deliveryRecipientName[1] : ' ';
-                $deliveryAddress->address1 = $shipping['Address']['Street'] . ' ' . $shipping['Address']['HouseNumber'] . (isset($shipping['Address']['ApartmentNumber']) ? '/' . $shipping['Address']['ApartmentNumber'] : '');
-                $deliveryAddress->postcode = $shipping['Address']['PostalCode'];
-                $deliveryAddress->city = $shipping['Address']['City'];
-                $deliveryAddress->phone = $Phone;
-                $deliveryAddress->deleted = 0;
-                $deliveryAddress->add();
-
-                $deliveryAddressId = $deliveryAddress->id;
-            }
-
-            $cart->id_customer = $customerId;
-            $cart->id_address_invoice = $invoiceAddressId;
-            $cart->id_address_delivery = $deliveryAddressId;
-            $cart->id_carrier = $carrierId;
-            $cart->update();
-        }
-
+        $this->updateOrderData($payuSession->id_order, $orderRetrieveResponse);
     }
 
     /* Update order data (clear address and customer guest) */
@@ -1284,8 +1166,7 @@ class PayUAbstract extends PaymentModule
 
         $customerId = $order->id_customer;
 
-        if(!empty($shipping))
-        {
+        if (!empty($shipping)) {
             $countryId = intval(Country::getByIso($shipping['Address']['CountryCode']) ? Country::getByIso($shipping['Address']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT'));
             $shippingRecipientName = explode(' ', $shipping['Address']['RecipientName']);
 
@@ -1306,8 +1187,7 @@ class PayUAbstract extends PaymentModule
         }
 
 
-        if(!empty($invoice))
-        {
+        if (!empty($invoice)) {
             $invoiceCountryId = (Country::getByIso($invoice['Billing']['CountryCode'])) ? Country::getByIso($invoice['Billing']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT');
             $invoiceRecipientName = explode(' ', $invoice['Billing']['RecipientName']);
 
@@ -1370,7 +1250,7 @@ class PayUAbstract extends PaymentModule
      * @param $cart,$carriers,$isoLang
      * @return array
      */
-    private function orderCreateRequest($cart, $carriers)
+    public function orderCreateRequest($cart, $carriers)
     {
         global $link;
 
@@ -1398,8 +1278,7 @@ class PayUAbstract extends PaymentModule
             $orderType = 'MATERIAL';
         }
 
-        foreach ($cartProducts as $product)
-        {
+        foreach ($cartProducts as $product) {
             $tax = explode('.', $product['rate']);
             $price_wt = $this->toAmount($product['price_wt']);
             $price = $this->toAmount($product['price']);
@@ -1417,8 +1296,8 @@ class PayUAbstract extends PaymentModule
                 )
             );
 
-            if(!empty($tax[0]))
-              $item['Product']['UnitPrice']['TaxRate'] = $tax[0];
+            if (!empty($tax[0]))
+                $item['Product']['UnitPrice']['TaxRate'] = $tax[0];
 
             $item['Product']['UnitPrice']['CurrencyCode'] = $currency['iso_code'];
 
@@ -1450,17 +1329,14 @@ class PayUAbstract extends PaymentModule
                     )
                 );
 
-                if(!empty($tax_rate))
+                if (!empty($tax_rate))
                     $carrierList[0]['ShippingCost']['Price']['TaxRate'] = $tax_rate;
 
                 $carrierList[0]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
             }
-        }
-        else
-        {
+        } else {
             $i = 0;
-            if($carriers)
-            {
+            if ($carriers) {
                 foreach ($carriers as $carrier) {
                     $c = new Carrier((int)$carrier['id_carrier']);
 
@@ -1483,7 +1359,7 @@ class PayUAbstract extends PaymentModule
                                 )
                             );
 
-                            if(!empty($tax_rate))
+                            if (!empty($tax_rate))
                                 $carrierList[$i]['ShippingCost']['Price']['TaxRate'] = $tax_rate;
 
                             $carrierList[$i]['ShippingCost']['Price']['CurrencyCode'] = $currency['iso_code'];
@@ -1502,8 +1378,8 @@ class PayUAbstract extends PaymentModule
         );
 
         $shoppingCart = array(
-            'GrandTotal' => ($this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total ? $total   : $this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))),
-            'DiscountTotal' => ($this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total ? $total - $this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))   : 0),
+            'GrandTotal' => ($this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total ? $total : $this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))),
+            'DiscountTotal' => ($this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total ? $total - $this->toAmount($cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) : 0),
             'CurrencyCode' => $currency['iso_code'],
             'ShoppingCartItems' => $items
         );
@@ -1536,8 +1412,7 @@ class PayUAbstract extends PaymentModule
         if (!empty($cart->id_customer)) {
             $customer = new Customer((int)$cart->id_customer);
 
-            if($customer->email)
-            {
+            if ($customer->email) {
                 $customer_sheet = array(
                     'Email' => $customer->email,
                     'FirstName' => $customer->firstname,
@@ -1581,7 +1456,7 @@ class PayUAbstract extends PaymentModule
                 $OCReq['Customer'] = $customer_sheet;
             }
         }
-        
+
         $result = OpenPayU_Order::create($OCReq);
 
         if ($result->getSuccess()) {
@@ -1595,7 +1470,7 @@ class PayUAbstract extends PaymentModule
 
             $this->saveSID($_SESSION['sessionId'], 0, 'ORDER_STATUS_PENDING', $cart->id);
         } else {
-            Logger::addLog(trim($result->getError() . ' ' . $result->getMessage() .' ' . $_SESSION['sessionId']), 1, 0, 'PayU');
+            Logger::addLog(trim($result->getError() . ' ' . $result->getMessage() . ' ' . $_SESSION['sessionId']), 1, 0, 'PayU');
         }
 
         return $ret;
@@ -1625,7 +1500,7 @@ class PayUAbstract extends PaymentModule
             ob_clean();
             Header("Location: " . OpenPayu_Configuration::getSummaryUrl() . "?sessionId=" . $_SESSION['sessionId'] . "&oauth_token=" . $result->getAccessToken());
         } else {
-            Logger::addLog(trim($result->getError() . ' ' . $result->getMessage() .' ' . $_SESSION['sessionId']), 1, 0, 'PayU');
+            Logger::addLog(trim($result->getError() . ' ' . $result->getMessage() . ' ' . $_SESSION['sessionId']), 1, 0, 'PayU');
         }
 
         return $ret;
@@ -1760,7 +1635,7 @@ class PayUAbstract extends PaymentModule
             return $result;
             ob_end_flush();
         } else {
-            Logger::addLog(trim($result->getError() . ' ' . $result->getMessage() .' ' . $sessionId), 1, 0, 'PayU');
+            Logger::addLog(trim($result->getError() . ' ' . $result->getMessage() . ' ' . $sessionId), 1, 0, 'PayU');
             return false;
         }
 
@@ -1827,21 +1702,20 @@ class PayUAbstract extends PaymentModule
 
     public function getModuleAddress($http = false, $entities = false)
     {
-        return self::getShopDomainAddress($http, $entities) . (__PS_BASE_URI__.'modules/'.$this->name.'/');
+        return self::getShopDomainAddress($http, $entities) . (__PS_BASE_URI__ . 'modules/' . $this->name . '/');
     }
 
     public static function getShopDomainAddress($http = false, $entities = false)
     {
         if (method_exists('Tools', 'getShopDomainSsl'))
             return Tools::getShopDomainSsl($http, $entities);
-        else
-        {
+        else {
             if (!($domain = Configuration::get('PS_SHOP_DOMAIN_SSL')))
                 $domain = self::getHttpHost();
             if ($entities)
                 $domain = htmlspecialchars($domain, ENT_COMPAT, 'UTF-8');
             if ($http)
-                $domain = (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://').$domain;
+                $domain = (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://') . $domain;
             return $domain;
         }
     }
