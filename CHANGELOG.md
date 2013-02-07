@@ -1,3 +1,8 @@
+## 1.9.2
+
+* Fixed updating of choosen shipping method
+* Added paid amount in payments
+
 ## 1.9.1
 
 * Changed OneStepCheckout Enabled only for logged customers

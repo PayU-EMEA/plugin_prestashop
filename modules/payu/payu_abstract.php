@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.1
+ *  ver. 1.9.2
  *  PayU Payment Modules
  *
  *  @copyright  Copyright 2012 by PayU
@@ -1168,6 +1168,49 @@ class PayUAbstract extends PaymentModule
         $customerId = $order->id_customer;
 
         if (!empty($shipping)) {
+
+            // Update order_carrier
+            if(isset($shipping['ShippingType']))
+            {
+                preg_match_all("'([0-9])'si", trim($shipping['ShippingType'], ')'), $carrier);
+                $carrierId = ($carrier[0][count($carrier[0]) - 1]);
+
+                if(!empty($carrierId)){
+                    $order->id_carrier = $carrierId;
+
+                    $id_order_carrier = Db::getInstance()->getValue('
+                        SELECT `id_order_carrier`
+                        FROM `'._DB_PREFIX_.'order_carrier`
+                        WHERE `id_order` = '.(int)$orderId.'
+                        AND (`id_order_invoice` IS NULL OR `id_order_invoice` = 0)');
+
+                    if ($id_order_carrier)
+                    {
+                        $shipping_cost_tax_excl = $this->toDecimal(intval($shipping['ShippingCost']['Net']));
+                        $shipping_cost_tax_incl = $this->toDecimal(intval($shipping['ShippingCost']['Gross']));
+
+                        $order_carrier = new OrderCarrier($id_order_carrier);
+                        $order_carrier->id_carrier = (int)$order->id_carrier;
+                        $order_carrier->shipping_cost_tax_excl = $shipping_cost_tax_excl;
+                        $order_carrier->shipping_cost_tax_incl = $shipping_cost_tax_incl;
+                        $order_carrier->update();
+
+                        $order->total_shipping = $order_carrier->shipping_cost_tax_incl;
+                        $order->total_shipping_tax_incl = $order_carrier->shipping_cost_tax_incl;
+                        $order->total_shipping_tax_excl = $order_carrier->shipping_cost_tax_excl;
+
+                        $order->total_paid = $order->total_products_wt	+ $order->total_shipping_tax_incl;
+                        $order->total_paid_tax_incl = $order->total_paid;
+                        $order->total_paid_tax_excl = $order->total_products + $order->total_shipping_tax_excl;
+
+                        if(isset($orderRetrieveResponse['PaidAmount']) && $orderRetrieveResponse['OrderStatus'] == 'ORDER_STATUS_COMPLETE' && $orderRetrieveResponse['PaymentStatus'] == 'PAYMENT_STATUS_END')
+                        {
+                            $order->addOrderPayment($this->toDecimal(intval($orderRetrieveResponse['PaidAmount'])), $this->displayName, $orderRetrieveResponse['SessionId']);
+                        }
+                    }
+                }
+            }
+
             $countryId = intval(Country::getByIso($shipping['Address']['CountryCode']) ? Country::getByIso($shipping['Address']['CountryCode']) : Configuration::get('PS_COUNTRY_DEFAULT'));
             $shippingRecipientName = explode(' ', $shipping['Address']['RecipientName']);
 
