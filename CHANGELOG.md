@@ -1,3 +1,7 @@
+## 1.9.1
+
+* Changed OneStepCheckout Enabled only for logged customers
+
 ## 1.9
 
 * Added creating order's statement before redirect to PayU

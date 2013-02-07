@@ -26,12 +26,12 @@ class PayU extends PayUAbstract
             $ips = payu_session::existsByCartId($cart->id);
             $payuSession = new payu_session($ips);
 
-            $this->saveSID($payuSession->sid, (int)$this->currentOrder, 'ORDER_STATUS_PENDING', $cart->id);
+            $this->saveSID($payuSession->sid, (int)$payuSession->id_order, 'ORDER_STATUS_PENDING', $cart->id);
 
             if ((int)Context::getContext()->cookie->id_customer > 0 && !Context::getContext()->customer->is_guest) {
-                Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?id_order=' . (int)$this->currentOrder);
+                Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?id_order=' . (int)$payuSession->id_order);
             } else {
-                Tools::redirectLink(__PS_BASE_URI__ . 'guest-tracking.php?id_order=' . (int)$this->currentOrder);
+                Tools::redirectLink(__PS_BASE_URI__ . 'guest-tracking.php?id_order=' . (int)$payuSession->id_order);
             }
         }
     }
