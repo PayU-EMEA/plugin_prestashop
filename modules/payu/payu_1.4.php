@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.2
+ *  ver. 1.9.3
  *  PayU Payment Modules
  *
  *  @copyright  Copyright 2012 by PayU

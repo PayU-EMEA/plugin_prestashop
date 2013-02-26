@@ -1,3 +1,7 @@
+## 1.9.3
+
+* Changed retrieving value of orderId in orderNotifyRequest function
+
 ## 1.9.2
 
 * Fixed updating of choosen shipping method

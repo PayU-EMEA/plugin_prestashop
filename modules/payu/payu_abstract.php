@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.2
+ *  ver. 1.9.3
  *  PayU Payment Modules
  *
  *  @copyright  Copyright 2012 by PayU
@@ -73,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.9.1';
+        $this->version = '1.9.3';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -416,15 +416,27 @@ class PayUAbstract extends PaymentModule
     /**
      * Get session id by cart id
      *
-     * @param $sess
+     * @param $sessionId
      * @return string
      * */
-    private function getCartIdBySessionId($sess)
+    private function getCartIdBySessionId($sessionId)
     {
-        $sessArr = explode("-", $sess);
+        $sessArr = explode("-", $sessionId);
         if (count($sessArr) < 2)
             return null;
         return $sessArr[0];
+    }
+
+    /**
+     * Get order ID by sessiond ID
+     *
+     * @param $sessionId
+     * @return mixed
+     */
+    private function getOrderIdBySessionId($sessionId)
+    {
+        $id_order = Db::getInstance()->getValue('SELECT `id_order` FROM `'._DB_PREFIX_.'payu_session` WHERE `sid` = "'.$sessionId.'"');
+        return $id_order;
     }
 
 
@@ -1634,7 +1646,7 @@ class PayUAbstract extends PaymentModule
             if (!$cartId)
                 return false;
 
-            $orderId = intval(Order::getOrderByCartId($cartId));
+            $orderId = intval($this->getOrderIdBySessionId($sessionId));
 
             if (!$orderId)
                 return false;
