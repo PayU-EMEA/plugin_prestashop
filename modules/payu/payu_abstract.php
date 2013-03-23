@@ -1211,14 +1211,10 @@ class PayUAbstract extends PaymentModule
                         $order->total_shipping_tax_incl = $order_carrier->shipping_cost_tax_incl;
                         $order->total_shipping_tax_excl = $order_carrier->shipping_cost_tax_excl;
 
-                        $order->total_paid = $order->total_products_wt	+ $order->total_shipping_tax_incl;
-                        $order->total_paid_tax_incl = $order->total_paid;
-                        $order->total_paid_tax_excl = $order->total_products + $order->total_shipping_tax_excl;
-
-                        if(isset($orderRetrieveResponse['PaidAmount']) && $orderRetrieveResponse['OrderStatus'] == 'ORDER_STATUS_COMPLETE' && $orderRetrieveResponse['PaymentStatus'] == 'PAYMENT_STATUS_END')
-                        {
-                            $order->addOrderPayment($this->toDecimal(intval($orderRetrieveResponse['PaidAmount'])), $this->displayName, $orderRetrieveResponse['SessionId']);
-                        }
+	                    if((isset($orderRetrieveResponse['PaidAmount']) && $orderRetrieveResponse['OrderStatus'] == 'ORDER_STATUS_COMPLETE' && $orderRetrieveResponse['PaymentStatus'] == 'PAYMENT_STATUS_END') && intval($order->total_paid_real) == 0)
+	                    {
+		                    $order->addOrderPayment($this->toDecimal(intval($orderRetrieveResponse['PaidAmount'])), $this->displayName, $orderRetrieveResponse['SessionId']);
+	                    }
                     }
                 }
             }
