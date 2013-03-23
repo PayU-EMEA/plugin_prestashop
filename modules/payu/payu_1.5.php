@@ -28,11 +28,11 @@ class PayU extends PayUAbstract
 
             $this->saveSID($payuSession->sid, (int)$payuSession->id_order, 'ORDER_STATUS_PENDING', $cart->id);
 
-            if ((int)Context::getContext()->cookie->id_customer > 0 && !Context::getContext()->customer->is_guest) {
-                Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?id_order=' . (int)$payuSession->id_order);
-            } else {
-                Tools::redirectLink(__PS_BASE_URI__ . 'guest-tracking.php?id_order=' . (int)$payuSession->id_order);
-            }
+	        if ((int)Context::getContext()->cookie->id_customer > 0 && !Context::getContext()->customer->is_guest) {
+		        Tools::redirect('index.php?controller=order-confirmation&id_order=' . (int)$payuSession->id_order, __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+	        } else {
+		        Tools::redirect('index.php?controller=guest-tracking&id_order=' . (int)$payuSession->id_order, __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+	        }
         }
     }
 
