@@ -1,3 +1,8 @@
+## 1.9.4
+
+* Fixed problem with duplicated payments
+* Fixed wrong success redirect
+
 ## 1.9.3
 
 * Changed retrieving value of orderId in orderNotifyRequest function

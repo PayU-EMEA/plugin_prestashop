@@ -1,3 +1,12 @@
+{*
+*	ver. 1.9.4
+*	PayU Payment Modules
+*
+*	@copyright  Copyright 2012 by PayU
+*	@license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
+*	http://www.payu.com
+*	http://twitter.com/openpayu
+*}
 {if $smarty.const._PS_VERSION_ < 1.5 && isset($use_mobile) && $use_mobile}
 	{include file="$tpl_dir./modules/payu/views/templates/front/order-confirmation.tpl"}
 {else}

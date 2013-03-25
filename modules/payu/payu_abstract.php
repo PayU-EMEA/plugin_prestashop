@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.3
+ *  ver. 1.9.4
  *  PayU Payment Modules
  *
  *  @copyright  Copyright 2012 by PayU
@@ -73,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.9.3';
+        $this->version = '1.9.4';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -1213,7 +1213,18 @@ class PayUAbstract extends PaymentModule
 
 	                    if((isset($orderRetrieveResponse['PaidAmount']) && $orderRetrieveResponse['OrderStatus'] == 'ORDER_STATUS_COMPLETE' && $orderRetrieveResponse['PaymentStatus'] == 'PAYMENT_STATUS_END') && intval($order->total_paid_real) == 0)
 	                    {
-		                    $order->addOrderPayment($this->toDecimal(intval($orderRetrieveResponse['PaidAmount'])), $this->displayName, $orderRetrieveResponse['SessionId']);
+                            $order->total_paid = $order->total_products_wt  + $order->total_shipping_tax_incl;
+                            $order->total_paid_tax_incl = $order->total_paid;
+                            $order->total_paid_tax_excl = $order->total_products + $order->total_shipping_tax_excl;
+
+                            if (_PS_VERSION_ < '1.5')
+                            {
+                                $this->total_paid_real = $this->toDecimal(intval($orderRetrieveResponse['PaidAmount']));
+                            }
+                            else
+                            {
+                                $order->addOrderPayment($this->toDecimal(intval($orderRetrieveResponse['PaidAmount'])), $this->displayName, $orderRetrieveResponse['SessionId']);
+                            }
 	                    }
                     }
                 }
@@ -1482,7 +1493,7 @@ class PayUAbstract extends PaymentModule
                         'Street' => $address->address1,
                         'PostalCode' => $address->postcode,
                         'City' => $address->city,
-                        'CountryCode' => $country->iso_code,
+                        'CountryCode' => Tools::strtoupper($country->iso_code),
                         'AddressType' => 'SHIPPING',
                         'RecipientName' => trim($address->firstname . ' ' . $address->lastname),
                         'RecipientPhone' => $address->phone,
@@ -1498,7 +1509,7 @@ class PayUAbstract extends PaymentModule
                         'Street' => $address->address1,
                         'PostalCode' => $address->postcode,
                         'City' => $address->city,
-                        'CountryCode' => $country->iso_code,
+                        'CountryCode' => Tools::strtoupper($country->iso_code),
                         'AddressType' => 'BILLING',
                         'RecipientName' => trim($address->firstname . ' ' . $address->lastname),
                         'TIN' => $address->vat_number
@@ -1589,19 +1600,19 @@ class PayUAbstract extends PaymentModule
                             if ($carrier['id_carrier'] != $cart->id_carrier) {
                                 $carrierList[]['ShippingCost'] = array(
                                     'Type' => $carrier['name'] . ' (' . $carrier['id_carrier'] . ')',
-                                    'CountryCode' => $iso_country,
+                                    'CountryCode' => Tools::strtoupper($iso_country),
                                     'Price' => array(
                                         'Gross' => $this->toAmount($price),
                                         'Net' => $this->toAmount($price_tax_exc),
                                         'Tax' => '23',
                                         'TaxRate' => '23',
-                                        'CurrencyCode' => $currency['iso_code']
+                                        'CurrencyCode' => Tools::strtoupper($currency['iso_code'])
                                     )
                                 );
                             }
                         }
                         $shippingCost = array(
-                            'CountryCode' => $iso_country,
+                            'CountryCode' => Tools::strtoupper($iso_country),
                             'ShipToOtherCountry' => $this->payu_ship_abroad,
                             'ShippingCostList' => $carrierList
                         );
