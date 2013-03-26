@@ -1,10 +1,10 @@
 <?php
 /**
- *  ver. 1.9.4
+ *  ver. 1.9.5
  *  PayU Payment Modules
  *
- *  @copyright  Copyright 2012 by PayU
- *  @license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
+ * @copyright  Copyright 2012 by PayU
+ * @license    http://opensource.org/licenses/GPL-3.0  Open Software License (GPL 3.0)
  *  http://www.payu.com
  *  http://twitter.com/openpayu
  */
@@ -73,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.9.4';
+        $this->version = '1.9.5';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -208,8 +208,8 @@ class PayUAbstract extends PaymentModule
     private function createSessionTable()
     {
         return Db::getInstance()->Execute
-        (
-            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'payu_session` (
+            (
+                'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'payu_session` (
 			`id_payu_session` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			`id_order` INT UNSIGNED NOT NULL,
 			`id_cart` INT UNSIGNED NOT NULL,
@@ -218,7 +218,7 @@ class PayUAbstract extends PaymentModule
 			`create_at` datetime,
 			`update_at` datetime
 			)'
-        );
+            );
     }
 
     /**
@@ -435,7 +435,7 @@ class PayUAbstract extends PaymentModule
      */
     private function getOrderIdBySessionId($sessionId)
     {
-        $id_order = Db::getInstance()->getValue('SELECT `id_order` FROM `'._DB_PREFIX_.'payu_session` WHERE `sid` = "'.$sessionId.'"');
+        $id_order = Db::getInstance()->getValue('SELECT `id_order` FROM `' . _DB_PREFIX_ . 'payu_session` WHERE `sid` = "' . $sessionId . '"');
         return $id_order;
     }
 
@@ -1182,22 +1182,20 @@ class PayUAbstract extends PaymentModule
         if (!empty($shipping)) {
 
             // Update order_carrier
-            if(isset($shipping['ShippingType']))
-            {
+            if (isset($shipping['ShippingType'])) {
                 preg_match_all("'([0-9])'si", trim($shipping['ShippingType'], ')'), $carrier);
                 $carrierId = ($carrier[0][count($carrier[0]) - 1]);
 
-                if(!empty($carrierId)){
+                if (!empty($carrierId)) {
                     $order->id_carrier = $carrierId;
 
                     $id_order_carrier = Db::getInstance()->getValue('
                         SELECT `id_order_carrier`
-                        FROM `'._DB_PREFIX_.'order_carrier`
-                        WHERE `id_order` = '.(int)$orderId.'
+                        FROM `' . _DB_PREFIX_ . 'order_carrier`
+                        WHERE `id_order` = ' . (int)$orderId . '
                         AND (`id_order_invoice` IS NULL OR `id_order_invoice` = 0)');
 
-                    if ($id_order_carrier)
-                    {
+                    if ($id_order_carrier) {
                         $shipping_cost_tax_excl = $this->toDecimal(intval($shipping['ShippingCost']['Net']));
                         $shipping_cost_tax_incl = $this->toDecimal(intval($shipping['ShippingCost']['Gross']));
 
@@ -1211,21 +1209,17 @@ class PayUAbstract extends PaymentModule
                         $order->total_shipping_tax_incl = $order_carrier->shipping_cost_tax_incl;
                         $order->total_shipping_tax_excl = $order_carrier->shipping_cost_tax_excl;
 
-	                    if((isset($orderRetrieveResponse['PaidAmount']) && $orderRetrieveResponse['OrderStatus'] == 'ORDER_STATUS_COMPLETE' && $orderRetrieveResponse['PaymentStatus'] == 'PAYMENT_STATUS_END') && intval($order->total_paid_real) == 0)
-	                    {
-                            $order->total_paid = $order->total_products_wt  + $order->total_shipping_tax_incl;
+                        if ((isset($orderRetrieveResponse['PaidAmount']) && $orderRetrieveResponse['OrderStatus'] == 'ORDER_STATUS_COMPLETE' && $orderRetrieveResponse['PaymentStatus'] == 'PAYMENT_STATUS_END') && intval($order->total_paid_real) == 0) {
+                            $order->total_paid = $order->total_products_wt + $order->total_shipping_tax_incl;
                             $order->total_paid_tax_incl = $order->total_paid;
                             $order->total_paid_tax_excl = $order->total_products + $order->total_shipping_tax_excl;
 
-                            if (_PS_VERSION_ < '1.5')
-                            {
+                            if (_PS_VERSION_ < '1.5') {
                                 $this->total_paid_real = $this->toDecimal(intval($orderRetrieveResponse['PaidAmount']));
-                            }
-                            else
-                            {
+                            } else {
                                 $order->addOrderPayment($this->toDecimal(intval($orderRetrieveResponse['PaidAmount'])), $this->displayName, $orderRetrieveResponse['SessionId']);
                             }
-	                    }
+                        }
                     }
                 }
             }
@@ -1371,15 +1365,28 @@ class PayUAbstract extends PaymentModule
 
         $tax_rate = 0;
         $tax_amount = 0;
+        $free_shipping = false;
+
+        # check is free shipping for cart
+        foreach ($cart->getCartRules() as $rule)
+            if ($rule['free_shipping']) {
+                $free_shipping = true;
+                break;
+            }
 
         if ($cart->id_carrier > 0) {
             $selectedCarrier = new Carrier($cart->id_carrier);
             $shippingMethod = $selectedCarrier->getShippingMethod();
 
-            $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, true, $country, $cartProducts));
-            $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, false, $country, $cartProducts));
-
-            $tax_amount = intval(($price - $price_tax_exc) * 100);
+            if ($free_shipping == false) {
+                $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, true, $country, $cartProducts));
+                $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$cart->id_carrier, false, $country, $cartProducts));
+                $tax_amount = intval(($price - $price_tax_exc) * 100);
+            } else {
+                $price = 0;
+                $price_tax_exc = 0;
+                $tax_amount = 0;
+            }
 
             if (intval($selectedCarrier->active) == 1) {
                 $carrierList[0]['ShippingCost'] = array(
@@ -1405,10 +1412,15 @@ class PayUAbstract extends PaymentModule
 
                     $shippingMethod = $c->getShippingMethod();
 
-                    $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cartProducts));
-                    $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cartProducts));
-
-                    $tax_amount = intval(($price - $price_tax_exc) * 100);
+                    if ($free_shipping == false) {
+                        $price = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cartProducts));
+                        $price_tax_exc = ($shippingMethod == Carrier::SHIPPING_METHOD_FREE ? 0 : $cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cartProducts));
+                        $tax_amount = intval(($price - $price_tax_exc) * 100);
+                    } else {
+                        $price = 0;
+                        $price_tax_exc = 0;
+                        $tax_amount = 0;
+                    }
 
                     if ($carrier['id_carrier'] != $cart->id_carrier) {
                         if (intval($carrier['active']) == 1) {
@@ -1453,6 +1465,7 @@ class PayUAbstract extends PaymentModule
             'OrderUrl' => $link->getPageLink(__PS_BASE_URI__ . 'guest-tracking.php'),
             'OrderCreateDate' => date("c"),
             'ValidityTime' => $this->payu_validity_time,
+            'InvoiceDisabled' => (Configuration::get('PS_INVOICE')) ? 'false' : 'true',
             'OrderDescription' => $this->l('Order for cart: ') . $cart->id . $this->l(' from the store: ') . Configuration::get('PS_SHOP_NAME'),
             'MerchantAuthorizationKey' => OpenPayU_Configuration::getPosAuthKey(),
             'OrderType' => $orderType,
@@ -1501,7 +1514,7 @@ class PayUAbstract extends PaymentModule
                     );
                 }
 
-                if (!empty($cart->id_address_invoice)) {
+                if (!empty($cart->id_address_invoice) && Configuration::get('PS_INVOICE')) {
                     $address = new Address((int)$cart->id_address_invoice);
                     $country = new Country((int)$address->id_country);
 

@@ -1,3 +1,8 @@
+## 1.9.5
+
+* Added support for the invoices [enabled/disabled] on summary page
+* Added support for free shipping in cart rules
+
 ## 1.9.4
 
 * Fixed problem with duplicated payments
