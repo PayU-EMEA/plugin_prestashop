@@ -1,3 +1,7 @@
+## 1.9.6
+
+* Added fix for free shipping in cart rules. Available only Prestashop since version 1.5
+
 ## 1.9.5
 
 * Added support for the invoices [enabled/disabled] on summary page

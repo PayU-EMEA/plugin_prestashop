@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.5
+ *  ver. 1.9.6
  *  PayU Payment Modules
  *
  * @copyright  Copyright 2012 by PayU
@@ -73,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.9.5';
+        $this->version = '1.9.6';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -1368,11 +1368,14 @@ class PayUAbstract extends PaymentModule
         $free_shipping = false;
 
         # check is free shipping for cart
-        foreach ($cart->getCartRules() as $rule)
-            if ($rule['free_shipping']) {
-                $free_shipping = true;
-                break;
-            }
+        if (_PS_VERSION_ >= '1.5')
+        {
+            foreach ($cart->getCartRules() as $rule)
+                if ($rule['free_shipping']) {
+                    $free_shipping = true;
+                    break;
+                }
+        }
 
         if ($cart->id_carrier > 0) {
             $selectedCarrier = new Carrier($cart->id_carrier);
