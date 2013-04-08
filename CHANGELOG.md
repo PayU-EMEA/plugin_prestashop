@@ -1,3 +1,7 @@
+## 1.9.7
+
+* Added fix for Fatal error (Order -> conversion_rate is empty), below Prestashop version 1.5
+
 ## 1.9.6
 
 * Added fix for free shipping in cart rules. Available only Prestashop since version 1.5

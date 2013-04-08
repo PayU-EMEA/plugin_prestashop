@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.6
+ *  ver. 1.9.7
  *  PayU Payment Modules
  *
  * @copyright  Copyright 2012 by PayU
@@ -73,7 +73,7 @@ class PayUAbstract extends PaymentModule
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.9.6';
+        $this->version = '1.9.7';
 
         $this->info_url = 'http://www.payu.pl';
 

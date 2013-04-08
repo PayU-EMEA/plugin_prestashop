@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.6
+ *  ver. 1.9.7
  *  PayU Payment Modules
  *
  *  @copyright  Copyright 2012 by PayU
@@ -63,6 +63,7 @@ class PayU extends PayUAbstract
 
         if (!empty($result)) {
             $this->validateOrder($cart->id, Configuration::get('PAYMENT_PAYU_NEW_STATE'), $cart->getOrderTotal(true, Cart::BOTH), 'payu', 'payu.pl cart ID: ' . $cart->id . ', sessionId: ' . $_SESSION['sessionId'], null, null, false, $cart->secure_key);
+            $this->saveSID($_SESSION['sessionId'], (int)$this->currentOrder, 'ORDER_STATUS_PENDING', $cart->id);
 
             $smarty->assign($result + array('id_customer' => $cookie->id_customer));
             return $this->fetchTemplate('/views/templates/front/', 'order-summary');
