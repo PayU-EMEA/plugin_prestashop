@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.7
+ *  ver. 1.9.8
  *  PayU Payment Modules
  *
  * @copyright  Copyright 2012 by PayU
@@ -70,10 +70,12 @@ class PayUAbstract extends PaymentModule
 
     public function __construct()
     {
+        global $cookie;
+
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
         $this->author = 'PayU';
-        $this->version = '1.9.7';
+        $this->version = '1.9.8';
 
         $this->info_url = 'http://www.payu.pl';
 
@@ -84,6 +86,8 @@ class PayUAbstract extends PaymentModule
         $this->description = $this->l('Accept PayU payments');
 
         $this->initializeOpenPayUConfiguration();
+
+        $this->lang = Tools::strtolower(Language::getIsoById(intval($cookie->id_lang)));
     }
 
     /**
@@ -952,12 +956,9 @@ class PayUAbstract extends PaymentModule
      */
     public function hookPayment($params)
     {
-        global $smarty, $cookie;
+        global $smarty;
 
-        $img = Configuration::get('PAYU_LOGO');
-
-        if ($cookie->id_lang != 6)
-            $img = str_replace(array('/pl/', '_pl.'), array('/en/', '_en.'), $img);
+        $img = $this->getImageSource(Configuration::get('PAYU_LOGO'));
 
         $smarty->assign(array(
             'image' => $img,
@@ -997,14 +998,11 @@ class PayUAbstract extends PaymentModule
      */
     public function hookShoppingCart($params)
     {
-        global $smarty, $cookie;
+        global $smarty;
 
         if (Configuration::get('PAYU_ONE_STEP_CHECKOUT')) {
 
-            $img = Configuration::get('PAYU_BUTTON');
-
-            if ($cookie->id_lang != 6)
-                $img = str_replace(array('/pl/', '_pl.'), array('/en/', '_en.'), $img);
+            $img = $this->getImageSource(Configuration::get('PAYU_BUTTON'));
 
             if (Validate::isLoadedObject($params['cart'])) {
                 $smarty->assign(array(
@@ -1031,13 +1029,9 @@ class PayUAbstract extends PaymentModule
      */
     public function hookRightColumn($params)
     {
-        global $smarty, $cookie;
+        global $smarty;
 
-        $img = Configuration::get('PAYU_IMG_ADVERT');
-
-        if ($cookie->id_lang != 6)
-            $img = str_replace(array('/pl/', '_pl.'), array('/en/', '_en.'), $img);
-
+        $img = $this->getImageSource(Configuration::get('PAYU_IMG_ADVERT'));
 
         $smarty->assign(array(
             'image' => $img,
@@ -1368,8 +1362,7 @@ class PayUAbstract extends PaymentModule
         $free_shipping = false;
 
         # check is free shipping for cart
-        if (_PS_VERSION_ >= '1.5')
-        {
+        if (_PS_VERSION_ >= '1.5') {
             foreach ($cart->getCartRules() as $rule)
                 if ($rule['free_shipping']) {
                     $free_shipping = true;
@@ -1796,6 +1789,15 @@ class PayUAbstract extends PaymentModule
             if ($http)
                 $domain = (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://') . $domain;
             return $domain;
+        }
+    }
+
+    private function getImageSource($img)
+    {
+        if (($this->lang == 'pl' && !preg_match('/' . $this->lang . '/', $img)) || $this->lang == 'pl') {
+            return $img = str_replace('/en/', '/pl/', $img);
+        } else {
+            return $img = str_replace('/pl/', '/en/', $img);
         }
     }
 }

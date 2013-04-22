@@ -1,3 +1,7 @@
+## 1.9.8
+
+* Corrected source code references to language versions of the graphics
+
 ## 1.9.7
 
 * Added fix for Fatal error (Order -> conversion_rate is empty), below Prestashop version 1.5
