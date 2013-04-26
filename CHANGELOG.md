@@ -1,3 +1,7 @@
+## 1.9.9
+
+* Fixed XSS on error and success pages
+
 ## 1.9.8
 
 * Corrected source code references to language versions of the graphics

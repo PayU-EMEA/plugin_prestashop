@@ -1,6 +1,6 @@
 <?php
 /**
-*	ver. 1.9.8
+*	ver. 1.9.9
 *	PayU Payment Modules
 *	
 *	@copyright  Copyright 2012 by PayU
@@ -14,7 +14,7 @@ include(dirname(__FILE__).'/../../header.php');
 ob_clean();
 
 $payu = new Payu();
-$values = array('order' => Tools::getValue('order'), 'error' => Tools::getValue('error'));
+$values = array('order' => (int)Tools::getValue('order'), 'error' => (int)Tools::getValue('error'));
 
 if(Tools::getValue('error'))
 {
