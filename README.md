@@ -44,7 +44,7 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Copy the folders from [the plugin repository][ext1] to your PrestaShop root folder on the server.
+1. Copy the folders(modules/payu and /tools/payu) from [the plugin repository][ext1] to your PrestaShop root folder on the server.
 2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
 3. Go to **Modules** > **Payments & Gateways**.
 4. Select **PayU** and click **Install**.
