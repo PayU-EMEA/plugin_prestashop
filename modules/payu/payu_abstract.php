@@ -551,8 +551,8 @@ class PayUAbstract extends PaymentModule
                                 <td><label for="environment">' . $this->l('Test Mode On') . '</label></td>
                                 <td>
                                     <select id="environment" name="environment">
-                                        <option value="sandbox"' . (($this->payu_environment == 'sandbox') ? 'selected="selected"' : '') . '>' . $this->l('Yes') . '</option>
-                                        <option value="secure"' . (($this->payu_environment == 'secure') ? 'selected="selected"' : '') . '>' . $this->l('No') . '</option>
+                                        <option value="sandbox"' . (($this->payu_environment == 'sandbox') ? ' selected="selected"' : '') . '>' . $this->l('Yes') . '</option>
+                                        <option value="secure"' . (($this->payu_environment == 'secure') ? ' selected="selected"' : '') . '>' . $this->l('No') . '</option>
                                     </select>
                                 </td>
                             </tr>
@@ -560,8 +560,8 @@ class PayUAbstract extends PaymentModule
                                 <td><label for="self-return">' . $this->l('Self-Return Enabled') . '</label></td>
                                 <td>
                                     <select id="self-return" name="self-return">
-                                        <option value="1"' . (($this->payu_self_return == 1) ? 'selected="selected"' : '') . '>' . $this->l('Yes') . '</option>
-                                        <option value="0"' . (($this->payu_self_return == 0) ? 'selected="selected"' : '') . '>' . $this->l('No') . '</option>
+                                        <option value="1"' . (($this->payu_self_return == 1) ? ' selected="selected"' : '') . '>' . $this->l('Yes') . '</option>
+                                        <option value="0"' . (($this->payu_self_return == 0) ? ' selected="selected"' : '') . '>' . $this->l('No') . '</option>
                                     </select>
                                 </td>
                             </tr>
@@ -577,8 +577,8 @@ class PayUAbstract extends PaymentModule
                                 <td><label for="ship_abroad">' . $this->l('Ship Abroad') . '</label></td>
                                 <td>
                                     <select id="ship_abroad" name="ship_abroad">
-                                        <option value="true"' . (($this->payu_ship_abroad == true) ? 'selected="selected"' : '') . '>' . $this->l('Enable') . '</option>
-                                        <option value="false"' . (($this->payu_ship_abroad == false) ? 'selected="selected"' : '') . '>' . $this->l('Disable') . '</option>
+                                        <option value="true"' . (($this->payu_ship_abroad == true) ? ' selected="selected"' : '') . '>' . $this->l('Enable') . '</option>
+                                        <option value="false"' . (($this->payu_ship_abroad == false) ? ' selected="selected"' : '') . '>' . $this->l('Disable') . '</option>
                                     </select>
                                 </td>
                             </tr>
@@ -586,8 +586,8 @@ class PayUAbstract extends PaymentModule
                                 <td><label for="one_step">' . $this->l('OneStepCheckout Enabled') . '</label></td>
                                 <td>
                                     <select id="one_step" name="one_step">
-                                        <option value="1"' . (($this->payu_one_step_checkout == 1) ? 'selected="selected"' : '') . '>' . $this->l('Enabled') . '</option>
-                                        <option value="0"' . (($this->payu_one_step_checkout == 0) ? 'selected="selected"' : '') . '>' . $this->l('Disabled') . '</option>
+                                        <option value="1"' . (($this->payu_one_step_checkout == 1) ? ' selected="selected"' : '') . '>' . $this->l('Enabled') . '</option>
+                                        <option value="0"' . (($this->payu_one_step_checkout == 0) ? ' selected="selected"' : '') . '>' . $this->l('Disabled') . '</option>
                                     </select>
                                 </td>
                             </tr>
