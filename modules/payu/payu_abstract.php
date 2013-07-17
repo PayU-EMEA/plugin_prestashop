@@ -577,8 +577,8 @@ class PayUAbstract extends PaymentModule
                                 <td><label for="ship_abroad">' . $this->l('Ship Abroad') . '</label></td>
                                 <td>
                                     <select id="ship_abroad" name="ship_abroad">
-                                        <option value="true"' . (($this->payu_ship_abroad == true) ? 'selected="selected"' : '') . '>' . $this->l('Enable') . '</option>
-                                        <option value="false"' . (($this->payu_ship_abroad == false) ? 'selected="selected"' : '') . '>' . $this->l('Disable') . '</option>
+                                        <option value="true"' . (($this->payu_ship_abroad === 'true') ? 'selected="selected"' : '') . '>' . $this->l('Enable') . '</option>
+                                        <option value="false"' . (($this->payu_ship_abroad === 'false') ? 'selected="selected"' : '') . '>' . $this->l('Disable') . '</option>
                                     </select>
                                 </td>
                             </tr>
