@@ -1177,7 +1177,7 @@ class PayUAbstract extends PaymentModule
 
             // Update order_carrier
             if (isset($shipping['ShippingType'])) {
-                preg_match_all("'([0-9])'si", trim($shipping['ShippingType'], ')'), $carrier);
+                preg_match_all("'([0-9]+)'si", trim($shipping['ShippingType'], ')'), $carrier);
                 $carrierId = ($carrier[0][count($carrier[0]) - 1]);
 
                 if (!empty($carrierId)) {
