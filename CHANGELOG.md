@@ -1,3 +1,7 @@
+## 1.9.10
+
+* Fixed ShippingType parser
+
 ## 1.9.9
 
 * Fixed XSS on error and success pages
