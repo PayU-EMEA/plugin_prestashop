@@ -102,7 +102,7 @@
 </fieldset>
 <br>
 <fieldset id="fieldset_2" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
-    <legend>{l s='Parameters of test environment (Sandbox)' mod='payu'}</legend>
+    <legend>{l s='Environment settings (Test)' mod='payu'}</legend>
     <label>{l s='POS ID' mod='payu'}</label>
     <div class="margin-form">
         <input type="text" name="PAYU_SANDBOX_POS_ID" id="PAYU_SANDBOX_POS_ID" value="{$PAYU_SANDBOX_POS_ID|escape:'htmlall':'UTF-8'}" size="10">
@@ -133,7 +133,7 @@
 </fieldset>
 <br>
 <fieldset id="fieldset_3" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
-    <legend>{l s='Parameters of test environment (Secure)' mod='payu'}</legend>
+    <legend>{l s='Environment settings' mod='payu'}</legend>
     <label>{l s='POS ID' mod='payu'}</label>
     <div class="margin-form">
         <input type="text" name="PAYU_POS_ID" id="PAYU_POS_ID" value="{$PAYU_POS_ID|escape:'htmlall':'UTF-8'}" size="10">
@@ -168,7 +168,7 @@
 </fieldset>
 <br>
 <fieldset id="fieldset_4" class="hide {$PAYU_PAYMENT_PLATFORM_EPAYMENT|escape:'htmlall':'UTF-8'}">
-    <legend>{l s='ePayment config' mod='payu'}</legend>
+    <legend>{l s='Environment settings' mod='payu'}</legend>
     <label>{l s='Merchant' mod='payu'}</label>
     <div class="margin-form">
         <input type="text" name="PAYU_EPAYMENT_MERCHANT" id="PAYU_EPAYMENT_MERCHANT" value="{$PAYU_EPAYMENT_MERCHANT|escape:'htmlall':'UTF-8'}" size="10">
