@@ -44,7 +44,7 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Copy the folders(modules/payu and /tools/payu) from [the plugin repository][ext1] to your PrestaShop root folder on the server.
+1. Copy the folders(modules) from [the plugin repository][ext1] to your PrestaShop root folder on the server.
 2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
 3. Go to **Modules** > **Payments & Gateways**.
 4. Select **PayU** and click **Install**.
@@ -110,15 +110,15 @@ You can set external resources for the following:
 
 <!--topic urls:-->
 
-[1]: https://github.com/PayU/plugin_prestashop#prerequisites
-[2]: https://github.com/PayU/plugin_prestashop#installation
-[2.1]: https://github.com/PayU/plugin_prestashop#installing-manually
-[2.2]: https://github.com/PayU/plugin_prestashop#installing-from-admin-page
-[3]: https://github.com/PayU/plugin_prestashop#configuration
-[3.1]: https://github.com/PayU/plugin_prestashop#configuration-parameters
-[3.1.1]: https://github.com/PayU/plugin_prestashop#main-parameters
-[3.1.2]: https://github.com/PayU/plugin_prestashop#parameters-of-production-and-test-environments
-[3.1.3]: https://github.com/PayU/plugin_prestashop#settings-of-external-resources
+[1]: https://github.com/PayU/plugin_prestashop_144#prerequisites
+[2]: https://github.com/PayU/plugin_prestashop_144#installation
+[2.1]: https://github.com/PayU/plugin_prestashop_144#installing-manually
+[2.2]: https://github.com/PayU/plugin_prestashop_144#installing-from-admin-page
+[3]: https://github.com/PayU/plugin_prestashop_144#configuration
+[3.1]: https://github.com/PayU/plugin_prestashop_144#configuration-parameters
+[3.1.1]: https://github.com/PayU/plugin_prestashop_144#main-parameters
+[3.1.2]: https://github.com/PayU/plugin_prestashop_144#parameters-of-production-and-test-environments
+[3.1.3]: https://github.com/PayU/plugin_prestashop_144#settings-of-external-resources
 
 
 <!--external links:-->
