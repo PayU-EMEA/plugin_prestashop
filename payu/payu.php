@@ -226,7 +226,7 @@ class PayU extends PaymentModule
 			OpenPayUConfiguration::setMerchantPosid(Configuration::get('PAYU_POS_ID'));
 			OpenPayUConfiguration::setPosAuthkey(Configuration::get('PAYU_POS_AUTH_KEY'));
 			OpenPayUConfiguration::setClientId(Configuration::get('PAYU_POS_ID'));
-			OpenPayUConfiguration::setClientSecret(Configuration::get('PAYU_POS_CLIENT_SECRET'));
+			OpenPayUConfiguration::setClientSecret(Configuration::get('PAYU_CLIENT_SECRET'));
 			OpenPayUConfiguration::setSignatureKey(Configuration::get('PAYU_SIGNATURE_KEY'));
 		}
 	}
