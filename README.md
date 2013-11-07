@@ -17,8 +17,10 @@ define their payment options, see their purchase history, and manage personal pr
 <!--* [Installing from admin page][2.2]-->
 
 [Configuration][3]
-* [Configuration Parameters][3.1]
-
+* [Busieness area][3.1]
+* [Configuration Parameters (Poland)][3.2]
+* [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)][3.3]
+* [Settings of external resources][3.4]
 
 ## Prerequisites
 
@@ -65,7 +67,13 @@ To configure the PrestaShop plugin:
 
 **Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
 
-### Configuration Parameters
+### Busieness area
+
+This section define merchant business area. Other seection depends on this setup. It means that there might be different merchant configuration for Poland and Turkey merchant. 
+Details are described in next sections.
+
+
+### Configuration Parameters (Poland)
 
 The tables below present the descriptions of the configuration form parameters.
 
@@ -95,7 +103,25 @@ The test environment is called *Sandbox* and you can adjust it separately from t
 |Second Key| MD5 key for securing communication|
 |POS Auth Key|Transaction authorization key|
 
-#### Settings of external resources
+### Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)
+
+The tables below present the descriptions of the configuration form parameters.
+
+#### Main parameters
+
+The main parameters for plugin configuration are as follows:
+
+| Parameter | Values | Description | 
+|:---------:|:------:|:-----------:|
+|Merchant|-|Unique ID of the merchant|
+|Secret Key|-|Key for securing communication|
+|IPN|On/Off||
+|IPN URL|-||
+|IDN|On/Off||
+|IRN|On/Off||
+
+
+### Settings of external resources
 
 You can set external resources for the following:
 
