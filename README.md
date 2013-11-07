@@ -17,7 +17,7 @@ define their payment options, see their purchase history, and manage personal pr
 <!--* [Installing from admin page][2.2]-->
 
 [Configuration][3]
-* [Busieness area][3.1]
+* [Business area][3.1]
 * [Configuration Parameters (Poland)][3.2]
 * [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)][3.3]
 * [Settings of external resources][3.4]
@@ -46,11 +46,12 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Copy the folders(modules) from [the plugin repository][ext1] to your PrestaShop root folder on the server.
-2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-3. Go to **Modules** > **Payments & Gateways**.
-4. Select **PayU** and click **Install**.
-
+1. Download plugin from [the plugin repository][ext1] to local directory.
+2. Create zip archive of internal directory (payu) which contains module
+3. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
+4. Go to **Modules** > **Modules**.
+5. ** Add new module ** and point archive contained plugin
+6. Load the plugin
 
 <!--### Installing from the administration page
 
@@ -67,7 +68,7 @@ To configure the PrestaShop plugin:
 
 **Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
 
-### Busieness area
+### Business area
 
 This section define merchant business area. Other seection depends on this setup. It means that there might be different merchant configuration for Poland and Turkey merchant. 
 Details are described in next sections.
@@ -141,10 +142,10 @@ You can set external resources for the following:
 [2.1]: https://github.com/PayU/plugin_prestashop_144#installing-manually
 [2.2]: https://github.com/PayU/plugin_prestashop_144#installing-from-admin-page
 [3]: https://github.com/PayU/plugin_prestashop_144#configuration
-[3.1]: https://github.com/PayU/plugin_prestashop_144#configuration-parameters
-[3.1.1]: https://github.com/PayU/plugin_prestashop_144#main-parameters
-[3.1.2]: https://github.com/PayU/plugin_prestashop_144#parameters-of-production-and-test-environments
-[3.1.3]: https://github.com/PayU/plugin_prestashop_144#settings-of-external-resources
+[3.1]:https://github.com/PayU/plugin_prestashop_144#business-area
+[3.2]:https://github.com/PayU/plugin_prestashop_144#configuration-parameters-poland
+[3.3]:https://github.com/PayU/plugin_prestashop_144#configuration-parameters-romania-turkey-russia-ukraine-hungary
+[3.4]: https://github.com/PayU/plugin_prestashop_144#settings-of-external-resources
 
 
 <!--external links:-->
