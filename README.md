@@ -116,10 +116,10 @@ The main parameters for plugin configuration are as follows:
 |:---------:|:------:|:-----------:|
 |Merchant|-|Unique ID of the merchant|
 |Secret Key|-|Key for securing communication|
-|IPN|On/Off||
-|IPN URL|-||
-|IDN|On/Off||
-|IRN|On/Off||
+|IPN|On/Off|Instant Payment Notification makes possible the automated processing of each authorized order in the online payment system, being a link between the PayU servers and your servers. This notification method will allow the retrieval of transaction data in order to be processed in your own order management system.|
+|IPN URL|-|After an order gets authorized and approved, the PayU server sends a data structure containing all the order related info to a preset URL on your system. The data is sent through HTTP POST.|
+|IDN|On/Off|The Instant Delivery Notification facilitated automatic delivery confirmations from your system directly to the PayU system which automatically registers these confirmations on the PayU servers. As soon as your orders made to the PayU system are confirmed, a POST must be sent through your administration system to a URL provided by PayU, containing the identification data for transaction about to be confirmed.|
+|IRN|On/Off|Instant Refund/Reverse Notification makes it possible for you to automate the sending of reverse/refund requests for orders paid through PayU, directly from the order management application.|
 
 
 ### Settings of external resources
