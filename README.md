@@ -9,18 +9,27 @@ define their payment options, see their purchase history, and manage personal pr
 
 ## Table of Contents
 
-[Prerequisites][1] <br />
-<!--[Installation][2]-->
+
+<!--topic urls:-->
+
+
+[3]: #configuration
+[3.1]: #business-area
+[3.2]: #configuration-parameters-poland
+[3.3]: #configuration-parameters-romania-turkey-russia-ukraine-hungary
+[3.4]: #settings-of-external-resources
+[Prerequisites][#prerequisites] <br />
+<!--[Installation][#installation]-->
  * 
-[Installing Manually][2.1]
+[Installing Manually][#installing-manually]
 
-<!--* [Installing from admin page][2.2]-->
+<!--* [Installing from admin page][#installing-from-admin-page]-->
 
-[Configuration][3]
-* [Business area][3.1]
-* [Configuration Parameters (Poland)][3.2]
-* [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)][3.3]
-* [Settings of external resources][3.4]
+[Configuration][#configuration]
+* [Business area][#business-area]
+* [Configuration Parameters (Poland)][#configuration-parameters-poland]
+* [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)][#configuration-parameters-romania-turkey-russia-ukraine-hungary]
+* [Settings of external resources][#settings-of-external-resources]
 
 ## Prerequisites
 
@@ -37,8 +46,8 @@ The following PHP extensions are required:
 
 <!--There are two ways in which you can install the plugin:
 
-* [manual installation][2.1] by copying and pasting folders from the repository
-* [installation from the admin page][2.2]
+* [manual installation][#installing-manually] by copying and pasting folders from the repository
+* [installation from the admin page][#installing-from-admin-page]
 
 See the sections below to find out about steps for each of the procedures.-->
 
@@ -50,7 +59,7 @@ To install the plugin, copy folders from the repository and activate the plugin 
 2. Create zip archive of internal directory (payu) which contains module
 3. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
 4. Go to **Modules** > **Modules**.
-5. ** Add new module ** and point archive contained plugin
+5. **Add new module** and point archive contained plugin
 6. Load the plugin
 
 <!--### Installing from the administration page
@@ -134,19 +143,6 @@ You can set external resources for the following:
 |Payment accept|URL address of the *We accept PayU payments* banner|
 
 <!--LINKS-->
-
-<!--topic urls:-->
-
-[1]: #prerequisites
-[2]: #installation
-[2.1]: #installing-manually
-[2.2]: #installing-from-admin-page
-[3]: #configuration
-[3.1]: #business-area
-[3.2]: #configuration-parameters-poland
-[3.3]: #configuration-parameters-romania-turkey-russia-ukraine-hungary
-[3.4]: #settings-of-external-resources
-
 
 <!--external links:-->
 
