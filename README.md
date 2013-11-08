@@ -18,18 +18,18 @@ define their payment options, see their purchase history, and manage personal pr
 [3.2]: #configuration-parameters-poland
 [3.3]: #configuration-parameters-romania-turkey-russia-ukraine-hungary
 [3.4]: #settings-of-external-resources
-[Prerequisites][#prerequisites] <br />
+[Prerequisites](#prerequisites) <br />
 <!--[Installation][#installation]-->
  * 
-[Installing Manually][#installing-manually]
+[Installing Manually](#installing-manually)
 
 <!--* [Installing from admin page][#installing-from-admin-page]-->
 
-[Configuration][#configuration]
-* [Business area][#business-area]
-* [Configuration Parameters (Poland)][#configuration-parameters-poland]
-* [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)][#configuration-parameters-romania-turkey-russia-ukraine-hungary]
-* [Settings of external resources][#settings-of-external-resources]
+[Configuration](#configuration)
+* [Business area](#business-area)
+* [Configuration Parameters (Poland)](#configuration-parameters-poland)
+* [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)](#configuration-parameters-romania-turkey-russia-ukraine-hungary)
+* [Settings of external resources](#settings-of-external-resources)
 
 ## Prerequisites
 
@@ -46,8 +46,8 @@ The following PHP extensions are required:
 
 <!--There are two ways in which you can install the plugin:
 
-* [manual installation][#installing-manually] by copying and pasting folders from the repository
-* [installation from the admin page][#installing-from-admin-page]
+* [manual installation](#installing-manually) by copying and pasting folders from the repository
+* [installation from the admin page](#installing-from-admin-page)
 
 See the sections below to find out about steps for each of the procedures.-->
 
