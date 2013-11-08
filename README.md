@@ -137,15 +137,15 @@ You can set external resources for the following:
 
 <!--topic urls:-->
 
-[1]: https://github.com/PayU/plugin_prestashop_144#prerequisites
-[2]: https://github.com/PayU/plugin_prestashop_144#installation
-[2.1]: https://github.com/PayU/plugin_prestashop_144#installing-manually
-[2.2]: https://github.com/PayU/plugin_prestashop_144#installing-from-admin-page
-[3]: https://github.com/PayU/plugin_prestashop_144#configuration
-[3.1]:https://github.com/PayU/plugin_prestashop_144#business-area
-[3.2]:https://github.com/PayU/plugin_prestashop_144#configuration-parameters-poland
-[3.3]:https://github.com/PayU/plugin_prestashop_144#configuration-parameters-romania-turkey-russia-ukraine-hungary
-[3.4]: https://github.com/PayU/plugin_prestashop_144#settings-of-external-resources
+[1]: #prerequisites
+[2]: #installation
+[2.1]: #installing-manually
+[2.2]: #installing-from-admin-page
+[3]: #configuration
+[3.1]: #business-area
+[3.2]: #configuration-parameters-poland
+[3.3]: #configuration-parameters-romania-turkey-russia-ukraine-hungary
+[3.4]: #settings-of-external-resources
 
 
 <!--external links:-->
