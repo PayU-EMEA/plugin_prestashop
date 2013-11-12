@@ -14,6 +14,8 @@
 if (!defined('OPENPAYU_LIBRARY'))
 	exit;
 
+include_once('Configuration.php');
+
 class OpenPayUBase extends OpenPayUNetwork
 {
 
@@ -184,7 +186,7 @@ class OpenPayUBase extends OpenPayUNetwork
 
 		$xml->writeElement('Algorithm', 'MD5');
 
-		$xml->writeElement('SenderName', 'exampleSenderName');
+		$xml->writeElement('SenderName', 'posid=' . OpenPayUConfiguration::getMerchantPosid() .';plugin=prestashop');
 		$xml->writeElement('Version', $xml_version);
 
 		$xml->endElement();
