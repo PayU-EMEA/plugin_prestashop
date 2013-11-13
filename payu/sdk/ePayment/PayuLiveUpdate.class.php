@@ -178,7 +178,7 @@ class PayuLu extends PayuSettings
 	 */
 	private function _makeFields()
 	{
-		$this->_htmlFormCode .= $this->_addInput('PLUGIN', "PRESTASHOP");
+		$this->_htmlFormCode .= $this->_addInput('CUSTOM_PLUGIN', "PRESTASHOP");
 		$this->_htmlFormCode .= $this->_addInput('MERCHANT', $this->_merchantId);
 		$this->_htmlFormCode .= $this->_addInput('ORDER_HASH', $this->_HASH);
 		$this->_htmlFormCode .= (!empty($this->_BackRef) ? $this->_addInput('BACK_REF', $this->_BackRef) : '');

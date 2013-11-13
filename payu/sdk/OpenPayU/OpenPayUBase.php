@@ -186,7 +186,7 @@ class OpenPayUBase extends OpenPayUNetwork
 
 		$xml->writeElement('Algorithm', 'MD5');
 
-		$xml->writeElement('SenderName', 'posid=' . OpenPayUConfiguration::getMerchantPosid() .';plugin=prestashop');
+		$xml->writeElement('SenderName', 'POSID=' . OpenPayUConfiguration::getMerchantPosid() .';CUSTOM_PLUGIN=PRESTASHOP');
 		$xml->writeElement('Version', $xml_version);
 
 		$xml->endElement();
@@ -206,7 +206,7 @@ class OpenPayUBase extends OpenPayUNetwork
 		// document level - close
 		$xml->endElement();
 
-		return $xml->outputMemory(true);
+	return $xml->outputMemory(true);
 	}
 
 	/**
