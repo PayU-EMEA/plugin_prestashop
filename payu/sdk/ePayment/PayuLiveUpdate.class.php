@@ -178,7 +178,6 @@ class PayuLu extends PayuSettings
 	 */
 	private function _makeFields()
 	{
-		$this->_htmlFormCode .= $this->_addInput('CUSTOM_PLUGIN', "PRESTASHOP");
 		$this->_htmlFormCode .= $this->_addInput('MERCHANT', $this->_merchantId);
 		$this->_htmlFormCode .= $this->_addInput('ORDER_HASH', $this->_HASH);
 		$this->_htmlFormCode .= (!empty($this->_BackRef) ? $this->_addInput('BACK_REF', $this->_BackRef) : '');
@@ -377,6 +376,7 @@ class PayuLu extends PayuSettings
 			);
 		}
 
+		$this->_htmlFormCode .= $this->_addInput('CUSTOM_PLUGIN', "PRESTASHOP");
 		$this->_htmlFormCode .= $this->_addInput('PRICES_CURRENCY', $this->_PriceCurrency);
 		$this->_htmlFormCode .= (!empty($this->_Currency) ? $this->_addInput('CURRENCY', $this->_Currency) : '');
 		$this->_htmlFormCode .= (!empty($this->_Debug) ? $this->_addInput('DEBUG', 'TRUE') : '');
@@ -533,6 +533,7 @@ class PayuLu extends PayuSettings
 		);
 		$this->HashString .= $finalPriceType;
 
+		$this->HashString .= $this->_addHashValue('PRESTASHOP', 'CUSTOM_PLUGIN');
 
 		return $this->HashString;
 	}
