@@ -1,3 +1,7 @@
+## 1.9.11
+
+* Fixed status change after notification
+
 ## 1.9.10
 
 * Fixed ShippingType parser

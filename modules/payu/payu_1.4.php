@@ -1,6 +1,6 @@
 <?php
 /**
- *  ver. 1.9.9
+ *  ver. 1.9.11
  *  PayU Payment Modules
  *
  *  @copyright  Copyright 2012 by PayU
@@ -28,7 +28,7 @@ class PayU extends PayUAbstract
             $ips = payu_session::existsByCartId($cart->id);
             $payuSession = new payu_session($ips);
 
-            $this->saveSID($payuSession->sid, (int)$this->currentOrder, 'ORDER_STATUS_PENDING', $cart->id);
+            $this->saveSID($payuSession->sid, (int)$payuSession->id_order, 'ORDER_STATUS_PENDING', $cart->id);
 
             if ((int)$cookie->id_customer > 0) {
                 Tools::redirectLink(__PS_BASE_URI__ . 'order-confirmation.php?id_order=' . (int)$payuSession->id_order);
