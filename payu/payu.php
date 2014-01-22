@@ -737,6 +737,9 @@ class PayU extends PaymentModule
 	{
 		$img = Configuration::get('PAYU_PAYMENT_ADVERT');
 
+		if (Configuration::get('PS_SSL_ENABLED'))
+			$img = str_replace('https://', 'https://', $img);
+
 		$this->context->smarty->assign('image', $img);
 
 		return $this->fetchTemplate('/views/templates/hook/advertisement.tpl');
