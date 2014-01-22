@@ -1006,7 +1006,7 @@ class PayU extends PaymentModule
 			return Tools::getShopDomainSsl($http, $entities);
 		else {
 			if (!($domain = Configuration::get('PS_SHOP_DOMAIN_SSL')))
-				$domain = self::getHttpHost();
+				$domain = Tools::getHttpHost();
 
 			if ($entities)
 				$domain = htmlspecialchars($domain, ENT_COMPAT, 'UTF-8');
