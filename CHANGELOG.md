@@ -1,3 +1,8 @@
+## 1.9.12
+
+* Fixed shop domain url
+* Fixed the type of protocol of the all images
+
 ## 1.9.11
 
 * Fixed status change after notification
