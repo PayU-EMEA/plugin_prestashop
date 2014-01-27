@@ -738,7 +738,7 @@ class PayU extends PaymentModule
 		$img = Configuration::get('PAYU_PAYMENT_ADVERT');
 
 		if (Configuration::get('PS_SSL_ENABLED'))
-			$img = str_replace('https://', 'https://', $img);
+			$img = str_replace('http://', 'https://', $img);
 
 		$this->context->smarty->assign('image', $img);
 
@@ -759,6 +759,9 @@ class PayU extends PaymentModule
 	public function hookPayment()
 	{
 		$img = Configuration::get('PAYU_PAYMENT_BUTTON');
+
+		if (Configuration::get('PS_SSL_ENABLED'))
+			$img = str_replace('http://', 'https://', $img);
 
 		if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 			$link = $this->getModuleAddress().'backward_compatibility/payment.php';
