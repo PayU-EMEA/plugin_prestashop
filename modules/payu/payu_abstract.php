@@ -966,7 +966,6 @@ class PayUAbstract extends PaymentModule
         ));
 
         return $this->fetchTemplate('/views/templates/front/', 'payment');
-
     }
 
     /**
@@ -1794,6 +1793,9 @@ class PayUAbstract extends PaymentModule
 
     private function getImageSource($img)
     {
+        if (Configuration::get('PS_SSL_ENABLED'))
+            $img = str_replace('http://', 'https://', $img);
+
         if (($this->lang == 'pl' && !preg_match('/' . $this->lang . '/', $img)) || $this->lang == 'pl') {
             return $img = str_replace('/en/', '/pl/', $img);
         } else {
