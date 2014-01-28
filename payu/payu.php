@@ -117,7 +117,6 @@ class PayU extends PaymentModule
 				Configuration::updateValue('PAYU_EPAYMENT_IRN', '1') &&
 				Configuration::updateValue('PAYU_SELF_RETURN', 1) &&
 				Configuration::updateValue('PAYU_VALIDITY_TIME', 1440) &&
-				Configuration::updateValue('PAYU_SHIP_ABROAD', 1) &&
 				Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', 1) &&
 				Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', $this->addNewOrderState('PAYU_PAYMENT_STATUS_PENDING',
 					array('en' => 'PayU payment started', 'pl' => 'Płatność PayU rozpoczęta', 'ro' => 'PayU payment started',
@@ -158,7 +157,6 @@ class PayU extends PaymentModule
 			!Configuration::deleteByName('PAYU_EPAYMENT_IRN') ||
 			!Configuration::deleteByName('PAYU_SELF_RETURN') ||
 			!Configuration::deleteByName('PAYU_VALIDITY_TIME') ||
-			!Configuration::deleteByName('PAYU_SHIP_ABROAD') ||
 			!Configuration::deleteByName('PAYU_ONE_STEP_CHECKOUT') ||
 			!Configuration::deleteByName('PAYU_PAYMENT_STATUS_PENDING') ||
 			!Configuration::deleteByName('PAYU_PAYMENT_STATUS_SENT') ||
@@ -283,7 +281,6 @@ class PayU extends PaymentModule
 				!Configuration::updateValue('PAYU_PAYMENT_PLATFORM', Tools::getValue('PAYU_PAYMENT_PLATFORM')) ||
 				!Configuration::updateValue('PAYU_SELF_RETURN', (int)Tools::getValue('PAYU_SELF_RETURN')) ||
 				!Configuration::updateValue('PAYU_VALIDITY_TIME', Tools::getValue('PAYU_VALIDITY_TIME')) ||
-				!Configuration::updateValue('PAYU_SHIP_ABROAD', (int)Tools::getValue('PAYU_SHIP_ABROAD')) ||
 				!Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', (int)Tools::getValue('PAYU_ONE_STEP_CHECKOUT')) ||
 				!Configuration::updateValue('PAYU_SANDBOX_POS_ID', Tools::getValue('PAYU_SANDBOX_POS_ID')) ||
 				!Configuration::updateValue('PAYU_SANDBOX_POS_AUTH_KEY', Tools::getValue('PAYU_SANDBOX_POS_AUTH_KEY')) ||
@@ -361,17 +358,6 @@ class PayU extends PaymentModule
 			),
 			'PAYU_VALIDITY_TIME' => Configuration::get('PAYU_VALIDITY_TIME'),
 			'PAYU_VALIDITY_TIME_OPTIONS' => $this->getValidityTimeList(),
-			'PAYU_SHIP_ABROAD' => Configuration::get('PAYU_SHIP_ABROAD'),
-			'PAYU_SHIP_ABROAD_OPTIONS' => array(
-				array(
-					'id' => '1',
-					'name' => $this->l('Yes')
-				),
-				array(
-					'id' => '0',
-					'name' => $this->l('No')
-				)
-			),
 			'PAYU_ONE_STEP_CHECKOUT' => Configuration::get('PAYU_ONE_STEP_CHECKOUT'),
 			'PAYU_ONE_STEP_CHECKOUT_OPTIONS' => array(
 				array(
@@ -1073,7 +1059,7 @@ class PayU extends PaymentModule
 
 		$shipping_cost = array(
 			'CountryCode' => Tools::strtoupper(Configuration::get('PS_LOCALE_COUNTRY')),
-			'ShipToOtherCountry' => (int)Configuration::get('PAYU_SHIP_ABROAD') ? 'true' : 'false',
+			'ShipToOtherCountry' => 'true',
 			'ShippingCostList' => $carriers_list
 		);
 
@@ -1570,7 +1556,7 @@ class PayU extends PaymentModule
 
 						$shipping_cost = array(
 							'CountryCode' => Tools::strtoupper($iso_country_code),
-							'ShipToOtherCountry' => (int)Configuration::get('PAYU_SHIP_ABROAD') ? 'false' : 'true',
+							'ShipToOtherCountry' => 'true',
 							'ShippingCostList' => $carrier_list
 						);
 						$xml = OpenPayU::buildShippingCostRetrieveResponse($shipping_cost, $this->id_request, $iso_country_code);
