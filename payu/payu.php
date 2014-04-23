@@ -1055,6 +1055,29 @@ class PayU extends PaymentModule
 			$items[]['ShoppingCartItem'] = $item;
 		}
 
+		// Wrapping fees
+		$wrapping_fees_tax_inc = $wrapping_fees = 0;
+		if((int)(Configuration::get('PS_GIFT_WRAPPING')) && $this->context->cart->gift)
+		{
+			$wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
+			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
+
+			$items[]['ShoppingCartItem'] = array(
+				'Quantity' => 1,
+				'Product' => array(
+					'Name' => $this->l('Gift wrapping'),
+					'UnitPrice' => array(
+						'Gross' => $wrapping_fees,
+						'Net' => $wrapping_fees_tax_inc,
+						'Tax' => ($wrapping_fees_tax_inc - $wrapping_fees),
+						'CurrencyCode' => $currency['iso_code']
+					)
+				)
+			);
+
+			$total += $wrapping_fees_tax_inc;
+		}
+
 		$carriers_list = $this->getCarriersListForCart($this->cart);
 
 		$shipping_cost = array(
@@ -1063,12 +1086,12 @@ class PayU extends PaymentModule
 			'ShippingCostList' => $carriers_list
 		);
 
-		if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total)
+		if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc < $total)
 		{
 			$grand_total = $total;
 			$discount_total = $total - $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
 		} else {
-			$grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
+			$grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc;
 			$discount_total = 0;
 		}
 
