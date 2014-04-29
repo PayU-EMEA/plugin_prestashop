@@ -13,7 +13,7 @@
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/payu.php');
 
-$payu = new Payu();
+$payu = new PayU();
 $response = $payu->interpretIPN($_POST);
 
 if ($response !== false)

@@ -13,7 +13,7 @@
 include(dirname(__FILE__).'/../../config/config.inc.php');
 include(dirname(__FILE__).'/../../header.php');
 
-$payu = new Payu();
+$payu = new PayU();
 $payu->interpretReturnParameters($_SERVER);
 
 if (version_compare(_PS_VERSION_, '1.5', 'lt'))
