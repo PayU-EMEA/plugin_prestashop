@@ -70,15 +70,6 @@
         </p>
     </div>
     <div class="clear"></div>
-    <label>{l s='Ship Abroad' mod='payu'}</label>
-    <div class="margin-form">
-        <select name="PAYU_SHIP_ABROAD" id="PAYU_SHIP_ABROAD">
-            {foreach from=$PAYU_SHIP_ABROAD_OPTIONS item=option}
-                <option value="{$option.id|escape:'htmlall':'UTF-8'}" {if $option.id == $PAYU_ENVIRONMENT}selected="selected"{/if}>{$option.name|escape:'htmlall':'UTF-8'}</option>
-            {/foreach}
-        </select>
-    </div>
-    <div class="clear"></div>
     <label>{l s='One step checkout enabled' mod='payu'}</label>
     <div class="margin-form">
         <select name="PAYU_ONE_STEP_CHECKOUT" id="PAYU_ONE_STEP_CHECKOUT">

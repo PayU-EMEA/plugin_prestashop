@@ -117,7 +117,6 @@ class PayU extends PaymentModule
 				Configuration::updateValue('PAYU_EPAYMENT_IRN', '1') &&
 				Configuration::updateValue('PAYU_SELF_RETURN', 1) &&
 				Configuration::updateValue('PAYU_VALIDITY_TIME', 1440) &&
-				Configuration::updateValue('PAYU_SHIP_ABROAD', 1) &&
 				Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', 1) &&
 				Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', $this->addNewOrderState('PAYU_PAYMENT_STATUS_PENDING',
 					array('en' => 'PayU payment started', 'pl' => 'Płatność PayU rozpoczęta', 'ro' => 'PayU payment started',
@@ -158,7 +157,6 @@ class PayU extends PaymentModule
 			!Configuration::deleteByName('PAYU_EPAYMENT_IRN') ||
 			!Configuration::deleteByName('PAYU_SELF_RETURN') ||
 			!Configuration::deleteByName('PAYU_VALIDITY_TIME') ||
-			!Configuration::deleteByName('PAYU_SHIP_ABROAD') ||
 			!Configuration::deleteByName('PAYU_ONE_STEP_CHECKOUT') ||
 			!Configuration::deleteByName('PAYU_PAYMENT_STATUS_PENDING') ||
 			!Configuration::deleteByName('PAYU_PAYMENT_STATUS_SENT') ||
@@ -283,7 +281,6 @@ class PayU extends PaymentModule
 				!Configuration::updateValue('PAYU_PAYMENT_PLATFORM', Tools::getValue('PAYU_PAYMENT_PLATFORM')) ||
 				!Configuration::updateValue('PAYU_SELF_RETURN', (int)Tools::getValue('PAYU_SELF_RETURN')) ||
 				!Configuration::updateValue('PAYU_VALIDITY_TIME', Tools::getValue('PAYU_VALIDITY_TIME')) ||
-				!Configuration::updateValue('PAYU_SHIP_ABROAD', (int)Tools::getValue('PAYU_SHIP_ABROAD')) ||
 				!Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', (int)Tools::getValue('PAYU_ONE_STEP_CHECKOUT')) ||
 				!Configuration::updateValue('PAYU_SANDBOX_POS_ID', Tools::getValue('PAYU_SANDBOX_POS_ID')) ||
 				!Configuration::updateValue('PAYU_SANDBOX_POS_AUTH_KEY', Tools::getValue('PAYU_SANDBOX_POS_AUTH_KEY')) ||
@@ -361,17 +358,6 @@ class PayU extends PaymentModule
 			),
 			'PAYU_VALIDITY_TIME' => Configuration::get('PAYU_VALIDITY_TIME'),
 			'PAYU_VALIDITY_TIME_OPTIONS' => $this->getValidityTimeList(),
-			'PAYU_SHIP_ABROAD' => Configuration::get('PAYU_SHIP_ABROAD'),
-			'PAYU_SHIP_ABROAD_OPTIONS' => array(
-				array(
-					'id' => '1',
-					'name' => $this->l('Yes')
-				),
-				array(
-					'id' => '0',
-					'name' => $this->l('No')
-				)
-			),
 			'PAYU_ONE_STEP_CHECKOUT' => Configuration::get('PAYU_ONE_STEP_CHECKOUT'),
 			'PAYU_ONE_STEP_CHECKOUT_OPTIONS' => array(
 				array(
@@ -737,6 +723,9 @@ class PayU extends PaymentModule
 	{
 		$img = Configuration::get('PAYU_PAYMENT_ADVERT');
 
+		if (Configuration::get('PS_SSL_ENABLED'))
+			$img = str_replace('http://', 'https://', $img);
+
 		$this->context->smarty->assign('image', $img);
 
 		return $this->fetchTemplate('/views/templates/hook/advertisement.tpl');
@@ -756,6 +745,9 @@ class PayU extends PaymentModule
 	public function hookPayment()
 	{
 		$img = Configuration::get('PAYU_PAYMENT_BUTTON');
+
+		if (Configuration::get('PS_SSL_ENABLED'))
+			$img = str_replace('http://', 'https://', $img);
 
 		if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 			$link = $this->getModuleAddress().'backward_compatibility/payment.php';
@@ -1006,7 +998,7 @@ class PayU extends PaymentModule
 			return Tools::getShopDomainSsl($http, $entities);
 		else {
 			if (!($domain = Configuration::get('PS_SHOP_DOMAIN_SSL')))
-				$domain = self::getHttpHost();
+				$domain = Tools::getHttpHost();
 
 			if ($entities)
 				$domain = htmlspecialchars($domain, ENT_COMPAT, 'UTF-8');
@@ -1063,20 +1055,43 @@ class PayU extends PaymentModule
 			$items[]['ShoppingCartItem'] = $item;
 		}
 
+		// Wrapping fees
+		$wrapping_fees_tax_inc = $wrapping_fees = 0;
+		if((int)(Configuration::get('PS_GIFT_WRAPPING')) && $this->context->cart->gift)
+		{
+			$wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
+			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
+
+			$items[]['ShoppingCartItem'] = array(
+				'Quantity' => 1,
+				'Product' => array(
+					'Name' => $this->l('Gift wrapping'),
+					'UnitPrice' => array(
+						'Gross' => $wrapping_fees,
+						'Net' => $wrapping_fees_tax_inc,
+						'Tax' => ($wrapping_fees_tax_inc - $wrapping_fees),
+						'CurrencyCode' => $currency['iso_code']
+					)
+				)
+			);
+
+			$total += $wrapping_fees_tax_inc;
+		}
+
 		$carriers_list = $this->getCarriersListForCart($this->cart);
 
 		$shipping_cost = array(
 			'CountryCode' => Tools::strtoupper(Configuration::get('PS_LOCALE_COUNTRY')),
-			'ShipToOtherCountry' => (int)Configuration::get('PAYU_SHIP_ABROAD') ? 'true' : 'false',
+			'ShipToOtherCountry' => 'true',
 			'ShippingCostList' => $carriers_list
 		);
 
-		if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) < $total)
+		if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc < $total)
 		{
 			$grand_total = $total;
 			$discount_total = $total - $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
 		} else {
-			$grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
+			$grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc;
 			$discount_total = 0;
 		}
 
@@ -1564,7 +1579,7 @@ class PayU extends PaymentModule
 
 						$shipping_cost = array(
 							'CountryCode' => Tools::strtoupper($iso_country_code),
-							'ShipToOtherCountry' => (int)Configuration::get('PAYU_SHIP_ABROAD') ? 'false' : 'true',
+							'ShipToOtherCountry' => 'true',
 							'ShippingCostList' => $carrier_list
 						);
 						$xml = OpenPayU::buildShippingCostRetrieveResponse($shipping_cost, $this->id_request, $iso_country_code);

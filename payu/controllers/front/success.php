@@ -30,9 +30,11 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 		$payu->id_cart = (int)$order_payment['id_cart'];
 
 		// if order not validated yet
+        $cart_id = $payu->id_cart;
 		if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)
 		{
 			$cart = new Cart($payu->id_cart);
+			$cart_id = $cart->id;
 
 			$payu->validateOrder(
 				$cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
@@ -54,13 +56,9 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 			$payu->updateOrderData();
 		}
 
-		if ($this->context->customer->is_guest)
-			Tools::redirect('index.php?controller=history', __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
-		else {
-			Tools::redirect(
-				'index.php?controller=order-confirmation&id_order='.$id_order, __PS_BASE_URI__, null,
-				'HTTP/1.1 301 Moved Permanently'
-			);
-		}
+		Tools::redirect(
+			'index.php?controller=order-confirmation&id_cart='.$cart_id, __PS_BASE_URI__, null,
+			'HTTP/1.1 301 Moved Permanently'
+		);
 	}
 }

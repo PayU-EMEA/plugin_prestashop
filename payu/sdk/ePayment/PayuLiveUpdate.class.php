@@ -376,6 +376,7 @@ class PayuLu extends PayuSettings
 			);
 		}
 
+		$this->_htmlFormCode .= $this->_addInput('CUSTOM_PLUGIN', "PRESTASHOP");
 		$this->_htmlFormCode .= $this->_addInput('PRICES_CURRENCY', $this->_PriceCurrency);
 		$this->_htmlFormCode .= (!empty($this->_Currency) ? $this->_addInput('CURRENCY', $this->_Currency) : '');
 		$this->_htmlFormCode .= (!empty($this->_Debug) ? $this->_addInput('DEBUG', 'TRUE') : '');
@@ -532,6 +533,7 @@ class PayuLu extends PayuSettings
 		);
 		$this->HashString .= $finalPriceType;
 
+		$this->HashString .= $this->_addHashValue('PRESTASHOP', 'CUSTOM_PLUGIN');
 
 		return $this->HashString;
 	}
