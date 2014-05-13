@@ -190,7 +190,8 @@ class PayuIDN
 			$return_array['RESPONSE_MSG'] = $contents[2];
 
 			return $return_array;
-		} else
+		}
+		else
 			return $this->all_errors[self::DEBUG_ALL];
 	}
 

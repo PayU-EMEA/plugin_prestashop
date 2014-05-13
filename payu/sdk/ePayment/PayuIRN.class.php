@@ -128,7 +128,9 @@ class PayuIRN
 
 			$this->hash_product_ids .= strlen($product_id).$product_id;
 			$this->hash_product_qtys .= strlen($product_qty).$product_qty;
-		} else {
+		}
+		else
+		{
 			if (!$product_id)
 				$this->logError('Product id is missing, product will be ignored', self::DEBUG_ERROR);
 			if (!$product_qty)
@@ -205,13 +207,15 @@ class PayuIRN
 				$contents = explode('|', $contents);
 				$return_array['RESPONSE_CODE'] = $contents[1];
 				$return_array['RESPONSE_MSG'] = $contents[2];
-			} else
+			}
+			else
 				$return_array['RESPONSE'] = $contents;
 
 			$return_array['ERRORS'] = $this->all_errors[self::DEBUG_ALL];
 
 			return $return_array;
-		} else
+		}
+		else
 			return $this->all_errors[self::DEBUG_ALL];
 
 	}
@@ -226,7 +230,8 @@ class PayuIRN
 	{
 		if (!is_array($entry))
 			echo '['.date('d-m-y H:s').'] '.$entry."\n<br/>";
-		else {
+		else
+		{
 			echo '<pre>['.date('d-m-y H:s')."]\n<br/>";
 			print_r($entry);
 			echo '</pre>';

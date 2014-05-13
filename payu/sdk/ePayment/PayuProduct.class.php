@@ -187,7 +187,8 @@ class PayuProduct extends PayuSettings
 					1
 				);
 			}
-		} else
+		}
+		else
 		{
 			$discountPaymentOptions = self::PAY_OPTION_ALL;
 			self::_logError(
@@ -204,7 +205,8 @@ class PayuProduct extends PayuSettings
 				1
 			);
 			return 0;
-		} else
+		}
+		else
 		{
 			if (!in_array(
 				$discountPaymentMethod,
@@ -229,7 +231,8 @@ class PayuProduct extends PayuSettings
 			if ($discountPaymentMethod != self::PAY_METHOD_CCVISAMC && $discountPaymentOptions != self::PAY_OPTION_ALL)
 			{
 				self::_logError(
-					' Payment Method is incompatible with Payment Option for product with name '.$this->productName.' Payment Option will be assumed as  PayuProduct::PAY_OPTION_ALL',
+					' Payment Method is incompatible with Payment Option for product with name '.$this->productName
+					.' Payment Option will be assumed as  PayuProduct::PAY_OPTION_ALL',
 					1
 				);
 				$discountPaymentOptions = self::PAY_OPTION_ALL;
@@ -260,7 +263,9 @@ class PayuProduct extends PayuSettings
 					2
 				);
 
-		} else {
+		}
+		else
+		{
 			self::_logError(
 				' Payment Method is missing for product with name '.$this->productName.' discount will be ignored',
 				1
