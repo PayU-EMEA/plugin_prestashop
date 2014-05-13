@@ -28,10 +28,10 @@ class PayuIDN
 	private $all_errors = array();
 
 	/** @var string */
-	private $idn_queryUrl = '';
+	private $idn_query_url = '';
 
 	/** @var string */
-	private $payu_refNo;
+	private $payu_ref_no;
 
 	/** @var float */
 	private $order_amount;
@@ -69,7 +69,7 @@ class PayuIDN
 	 */
 	public function setQueryUrl($url)
 	{
-		$this->idn_queryUrl = $url;
+		$this->idn_query_url = $url;
 		return true;
 	}
 
@@ -79,7 +79,7 @@ class PayuIDN
 	 */
 	public function setPayuReference($payu_ref_no)
 	{
-		$this->payu_refNo = $payu_ref_no;
+		$this->payu_ref_no = $payu_ref_no;
 		return true;
 	}
 
@@ -126,7 +126,7 @@ class PayuIDN
 
 	private function validate()
 	{
-		if ($this->checkEmptyVar($this->payu_refNo))
+		if ($this->checkEmptyVar($this->payu_ref_no))
 			$this->logError('Payu reference number is missing', self::DEBUG_FATAL);
 
 		if ($this->checkEmptyVar($this->order_amount))
@@ -159,11 +159,11 @@ class PayuIDN
 		if (!isset($this->all_errors[self::DEBUG_FATAL]) || !$this->all_errors[self::DEBUG_FATAL])
 		{
 			$process_string = strlen($this->merchant_id).$this->merchant_id;
-			$process_string .= strlen($this->payu_refNo).$this->payu_refNo;
+			$process_string .= strlen($this->payu_ref_no).$this->payu_ref_no;
 			$process_string .= strlen($this->order_amount).$this->order_amount;
 			$process_string .= strlen($this->order_currency).$this->order_currency;
-			$idnDate = date('Y-m-d H:i:s', time());
-			$process_string .= strlen($idnDate).$idnDate;
+			$idn_date = date('Y-m-d H:i:s', time());
+			$process_string .= strlen($idn_date).$idn_date;
 
 			if (!empty($this->order_charge_amount))
 				$process_string .= strlen($this->order_charge_amount).$this->order_charge_amount;
@@ -175,11 +175,17 @@ class PayuIDN
 
 			$curl = curl_init();
 			curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($curl, CURLOPT_URL, $this->idn_queryUrl);
+			curl_setopt($curl, CURLOPT_URL, $this->idn_query_url);
 			curl_setopt($curl, CURLOPT_POST, 1);
 			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
-			curl_setopt($curl, CURLOPT_POSTFIELDS, 'MERCHANT='.$this->merchant_id.'&'.'ORDER_REF='.$this->payu_refNo.'&'.'ORDER_AMOUNT='.$this->order_amount.'&'.'ORDER_CURRENCY='.$this->order_currency.'&'.'IDN_DATE='.$idnDate.'&'.((!empty($this->order_charge_amount)) ? 'CHARGE_AMOUNT='.$this->order_charge_amount.'&' : '').((!empty($this->order_idn_prn)) ? 'IDN_PRN='.$this->order_idn_prn.'&' : '').'ORDER_HASH='.$hash);
+			curl_setopt(
+				$curl,
+				CURLOPT_POSTFIELDS,
+				'MERCHANT='.$this->merchant_id.'&ORDER_REF='.$this->payu_ref_no.'&ORDER_AMOUNT='.$this->order_amount
+				.'&ORDER_CURRENCY='.$this->order_currency.'&IDN_DATE='.$idn_date.'&'.((!empty($this->order_charge_amount)) ?
+					'CHARGE_AMOUNT='.$this->order_charge_amount.'&' : '').((!empty($this->order_idn_prn)) ?
+					'IDN_PRN='.$this->order_idn_prn.'&' : '').'ORDER_HASH='.$hash);
 
 			curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
 			$contents = curl_exec($curl);
@@ -227,11 +233,11 @@ class PayuIDN
 	/**
 	 * Log the errors according to the class
 	 *
-	 * @param $errorString
+	 * @param $error_string
 	 * @param string $level
 	 * @return bool true on success
 	 */
-	private function logError($errorString, $level = self::DEBUG_ERROR)
+	private function logError($error_string, $level = self::DEBUG_ERROR)
 	{
 		switch ($level)
 		{
@@ -249,7 +255,7 @@ class PayuIDN
 		if (empty($this->error_log[$level]))
 			$this->error_log[$level] = '';
 
-		$this->error_log[$level] .= $debug_text.' '.__CLASS__.': '.$errorString.'<br/>';
+		$this->error_log[$level] .= $debug_text.' '.__CLASS__.': '.$error_string.'<br/>';
 		return true;
 	}
 

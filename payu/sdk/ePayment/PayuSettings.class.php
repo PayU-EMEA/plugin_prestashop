@@ -35,16 +35,16 @@ abstract class PayuSettings
 	const PAY_OPTION_VISA_ELECTRON = 'VISA ELECTRON';
 	const PAY_OPTION_ALL = 'ALL';
 
-	protected $_debugLevel = 0;
-	protected $_errorLog = '';
-	protected $_allErrors = array();
+	protected $debug_level = 0;
+	protected $error_log = '';
+	protected $all_errors = array();
 
 	/**
 	 * Log the errors according to the class
 	 *
 	 * @return int 1 on success
 	 */
-	protected function _logError($errorString, $level = self::DEBUG_ERROR)
+	protected function logError($error_string, $level = self::DEBUG_ERROR)
 	{
 		switch ($level)
 		{
@@ -56,34 +56,34 @@ abstract class PayuSettings
 				break;
 		}
 
-		if (empty($this->_errorLog[$level]))
-			$this->_errorLog[$level] = '';
+		if (empty($this->error_log[$level]))
+			$this->error_log[$level] = '';
 
-		$this->_errorLog[$level] .= $debug_text.' '.__CLASS__.': '.$errorString.'<br/>';
+		$this->error_log[$level] .= $debug_text.' '.__CLASS__.': '.$error_string.'<br/>';
 		return 1;
 	}
 
 	/**
 	 * Method will merge all the error logs
 	 *
-	 * @param array $newLog this is the new log to be added to the main list of errors
+	 * @param array $new_log this is the new log to be added to the main list of errors
 	 * @return 1 on success
 	 */
-	protected function _mergeErrorLogs($newLog)
+	protected function mergeErrorLogs($new_log)
 	{
-		if (count($newLog))
+		if (count($new_log))
 		{ // if there are errors and the debug is set
-			if (empty($this->_allErrors[$this->_debugLevel])) // if the entry is not set the set it to a default
-				$this->_allErrors[$this->_debugLevel] = '';
+			if (empty($this->all_errors[$this->debug_level])) // if the entry is not set the set it to a default
+				$this->all_errors[$this->debug_level] = '';
 
-			if (!empty($newLog[self::DEBUG_WARNING]) && count($newLog[self::DEBUG_WARNING]) > 0)
-				$this->_allErrors[self::DEBUG_ALL] .= $newLog[self::DEBUG_WARNING];
+			if (!empty($new_log[self::DEBUG_WARNING]) && count($new_log[self::DEBUG_WARNING]) > 0)
+				$this->all_errors[self::DEBUG_ALL] .= $new_log[self::DEBUG_WARNING];
 
-			if (!empty($newLog[self::DEBUG_ERROR]) && count($newLog[self::DEBUG_ERROR]) > 0)
-				$this->_allErrors[self::DEBUG_ALL] .= $newLog[self::DEBUG_ERROR];
+			if (!empty($new_log[self::DEBUG_ERROR]) && count($new_log[self::DEBUG_ERROR]) > 0)
+				$this->all_errors[self::DEBUG_ALL] .= $new_log[self::DEBUG_ERROR];
 
-			if (!empty($newLog[self::DEBUG_FATAL]) && count($newLog[self::DEBUG_FATAL]) > 0)
-				$this->_allErrors[self::DEBUG_ALL] .= $newLog[self::DEBUG_FATAL];
+			if (!empty($new_log[self::DEBUG_FATAL]) && count($new_log[self::DEBUG_FATAL]) > 0)
+				$this->all_errors[self::DEBUG_ALL] .= $new_log[self::DEBUG_FATAL];
 		}
 		return 1;
 	}

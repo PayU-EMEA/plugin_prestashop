@@ -13,87 +13,87 @@
 class PayuAddress extends PayuSettings
 {
 
-	public $firstName;
-	public $lastName;
-	public $ciSerial;
-	public $ciNumber;
-	public $ciIssuer;
+	public $first_name;
+	public $last_name;
+	public $ci_serial;
+	public $ci_number;
+	public $ci_issuer;
 	public $cnp;
 	public $company;
-	public $fiscalCode;
-	public $regNumber;
+	public $fiscal_code;
+	public $reg_number;
 	public $bank;
-	public $bankAccount;
+	public $bank_account;
 	public $email;
 	public $phone;
 	public $fax;
 	public $address;
 	public $address2;
-	public $zipCode;
+	public $zip_code;
 	public $city;
 	public $state;
-	public $countryCode;
+	public $country_code;
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $firstName name of the client
-	 * @param string $lastName last name of the client
-	 * @param string $ciSerial id serial
-	 * @param string $ciNumber id serial number
-	 * @param string $ciIssuer issuer for the id
+	 * @param string $first_name name of the client
+	 * @param string $last_name last name of the client
+	 * @param string $ci_serial id serial
+	 * @param string $ci_number id serial number
+	 * @param string $ci_issuer issuer for the id
 	 * @param string $cnp private numeric identification
 	 * @param string $company company of the client
-	 * @param string $fiscalCode fiscal code for the company
-	 * @param string $regNumber registration number for the company
+	 * @param string $fiscal_code fiscal code for the company
+	 * @param string $reg_number registration number for the company
 	 * @param string $bank bank for the client
-	 * @param string $bankAccount bank account for the client
+	 * @param string $bank_account bank account for the client
 	 * @param string $email email for the client
 	 * @param string $phone phone number for the client
 	 * @param string $fax fax number for the client
 	 * @param string $address address for the client
 	 * @param string $address2 optional address for the client
-	 * @param string $zipCode zipcode for the client
+	 * @param string $zip_code zipcode for the client
 	 * @param string $city city for the client
 	 * @param string $state state/province for the client
-	 * @param string $countryCode iso country code
+	 * @param string $country_code iso country code
 	 * @return int returns 1 upon success
 	 */
-	public function __construct($firstName = '',
-		$lastName = '',
-		$ciSerial = '',
-		$ciNumber = '',
-		$ciIssuer = '',
+	public function __construct($first_name = '',
+		$last_name = '',
+		$ci_serial = '',
+		$ci_number = '',
+		$ci_issuer = '',
 		$cnp = '',
 		$company = '',
-		$fiscalCode = '',
-		$regNumber = '',
+		$fiscal_code = '',
+		$reg_number = '',
 		$bank = '',
-		$bankAccount = '',
+		$bank_account = '',
 		$email = '',
 		$phone = '',
 		$fax = '',
 		$address = '',
 		$address2 = '',
-		$zipCode = '',
+		$zip_code = '',
 		$city = '',
 		$state = '',
-		$countryCode = '')
+		$country_code = '')
 	{
-		if (!empty($firstName))
-			$this->setFirstName($firstName);
+		if (!empty($first_name))
+			$this->setFirstName($first_name);
 
-		if (!empty($lastName))
-			$this->setLastName($lastName);
+		if (!empty($last_name))
+			$this->setLastName($last_name);
 
-		if (!empty($ciSerial))
-			$this->setCiSerial($ciSerial);
+		if (!empty($ci_serial))
+			$this->setCiSerial($ci_serial);
 
-		if (!empty($ciNumber))
-			$this->setCiNumber($ciNumber);
+		if (!empty($ci_number))
+			$this->setCiNumber($ci_number);
 
-		if (!empty($ciIssuer))
-			$this->setCiIssuer($ciIssuer);
+		if (!empty($ci_issuer))
+			$this->setCiIssuer($ci_issuer);
 
 		if (!empty($cnp))
 			$this->setCnp($cnp);
@@ -101,17 +101,17 @@ class PayuAddress extends PayuSettings
 		if (!empty($company))
 			$this->setCompany($company);
 
-		if (!empty($fiscalCode))
-			$this->setFiscalCode($fiscalCode);
+		if (!empty($fiscal_code))
+			$this->setFiscalCode($fiscal_code);
 
-		if (!empty($regNumber))
-			$this->setRegNumber($regNumber);
+		if (!empty($reg_number))
+			$this->setRegNumber($reg_number);
 
 		if (!empty($bank))
 			$this->setBank($bank);
 
-		if (!empty($bankAccount))
-			$this->setBankAccount($bankAccount);
+		if (!empty($bank_account))
+			$this->setBankAccount($bank_account);
 
 		if (!empty($email))
 			$this->setEmail($email);
@@ -128,8 +128,8 @@ class PayuAddress extends PayuSettings
 		if (!empty($address2))
 			$this->setAddress2($address2);
 
-		if (!empty($zipCode))
-			$this->setZipCode($zipCode);
+		if (!empty($zip_code))
+			$this->setZipCode($zip_code);
 
 		if (!empty($city))
 			$this->setCity($city);
@@ -137,8 +137,8 @@ class PayuAddress extends PayuSettings
 		if (!empty($state))
 			$this->setState($state);
 
-		if (!empty($countryCode))
-			$this->setCountryCode($countryCode);
+		if (!empty($country_code))
+			$this->setCountryCode($country_code);
 
 		return 1;
 	}
@@ -146,60 +146,60 @@ class PayuAddress extends PayuSettings
 	/**
 	 *  Set first name for the client
 	 *
-	 * @param string $firstName
+	 * @param string $first_name
 	 * @return int 1 on success
 	 */
-	public function setFirstName($firstName)
+	public function setFirstName($first_name)
 	{
-		$this->firstName = $firstName;
+		$this->first_name = $first_name;
 		return 1;
 	}
 
 	/**
 	 *  Set last name for the client
 	 *
-	 * @param string $lastName
+	 * @param string $last_name
 	 * @return int 1 on success
 	 */
-	public function setLastName($lastName)
+	public function setLastName($last_name)
 	{
-		$this->lastName = $lastName;
+		$this->last_name = $last_name;
 		return 1;
 	}
 
 	/**
 	 *  Set ci serial
 	 *
-	 * @param string $ciSerial
+	 * @param string $ci_serial
 	 * @return int 1 on success
 	 */
-	public function setCiSerial($ciSerial)
+	public function setCiSerial($ci_serial)
 	{
-		$this->ciSerial = $ciSerial;
+		$this->ci_serial = $ci_serial;
 		return 1;
 	}
 
 	/**
 	 *  Set ci serial number
 	 *
-	 * @param string $ciNumber
+	 * @param string $ci_number
 	 * @return int 1 on success
 	 */
-	public function setCiNumber($ciNumber)
+	public function setCiNumber($ci_number)
 	{
-		$this->ciNumber = $ciNumber;
+		$this->ci_number = $ci_number;
 		return 1;
 	}
 
 	/**
 	 *  Set the issuer for the ci
 	 *
-	 * @param string $ciIssuer
+	 * @param string $ci_issuer
 	 * @return int 1 on success
 	 */
-	public function setCiIssuer($ciIssuer)
+	public function setCiIssuer($ci_issuer)
 	{
-		$this->ciIssuer = $ciIssuer;
+		$this->ci_issuer = $ci_issuer;
 		return 1;
 	}
 
@@ -230,24 +230,24 @@ class PayuAddress extends PayuSettings
 	/**
 	 *  Set the fiscal code
 	 *
-	 * @param string $fiscalCode
+	 * @param string $fiscal_code
 	 * @return int 1 on success
 	 */
-	public function setFiscalCode($fiscalCode)
+	public function setFiscalCode($fiscal_code)
 	{
-		$this->fiscalCode = $fiscalCode;
+		$this->fiscal_code = $fiscal_code;
 		return 1;
 	}
 
 	/**
 	 *  Set the registration number
 	 *
-	 * @param string $regNumber
+	 * @param string $reg_number
 	 * @return int 1 on success
 	 */
-	public function setRegNumber($regNumber)
+	public function setRegNumber($reg_number)
 	{
-		$this->regNumber = $regNumber;
+		$this->reg_number = $reg_number;
 		return 1;
 	}
 
@@ -266,12 +266,12 @@ class PayuAddress extends PayuSettings
 	/**
 	 *  Set the bank account
 	 *
-	 * @param string $bankAccount
+	 * @param string $bank_account
 	 * @return int 1 on success
 	 */
-	public function setBankAccount($bankAccount)
+	public function setBankAccount($bank_account)
 	{
-		$this->bankAccount = $bankAccount;
+		$this->bank_account = $bank_account;
 		return 1;
 	}
 
@@ -338,48 +338,48 @@ class PayuAddress extends PayuSettings
 	/**
 	 *  Set zip code
 	 *
-	 * @param string $zipCode
+	 * @param string $zip_code
 	 * @return int 1 on success
 	 */
-	public function setZipCode($zipCode)
+	public function setZipCode($zip_code)
 	{
-		$this->zipCode = $zipCode;
+		$this->zip_code = $zip_code;
 		return 1;
 	}
 
 	/**
 	 *  Set the city
 	 *
-	 * @param string $City
+	 * @param string $city
 	 * @return int 1 on success
 	 */
-	public function setCity($City)
+	public function setCity($city)
 	{
-		$this->city = $City;
+		$this->city = $city;
 		return 1;
 	}
 
 	/**
 	 *  Set state
 	 *
-	 * @param string $State
+	 * @param string $state
 	 * @return int 1 on success
 	 */
-	public function setState($State)
+	public function setState($state)
 	{
-		$this->state = $State;
+		$this->state = $state;
 		return 1;
 	}
 
 	/**
 	 *  Set country code
 	 *
-	 * @param string $CountryCode
+	 * @param string $country_code
 	 * @return int 1 on success
 	 */
-	public function setCountryCode($CountryCode)
+	public function setCountryCode($country_code)
 	{
-		$this->countryCode = $CountryCode;
+		$this->country_code = $country_code;
 		return 1;
 	}
 
@@ -390,14 +390,14 @@ class PayuAddress extends PayuSettings
 	 */
 	public function checkAddress()
 	{
-		if ($this->ciNumber && !is_numeric($this->ciNumber))
-			$this->_logError('CI Number is not a number');
+		if ($this->ci_number && !is_numeric($this->ci_number))
+			$this->logError('CI Number is not a number');
 
 		if ($this->email && preg_match(
 				'/^[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*+[a-z]{2}/is',
 				$this->email
 			) === 0)
-			$this->_logError('Email is invalid');
+			$this->logError('Email is invalid');
 
 		return 1;
 	}
@@ -410,7 +410,7 @@ class PayuAddress extends PayuSettings
 	public function validate()
 	{
 		self::checkAddress();
-		return $this->_errorLog;
+		return $this->error_log;
 	}
 
 }

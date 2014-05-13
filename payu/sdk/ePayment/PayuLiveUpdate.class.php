@@ -13,65 +13,67 @@
 class PayuLu extends PayuSettings
 {
 
-	private $_merchantId = '';
-	private $_secretKey = '';
-	private $_AutoMode = 0;
-	private $_TestMode = false;
-	private $_luQueryUrl = '';
-	private $_Discount;
-	private $_Language;
-	private $_OrderRef;
-	private $_OrderDate;
-	private $_PriceCurrency;
-	private $_Currency;
-	private $_BackRef;
-	private $_PayMethod;
-	private $_Debug;
-	private $_billingAddress;
-	private $_deliveryAddress;
-	private $_destinationAddress;
-	private $_OrderShipping;
-	private $_allProducts = array();
-	private $_tempProds = array();
-	private $_htmlFormCode;
-	private $_htmlCode;
-	private $_hashString;
-	private $_HASH;
-	public $_explained;
+	private $merchant_id = '';
+	private $secret_key = '';
+	private $auto_mode = 0;
+	private $test_mode = false;
+	private $lu_query_url = '';
+	private $discount;
+	private $language;
+	private $order_ref;
+	private $order_date;
+	private $price_currency;
+	private $currency;
+	private $back_ref;
+	private $pay_method;
+	private $debug;
+	private $billing_address;
+	private $delivery_address;
+	private $destination_address;
+	private $order_shipping;
+	private $all_products = array();
+	private $temp_prods = array();
+	private $html_form_code;
+	private $html_code;
+	private $hash_string;
+	private $hash;
+	private $order_timeout;
+	private $order_timeout_url;
+	public $explained;
 
 
 	/**
-	 * @param $merchantId
-	 * @param $secretKey
+	 * @param $merchant_id
+	 * @param $secret_key
 	 */
-	public function __construct($merchantId, $secretKey)
+	public function __construct($merchant_id, $secret_key)
 	{
-		$this->_merchantId = $merchantId; // store the merchant id
-		$this->_secretKey = $secretKey; // store the secretkey
-		if (empty($merchantId) && empty($secretKey))
+		$this->merchant_id = $merchant_id; // store the merchant id
+		$this->secret_key = $secret_key; // store the secretkey
+		if (empty($merchant_id) && empty($secret_key))
 		{
-			self::_logError('MECHANT id and SECRET KEY missing');
+			self::logError('MECHANT id and SECRET KEY missing');
 			return 0;
 		}
-		$this->_allErrors[self::DEBUG_WARNING] = '';
-		$this->_allErrors[self::DEBUG_ERROR] = '';
-		$this->_allErrors[self::DEBUG_ALL] = '';
+		$this->all_errors[self::DEBUG_WARNING] = '';
+		$this->all_errors[self::DEBUG_ERROR] = '';
+		$this->all_errors[self::DEBUG_ALL] = '';
 		return 1;
 	}
 
 	/**
 	 * Adds Address for the delivery set
 	 *
-	 * @param PayuAddress $currentAddress the address to be used as the delivery
+	 * @param PayuAddress $current_address the address to be used as the delivery
 	 * @return int returns 1 upon success
 	 */
-	public function setDeliveryAddress(PayuAddress $currentAddress)
+	public function setDeliveryAddress(PayuAddress $current_address)
 	{
-		if ($currentAddress)
+		if ($current_address)
 		{
-			$this->_deliveryAddress = $currentAddress;
-			$possibleErrors = $currentAddress->validate(); // read errors for the current product
-			$this->_mergeErrorLogs($possibleErrors);
+			$this->delivery_address = $current_address;
+			$possible_errors = $current_address->validate(); // read errors for the current product
+			$this->mergeErrorLogs($possible_errors);
 			return 1;
 		}
 		return 0;
@@ -80,16 +82,16 @@ class PayuLu extends PayuSettings
 	/**
 	 * Adds Address for the billing set
 	 *
-	 * @param PayuAddress $currentAddress the address to be used as the billing
+	 * @param PayuAddress $current_address the address to be used as the billing
 	 * @return int returns 1 upon success
 	 */
-	public function setBillingAddress(PayuAddress $currentAddress)
+	public function setBillingAddress(PayuAddress $current_address)
 	{
-		if ($currentAddress)
+		if ($current_address)
 		{
-			$this->_billingAddress = $currentAddress;
-			$possibleErrors = $currentAddress->validate(); // read errors for the current product
-			$this->_mergeErrorLogs($possibleErrors);
+			$this->billing_address = $current_address;
+			$possible_errors = $current_address->validate(); // read errors for the current product
+			$this->mergeErrorLogs($possible_errors);
 			return 1;
 		}
 		return 0;
@@ -98,16 +100,16 @@ class PayuLu extends PayuSettings
 	/**
 	 * Adds Address for the destination set
 	 *
-	 * @param PayuAddress $currentAddress the address to be used as the billing
+	 * @param PayuAddress $current_address the address to be used as the billing
 	 * @return int returns 1 upon success
 	 */
-	public function setDestinationAddress(PayuAddress $currentAddress)
+	public function setDestinationAddress(PayuAddress $current_address)
 	{
-		if ($currentAddress)
+		if ($current_address)
 		{
-			$this->_destinationAddress = $currentAddress;
-			$possibleErrors = $currentAddress->validate(); // read errors for the current product
-			$this->_mergeErrorLogs($possibleErrors);
+			$this->destination_address = $current_address;
+			$possible_errors = $current_address->validate(); // read errors for the current product
+			$this->mergeErrorLogs($possible_errors);
 			return 1;
 		}
 		return 0;
@@ -116,16 +118,16 @@ class PayuLu extends PayuSettings
 	/**
 	 * Adds Products to be sent to PAYU via LiveUpdate
 	 *
-	 * @param PayuProduct $currentProduct the product to be added
+	 * @param PayuProduct $current_product the product to be added
 	 * @return int returns 1 upon success
 	 */
-	public function addProduct(PayuProduct $currentProduct)
+	public function addProduct(PayuProduct $current_product)
 	{
-		if ($currentProduct)
+		if ($current_product)
 		{
-			$this->_allProducts[] = $currentProduct; // add the current product
-			$possibleErrors = $currentProduct->validate(); // read errors for the current product
-			$this->_mergeErrorLogs($possibleErrors);
+			$this->all_products[] = $current_product; // add the current product
+			$possible_errors = $current_product->validate(); // read errors for the current product
+			$this->mergeErrorLogs($possible_errors);
 			return 1;
 		}
 		return 0;
@@ -138,37 +140,37 @@ class PayuLu extends PayuSettings
 	 */
 	public function renderPaymentInputs()
 	{
-		$this->_validate();
-		$this->_setOrderDate();
-		$this->_makeHashString();
-		$this->_makeHash();
-		$this->_makeFields();
-		if (!empty($this->_allErrors[$this->_debugLevel]))
-			echo $this->_allErrors[$this->_debugLevel];
+		$this->validate();
+		$this->setOrderDate();
+		$this->makeHashString();
+		$this->makeHash();
+		$this->makeFields();
+		if (!empty($this->all_errors[$this->debug_level]))
+			echo $this->all_errors[$this->debug_level];
 
-		echo $this->_htmlFormCode;
-		return $this->_allErrors[self::DEBUG_ALL];
+		echo $this->html_form_code;
+		return $this->all_errors[self::DEBUG_ALL];
 	}
 
 	/**
 	 * Method will render the form needed needed for the Payment request
 	 *
-	 * @param  boolean $autoSubmit this will autosubmit the form upon rendering
+	 * @param  boolean $auto_submit this will autosubmit the form upon rendering
 	 * @return string all errors that have been generated
 	 */
-	public function renderPaymentForm($autoSubmit = false)
+	public function renderPaymentForm($auto_submit = false)
 	{
-		$this->_validate();
-		$this->_setOrderDate();
-		$this->_hashString = $this->_makeHashString();
-		$this->_makeHash();
-		$this->_makeFields();
-		if (!empty($this->_allErrors[$this->_debugLevel]))
-			echo $this->_allErrors[$this->_debugLevel];
+		$this->validate();
+		$this->setOrderDate();
+		$this->hash_string = $this->makeHashString();
+		$this->makeHash();
+		$this->makeFields();
+		if (!empty($this->all_errors[$this->debug_level]))
+			echo $this->all_errors[$this->debug_level];
 
-		$this->_makeForm($autoSubmit);
+		$this->makeForm($auto_submit);
 
-		return $this->_htmlCode;
+		return $this->html_code;
 	}
 
 	/**
@@ -176,219 +178,218 @@ class PayuLu extends PayuSettings
 	 *
 	 * @return int 1 on success
 	 */
-	private function _makeFields()
+	private function makeFields()
 	{
-		$this->_htmlFormCode .= $this->_addInput('MERCHANT', $this->_merchantId);
-		$this->_htmlFormCode .= $this->_addInput('ORDER_HASH', $this->_HASH);
-		$this->_htmlFormCode .= (!empty($this->_BackRef) ? $this->_addInput('BACK_REF', $this->_BackRef) : '');
-		$this->_htmlFormCode .= $this->_addInput('LANGUAGE', (empty($this->_Language) ? '' : $this->_Language));
-		$this->_htmlFormCode .= $this->_addInput('ORDER_REF', (empty($this->_OrderRef) ? '' : $this->_OrderRef));
-		$this->_htmlFormCode .= $this->_addInput('ORDER_DATE', (empty($this->_OrderDate) ? '' : $this->_OrderDate));
-		$this->_htmlFormCode .= $this->_addInput(
+		$this->html_form_code .= $this->addInput('MERCHANT', $this->merchant_id);
+		$this->html_form_code .= $this->addInput('ORDER_HASH', $this->hash);
+		$this->html_form_code .= (!empty($this->back_ref) ? $this->addInput('BACK_REF', $this->back_ref) : '');
+		$this->html_form_code .= $this->addInput('LANGUAGE', (empty($this->language) ? '' : $this->language));
+		$this->html_form_code .= $this->addInput('ORDER_REF', (empty($this->order_ref) ? '' : $this->order_ref));
+		$this->html_form_code .= $this->addInput('ORDER_DATE', (empty($this->order_date) ? '' : $this->order_date));
+		$this->html_form_code .= $this->addInput(
 			'DESTINATION_CITY',
-			(empty($this->_destinationAddress->city) ? '' : $this->_destinationAddress->city)
+			(empty($this->destination_address->city) ? '' : $this->destination_address->city)
 		);
-		$this->_htmlFormCode .= $this->_addInput(
+		$this->html_form_code .= $this->addInput(
 			'DESTINATION_STATE',
-			(empty($this->_destinationAddress->state) ? '' : $this->_destinationAddress->state)
+			(empty($this->destination_address->state) ? '' : $this->destination_address->state)
 		);
-		$this->_htmlFormCode .= $this->_addInput(
+		$this->html_form_code .= $this->addInput(
 			'DESTINATION_COUNTRY',
-			(empty($this->_destinationAddress->countryCode) ? '' : $this->_destinationAddress->countryCode)
+			(empty($this->destination_address->countryCode) ? '' : $this->destination_address->countryCode)
 		);
-		$this->_htmlFormCode .= $this->_addInput(
+		$this->html_form_code .= $this->addInput(
 			'ORDER_SHIPPING',
-			(empty($this->_OrderShipping) ? '' : $this->_OrderShipping)
+			(empty($this->order_shipping) ? '' : $this->order_shipping)
 		);
 
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->firstName) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->firstName) ? $this->addInput(
 			'BILL_FNAME',
-			$this->_billingAddress->firstName
+			$this->billing_address->firstName
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->lastName) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->lastName) ? $this->addInput(
 			'BILL_LNAME',
-			$this->_billingAddress->lastName
+			$this->billing_address->lastName
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->ciSerial) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->ciSerial) ? $this->addInput(
 			'BILL_CISERIAL',
-			$this->_billingAddress->ciSerial
+			$this->billing_address->ciSerial
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->ciNumber) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->ciNumber) ? $this->addInput(
 			'BILL_CINUMBER',
-			$this->_billingAddress->ciNumber
+			$this->billing_address->ciNumber
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->cnp) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->cnp) ? $this->addInput(
 			'BILL_CNP',
-			$this->_billingAddress->cnp
+			$this->billing_address->cnp
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->company) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->company) ? $this->addInput(
 			'BILL_COMPANY',
-			$this->_billingAddress->company
+			$this->billing_address->company
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->fiscalCode) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->fiscalCode) ? $this->addInput(
 			'BILL_FISCALCODE',
-			$this->_billingAddress->fiscalCode
+			$this->billing_address->fiscalCode
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->regNumber) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->regNumber) ? $this->addInput(
 			'BILL_REGNUMBER',
-			$this->_billingAddress->regNumber
+			$this->billing_address->regNumber
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->bank) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->bank) ? $this->addInput(
 			'BILL_BANK',
-			$this->_billingAddress->bank
+			$this->billing_address->bank
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->bankAccount) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->bankAccount) ? $this->addInput(
 			'BILL_BANKACCOUNT',
-			$this->_billingAddress->bankAccount
+			$this->billing_address->bankAccount
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->email) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->email) ? $this->addInput(
 			'BILL_EMAIL',
-			$this->_billingAddress->email
+			$this->billing_address->email
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->phone) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->phone) ? $this->addInput(
 			'BILL_PHONE',
-			$this->_billingAddress->phone
+			$this->billing_address->phone
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->fax) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->fax) ? $this->addInput(
 			'BILL_FAX',
-			$this->_billingAddress->fax
+			$this->billing_address->fax
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->address) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->address) ? $this->addInput(
 			'BILL_ADDRESS',
-			$this->_billingAddress->address
+			$this->billing_address->address
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->address2) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->address2) ? $this->addInput(
 			'BILL_ADDRESS2',
-			$this->_billingAddress->address2
+			$this->billing_address->address2
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->zipCode) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->zipCode) ? $this->addInput(
 			'BILL_ZIPCODE',
-			$this->_billingAddress->zipCode
+			$this->billing_address->zipCode
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->city) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->city) ? $this->addInput(
 			'BILL_CITY',
-			$this->_billingAddress->city
+			$this->billing_address->city
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->state) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->state) ? $this->addInput(
 			'BILL_STATE',
-			$this->_billingAddress->state
+			$this->billing_address->state
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_billingAddress->countryCode) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->billing_address->countryCode) ? $this->addInput(
 			'BILL_COUNTRYCODE',
-			$this->_billingAddress->countryCode
+			$this->billing_address->countryCode
 		) : '');
 
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->firstName) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->firstName) ? $this->addInput(
 			'DELIVERY_FNAME',
-			$this->_deliveryAddress->firstName
+			$this->delivery_address->firstName
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->lastName) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->lastName) ? $this->addInput(
 			'DELIVERY_LNAME',
-			$this->_deliveryAddress->lastName
+			$this->delivery_address->lastName
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->ciSerial) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->ciSerial) ? $this->addInput(
 			'DELIVERY_CISERIAL',
-			$this->_deliveryAddress->ciSerial
+			$this->delivery_address->ciSerial
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->ciNumber) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->ciNumber) ? $this->addInput(
 			'BILL_CINUMBER',
-			$this->_deliveryAddress->ciNumber
+			$this->delivery_address->ciNumber
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->cnp) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->cnp) ? $this->addInput(
 			'DELIVERY_CNP',
-			$this->_deliveryAddress->cnp
+			$this->delivery_address->cnp
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->company) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->company) ? $this->addInput(
 			'DELIVERY_COMPANY',
-			$this->_deliveryAddress->company
+			$this->delivery_address->company
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->fiscalCode) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->fiscalCode) ? $this->addInput(
 			'DELIVERY_FISCALCODE',
-			$this->_deliveryAddress->fiscalCode
+			$this->delivery_address->fiscalCode
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->regNumber) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->regNumber) ? $this->addInput(
 			'DELIVERY_REGNUMBER',
-			$this->_deliveryAddress->regNumber
+			$this->delivery_address->regNumber
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->bank) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->bank) ? $this->addInput(
 			'DELIVERY_BANK',
-			$this->_deliveryAddress->bank
+			$this->delivery_address->bank
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->bankAccount) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->bankAccount) ? $this->addInput(
 			'DELIVERY_BANKACCOUNT',
-			$this->_deliveryAddress->bankAccount
+			$this->delivery_address->bankAccount
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->email) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->email) ? $this->addInput(
 			'DELIVERY_EMAIL',
-			$this->_deliveryAddress->email
+			$this->delivery_address->email
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->phone) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->phone) ? $this->addInput(
 			'DELIVERY_PHONE',
-			$this->_deliveryAddress->phone
+			$this->delivery_address->phone
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->fax) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->fax) ? $this->addInput(
 			'DELIVERY_FAX',
-			$this->_deliveryAddress->fax
+			$this->delivery_address->fax
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->address) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->address) ? $this->addInput(
 			'DELIVERY_ADDRESS',
-			$this->_deliveryAddress->address
+			$this->delivery_address->address
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->address2) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->address2) ? $this->addInput(
 			'DELIVERY_ADDRESS2',
-			$this->_deliveryAddress->address2
+			$this->delivery_address->address2
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->zipCode) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->zipCode) ? $this->addInput(
 			'DELIVERY_ZIPCODE',
-			$this->_deliveryAddress->zipCode
+			$this->delivery_address->zipCode
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->city) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->city) ? $this->addInput(
 			'DELIVERY_CITY',
-			$this->_deliveryAddress->city
+			$this->delivery_address->city
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->state) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->state) ? $this->addInput(
 			'DELIVERY_STATE',
-			$this->_deliveryAddress->state
+			$this->delivery_address->state
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_deliveryAddress->countryCode) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->countryCode) ? $this->addInput(
 			'DELIVERY_COUNTRYCODE',
-			$this->_deliveryAddress->countryCode
+			$this->delivery_address->countryCode
 		) : '');
 
-		$this->_htmlFormCode .= $this->_addInput('DISCOUNT', $this->_Discount);
-		$this->_htmlFormCode .= $this->_addInput('PAY_METHOD', $this->_PayMethod);
+		$this->html_form_code .= $this->addInput('DISCOUNT', $this->discount);
+		$this->html_form_code .= $this->addInput('PAY_METHOD', $this->pay_method);
 
-
-		foreach ($this->_tempProds as $prodCode => $product)
+		foreach ($this->temp_prods as $prod_code => $product)
 		{
-			$this->_htmlFormCode .= $this->_addInput('ORDER_PNAME[]', $product['prodName']);
-			$this->_htmlFormCode .= $this->_addInput('ORDER_PCODE[]', $prodCode);
-			$this->_htmlFormCode .= $this->_addInput(
+			$this->html_form_code .= $this->addInput('ORDER_PNAME[]', $product['prodName']);
+			$this->html_form_code .= $this->addInput('ORDER_PCODE[]', $prod_code);
+			$this->html_form_code .= $this->addInput(
 				'ORDER_PINFO[]',
 				(empty($product['prodInfo']) ? '' : $product['prodInfo'])
 			);
-			$this->_htmlFormCode .= $this->_addInput('ORDER_PRICE[]', $product['prodPrice']);
-			$this->_htmlFormCode .= $this->_addInput('ORDER_QTY[]', $product['prodQuantity']);
-			$this->_htmlFormCode .= $this->_addInput('ORDER_VAT[]', $product['prodVat']);
-			$this->_htmlFormCode .= $this->_addInput(
+			$this->html_form_code .= $this->addInput('ORDER_PRICE[]', $product['prodPrice']);
+			$this->html_form_code .= $this->addInput('ORDER_QTY[]', $product['prodQuantity']);
+			$this->html_form_code .= $this->addInput('ORDER_VAT[]', $product['prodVat']);
+			$this->html_form_code .= $this->addInput(
 				'ORDER_PRICE_TYPE[]',
 				$product['prodPriceType']
 			);
 		}
 
-		$this->_htmlFormCode .= $this->_addInput('CUSTOM_PLUGIN', "PRESTASHOP");
-		$this->_htmlFormCode .= $this->_addInput('PRICES_CURRENCY', $this->_PriceCurrency);
-		$this->_htmlFormCode .= (!empty($this->_Currency) ? $this->_addInput('CURRENCY', $this->_Currency) : '');
-		$this->_htmlFormCode .= (!empty($this->_Debug) ? $this->_addInput('DEBUG', 'TRUE') : '');
-		$this->_htmlFormCode .= (!empty($this->_TestMode) ? $this->_addInput('TESTORDER', $this->_TestMode) : '');
-		$this->_htmlFormCode .= (!empty($this->_AutoMode) ? $this->_addInput('AUTOMODE', '1') : '');
-		$this->_htmlFormCode .= (!empty($this->_OrderTimeout) ? $this->_addInput(
+		$this->html_form_code .= $this->addInput('CUSTOM_PLUGIN', 'PRESTASHOP');
+		$this->html_form_code .= $this->addInput('PRICES_CURRENCY', $this->price_currency);
+		$this->html_form_code .= (!empty($this->currency) ? $this->addInput('CURRENCY', $this->currency) : '');
+		$this->html_form_code .= (!empty($this->debug) ? $this->addInput('DEBUG', 'TRUE') : '');
+		$this->html_form_code .= (!empty($this->test_mode) ? $this->addInput('TESTORDER', $this->test_mode) : '');
+		$this->html_form_code .= (!empty($this->auto_mode) ? $this->addInput('AUTOMODE', '1') : '');
+		$this->html_form_code .= (!empty($this->order_timeout) ? $this->addInput(
 			'ORDER_TIMEOUT',
-			$this->_OrderTimeout
+			$this->order_timeout
 		) : '');
-		$this->_htmlFormCode .= (!empty($this->_OrderTimeoutUrl) ? $this->_addInput(
+		$this->html_form_code .= (!empty($this->order_timeout_url) ? $this->addInput(
 			'TIMEOUT_URL',
-			$this->_OrderTimeoutUrl
+			$this->order_timeout_url
 		) : '');
 
 		return 1;
@@ -397,21 +398,20 @@ class PayuLu extends PayuSettings
 	/**
 	 * Method will generate the actual FORM
 	 *
-	 * @param boolean $autoSubmit makes the form autosubmit
+	 * @param boolean $auto_submit makes the form autosubmit
 	 * @return int 1 on success
 	 */
-	private function _makeForm($autoSubmit = false)
+	private function makeForm($auto_submit = false)
 	{
-		$this->_htmlCode .= '<form action="'.$this->_luQueryUrl.'" method="POST" id="payForm" name="payForm">'."\n";
-		$this->_htmlCode .= $this->_htmlFormCode;
-		if ($autoSubmit === false)
-			$this->_htmlCode .= '<input type="submit" value="Submit Payment Form" class="exclusive_large"/>'."\n";
+		$this->html_code .= '<form action="'.$this->lu_query_url.'" method="POST" id="payForm" name="payForm">'."\n";
+		$this->html_code .= $this->html_form_code;
+		if ($auto_submit === false)
+			$this->html_code .= '<input type="submit" value="Submit Payment Form" class="exclusive_large"/>'."\n";
 
-		$this->_htmlCode .= '</form>';
+		$this->html_code .= '</form>';
 
-		if ($autoSubmit === true)
-			$this->_htmlCode .= '<script>document.payForm.submit();</script>';
-
+		if ($auto_submit === true)
+			$this->html_code .= '<script>document.payForm.submit();</script>';
 
 		return 1;
 	}
@@ -419,69 +419,72 @@ class PayuLu extends PayuSettings
 	/**
 	 * Method will assemble the hash string
 	 *
-	 * @param string type of returned text HTML/plain
+	 * @param string $type of returned text HTML/plain
 	 * @return int 1 on success
 	 */
-	private function _makeHashString($type = 'plain')
+	private function makeHashString($type = 'plain')
 	{
-		$finalPriceType = '';
+		$final_price_type = '';
 
-		$this->HashString = $this->_addHashValue($this->_merchantId, 'MerchantId', $type);
-		$this->HashString .= $this->_addHashValue($this->_OrderRef, 'OrderRef', $type);
-		$this->HashString .= $this->_addHashValue($this->_OrderDate, 'OrderDate', $type);
+		$this->hash_string = $this->addHashValue($this->merchant_id, 'MerchantId', $type);
+		$this->hash_string .= $this->addHashValue($this->order_ref, 'OrderRef', $type);
+		$this->hash_string .= $this->addHashValue($this->order_date, 'OrderDate', $type);
 
-		foreach ($this->_allProducts as $product)
+		foreach ($this->all_products as $product)
 		{
-			$tempProd['prodName'] = $product->productName;
-			$tempProd['prodInfo'] = $product->productInfo;
-			$tempProd['prodPrice'] = $product->productPrice;
-			$tempProd['prodQuantity'] = $product->productQuantity;
-			$tempProd['prodVat'] = $product->productVat;
-			$tempProd['prodPriceType'] = $product->productPriceType;
-			$tempProd['customFields'] = $product->customFields;
+			/** @var $product PayuProduct */
+			$temp_prod['prodName'] = $product->product_name;
+			$temp_prod['prodInfo'] = $product->product_info;
+			$temp_prod['prodPrice'] = $product->product_price;
+			$temp_prod['prodQuantity'] = $product->product_quantity;
+			$temp_prod['prodVat'] = $product->product_vat;
+			$temp_prod['prodPriceType'] = $product->product_price_type;
+			$temp_prod['custom_fields'] = $product->custom_fields;
 
-			if (!empty($tempProds[$product->productCode]['prodQuantity']))
+			if (!empty($temp_prods[$product->product_code]['prodQuantity']))
 			{
-				if ($tempProds[$product->productCode]['prodPrice'] != $product->productPrice)
+				if ($temp_prods[$product->product_code]['prodPrice'] != $product->product_price)
 				{
-					$this->_logError(
-						'Found more entries with same product code: '.$product->productCode.' (product code must be unique) and different prices'
+					$this->logError(
+						'Found more entries with same product code: '.$product->product_code.' (product code must be unique) and different prices'
 					);
-					$tempProds[$product->productCode] = $tempProd;
-				} else
+					$temp_prods[$product->product_code] = $temp_prod;
+				}
+				else
 				{
-					$this->_logError(
-						'Found more entries with same product code: '.$product->productCode.', merged into 1',
+					$this->logError(
+						'Found more entries with same product code: '.$product->product_code.', merged into 1',
 						1
 					);
-					$tempProds[$product->productCode]['prodQuantity'] += $product->productQuantity;
+					$temp_prods[$product->product_code]['prodQuantity'] += $product->product_quantity;
 				}
-			} else
-				$tempProds[$product->productCode] = $tempProd;
+			}
+			else
+				$temp_prods[$product->product_code] = $temp_prod;
 		}
 
-		$prodNames = '';
-		$prodInfo = '';
-		$prodPrice = '';
-		$prodQuantity = '';
-		$prodVat = '';
-		$prodCodes = '';
-		$finalPriceType = '';
+		$prod_names = '';
+		$prod_info = '';
+		$prod_price = '';
+		$prod_quantity = '';
+		$prod_vat = '';
+		$prod_codes = '';
+		$final_price_type = '';
 
 		$iterator = 0;
-		foreach ($tempProds as $prodCode => $product)
+		foreach ($temp_prods as $prod_code => $product)
 		{
-			$prodNames .= $this->_addHashValue($product['prodName'], 'ProductName['.$iterator.']', $type);
-			$prodInfo .= $this->_addHashValue(
+			$prod_names .= $this->addHashValue($product['prodName'], 'ProductName['.$iterator.']', $type);
+			$prod_info .= $this->addHashValue(
 				(empty($product['prodInfo']) ? '' : $product['prodInfo']),
 				'ProductInfo['.$iterator.']',
 				$type
 			);
-			$prodPrice .= $this->_addHashValue($product['prodPrice'], 'ProductPrice['.$iterator.']', $type);
-			$prodQuantity .= $this->_addHashValue($product['prodQuantity'], 'ProductQuality['.$iterator.']', $type);
-			$prodVat .= $this->_addHashValue($product['prodVat'], 'ProductVat['.$iterator.']', $type);
-			$prodCodes .= $this->_addHashValue($prodCode, 'ProductCode['.$iterator.']', $type);
-			$finalPriceType .= $this->_addHashValue(
+			$prod_price .= $this->addHashValue($product['prodPrice'], 'ProductPrice['.$iterator.']', $type);
+			$prod_quantity .= $this->addHashValue($product['prodQuantity'], 'ProductQuality['.$iterator.']', $type);
+			$prod_vat .= $this->addHashValue($product['prodVat'], 'ProductVat['.$iterator.']', $type);
+			$prod_codes .= $this->addHashValue($prod_code, 'ProductCode['.$iterator.']', $type);
+			$final_price_type .= $this->addHashValue(
 				(empty($product['prodPriceType']) ? '' : $product['prodPriceType']),
 				'ProductPriceType['.$iterator.']',
 				$type
@@ -490,52 +493,51 @@ class PayuLu extends PayuSettings
 			$iterator++;
 		}
 
-		$this->HashString .= $prodNames;
-		$this->HashString .= $prodCodes;
-		$this->HashString .= $prodInfo;
-		$this->HashString .= $prodPrice;
-		$this->HashString .= $prodQuantity;
-		$this->HashString .= $prodVat;
+		$this->hash_string .= $prod_names;
+		$this->hash_string .= $prod_codes;
+		$this->hash_string .= $prod_info;
+		$this->hash_string .= $prod_price;
+		$this->hash_string .= $prod_quantity;
+		$this->hash_string .= $prod_vat;
 
-
-		$this->_tempProds = $tempProds;
-		$this->HashString .= $this->_addHashValue(
-			($this->checkEmptyVar($this->_OrderShipping) ? '' : $this->_OrderShipping),
+		$this->temp_prods = $temp_prods;
+		$this->hash_string .= $this->addHashValue(
+			($this->checkEmptyVar($this->order_shipping) ? '' : $this->order_shipping),
 			'OrderShipping',
 			$type
 		);
-		$this->HashString .= $this->_addHashValue(
-			($this->checkEmptyVar($this->_PriceCurrency) ? '' : $this->_PriceCurrency),
+		$this->hash_string .= $this->addHashValue(
+			($this->checkEmptyVar($this->price_currency) ? '' : $this->price_currency),
 			'PriceCurrency',
 			$type
 		);
-		$this->HashString .= $this->_addHashValue((empty($this->_Discount) ? '' : $this->_Discount), 'Discount', $type);
-		$this->HashString .= $this->_addHashValue(
-			(empty($this->_destinationAddress->city) ? '' : $this->_destinationAddress->city),
+		$this->hash_string .= $this->addHashValue((empty($this->discount) ? '' : $this->discount), 'Discount', $type);
+		$this->hash_string .= $this->addHashValue(
+			(empty($this->destination_address->city) ? '' : $this->destination_address->city),
 			'DestinationCity',
 			$type
 		);
-		$this->HashString .= $this->_addHashValue(
-			(empty($this->_destinationAddress->state) ? '' : $this->_destinationAddress->state),
+		$this->hash_string .= $this->addHashValue(
+			(empty($this->destination_address->state) ? '' : $this->destination_address->state),
 			'DestinationState',
 			$type
 		);
-		$this->HashString .= $this->_addHashValue(
-			(empty($this->_destinationAddress->countryCode) ? '' : $this->_destinationAddress->countryCode),
+		$this->hash_string .= $this->addHashValue(
+			(empty($this->destination_address->countryCode) ? '' : $this->destination_address->countryCode),
 			'DestinationCountryCode',
 			$type
 		);
 
-		$this->HashString .= $this->_addHashValue(
-			(empty($this->_PayMethod) ? '' : $this->_PayMethod),
+		$this->hash_string .= $this->addHashValue(
+			(empty($this->pay_method) ? '' : $this->pay_method),
 			'PayMethod',
 			$type
 		);
-		$this->HashString .= $finalPriceType;
+		$this->hash_string .= $final_price_type;
 
-		$this->HashString .= $this->_addHashValue('PRESTASHOP', 'CUSTOM_PLUGIN');
+		$this->hash_string .= $this->addHashValue('PRESTASHOP', 'CUSTOM_PLUGIN');
 
-		return $this->HashString;
+		return $this->hash_string;
 	}
 
 	private function checkEmptyVar($string)
@@ -548,9 +550,9 @@ class PayuLu extends PayuSettings
 	 *
 	 * @return int 1 on success
 	 */
-	private function _makeHash()
+	private function makeHash()
 	{
-		$this->_HASH = PayuSignature::generateHmac($this->_secretKey, $this->_hashString);
+		$this->hash = PayuSignature::generateHmac($this->secret_key, $this->hash_string);
 		return 1;
 	}
 
@@ -561,7 +563,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setAutoMode()
 	{
-		$this->_AutoMode = 1;
+		$this->auto_mode = 1;
 		return 1;
 	}
 
@@ -573,7 +575,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setTestMode()
 	{
-		$this->_TestMode = true;
+		$this->test_mode = true;
 		return 1;
 	}
 
@@ -585,7 +587,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setGlobalDiscount($discount)
 	{
-		$this->_Discount = $discount;
+		$this->discount = $discount;
 		return 1;
 	}
 
@@ -597,7 +599,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setLanguage($lang)
 	{
-		$this->_Language = $lang;
+		$this->language = $lang;
 		return 1;
 	}
 
@@ -609,7 +611,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setOrderRef($refno)
 	{
-		$this->_OrderRef = $refno;
+		$this->order_ref = $refno;
 		return 1;
 	}
 
@@ -618,21 +620,21 @@ class PayuLu extends PayuSettings
 	 *
 	 * @return int 1 on success
 	 */
-	private function _setOrderDate()
+	private function setOrderDate()
 	{
-		$this->_OrderDate = date('Y-m-d H:i:s', time());
+		$this->order_date = date('Y-m-d H:i:s', time());
 		return 1;
 	}
 
 	/**
 	 * Sets the Pay Method for the order
 	 *
-	 * @param string $payMethod value Payment method (please refer to the static vars in this class)
+	 * @param string $pay_method value Payment method (please refer to the static vars in this class)
 	 * @return int 1 on success
 	 */
-	public function setPayMethod($payMethod)
+	public function setPayMethod($pay_method)
 	{
-		$this->_PayMethod = $payMethod;
+		$this->pay_method = $pay_method;
 		return 1;
 	}
 
@@ -644,7 +646,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setPaymentCurrency($currency)
 	{
-		$this->_PriceCurrency = $currency;
+		$this->price_currency = $currency;
 		return 1;
 	}
 
@@ -656,7 +658,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setCurrency($currency)
 	{
-		$this->_Currency = $currency;
+		$this->currency = $currency;
 		return 1;
 	}
 
@@ -668,7 +670,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setOrderTimeout($timeout)
 	{
-		$this->_OrderTimeout = $timeout;
+		$this->order_timeout = $timeout;
 		return 1;
 	}
 
@@ -680,7 +682,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setTimeoutUrl($url)
 	{
-		$this->_OrderTimeoutUrl = $url;
+		$this->order_timeout_url = $url;
 		return 1;
 	}
 
@@ -692,18 +694,18 @@ class PayuLu extends PayuSettings
 	 */
 	public function getHashString($debug = false)
 	{
-		if (!empty($this->_hashString))
+		if (!empty($this->hash_string))
 		{
 			if ($debug === true)
-				return 'Hover on the substring for explanation:<br/><style>.puHidden{display:none;}.puInline{display: block;float: left;}</style>'.$this->_makeHashString(
-					'HTML'
-				).' <script type="javascript"></script>';
+				return 'Hover on the substring for explanation:<br/><style>.puHidden{display:none;}.puInline{display: block;float: left;}</style>'
+					.$this->makeHashString('HTML').' <script type="javascript"></script>';
 		else
-			return $this->_hashString;
+			return $this->hash_string;
 
-		} else
+		}
+		else
 		{
-			$this->_logError('Hash String not ready. Try renderPaymentForm or renderPaymentInputs first ', 1);
+			$this->logError('Hash String not ready. Try renderPaymentForm or renderPaymentInputs first ', 1);
 			return 0;
 		}
 	}
@@ -716,7 +718,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setBackRef($url)
 	{
-		$this->_BackRef = $url;
+		$this->back_ref = $url;
 		return 1;
 	}
 
@@ -731,7 +733,7 @@ class PayuLu extends PayuSettings
 
 	public function setOrderShipping($shipping)
 	{
-		$this->_OrderShipping = $shipping;
+		$this->order_shipping = $shipping;
 		return 1;
 	}
 
@@ -742,7 +744,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setTrace()
 	{
-		$this->_Debug = 1;
+		$this->debug = 1;
 		return 1;
 	}
 
@@ -752,26 +754,25 @@ class PayuLu extends PayuSettings
 	 *
 	 * @return string contains all errors
 	 */
-	private function _validate()
+	private function validate()
 	{
-		if (!empty($this->_Discount) && ($this->_Discount < 0 || !is_numeric($this->_Discount)))
-			$this->_logError('Discount must be a positive number');
+		if (!empty($this->discount) && ($this->discount < 0 || !is_numeric($this->discount)))
+			$this->logError('Discount must be a positive number');
 
-
-		if (!empty($this->_PayMethod) &&
-			($this->_PayMethod != self::PAY_METHOD_CCVISAMC &&
-				$this->_PayMethod != self::PAY_METHOD_CCAMEX &&
-				$this->_PayMethod != self::PAY_METHOD_CCDINERS &&
-				$this->_PayMethod != self::PAY_METHOD_CCJCB &&
-				$this->_PayMethod != self::PAY_METHOD_WIRE &&
-				$this->_PayMethod != self::PAY_METHOD_PAYPAL &&
-				$this->_PayMethod != self::PAY_METHOD_CASH))
+		if (!empty($this->pay_method) &&
+			($this->pay_method != self::PAY_METHOD_CCVISAMC &&
+				$this->pay_method != self::PAY_METHOD_CCAMEX &&
+				$this->pay_method != self::PAY_METHOD_CCDINERS &&
+				$this->pay_method != self::PAY_METHOD_CCJCB &&
+				$this->pay_method != self::PAY_METHOD_WIRE &&
+				$this->pay_method != self::PAY_METHOD_PAYPAL &&
+				$this->pay_method != self::PAY_METHOD_CASH))
 		{
-			$this->_logError('Payment Method: '.$this->_PayMethod.' is not supported reverted to none', 1);
-			$this->_PayMethod = '';
+			$this->logError('Payment Method: '.$this->pay_method.' is not supported reverted to none', 1);
+			$this->pay_method = '';
 		}
-		$this->_mergeErrorLogs($this->_errorLog);
-		return $this->_errorLog;
+		$this->mergeErrorLogs($this->error_log);
+		return $this->error_log;
 	}
 
 	/**
@@ -780,9 +781,9 @@ class PayuLu extends PayuSettings
 	 * @param int debug level constants should be used
 	 * @return int 1 on success
 	 */
-	public function setDebug($debugLevel)
+	public function setDebug($debug_level)
 	{
-		$this->_debugLevel = $debugLevel;
+		$this->debug_level = $debug_level;
 		return 1;
 	}
 
@@ -794,7 +795,7 @@ class PayuLu extends PayuSettings
 	 */
 	public function setQueryUrl($url)
 	{
-		$this->_luQueryUrl = $url;
+		$this->lu_query_url = $url;
 		return 1;
 	}
 
@@ -806,11 +807,11 @@ class PayuLu extends PayuSettings
 	 * @param string type of returned text HTML/plain
 	 */
 
-	private function _addHashValue($string, $name = '', $type)
+	private function addHashValue($string, $name = '', $type)
 	{
 		if ($this->checkEmptyVar($string))
 		{
-			$returnHtmlValue = '<div class="puInline" onmouseover="document.getElementById(\''.md5(
+			$return_html_value = '<div class="puInline" onmouseover="document.getElementById(\''.md5(
 					$name
 				).'\').innerHTML=\''.$name.'\';document.getElementById(\''.md5(
 					$name
@@ -819,10 +820,11 @@ class PayuLu extends PayuSettings
 				).'\').style.display=\'none\';this.style.border=\'0\'"><b style="color:red">0</b><strong id="'.md5(
 					$name
 				).'" class="puHidden"></strong></div>';
-			$returnValue = '0';
-		} else
+			$return_value = '0';
+		}
+		else
 		{
-			$returnHtmlValue = '<div class="puInline" onmouseover="document.getElementById(\''.md5(
+			$return_html_value = '<div class="puInline" onmouseover="document.getElementById(\''.md5(
 					$name
 				).'\').innerHTML=\''.$name.'\';document.getElementById(\''.md5(
 					$name
@@ -831,13 +833,13 @@ class PayuLu extends PayuSettings
 				).'\').style.display=\'none\';this.style.border=\'0\'"><b style="color:red">'.strlen(
 					$string
 				).'</b>'.$string.'<strong id="'.md5($name).'" class="puHidden"></strong></div>';
-			$returnValue = strlen($string).$string;
+			$return_value = strlen($string).$string;
 		}
 
 		if ($type == 'HTML')
-			return $returnHtmlValue;
+			return $return_html_value;
 		else
-			return $returnValue;
+			return $return_value;
 	}
 
 	/*
@@ -847,7 +849,7 @@ class PayuLu extends PayuSettings
 	 * @param string value of the input
 	 */
 
-	private function _addInput($string, $value)
+	private function addInput($string, $value)
 	{
 		return '<input type="hidden" name="'.strtoupper($string).'" value="'.htmlentities(
 			$value,
