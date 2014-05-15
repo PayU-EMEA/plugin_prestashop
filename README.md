@@ -93,7 +93,6 @@ The main parameters for plugin configuration are as follows:
 
 | Parameter | Values | Description | 
 |:---------:|:------:|:-----------:|
-|Test Mode On|Yes/No|If you are in the test mode, the transactions are only simulated and no real payments are made. Use the test mode to see how the transactions work.|
 |Self-Return Enabled|Yes/No|If self-return is disabled, the payment must be confirmed manually.|
 |Order Validity Time|24h/12h/6h/1h/30min|Specifies the time during which the order is valid in the PayU system. When validity time expires, the order is cancelled, and you are notified that the transaction failed.|
 |Ship Abroad|Enabled/Disabled|If ship abroad is disabled, you can only choose the country of the shop for shipping.|
@@ -101,17 +100,12 @@ The main parameters for plugin configuration are as follows:
 
 #### Parameters of test and production environments
 
-The test environment is called *Sandbox* and you can adjust it separately from the production environment to see which configuration suits you the best.
-<!--To check the values of the parameters below, go to **Administration Panel** > **My shops** > **Your shop** > **POS** and click the name of a given POS.
--->
-**Important:** If you set the [**Test Mode On**][3.1.1] parameter to *Yes*, the transactions in your shop are only simulated. No real payments are made.
+**Important:** There is no test environment (*Sandbox*) for this version of module and you can set Test Payment method in your POS settings in the PayU system, before you deploy your shop to production enivronment.
 
 | Parameter | Description | 
 |:---------:|:-----------:|
 |POS ID|Unique ID of the POS|
-|Key|Unique MD5 key
 |Second Key| MD5 key for securing communication|
-|POS Auth Key|Transaction authorization key|
 
 ### Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)
 
