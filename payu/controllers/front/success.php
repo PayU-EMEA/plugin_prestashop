@@ -16,14 +16,23 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 	{
 		$payu = new PayU();
 
+		
 		$id_cart = Tools::getValue('id_cart');
-		$id_payu_session = Tools::getValue('id_payu_session');
+		//$id_payu_session = Tools::getValue('id_payu_session');
+		
+		$id_payu_session = $this->context->cookie->__get("payu_order_id");
+		
+		//$id_payu_session = Tools::getValue('sessionId');
 
 		if (Tools::getValue('error'))
 			Tools::redirect('order.php?error='.Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
 
 		$payu->id_cart = $id_cart;
 		$payu->id_session = $id_payu_session;
+		
+		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/orderComplete.log',$payu->id_cart . " " . $payu->id_session);
+		
+		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/session.log',print_r($_SESSION, true));
 
 		$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
 		$id_order = (int)$order_payment['id_order'];
