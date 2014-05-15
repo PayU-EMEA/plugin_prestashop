@@ -1162,20 +1162,13 @@ class PayU extends PaymentModule
 		$OCReq ['totalAmount'] = $grand_total;
 		$OCReq ['extOrderId'] = 1;
 		$OCReq ['shippingMethods'] = $carriers_list;
-		
-		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/orderPrestashop.log',print_r($OCReq,true));
 
 		try
 		{
 			$result = OpenPayU_Order::create($OCReq);
-			file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/orderCreatePrestashop.log',print_r($result,true));
 
 			if ($result->getStatus () == 'SUCCESS')
 			{
-				//$token = OpenPayUOAuthenticate::accessTokenByClientCredentials();
-
-			    //$_SESSION['sessionId'] = $result->getResponse ()->orderId;
-			    //$this->id_session = $result->getResponse ()->orderId;
 			    
 			    $context = Context::getContext();
 			    $context->cookie->__set("payu_order_id", $result->getResponse ()->orderId);
@@ -1730,19 +1723,7 @@ class PayU extends PaymentModule
 				$this->order->update();
 
 				// Update order state
-				//$this->updateOrderState(isset($payu_order['PaymentStatus']) ? $payu_order['PaymentStatus'] : null);
-				
-				/* $iTime      = explode ('.', microtime());
-				$iMill      = $iTime[1];
-				$dDate      = date ('Y-m-d H:i:s', $iTime[0]); */
-				
-				file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/orderNotifyRequest.log', 
-				    "[" .date ("Y:m:d H:i:s.u") . "] <<<<<<<<<<<<<< OrderNotifyRequest: ---- ". 
-				    "Prestashop OrderId: " . $this->id_order . 
-				    ", PayU Order Id: " .  $response->orders->orders[0]->orderId . ", PayU Order Status: " . $response->orders->orders[0]->status . "\n", FILE_APPEND);
-				
 				$this->updateOrderState(isset($response->orders->orders[0]->status) ? $response->orders->orders[0]->status : null);
-				//$response->orders->orders[0]->status
 			}
 		}
 	}
@@ -1784,7 +1765,6 @@ class PayU extends PaymentModule
 	private function addNewAddress($address)
 	{
 	    
-	    file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/addNewAddress.log',print_r($address,true));
 	    return;
 		if ((int)Country::getByIso($address['CountryCode']))
 			$address_country_id = Country::getByIso($address['CountryCode']);

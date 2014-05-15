@@ -29,10 +29,6 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 
 		$payu->id_cart = $id_cart;
 		$payu->id_session = $id_payu_session;
-		
-		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/orderComplete.log',$payu->id_cart . " " . $payu->id_session);
-		
-		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/session.log',print_r($_SESSION, true));
 
 		$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
 		$id_order = (int)$order_payment['id_order'];

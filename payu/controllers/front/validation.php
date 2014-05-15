@@ -24,8 +24,6 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 
 		$payu->id_session = $id_session;
 		$payu->id_cart = $cart->id;
-		
-		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/validation.log',$redirectUri . " " . $payu->id_session);
 
 		$payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 

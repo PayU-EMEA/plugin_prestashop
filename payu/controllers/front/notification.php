@@ -18,13 +18,9 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 	    $body = file_get_contents ( 'php://input' );
 	    $data = stripslashes ( trim ( $body ) );
 	    
-	    file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/notificationData.log', $data );
-	    
 	    $result = OpenPayU_Order::consumeNotification ( $data );
 		
 		$response = $result->getResponse();
-		
-		file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/payu/prestashop/log/notification.log', print_r($response, true) );
 
 		if (isset($response->order->orderId))
 		{
@@ -56,16 +52,6 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 			}
 			
 			$rsp = OpenPayU::buildOrderNotifyResponse ( $response->order->orderId );
-			
-			/* $iTime      = explode ('.', microtime());
-			 $iMill      = $iTime[1];
-			$dDate      = date ('Y-m-d H:i:s', $iTime[0]);
-			
-			print $dDate.'.'.$iMill; */
-			
-			file_put_contents('/home/gniewkos/domains/gniewko.ayz.pl/public_html/orderNotifyRequest.log',
-			"[" .date ("Y:m:d H:i:s.u") . "] >>>>>>>>>>>>>> OrderNotifyResponse: ---- ".
-			$rsp . "\n\n", FILE_APPEND);
 			
 			header("Content-Type: application/json");
 			echo $rsp;
