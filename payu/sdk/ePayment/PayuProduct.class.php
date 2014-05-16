@@ -13,165 +13,165 @@
 class PayuProduct extends PayuSettings
 {
 
-	public $productName = '';
-	public $productCode = '';
-	public $productInfo = '';
-	public $productPrice = 0.0;
-	public $productPriceType = '';
-	public $productQuantity = 0;
-	public $productVat = 0.0;
-	public $Discount = '';
-	public $customFields = array();
+	public $product_name = '';
+	public $product_code = '';
+	public $product_info = '';
+	public $product_price = 0.0;
+	public $product_price_type = '';
+	public $product_quantity = 0;
+	public $product_vat = 0.0;
+	public $discount = '';
+	public $custom_fields = array();
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $productName name of the product
-	 * @param string $productCode code of the product
-	 * @param string $productInfo info of the product
-	 * @param float $productPrice price of the product
-	 * @param string $productPriceType price type for the
-	 * @param int $productQuantity quantity for the product
-	 * @param string $productTax tax of the product
+	 * @param string $product_name name of the product
+	 * @param string $product_code code of the product
+	 * @param string $product_info info of the product
+	 * @param float $product_price price of the product
+	 * @param string $product_price_type price type for the
+	 * @param int $product_quantity quantity for the product
+	 * @param string $product_tax tax of the product
 	 */
-	public function __construct($productName = '',
-		$productCode = '',
-		$productInfo = '',
-		$productPrice = 0.0,
-		$productPriceType = '',
-		$productQuantity = 0,
-		$productTax = '')
+	public function __construct($product_name = '',
+		$product_code = '',
+		$product_info = '',
+		$product_price = 0.0,
+		$product_price_type = '',
+		$product_quantity = 0,
+		$product_tax = '')
 	{
-		$this->setName($productName);
-		$this->setCode($productCode);
-		$this->setInfo($productInfo);
-		$this->setPrice($productPrice);
-		$this->setPriceType($productPriceType);
-		$this->setQuantity($productQuantity);
-		$this->setTax($productTax);
+		$this->setName($product_name);
+		$this->setCode($product_code);
+		$this->setInfo($product_info);
+		$this->setPrice($product_price);
+		$this->setPriceType($product_price_type);
+		$this->setQuantity($product_quantity);
+		$this->setTax($product_tax);
 	}
 
 	/**
 	 * Adds a custom field to the product
 	 *
-	 * @param string $fieldName value of the fields name
-	 * @param string $fieldValue value of the field
+	 * @param string $field_name value of the fields name
+	 * @param string $field_value value of the field
 	 * @return int 1 on success
 	 */
-	public function addCustomField($fieldName, $fieldValue)
+	public function addCustomField($field_name, $field_value)
 	{
-		if (!$fieldName)
+		if (!$field_name)
 		{
-			self::_logError(
-				'Custom field name for product with name '.$this->productName.' is not valid, field will be ignored',
+			self::logError(
+				'Custom field name for product with name '.$this->product_name.' is not valid, field will be ignored',
 				1
 			);
 			return 0;
 		}
-		$this->customFields[$fieldName] = $fieldValue;
+		$this->custom_fields[$field_name] = $field_value;
 		return 1;
 	}
 
 	/**
 	 * Sets the product code for the current product must be unique for each product
 	 *
-	 * @param string $productName value of the product code
+	 * @param string $product_name value of the product code
 	 * @return int 1 on success
 	 */
-	public function setName($productName)
+	public function setName($product_name)
 	{
-		$this->productName = $productName;
+		$this->product_name = $product_name;
 		return 1;
 	}
 
 	/**
 	 * Sets the product code for the current product must be unique for each product
 	 *
-	 * @param string $setCode value of the product code
+	 * @param string $code value of the product code
 	 * @return int 1 on success
 	 */
-	public function setCode($setCode)
+	public function setCode($code)
 	{
-		$this->productCode = $setCode;
+		$this->product_code = $code;
 		return 1;
 	}
 
 	/**
 	 * Sets the information for the current product (long description) it is optional
 	 *
-	 * @param string $productInfo value of the information
+	 * @param string $product_info value of the information
 	 * @return int 1 on success
 	 */
-	public function setInfo($productInfo)
+	public function setInfo($product_info)
 	{
-		$this->productInfo = $productInfo;
+		$this->product_info = $product_info;
 		return 1;
 	}
 
 	/**
 	 * Sets the Price for the current product must be above zero
 	 *
-	 * @param float $productPrice value of the price must be a above zero
+	 * @param float $product_price value of the price must be a above zero
 	 * @return int 1 on success
 	 */
-	public function setPrice($productPrice)
+	public function setPrice($product_price)
 	{
-		$this->productPrice = $productPrice;
+		$this->product_price = $product_price;
 		return 1;
 	}
 
 	/**
 	 * Sets the Price Type for the current product must be either NET or GROSS
 	 *
-	 * @param string $productPriceType value of the Price Type must be either NET or GROSS
+	 * @param string $product_price_type value of the Price Type must be either NET or GROSS
 	 * @return int 1 on success
 	 */
-	public function setPriceType($productPriceType)
+	public function setPriceType($product_price_type)
 	{
-		$this->productPriceType = $productPriceType;
+		$this->product_price_type = $product_price_type;
 		return 1;
 	}
 
 	/**
 	 * Sets the Quantity for the current product
 	 *
-	 * @param int $productQuantity value of the quantity must be a integer
+	 * @param int $product_quantity value of the quantity must be a integer
 	 * @return int 1 on success
 	 */
-	public function setQuantity($productQuantity)
+	public function setQuantity($product_quantity)
 	{
-		$this->productQuantity = $productQuantity;
+		$this->product_quantity = $product_quantity;
 		return 1;
 	}
 
 	/**
 	 * Sets the VAT (TAX) for the current product
 	 *
-	 * @param int $productVat value of the VAT
+	 * @param int $product_vat value of the VAT
 	 * @return int 1 on success
 	 */
-	public function setTax($productVat)
+	public function setTax($product_vat)
 	{
-		$this->productVat = $productVat;
+		$this->product_vat = $product_vat;
 		return 1;
 	}
 
 	/**
 	 * Sets the discount per product
 	 *
-	 * @param int $discountPercent value of the discount to be applied
-	 * @param string $discountPaymentMethod the payment method for which the discount applies
-	 * @param string $discountPaymentOptions the payment option for which the discount applies
+	 * @param int $discount_percent value of the discount to be applied
+	 * @param string $discount_payment_method the payment method for which the discount applies
+	 * @param string $discount_payment_options the payment option for which the discount applies
 	 * @return int 1 on success
 	 */
-	public function setDiscount($discountPercent,
-		$discountPaymentMethod,
-		$discountPaymentOptions = PayuProduct::PAY_OPTION_ALL)
+	public function setDiscount($discount_percent,
+		$discount_payment_method,
+		$discount_payment_options = PayuProduct::PAY_OPTION_ALL)
 	{
-		if (!empty($discountPaymentOptions))
+		if (!empty($discount_payment_options))
 		{
 			if (!in_array(
-				$discountPaymentOptions,
+				$discount_payment_options,
 				array(
 					self::PAY_OPTION_VISA,
 					self::PAY_OPTION_VISA_ELECTRON,
@@ -181,33 +181,34 @@ class PayuProduct extends PayuSettings
 				)
 			))
 			{
-				$discountPaymentOptions = self::PAY_OPTION_ALL;
-				self::_logError(
-					' Payment Option for product with name '.$this->productName.' is not valid assumed ALL',
+				$discount_payment_options = self::PAY_OPTION_ALL;
+				self::logError(
+					' Payment Option for product with name '.$this->product_name.' is not valid assumed ALL',
 					1
 				);
 			}
-		} else
+		}
+		else
 		{
-			$discountPaymentOptions = self::PAY_OPTION_ALL;
-			self::_logError(
-				' Payment Option for product with name '.$this->productName.' is not valid assumed ALL',
+			$discount_payment_options = self::PAY_OPTION_ALL;
+			self::logError(
+				' Payment Option for product with name '.$this->product_name.' is not valid assumed ALL',
 				1
 			);
 		}
 
-
-		if (empty($discountPaymentMethod))
+		if (empty($discount_payment_method))
 		{
-			self::_logError(
-				' Payment Method is missing for product with name '.$this->productName.' discount will be ignored',
+			self::logError(
+				' Payment Method is missing for product with name '.$this->product_name.' discount will be ignored',
 				1
 			);
 			return 0;
-		} else
+		}
+		else
 		{
 			if (!in_array(
-				$discountPaymentMethod,
+				$discount_payment_method,
 				array(
 					self::PAY_METHOD_CCVISAMC,
 					self::PAY_METHOD_CCAMEX,
@@ -219,58 +220,60 @@ class PayuProduct extends PayuSettings
 				)
 			))
 			{
-				self::_logError(
-					' Payment Method is missing for product with name '.$this->productName.' discount will be ignored',
+				self::logError(
+					' Payment Method is missing for product with name '.$this->product_name.' discount will be ignored',
 					1
 				);
 				return 0;
 			}
 
-			if ($discountPaymentMethod != self::PAY_METHOD_CCVISAMC && $discountPaymentOptions != self::PAY_OPTION_ALL)
+			if ($discount_payment_method != self::PAY_METHOD_CCVISAMC && $discount_payment_options != self::PAY_OPTION_ALL)
 			{
-				self::_logError(
-					' Payment Method is incompatible with Payment Option for product with name '.$this->productName.' Payment Option will be assumed as  PayuProduct::PAY_OPTION_ALL',
+				self::logError(
+					' Payment Method is incompatible with Payment Option for product with name '.$this->product_name
+					.' Payment Option will be assumed as  PayuProduct::PAY_OPTION_ALL',
 					1
 				);
-				$discountPaymentOptions = self::PAY_OPTION_ALL;
+				$discount_payment_options = self::PAY_OPTION_ALL;
 			}
 		}
 
-		$formatedDiscountPercent = number_format($discountPercent, 2);
-		if (!empty($discountPercent))
+		$formatted_discount_percent = number_format($discount_percent, 2);
+		if (!empty($discount_percent))
 		{
-			if ($formatedDiscountPercent != $discountPercent)
+			if ($formatted_discount_percent != $discount_percent)
 			{
-				self::_logError(
-					' Discount percent for product with name '.$this->productName.' has more then 2 zecimals and was truncated ',
+				self::logError(
+					' Discount percent for product with name '.$this->product_name.' has more then 2 zecimals and was truncated ',
 					1
 				);
-				$discountPercent = $formatedDiscountPercent;
+				$discount_percent = $formatted_discount_percent;
 			}
 
-			if ($discountPercent <= 0)
-				self::_logError(
-					' Discount percent for product with name '.$this->productName.' must be a positive number ',
+			if ($discount_percent <= 0)
+				self::logError(
+					' Discount percent for product with name '.$this->product_name.' must be a positive number ',
 					2
 				);
 
-			if ($discountPercent > 99.9)
-				self::_logError(
-					' Discount percent for product with name '.$this->productName.' must be a below 99.9 ',
+			if ($discount_percent > 99.9)
+				self::logError(
+					' Discount percent for product with name '.$this->product_name.' must be a below 99.9 ',
 					2
 				);
 
-		} else {
-			self::_logError(
-				' Payment Method is missing for product with name '.$this->productName.' discount will be ignored',
+		}
+		else
+		{
+			self::logError(
+				' Payment Method is missing for product with name '.$this->product_name.' discount will be ignored',
 				1
 			);
 			return 0;
 		}
 
-
-		if ($discountPercent && $discountPaymentMethod && $discountPaymentOptions)
-			$this->Discount = $discountPercent.'|'.$discountPaymentMethod.'|'.$discountPaymentOptions;
+		if ($discount_percent && $discount_payment_method && $discount_payment_options)
+			$this->discount = $discount_percent.'|'.$discount_payment_method.'|'.$discount_payment_options;
 
 		return 1;
 	}
@@ -282,82 +285,81 @@ class PayuProduct extends PayuSettings
 	 */
 	public function checkProduct()
 	{
-		if (strlen($this->productName) > 155)
+		if (strlen($this->product_name) > 155)
 		{
-			$this->_logError(
-				'Product Name for product with name '.$this->productName.' must not exceede 155 chars. String was truncated.',
+			$this->logError(
+				'Product Name for product with name '.$this->product_name.' must not exceede 155 chars. String was truncated.',
 				1
 			);
-			$this->productName = substr($this->productName, 0, 155);
+			$this->product_name = substr($this->product_name, 0, 155);
 		}
 
-		if (strlen($this->productInfo) > 255)
+		if (strlen($this->product_info) > 255)
 		{
-			$this->_logError(
-				'Product Info for product with name '.$this->productName.' must not exceede 255 chars. String was truncated.',
+			$this->logError(
+				'Product Info for product with name '.$this->product_name.' must not exceede 255 chars. String was truncated.',
 				1
 			);
-			$this->productInfo = substr($this->productInfo, 0, 255);
+			$this->product_info = substr($this->product_info, 0, 255);
 		}
 
-		if (strlen($this->productCode) > 50)
+		if (strlen($this->product_code) > 50)
 		{
-			$this->_logError(
-				'Product Code for product with name '.$this->productName.' must not exceede 50 chars. String was truncated.'
+			$this->logError(
+				'Product Code for product with name '.$this->product_name.' must not exceede 50 chars. String was truncated.'
 			);
-			$this->productCode = substr($this->productCode, 0, 50);
+			$this->product_code = substr($this->product_code, 0, 50);
 		}
 
-		if ($this->productPrice < 0 || !is_numeric($this->productPrice) || $this->productPrice == 0)
+		if ($this->product_price < 0 || !is_numeric($this->product_price) || $this->product_price == 0)
 		{
-			$this->_logError(
-				'Price for product with name '.$this->productName.' must be a positive number above 0'
-			);
-		}
-
-		if ($this->productQuantity < 0 || !is_numeric($this->productQuantity) || (int)$this->productQuantity == 0)
-		{
-			$this->_logError(
-				'Quantity for product with name '.$this->productName.' must be a positive number above 0'
+			$this->logError(
+				'Price for product with name '.$this->product_name.' must be a positive number above 0'
 			);
 		}
 
-		if ($this->productQuantity != (int)$this->productQuantity)
+		if ($this->product_quantity < 0 || !is_numeric($this->product_quantity) || (int)$this->product_quantity == 0)
 		{
-			$this->_logError(
-				'Quantity for product with name '.$this->productName.' must be a integer number recieved: '.$this->productQuantity.' assumed: '.(int)$this->productQuantity,
+			$this->logError(
+				'Quantity for product with name '.$this->product_name.' must be a positive number above 0'
+			);
+		}
+
+		if ($this->product_quantity != (int)$this->product_quantity)
+		{
+			$this->logError(
+				'Quantity for product with name '.$this->product_name.' must be a integer number recieved: '.$this->product_quantity
+				.' assumed: '.(int)$this->product_quantity,
 				1
 			);
-			$this->productQuantity = (int)$this->productQuantity;
+			$this->product_quantity = (int)$this->product_quantity;
 		}
 
-
-		if ((string)$this->productVat == (string)(float)$this->productVat)
-			if ($this->productVat < 0)
-				$this->_logError('Tax for '.$this->productName.' must be a positive number');
+		if ((string)$this->product_vat == (string)(float)$this->product_vat)
+			if ($this->product_vat < 0)
+				$this->logError('Tax for '.$this->product_name.' must be a positive number');
 		else
-			$this->_logError('Tax for '.$this->productName.' must be a positive number');
+			$this->logError('Tax for '.$this->product_name.' must be a positive number');
 
+		if ($this->product_vat > 0 && $this->product_vat < 1)
+			$this->logError('Tax for '.$this->product_name.' must be a number above 1 or 0');
 
-		if ($this->productVat > 0 && $this->productVat < 1)
-			$this->_logError('Tax for '.$this->productName.' must be a number above 1 or 0');
+		if (!$this->product_name)
+			$this->logError(
+				'Name is missing'.($this->product_code ? ' for product with code:'.$this->product_code : ''));
 
-		if (!$this->productName)
-			$this->_logError(
-				'Name is missing'.($this->productCode ? ' for product with code:'.$this->productCode : ''));
-
-		if (!$this->productCode)
-			$this->_logError(
-				'Code is missing'.($this->productName ? ' for product with name:'.$this->productName : '')
+		if (!$this->product_code)
+			$this->logError(
+				'Code is missing'.($this->product_name ? ' for product with name:'.$this->product_name : '')
 			);
 
-		if (!$this->productPriceType || ($this->productPriceType != self::PRICE_TYPE_GROSS && $this->productPriceType != self::PRICE_TYPE_NET))
+		if (!$this->product_price_type || ($this->product_price_type != self::PRICE_TYPE_GROSS && $this->product_price_type != self::PRICE_TYPE_NET))
 		{
-			$this->_logError(
-				'PriceType is missing'.($this->productName ? ' for product with name:'.$this->productName : '').' assumed NET',
+			$this->logError(
+				'PriceType is missing'.($this->product_name ? ' for product with name:'.$this->product_name : '').' assumed NET',
 				1
 			);
-			$this->productPriceType = self::PRICE_TYPE_NET;
+			$this->product_price_type = self::PRICE_TYPE_NET;
 		}
 		return 1;
 	}
@@ -370,7 +372,7 @@ class PayuProduct extends PayuSettings
 	public function validate()
 	{
 		self::checkProduct();
-		return $this->_errorLog;
+		return $this->error_log;
 	}
 
 }
