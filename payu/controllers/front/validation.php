@@ -15,7 +15,10 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$cart = $this->context->cart;
-		$id_session = Tools::getValue('sessionId');
+		
+		//$id_session = Tools::getValue('sessionId');
+		$id_session = $this->context->cookie->__get("payu_order_id");
+		$redirectUri = Tools::getValue('redirectUri');
 
 		$payu = new PayU();
 
@@ -24,9 +27,6 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 
 		$payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 
-		Tools::redirect(
-			OpenPayUConfiguration::getSummaryUrl().'?sessionId='.$id_session.'&oauth_token='.
-			Tools::getValue('oauth_token').'&lang='.Tools::getValue('lang')
-		);
+		Tools::redirect($redirectUri);
 	}
 }
