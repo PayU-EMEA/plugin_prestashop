@@ -807,7 +807,7 @@ class PayuLu extends PayuSettings
 	 * @param string type of returned text HTML/plain
 	 */
 
-	private function addHashValue($string, $name = '', $type)
+	private function addHashValue($string, $name = '', $type = null)
 	{
 		if ($this->checkEmptyVar($string))
 		{
