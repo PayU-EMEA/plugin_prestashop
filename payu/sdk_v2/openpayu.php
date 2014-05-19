@@ -26,6 +26,7 @@ include_once('OpenPayU/Configuration.php');
 include_once('OpenPayU/v2/Refund.php');
 include_once('OpenPayU/v2/Order.php');
 include_once('OpenPayU/Util.php');
-require_once('OpenPayU/Http.php');
-require_once('OpenPayU/HttpProtocol.php');
-require_once('OpenPayU/HttpCurl.php');
+include_once('OpenPayU/Http.php');
+include_once('OpenPayU/HttpProtocol.php');
+include_once('OpenPayU/HttpCurl.php');
+
