@@ -1187,12 +1187,12 @@ class PayU extends PaymentModule
 					'langCode' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
 				); */
 			} else {
-				Logger::addLog($this->display_name.' '.trim($result->getError().' '.$result->getMessage().' '
+				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage().' '
 					.$_SESSION['sessionId']), 1);
 			}
 		}
 		catch(Exception $e){
-			Logger::addLog($this->display_name.' '.trim($e->getCode().' '.$e->getMessage().' '.$_SESSION['sessionId']), 1);
+			Logger::addLog($this->displayName.' '.trim($e->getCode().' '.$e->getMessage().' '.$_SESSION['sessionId']), 1);
 		}
 
 
@@ -1212,7 +1212,7 @@ class PayU extends PaymentModule
 		$live_update->setQueryUrl($url);
 
 		$this->validateOrder($cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-			$cart->getOrderTotal(true, Cart::BOTH), $this->display_name, null,
+			$cart->getOrderTotal(true, Cart::BOTH), $this->displayName, null,
 			null, (int)$cart->id_currency, false, $cart->secure_key,
 			Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 		);
@@ -1631,7 +1631,7 @@ class PayU extends PaymentModule
 	public function updateOrderData()
 	{
 		if (empty($this->id_session))
-			Logger::addLog($this->display_name.' '.$this->l('Can not get order information - id_session is empty'), 1);
+			Logger::addLog($this->displayName.' '.$this->l('Can not get order information - id_session is empty'), 1);
 
 		$result = OpenPayU_Order::retrieve($this->id_session);
 		
@@ -1949,7 +1949,7 @@ class PayU extends PaymentModule
 				'hash' => $hash,
 			);
 		} catch (Exception $e){
-			Logger::addLog($this->display_name.' '.trim($e->getCode().' '.$e->getMessage().' id_order: '.$order_id), 1);
+			Logger::addLog($this->displayName.' '.trim($e->getCode().' '.$e->getMessage().' id_order: '.$order_id), 1);
 			return false;
 		}
 	}
