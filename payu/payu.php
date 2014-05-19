@@ -1977,7 +1977,7 @@ class PayU extends PaymentModule
 			    SET
 			        id_order = '.(int)$order_id.',
 			        amount = '.(float)$amount.',
-			        currency = "'.addslashes($currency).'",
+			        currency = "'.addslashes($currency['iso_code']).'",
 			        create_at = NOW()
 		');
 
