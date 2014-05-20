@@ -483,19 +483,24 @@ class PayU extends PaymentModule
 			{
 				$order_state = OrderHistory::getLastOrderState($id_order);
 				$order_state_id = $order_state->id;
-			} else
+			}
+			else
 				$order_state_id = $order->current_state;
 
-			if ($order->module = 'payu' &&
-					($order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED') || $order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED') || $order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_REJECTED')))
+			if ($order->module = 'payu'
+					&& ($order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')
+					|| $order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED')
+					|| $order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_REJECTED')))
 			{
 				$refundable = true;
 				$this->context->smarty->assign('payu_refund_full_amount', $order->total_paid);
 				$this->context->smarty->assign('payu_refund_currency', $order->id_currency);
-			} else
+			}
+			else
 				$refundable = false;
 
-		} else
+		}
+		else
 			$refundable = false;
 
 		$refund_type = Tools::getValue('payu_refund_type');
@@ -516,10 +521,10 @@ class PayU extends PaymentModule
 			$payu_trans = $this->getPayuTransaction($id_order);
 
 			$ref_no = 0;
-			if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-
+			if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 				$ref_no = $payu_trans['id_payu_transaction'];
-			} else {
+			else
+			{
 				foreach ($order->getOrderPaymentCollection() as $payment)
 					$ref_no = $payment->transaction_id;
 			}
@@ -528,12 +533,13 @@ class PayU extends PaymentModule
 			{
 				$currency = Currency::getCurrency($order->id_currency);
 
-				if ($currency['iso_code'] != $payu_trans['currency'] && $payu_trans['payu_amount'] > 0) {
+				if ($currency['iso_code'] != $payu_trans['currency'] && $payu_trans['payu_amount'] > 0)
+				{
 					$refund_amount *= $payu_trans['payu_amount'] / $payu_trans['amount'];
 					$refund_curreny = $payu_trans['payu_currency'];
-				} else {
-					$refund_curreny = $currency['iso_code'];
 				}
+				else
+					$refund_curreny = $currency['iso_code'];
 
 				$irn = new PayuIRN(Configuration::get('PAYU_EPAYMENT_MERCHANT'), Configuration::get('PAYU_EPAYMENT_SECRET_KEY'));
 				$irn->setQueryUrl($this->getBusinessPartnerSetting('irn_url'));
@@ -543,8 +549,9 @@ class PayU extends PaymentModule
 				$irn->setOrderCurrency($refund_curreny);
 
 				$irn_response = $irn->processRequest();
-				
-				if (!isset($irn_response['RESPONSE_CODE']) || 1 != $irn_response['RESPONSE_CODE']) {
+
+				if (!isset($irn_response['RESPONSE_CODE']) || 1 != $irn_response['RESPONSE_CODE'])
+				{
 					$error = isset($irn_response['RESPONSE_MSG'])?$irn_response['RESPONSE_MSG']:(is_string($irn_response)?strip_tags($irn_response):'unknown');
 					$errors[] = $this->l('Refund error: ').$error;
 				}
