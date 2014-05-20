@@ -20,8 +20,18 @@ class PayuIRN
 	const DEBUG_WARNING = '1';
 
 	private $debug_level = 0;
-	private $error_log = '';
-	private $all_errors = array();
+	private $error_log = array(
+		self::DEBUG_WARNING => array(),
+		self::DEBUG_ERROR => array(),
+		self::DEBUG_FATAL => array(),
+		self::DEBUG_ALL => array(),
+	);
+	private $all_errors = array(
+		self::DEBUG_WARNING => array(),
+		self::DEBUG_ERROR => array(),
+		self::DEBUG_FATAL => array(),
+		self::DEBUG_ALL => array(),
+	);
 	private $irn_query_url = 'https://secure.payu.ro/order/irn.php';
 	private $payu_ref_no;
 	private $order_amount;
