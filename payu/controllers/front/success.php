@@ -31,6 +31,7 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 		$payu->id_session = $id_payu_session;
 
 		$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
+		
 		$id_order = (int)$order_payment['id_order'];
 		$payu->id_cart = (int)$order_payment['id_cart'];
 
@@ -43,13 +44,14 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 
 			$payu->validateOrder(
 				$cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-				$cart->getOrderTotal(true, Cart::BOTH), $payu->display_name,
-				'PayU cart ID: '.$cart->id.', sessionId: '.$payu->id_session,
+				$cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
+				'PayU cart ID: '.$cart_id.', sessionId: '.$payu->id_session,
 				null, (int)$cart->id_currency, false, $cart->secure_key,
 				Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 			);
 
 			$payu->id_order = $payu->current_order = $payu->currentOrder;
+			
 			$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
 		}
 
