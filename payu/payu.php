@@ -113,7 +113,6 @@ class PayU extends PaymentModule
 				(version_compare(_PS_VERSION_, '1.5', 'lt') || $this->registerHook('shoppingCart')) &&
 				$this->registerHook('backOfficeHeader') &&
 				$this->registerHook('adminOrder') &&
-				$this->registerHook('updateOrderStatus') &&
 				Configuration::updateValue('PAYU_ENVIRONMENT', 'sandbox') &&
 				Configuration::updateValue('PAYU_SANDBOX_POS_ID', '') &&
 				Configuration::updateValue('PAYU_SANDBOX_POS_AUTH_KEY', '') &&
@@ -487,36 +486,54 @@ class PayU extends PaymentModule
 			else
 				$order_state_id = $order->current_state;
 
-			if ($order->module = 'payu'
-					&& ($order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')
-					|| $order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED')
-					|| $order_state_id == Configuration::get('PAYU_PAYMENT_STATUS_REJECTED')))
+			if ($order->module = 'payu')
 			{
-				$refundable = true;
-				$this->context->smarty->assign('payu_refund_full_amount', $order->total_paid);
-				$this->context->smarty->assign('payu_refund_currency', $order->id_currency);
+
+				switch ($order_state_id)
+				{
+					case Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED'):
+					case Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'):
+						$refundable = true;
+						$deliverable = false;
+						break;
+					case Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'):
+						$refundable = true;
+						$deliverable = true;
+						break;
+					default:
+						$refundable = false;
+						$deliverable = false;
+				}
+
 			}
 			else
+			{
 				$refundable = false;
-
+				$deliverable = false;
+			}
 		}
 		else
+		{
 			$refundable = false;
+			$deliverable = false;
+		}
 
 		$refund_type = Tools::getValue('payu_refund_type');
 		$refund_amount = $refund_type === 'full' ? $order->total_paid : (float)Tools::getValue('payu_refund_amount');
 
 		$this->context->smarty->assign('payu_refund_amount', $refund_amount);
+		$this->context->smarty->assign('payu_refund_full_amount', $order->total_paid);
 		$this->context->smarty->assign('payu_refund_type', $refund_type);
 		$this->context->smarty->assign('show_refund', $refundable);
+		$this->context->smarty->assign('show_delivery', $deliverable);
 
-		$errors = array();
+		$refund_errors = array();
 
-		if (empty($errors) && $refundable && Tools::getValue('submitPayuRefund'))
+		if (empty($refund_errors) && $refundable && Tools::getValue('submitPayuRefund'))
 		{ //  refund form is submitted
 
 			if ($refund_amount > $order->total_paid)
-				$errors[] = $this->l('The refund amount you entered is greater than paid amount.');
+				$refund_errors[] = $this->l('The refund amount you entered is greater than paid amount.');
 
 			$payu_trans = $this->getPayuTransaction($id_order);
 
@@ -529,7 +546,7 @@ class PayU extends PaymentModule
 					$ref_no = $payment->transaction_id;
 			}
 
-			if (empty($errors))
+			if (empty($refund_errors))
 			{
 				$currency = Currency::getCurrency($order->id_currency);
 
@@ -553,10 +570,10 @@ class PayU extends PaymentModule
 				if (!isset($irn_response['RESPONSE_CODE']) || 1 != $irn_response['RESPONSE_CODE'])
 				{
 					$error = isset($irn_response['RESPONSE_MSG'])?$irn_response['RESPONSE_MSG']:(is_string($irn_response)?strip_tags($irn_response):'unknown');
-					$errors[] = $this->l('Refund error: ').$error;
+					$refund_errors[] = $this->l('Refund error: ').$error;
 				}
 
-				if (empty($errors))
+				if (empty($refund_errors))
 				{   //  change order status
 					// Create new OrderHistory
 					$history = new OrderHistory();
@@ -577,7 +594,61 @@ class PayU extends PaymentModule
 			}
 		}
 
-		$this->context->smarty->assign('payu_refund_errors', $errors);
+		$delivery_errors = array();
+
+		if ($deliverable && empty($delivery_errors) && Tools::getValue('submitPayuDelivery'))
+		{	//	delivery confirmation form is submitted
+
+			$payu_trans = $this->getPayuTransaction($id_order);
+
+			$ref_no = 0;
+			if (version_compare(_PS_VERSION_, '1.5', 'lt'))
+				$ref_no = $payu_trans['id_payu_transaction'];
+			else
+			{
+				foreach ($order->getOrderPaymentCollection() as $payment)
+					$ref_no = $payment->transaction_id;
+			}
+
+			$idn = new PayuIDN(Configuration::get('PAYU_EPAYMENT_MERCHANT'), Configuration::get('PAYU_EPAYMENT_SECRET_KEY'));
+			$idn->setQueryUrl($this->getBusinessPartnerSetting('idn_url'));
+			$idn->setPayuReference($ref_no);
+			$idn->setOrderAmount($payu_trans['payu_amount']);
+			$idn->setChargeAmount($payu_trans['payu_amount']);
+			$idn->setOrderCurrency($payu_trans['payu_currency']);
+			$idn_response = $idn->processRequest();
+
+			if (!isset($idn_response['RESPONSE_CODE']) || 1 != $idn_response['RESPONSE_CODE'])
+			{
+				$error = isset($idn_response['RESPONSE_MSG'])?$idn_response['RESPONSE_MSG']:(is_string($idn_response)?strip_tags($idn_response):'unknown');
+				$delivery_errors[] = $this->l('PayU error message on IDN request: ').$error;
+			}
+
+			if (empty($delivery_errors))
+			{
+				//  change order status
+				// Create new OrderHistory
+				$history = new OrderHistory();
+				$history->id_order = (int)$id_order;
+				$history->id_employee = (int)$this->context->employee->id;
+
+				$use_existings_payment = false;
+				/*if (!$order->hasInvoice())
+					$use_existings_payment = true;*/
+				$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED'), $id_order, $use_existings_payment);
+				$history->addWithemail(true, array());
+
+				if (version_compare(_PS_VERSION_, '1.5', 'lt'))
+					Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.$_GET['token']);
+				else
+					Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.$_GET['token']);
+			}
+		}
+
+		$this->context->smarty->assign('payu_delivery_errors', $delivery_errors);
+
+
+		$this->context->smarty->assign('payu_refund_errors', $refund_errors);
 
 		return $output.$this->fetchTemplate('/views/templates/admin/header.tpl');
 	}
@@ -1808,57 +1879,6 @@ class PayU extends PaymentModule
 		$new_address->add();
 		return $new_address->id;
 	}
-
-	/**
-	 * Hook action before status change
-	 *
-	 * @param array $params Parameters
-	 */
-	public function hookUpdateOrderStatus($params)
-	{
-		$order_id = $params['id_order'];
-
-		if (!$order_id)
-			return;
-
-		if ($this->getBusinessPartnerSetting('type') === self::BUSINESS_PARTNER_TYPE_EPAYMENT)
-		{
-			if ($params['newOrderStatus']->id == (int)Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED'))
-			{
-				$order = new Order($order_id);
-				$payu_trans = $this->getPayuTransaction($order_id);
-
-				$ref_no = 0;
-				if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-					$ref_no = $payu_trans['id_payu_transaction'];
-				}
-				else {
-					foreach ($order->getOrderPaymentCollection() as $payment)
-						$ref_no = $payment->transaction_id;
-				}
-
-				$idn = new PayuIDN(Configuration::get('PAYU_EPAYMENT_MERCHANT'), Configuration::get('PAYU_EPAYMENT_SECRET_KEY'));
-				$idn->setQueryUrl($this->getBusinessPartnerSetting('idn_url'));
-				$idn->setPayuReference($ref_no);
-				$idn->setOrderAmount($payu_trans['payu_amount']);
-				$idn->setChargeAmount($payu_trans['payu_amount']);
-				$idn->setOrderCurrency($payu_trans['payu_currency']);
-				$idn_result = $idn->processRequest();
-
-				// check if IDN failed
-				if (!isset($idn_result['RESPONSE_CODE']) || 1 != $idn_result['RESPONSE_CODE'])
-				{
-					if (version_compare(_PS_VERSION_, '1.5', 'lt'))
-						Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$order_id.'&token='.$_GET['token']);
-					else
-						Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$order_id.'&token='.$_GET['token']);
-				}
-			}
-		}
-
-		return true;
-	}
-
 
 	/**
 	 * @param $server
