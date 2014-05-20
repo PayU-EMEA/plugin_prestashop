@@ -54,7 +54,7 @@ if (!empty($result))
 		)
 	);
 
-	$smarty->assign(array('link' => $payu->getModuleAddress().'backward_compatibility/validation.php'));
+	$smarty->assign(array('url_address' => $payu->getModuleAddress().'backward_compatibility/validation.php'));
 
 	echo $payu->fetchTemplate($template);
 } else {
