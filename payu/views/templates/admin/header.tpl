@@ -27,7 +27,7 @@
     {capture assign=refund_fieldset}
         <fieldset>
             <legend><img src="{$module_dir|escape:'htmlall':'UTF-8'}/logo.gif" alt="" />{l s='Make a full or partial refund' mod='payu'}</legend>
-            <form action="" method="post" onsubmit="return confirm('Do you really want to submit the refund request?');">
+            <form action="" method="post" onsubmit="return confirm('{l s='Do you really want to submit the refund request?'}');">
                 <select name="payu_refund_type" id="payu_refund_type">
                     <option value="full"{if $payu_refund_type eq "full"} selected="selected"{/if}>Full refund</option>
                     <option value="partial"{if $payu_refund_type eq "partial"} selected="selected"{/if}>Partial refund</option>
@@ -76,7 +76,7 @@
 	{capture assign=delivery_fieldset}
 		<fieldset>
 			<legend><img src="{$module_dir|escape:'htmlall':'UTF-8'}/logo.gif" alt="" />{l s='Confirm delivery' mod='payu'}</legend>
-			<form action="" method="post" onsubmit="return confirm('Do you really want to confirm delivery of this order?');">
+			<form action="" method="post" onsubmit="return confirm('{l s='Do you really want to confirm delivery of this order?'}');">
 				<input type="submit" name="submitPayuDelivery" class="button" value="{l s='Confirm delivery' mod='payu'}"/>
 			</form>
 			{if $payu_delivery_errors|count}
