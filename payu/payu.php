@@ -224,7 +224,7 @@ class PayU extends PaymentModule
 	 */
 	protected function initializeOpenPayU()
 	{
-	    OpenPayU_Configuration::setApiVersion ( 2 );
+		OpenPayU_Configuration::setApiVersion ( 2 );
 		OpenPayU_Configuration::setEnvironment('secure');
 		OpenPayU_Configuration::setMerchantPosId(Configuration::get('PAYU_POS_ID'));
 		OpenPayU_Configuration::setSignatureKey(Configuration::get('PAYU_SIGNATURE_KEY'));
@@ -513,13 +513,13 @@ class PayU extends PaymentModule
 			if ($refund_amount > $order->total_paid)
 				$errors[] = $this->l('The refund amount you entered is greater than paid amount.');
 
-            $payu_trans = $this->getPayuTransaction($id_order);
+			$payu_trans = $this->getPayuTransaction($id_order);
 
 			$ref_no = 0;
 			if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
 
-                $ref_no = $payu_trans['id_payu_transaction'];
-            } else {
+				$ref_no = $payu_trans['id_payu_transaction'];
+			} else {
 				foreach ($order->getOrderPaymentCollection() as $payment)
 					$ref_no = $payment->transaction_id;
 			}
@@ -528,12 +528,12 @@ class PayU extends PaymentModule
 			{
 				$currency = Currency::getCurrency($order->id_currency);
 
-                if ($currency['iso_code'] != $payu_trans['currency'] && $payu_trans['payu_amount'] > 0) {
-                    $refund_amount *= $payu_trans['payu_amount'] / $payu_trans['amount'];
-                    $refund_curreny = $payu_trans['payu_currency'];
-                } else {
-                    $refund_curreny = $currency['iso_code'];
-                }
+				if ($currency['iso_code'] != $payu_trans['currency'] && $payu_trans['payu_amount'] > 0) {
+					$refund_amount *= $payu_trans['payu_amount'] / $payu_trans['amount'];
+					$refund_curreny = $payu_trans['payu_currency'];
+				} else {
+					$refund_curreny = $currency['iso_code'];
+				}
 
 				$irn = new PayuIRN(Configuration::get('PAYU_EPAYMENT_MERCHANT'), Configuration::get('PAYU_EPAYMENT_SECRET_KEY'));
 				$irn->setQueryUrl($this->getBusinessPartnerSetting('irn_url'));
@@ -1040,9 +1040,9 @@ class PayU extends PaymentModule
 			$total += $this->toAmount($product['total_wt']);
 			
 			$items ['products'] ['products'] [] = array (
-			        'quantity' => (int)$product['quantity'],
-			        'name' => $product['name'],
-			        'unitPrice' => $price_wt
+					'quantity' => (int)$product['quantity'],
+					'name' => $product['name'],
+					'unitPrice' => $price_wt
 			);
 
 		}
@@ -1055,9 +1055,9 @@ class PayU extends PaymentModule
 			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
 			
 			$items ['products'] ['products'] [] = array (
-			        'quantity' => 1,
-			        'name' => $this->l('Gift wrapping'),
-			        'unitPrice' => $wrapping_fees
+					'quantity' => 1,
+					'name' => $this->l('Gift wrapping'),
+					'unitPrice' => $wrapping_fees
 			);
 
 			$total += $wrapping_fees_tax_inc;
@@ -1110,13 +1110,13 @@ class PayU extends PaymentModule
 						$customer_sheet['phone'] = $address->phone;
 
 					$customer_sheet ['delivery'] = array (
-					        'street' => $address->address1,
-					        'postalCode' => $address->postcode,
-					        'city' => $address->city,
-					        'countryCode' => Tools::strtoupper($country->iso_code),
-					        'recipientName' => trim($address->firstname.' '.$address->lastname),
-					        'recipientPhone' => $address->phone ? $address->phone : $address->phone_mobile,
-					        'recipientEmail' => $customer->email
+							'street' => $address->address1,
+							'postalCode' => $address->postcode,
+							'city' => $address->city,
+							'countryCode' => Tools::strtoupper($country->iso_code),
+							'recipientName' => trim($address->firstname.' '.$address->lastname),
+							'recipientPhone' => $address->phone ? $address->phone : $address->phone_mobile,
+							'recipientEmail' => $customer->email
 					);
 					
 				}
@@ -1127,14 +1127,14 @@ class PayU extends PaymentModule
 					$country = new Country((int)$address->id_country);
 				
 					/* $customer_sheet ['invoice'] = array (
-					        'street' => $address->address1,
-					        'postalCode' => $address->postcode,
-					        'city' => $address->city,
-					        'countryCode' => Tools::strtoupper($country->iso_code),
-					        'recipientName' => trim($address->firstname.' '.$address->lastname),
-					        'recipientEmail' => $customer->email,
-					        'tIN' => $address->vat_number
-					        //'eInvoiceRequested' => (int)Configuration::get('PS_INVOICE') ? 'false' : 'true'
+							'street' => $address->address1,
+							'postalCode' => $address->postcode,
+							'city' => $address->city,
+							'countryCode' => Tools::strtoupper($country->iso_code),
+							'recipientName' => trim($address->firstname.' '.$address->lastname),
+							'recipientEmail' => $customer->email,
+							'tIN' => $address->vat_number
+							//'eInvoiceRequested' => (int)Configuration::get('PS_INVOICE') ? 'false' : 'true'
 					); */ 
 					
 				}
@@ -1169,15 +1169,15 @@ class PayU extends PaymentModule
 
 			if ($result->getStatus () == 'SUCCESS')
 			{
-			    
-			    $context = Context::getContext();
-			    $context->cookie->__set("payu_order_id", $result->getResponse ()->orderId);
-			    
+
+				$context = Context::getContext();
+				$context->cookie->__set("payu_order_id", $result->getResponse ()->orderId);
+
 				$return_array = array (
-				        'redirectUri' => urldecode($result->getResponse ()->redirectUri),
-				        //'summaryUrl' => OpenPayu_Configuration::getSummaryUrl (),
-				        'sessionId' => $result->getResponse ()->orderId
-				        //'lang' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
+						'redirectUri' => urldecode($result->getResponse ()->redirectUri),
+						//'summaryUrl' => OpenPayu_Configuration::getSummaryUrl (),
+						'sessionId' => $result->getResponse ()->orderId
+						//'lang' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
 				);
 				
 				/* $return_array = array(
@@ -1225,13 +1225,13 @@ class PayU extends PaymentModule
 		{
 			$internal_reference = '#'.str_pad($this->current_order, 6, '0', STR_PAD_LEFT);
 			$order_ref = $this->current_order.'|'.str_pad($this->current_order, 6, '0', STR_PAD_LEFT);
-            $order_id = $this->current_order;
+			$order_id = $this->current_order;
 		}
 		else
 		{
 			$internal_reference = $this->currentOrderReference;
 			$order_ref = $this->currentOrder.'|'.$this->currentOrderReference;
-            $order_id = $this->currentOrder;
+			$order_id = $this->currentOrder;
 		}
 
 		$live_update->setOrderRef($order_ref);
@@ -1297,7 +1297,7 @@ class PayU extends PaymentModule
 
 		$luForm = $live_update->renderPaymentForm(null);
 
-        $this->savePayuTransaction($order_id, $cart->getOrderTotal(true, Cart::BOTH), Currency::getCurrency($cart->id_currency));
+		$this->savePayuTransaction($order_id, $cart->getOrderTotal(true, Cart::BOTH), Currency::getCurrency($cart->id_currency));
 
 		return $luForm;
 	}
@@ -1357,9 +1357,9 @@ class PayU extends PaymentModule
 			{
 				
 				$carrier_list ['shippingMethods'] [] = array (
-				        'name' => $selected_carrier->name.' ('.$selected_carrier->id.')',
-				        'country' => $country->iso_code,
-				        'price' => $this->toAmount($price)
+						'name' => $selected_carrier->name.' ('.$selected_carrier->id.')',
+						'country' => $country->iso_code,
+						'price' => $this->toAmount($price)
 				);
 
 			}
@@ -1405,12 +1405,12 @@ class PayU extends PaymentModule
 					{
 						if ((int)$carrier['active'] == 1)
 						{
-						    
-						    $carrier_list ['shippingMethods'] [] = array (
-						            'name' => $carrier['name'].' ('.$carrier['id_carrier'].')',
-						            'country' => $country->iso_code,
-						            'price' => $this->toAmount($price)
-						    );
+
+							$carrier_list ['shippingMethods'] [] = array (
+									'name' => $carrier['name'].' ('.$carrier['id_carrier'].')',
+									'country' => $country->iso_code,
+									'price' => $this->toAmount($price)
+							);
 
 							$i++;
 						}
@@ -1476,7 +1476,7 @@ class PayU extends PaymentModule
 	 */
 	public function updateOrderPaymentSessionId($id_session,$id_payu_order)
 	{
-	    return $result = Db::getInstance()->execute('
+		return $result = Db::getInstance()->execute('
 			UPDATE `'._DB_PREFIX_.'order_payu_payments`
 			SET `id_session` = "'.$id_payu_order.'"
 			WHERE `id_session`="'.$id_session.'"');
@@ -1569,7 +1569,7 @@ class PayU extends PaymentModule
 	 */
 	private function updateOrderState($status)
 	{
-	    
+
 		if (!empty($this->order->id))
 		{
 			if (version_compare(_PS_VERSION_, '1.5', 'lt'))
@@ -1594,7 +1594,7 @@ class PayU extends PaymentModule
 					}
 					break;
 				//case self::PAYMENT_STATUS_CANCEL :
-			    case self::ORDER_V2_CANCELED :
+				case self::ORDER_V2_CANCELED :
 					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'))
 					{
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'), $this->order->id);
@@ -1692,9 +1692,9 @@ class PayU extends PaymentModule
 				// Delivery address add
 				if (!empty($response->orders->orders[0]->buyer))
 				{
-				    
-				    $buyer = $response->orders->orders[0]->buyer;
-				    
+
+					$buyer = $response->orders->orders[0]->buyer;
+
 					if (isset($buyer->phone) && !empty($buyer->phone))
 						$payu_order_shipping->recipientPhone = $buyer->phone;
 
@@ -1764,8 +1764,8 @@ class PayU extends PaymentModule
 	 */
 	private function addNewAddress($address)
 	{
-	    
-	    return;
+
+		return;
 		if ((int)Country::getByIso($address['CountryCode']))
 			$address_country_id = Country::getByIso($address['CountryCode']);
 		else
@@ -1819,12 +1819,12 @@ class PayU extends PaymentModule
 			if ($params['newOrderStatus']->id == (int)Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED'))
 			{
 				$order = new Order($order_id);
-                $payu_trans = $this->getPayuTransaction($order_id);
+				$payu_trans = $this->getPayuTransaction($order_id);
 
 				$ref_no = 0;
 				if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-                    $ref_no = $payu_trans['id_payu_transaction'];
-                }
+					$ref_no = $payu_trans['id_payu_transaction'];
+				}
 				else {
 					foreach ($order->getOrderPaymentCollection() as $payment)
 						$ref_no = $payment->transaction_id;
@@ -1929,7 +1929,7 @@ class PayU extends PaymentModule
 						$payments[$payment->count() - 1]->update();
 					}
 
-                    $this->updatePayuTransaction($order_id, (int)$params['REFNO'], $params['IPN_TOTALGENERAL'], $params['CURRENCY']);
+					$this->updatePayuTransaction($order_id, (int)$params['REFNO'], $params['IPN_TOTALGENERAL'], $params['CURRENCY']);
 					break;
 			}
 
@@ -1958,31 +1958,31 @@ class PayU extends PaymentModule
 	{
 		return Db::getInstance()->Execute('
 			UPDATE `'._DB_PREFIX_.'payu_payments`
-			    SET
-			        id_payu_transaction = '.(int)$transaction_id.',
-			        payu_amount = '.(float)$payu_amount.',
-			        payu_currency = "'.addslashes($payu_currency).'",
-			        update_at = NOW()
-			    WHERE id_order = '.(int)$order_id.'
+				SET
+					id_payu_transaction = '.(int)$transaction_id.',
+					payu_amount = '.(float)$payu_amount.',
+					payu_currency = "'.addslashes($payu_currency).'",
+					update_at = NOW()
+				WHERE id_order = '.(int)$order_id.'
 		');
 
 		return true;
 	}
 
-    public function savePayuTransaction($order_id, $amount, $currency)
-    {
-        return Db::getInstance()->Execute('
+	public function savePayuTransaction($order_id, $amount, $currency)
+	{
+		return Db::getInstance()->Execute('
 			INSERT INTO
-			    `'._DB_PREFIX_.'payu_payments`
-			    SET
-			        id_order = '.(int)$order_id.',
-			        amount = '.(float)$amount.',
-			        currency = "'.addslashes($currency['iso_code']).'",
-			        create_at = NOW()
+				`'._DB_PREFIX_.'payu_payments`
+				SET
+					id_order = '.(int)$order_id.',
+					amount = '.(float)$amount.',
+					currency = "'.addslashes($currency['iso_code']).'",
+					create_at = NOW()
 		');
 
-        return true;
-    }
+		return true;
+	}
 
 	public function getPayuTransaction($order_id)
 	{
