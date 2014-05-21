@@ -13,7 +13,7 @@
 if (!defined('_PS_VERSION_'))
 	exit;
 
-include_once(_PS_MODULE_DIR_.'payu/sdk_v2/openpayu.php');
+include_once(_PS_MODULE_DIR_.'../tools/payu/sdk_v2/openpayu.php');
 
 class PayU extends PaymentModule
 {
