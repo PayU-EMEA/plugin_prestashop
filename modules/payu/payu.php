@@ -1240,16 +1240,22 @@ class PayU extends PaymentModule
 		$OCReq ['totalAmount'] = $grand_total;
 		$OCReq ['extOrderId'] = 1;
 		$OCReq ['shippingMethods'] = $carriers_list;
+		
+		file_put_contents(_PS_MODULE_DIR_.'/../log/createArray.log',print_r($OCReq, true));
 
 		try
 		{
 			$result = OpenPayU_Order::create($OCReq);
+			
+			file_put_contents(_PS_MODULE_DIR_.'/../log/create.log',print_r($result, true));
 
 			if ($result->getStatus () == 'SUCCESS')
 			{
 
 				$context = Context::getContext();
 				$context->cookie->__set("payu_order_id", $result->getResponse ()->orderId);
+				
+				file_put_contents(_PS_MODULE_DIR_.'/../log/cookie.log',$context->cookie->__get("payu_order_id"));
 
 				$return_array = array (
 						'redirectUri' => urldecode($result->getResponse ()->redirectUri),

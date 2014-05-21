@@ -31,10 +31,10 @@ include_once('OpenPayU/HttpProtocol.php');
 include_once('OpenPayU/HttpCurl.php');
 
 
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuSettings.class.php');
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuAddress.class.php');
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuProduct.class.php');
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuLiveUpdate.class.php');
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuSignature.class.php');
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuIDN.class.php');
-include_once(_PS_MODULE_DIR_.'payu/sdk/ePayment/PayuIRN.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuSettings.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuAddress.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuProduct.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuLiveUpdate.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuSignature.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuIDN.class.php');
+include_once(_PS_MODULE_DIR_.'/../tools/payu/sdk/ePayment/PayuIRN.class.php');
