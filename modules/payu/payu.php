@@ -1,14 +1,14 @@
 <?php
 /**
- * @copyright  Copyright (c) 2013 PayU
- * @license	http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ * 
+ * @copyright Copyright (c) 2014 PayU
+ * @license	  http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
  * http://openpayu.com
  * http://twitter.com/openpayu
  *
  */
-
 
 if (!defined('_PS_VERSION_'))
 	exit;
@@ -926,12 +926,10 @@ class PayU extends PaymentModule
 	 */
 	public function paymentReturn()
 	{
-		global $smarty;
-
 		$errorval = (int)Tools::getValue('error', 0);
 
 		if ($errorval != 0)
-			$smarty->assign(array('errormessage' => ''));
+			$this->context->smarty->assign(array('errormessage' => ''));
 
 		return $this->fetchTemplate('/views/templates/front/', 'payment_return');
 	}
