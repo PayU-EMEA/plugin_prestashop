@@ -469,7 +469,7 @@ class PayU extends PaymentModule
 
 		$media = $this->getMediaResourcesList($lang_iso_code);
 
-		$output = '<script type="text/javascript">var business_platforms = '.json_encode($this->getBusinessPartnersPayU($media)).';</script>';
+		$output = '<script type="text/javascript">var business_platforms = '.Tools::jsonEncode($this->getBusinessPartnersPayU($media)).';</script>';
 
 		$vieworder = Tools::getValue('vieworder');
 		$id_order = Tools::getValue('id_order');
@@ -587,9 +587,9 @@ class PayU extends PaymentModule
 					$history->addWithemail(true, array());
 
 					if (version_compare(_PS_VERSION_, '1.5', 'lt'))
-						Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.$_GET['token']);
+						Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
 					else
-						Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.$_GET['token']);
+						Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
 				}
 			}
 		}
@@ -639,9 +639,9 @@ class PayU extends PaymentModule
 				$history->addWithemail(true, array());
 
 				if (version_compare(_PS_VERSION_, '1.5', 'lt'))
-					Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.$_GET['token']);
+					Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
 				else
-					Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.$_GET['token']);
+					Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
 			}
 		}
 
@@ -709,7 +709,7 @@ class PayU extends PaymentModule
 	private function getBusinessPartnersPayU()
 	{
 		$business_partners = $this->jsonOpenPayU('business_partners');
-		$business_partners = json_decode(json_encode($business_partners), true);
+		$business_partners = Tools::jsonDecode(Tools::jsonEncode($business_partners), true);
 
 		if (empty($business_partners))
 			$business_partners = array(
@@ -1909,7 +1909,7 @@ class PayU extends PaymentModule
 			$history = new OrderHistory();
 			$history->id_order = $order_id;
 
-			if (isset($_GET['TRS']) && $_GET['TRS'] === 'AUTH')
+			if (Tools::getIsset(Tools::getValue('TRS')) && Tools::getValue('TRS') === 'AUTH')
 			{
 				// mark order as complete
 				$history->changeIdOrderState((int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $order_id);

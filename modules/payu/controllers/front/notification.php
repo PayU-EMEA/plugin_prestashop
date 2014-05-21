@@ -15,8 +15,8 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
 	public function process()
 	{
-	    $body = file_get_contents ( 'php://input' );
-	    $data = stripslashes ( trim ( $body ) );
+	    $body = Tools::file_get_contents ( 'php://input' );
+	    $data = Tools::stripslashes ( trim ( $body ) );
 	    
 	    $result = OpenPayU_Order::consumeNotification ( $data );
 		
