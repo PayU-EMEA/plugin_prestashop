@@ -518,18 +518,22 @@ class PayU extends PaymentModule
 			$deliverable = false;
 		}
 
+		$refundable = $refundable && Configuration::get('PAYU_EPAYMENT_IRN');
+		$deliverable = $deliverable && Configuration::get('PAYU_EPAYMENT_IDN');
+
 		$refund_type = Tools::getValue('payu_refund_type');
 		$refund_amount = $refund_type === 'full' ? $order->total_paid : (float)Tools::getValue('payu_refund_amount');
 
 		$this->context->smarty->assign('payu_refund_amount', $refund_amount);
-		$this->context->smarty->assign('payu_refund_full_amount', $order->total_paid);
+		if (isset($order) && is_object($order))
+			$this->context->smarty->assign('payu_refund_full_amount', $order->total_paid);
 		$this->context->smarty->assign('payu_refund_type', $refund_type);
 		$this->context->smarty->assign('show_refund', $refundable);
 		$this->context->smarty->assign('show_delivery', $deliverable);
 
 		$refund_errors = array();
 
-		if (empty($refund_errors) && $refundable && Tools::getValue('submitPayuRefund'))
+		if ($refundable && empty($refund_errors) && Tools::getValue('submitPayuRefund'))
 		{ //  refund form is submitted
 
 			if ($refund_amount > $order->total_paid)
@@ -1939,6 +1943,9 @@ class PayU extends PaymentModule
 			return false;
 
 		if ($this->getBusinessPartnerSetting('type') !== self::BUSINESS_PARTNER_TYPE_EPAYMENT)
+			return false;
+
+		if (Configuration::get('PAYU_EPAYMENT_IPN'))
 			return false;
 
 		if ($params['HASH'] != PayuSignature::generateHmac(Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($params, array('HASH'))))
