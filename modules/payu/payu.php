@@ -43,15 +43,14 @@ class PayU extends PaymentModule
 	const ORDER_STATUS_COMPLETE = 'ORDER_STATUS_COMPLETE';
 	const ORDER_STATUS_CANCEL = 'ORDER_STATUS_CANCEL';
 	const ORDER_STATUS_REJECT = 'ORDER_STATUS_REJECT';
-	
-	
+
 	/**
 	 * PayU - order statuses SDK v2
 	 *
 	 * @var string
 	 */
 	const ORDER_V2_NEW = 'NEW';
-	const ORDER_V2_PENDING =  'PENDING';
+	const ORDER_V2_PENDING = 'PENDING';
 	const ORDER_V2_CANCELED = 'CANCELED';
 	const ORDER_V2_REJECTED = 'REJECTED';
 	const ORDER_V2_COMPLETED = 'COMPLETED';
@@ -228,7 +227,7 @@ class PayU extends PaymentModule
 		OpenPayU_Configuration::setEnvironment('secure');
 		OpenPayU_Configuration::setMerchantPosId(Configuration::get('PAYU_POS_ID'));
 		OpenPayU_Configuration::setSignatureKey(Configuration::get('PAYU_SIGNATURE_KEY'));
-		OpenPayU_Configuration::setSender("Prestashop ver ". _PS_VERSION_ ."/Plugin ver " . $this->version);
+		OpenPayU_Configuration::setSender('Prestashop ver '._PS_VERSION_.'/Plugin ver '.$this->version);
 	}
 
 	/**
@@ -445,13 +444,13 @@ class PayU extends PaymentModule
 		elseif (version_compare(_PS_VERSION_, '1.5', 'lt'))
 		{
 			$views = 'views/templates/';
-			if (@filemtime(dirname(__FILE__).'/'.$name))
+			if (filemtime(dirname(__FILE__).'/'.$name))
 				return $this->display(__FILE__, $name);
-			elseif (@filemtime(dirname(__FILE__).'/'.$views.'hook/'.$name))
+			elseif (filemtime(dirname(__FILE__).'/'.$views.'hook/'.$name))
 				return $this->display(__FILE__, $views.'hook/'.$name);
-			elseif (@filemtime(dirname(__FILE__).'/'.$views.'front/'.$name))
+			elseif (filemtime(dirname(__FILE__).'/'.$views.'front/'.$name))
 				return $this->display(__FILE__, $views.'front/'.$name);
-			elseif (@filemtime(dirname(__FILE__).'/'.$views.'admin/'.$name))
+			elseif (filemtime(dirname(__FILE__).'/'.$views.'admin/'.$name))
 				return $this->display(__FILE__, $views.'admin/'.$name);
 		}
 
@@ -648,7 +647,6 @@ class PayU extends PaymentModule
 
 		$this->context->smarty->assign('payu_delivery_errors', $delivery_errors);
 
-
 		$this->context->smarty->assign('payu_refund_errors', $refund_errors);
 
 		return $output.$this->fetchTemplate('/views/templates/admin/header.tpl');
@@ -695,7 +693,7 @@ class PayU extends PaymentModule
 
 		foreach ($media_resources->adverts as $group)
 		{
-			foreach($group as $advert)
+			foreach ($group as $advert)
 				$list[] = array('id' => $advert, 'name' => $advert);
 		}
 
@@ -782,7 +780,7 @@ class PayU extends PaymentModule
 		if (empty($business_partners_area_list))
 			return array();
 
-		foreach($business_partners_area_list as $id_area_partner => $partner)
+		foreach ($business_partners_area_list as $id_area_partner => $partner)
 			$list[] = array('id' => $id_area_partner, 'name' => $partner['name'], 'type' => $partner['type']);
 
 		return $list;
@@ -911,7 +909,9 @@ class PayU extends PaymentModule
 			{
 				$this->updateOrderData();
 				return true;
-			} else {
+			}
+			else
+			{
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage().' '.$this->id_session), 1);
 				return false;
 			}
@@ -1075,7 +1075,8 @@ class PayU extends PaymentModule
 	{
 		if (method_exists('Tools', 'getShopDomainSsl'))
 			return Tools::getShopDomainSsl($http, $entities);
-		else {
+		else
+		{
 			if (!($domain = Configuration::get('PS_SHOP_DOMAIN_SSL')))
 				$domain = Tools::getHttpHost();
 
@@ -1109,7 +1110,7 @@ class PayU extends PaymentModule
 
 			$total += $this->toAmount($product['total_wt']);
 			
-			$items ['products'] ['products'] [] = array (
+			$items['products']['products'][] = array (
 					'quantity' => (int)$product['quantity'],
 					'name' => $product['name'],
 					'unitPrice' => $price_wt
@@ -1119,12 +1120,12 @@ class PayU extends PaymentModule
 
 		// Wrapping fees
 		$wrapping_fees_tax_inc = $wrapping_fees = 0;
-		if((int)(Configuration::get('PS_GIFT_WRAPPING')) && $this->context->cart->gift)
+		if ((int)(Configuration::get('PS_GIFT_WRAPPING')) && $this->context->cart->gift)
 		{
 			$wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
 			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
 			
-			$items ['products'] ['products'] [] = array (
+			$items['products']['products'][] = array (
 					'quantity' => 1,
 					'name' => $this->l('Gift wrapping'),
 					'unitPrice' => $wrapping_fees
@@ -1140,7 +1141,9 @@ class PayU extends PaymentModule
 		{
 			$grand_total = $total;
 			//$discount_total = $total - $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
-		} else {
+		}
+		else
+		{
 			$grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc;
 			//$discount_total = 0;
 		}
@@ -1150,7 +1153,9 @@ class PayU extends PaymentModule
 			$order_complete_link = $this->context->link->getModuleLink('payu', 'success');
 			$order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
 			$order_cancel_link = $this->context->link->getPageLink('order.php', true);
-		} else {
+		}
+		else
+		{
 			$link = new Link();
 			$order_complete_link = $this->getModuleAddress().'backward_compatibility/success.php';
 			$order_notify_link = $this->getModuleAddress().'backward_compatibility/notification.php';
@@ -1179,7 +1184,7 @@ class PayU extends PaymentModule
 					else
 						$customer_sheet['phone'] = $address->phone;
 
-					$customer_sheet ['delivery'] = array (
+					$customer_sheet['delivery'] = array (
 							'street' => $address->address1,
 							'postalCode' => $address->postcode,
 							'city' => $address->city,
@@ -1196,7 +1201,7 @@ class PayU extends PaymentModule
 					$address = new Address((int)$this->cart->id_address_invoice);
 					$country = new Country((int)$address->id_country);
 				
-					/* $customer_sheet ['invoice'] = array (
+					/* $customer_sheet['invoice'] = array (
 							'street' => $address->address1,
 							'postalCode' => $address->postcode,
 							'city' => $address->city,
@@ -1206,48 +1211,49 @@ class PayU extends PaymentModule
 							'tIN' => $address->vat_number
 							//'eInvoiceRequested' => (int)Configuration::get('PS_INVOICE') ? 'false' : 'true'
 					); */ 
-					
+
 				}
 
 			}
 		}
 		
-		$OCReq = array();
+		$ocreq = array();
 		
-		$OCReq ['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
-		$OCReq ['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
-		$OCReq ['description'] = $this->l('Order for cart: ').$this->cart->id.$this->l(' from the store: ').Configuration::get('PS_SHOP_NAME');
-		$OCReq ['validityTime'] = (int)Configuration::get('PAYU_VALIDITY_TIME');
-		$OCReq ['products'] = $items['products'];
-		$OCReq ['buyer'] = $customer_sheet;
-		$OCReq ['customerIp'] = (
+		$ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
+		$ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
+		$ocreq['description'] = $this->l('Order for cart: ').$this->cart->id.$this->l(' from the store: ').Configuration::get('PS_SHOP_NAME');
+		$ocreq['validityTime'] = (int)Configuration::get('PAYU_VALIDITY_TIME');
+		$ocreq['products'] = $items['products'];
+		$ocreq['buyer'] = $customer_sheet;
+		$ocreq['customerIp'] = (
 			($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
-				!preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m', $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']
+				!preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m', 
+						$_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']
 			);
-		$OCReq ['notifyUrl'] = $order_notify_link;
-		$OCReq ['cancelUrl'] = $order_cancel_link;
-		$OCReq ['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id.'&id_payu_session='.$_SESSION['sessionId'];
-		//$OCReq ['continueUrl'] = $order_complete_link;
-		$OCReq ['currencyCode'] = $currency['iso_code'];
-		$OCReq ['totalAmount'] = $grand_total;
-		$OCReq ['extOrderId'] = 1;
-		$OCReq ['shippingMethods'] = $carriers_list;
+		$ocreq['notifyUrl'] = $order_notify_link;
+		$ocreq['cancelUrl'] = $order_cancel_link;
+		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id.'&id_payu_session='.$_SESSION['sessionId'];
+		//$ocreq['continueUrl'] = $order_complete_link;
+		$ocreq['currencyCode'] = $currency['iso_code'];
+		$ocreq['totalAmount'] = $grand_total;
+		$ocreq['extOrderId'] = 1;
+		$ocreq['shippingMethods'] = $carriers_list;
 		
-		file_put_contents(_PS_MODULE_DIR_.'/../log/createArray.log',print_r($OCReq, true));
+		file_put_contents(_PS_MODULE_DIR_.'/../log/createArray.log', print_r($ocreq, true));
 
 		try
 		{
-			$result = OpenPayU_Order::create($OCReq);
+			$result = OpenPayU_Order::create($ocreq);
 			
-			file_put_contents(_PS_MODULE_DIR_.'/../log/create.log',print_r($result, true));
+			file_put_contents(_PS_MODULE_DIR_.'/../log/create.log', print_r($result, true));
 
 			if ($result->getStatus () == 'SUCCESS')
 			{
 
 				$context = Context::getContext();
-				$context->cookie->__set("payu_order_id", $result->getResponse ()->orderId);
+				$context->cookie->__set('payu_order_id', $result->getResponse ()->orderId);
 				
-				file_put_contents(_PS_MODULE_DIR_.'/../log/cookie.log',$context->cookie->__get("payu_order_id"));
+				file_put_contents(_PS_MODULE_DIR_.'/../log/cookie.log', $context->cookie->__get('payu_order_id'));
 
 				$return_array = array (
 						'redirectUri' => urldecode($result->getResponse ()->redirectUri),
@@ -1262,7 +1268,9 @@ class PayU extends PaymentModule
 					'oauthToken' => $token->getAccessToken(),
 					'langCode' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
 				); */
-			} else {
+			}
+		else
+		{
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage().' '
 					.$_SESSION['sessionId']), 1);
 			}
@@ -1270,7 +1278,6 @@ class PayU extends PaymentModule
 		catch(Exception $e){
 			Logger::addLog($this->displayName.' '.trim($e->getCode().' '.$e->getMessage().' '.$_SESSION['sessionId']), 1);
 		}
-
 
 		return $return_array;
 	}
@@ -1423,7 +1430,9 @@ class PayU extends PaymentModule
 				}
 
 				//$tax_amount = $price - $price_tax_exc;
-			} else {
+			}
+			else
+			{
 				$price = 0;
 				//$price_tax_exc = 0;
 				//$tax_amount = 0;
@@ -1432,14 +1441,16 @@ class PayU extends PaymentModule
 			if ((int)$selected_carrier->active == 1)
 			{
 				
-				$carrier_list ['shippingMethods'] [] = array (
+				$carrier_list['shippingMethods'][] = array (
 						'name' => $selected_carrier->name.' ('.$selected_carrier->id.')',
 						'country' => $country->iso_code,
 						'price' => $this->toAmount($price)
 				);
 
 			}
-		} else {
+		}
+		else
+		{
 			$i = 0;
 			if ((int)$this->context->cookie->id_customer > 0)
 			{
@@ -1447,7 +1458,8 @@ class PayU extends PaymentModule
 				$address = new Address((int)$this->cart->id_address_delivery);
 				$id_zone = Address::getZoneById((int)$address->id);
 				$carriers = Carrier::getCarriersForOrder($id_zone, $customer->getGroups());
-			} else
+			}
+			else
 				$carriers = Carrier::getCarriers((int)$this->cart->id_lang, true);
 
 			if ($carriers)
@@ -1471,7 +1483,9 @@ class PayU extends PaymentModule
 							//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
 						}
 						//$tax_amount = $price - $price_tax_exc;
-					} else {
+					}
+					else
+					{
 						$price = 0;
 						//$price_tax_exc = 0;
 						//$tax_amount = 0;
@@ -1482,7 +1496,7 @@ class PayU extends PaymentModule
 						if ((int)$carrier['active'] == 1)
 						{
 
-							$carrier_list ['shippingMethods'] [] = array (
+							$carrier_list['shippingMethods'][] = array (
 									'name' => $carrier['name'].' ('.$carrier['id_carrier'].')',
 									'country' => $country->iso_code,
 									'price' => $this->toAmount($price)
@@ -1550,7 +1564,7 @@ class PayU extends PaymentModule
 	 * @param $id_session
 	 * @return bool
 	 */
-	public function updateOrderPaymentSessionId($id_session,$id_payu_order)
+	public function updateOrderPaymentSessionId($id_session, $id_payu_order)
 	{
 		return Db::getInstance()->execute('
 			UPDATE `'._DB_PREFIX_.'order_payu_payments`
@@ -1630,7 +1644,8 @@ class PayU extends PaymentModule
 						);
 						$xml = OpenPayU::buildShippingCostRetrieveResponse($shipping_cost, $this->id_request, $iso_country_code);
 						return $xml;
-					} else
+					}
+					else
 						Logger::addLog('carrier by id_zone is undefined');
 				}
 			}
@@ -1645,21 +1660,21 @@ class PayU extends PaymentModule
 	 */
 	private function updateOrderState($status)
 	{
-
 		if (!empty($this->order->id))
 		{
 			if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 			{
 				$order_state = OrderHistory::getLastOrderState($this->order->id);
 				$order_state_id = $order_state->id;
-			} else
+			}
+			else
 				$order_state_id = $this->order->current_state;
 
 			$history = new OrderHistory();
 			$history->id_order = $this->order->id;
 			$history->date_add = date('Y-m-d H:i:s');
 
-			switch($status)
+			switch ($status)
 			{
 				//case self::PAYMENT_STATUS_END :
 				case self::ORDER_V2_COMPLETED :
@@ -1711,11 +1726,10 @@ class PayU extends PaymentModule
 
 		$result = OpenPayU_Order::retrieve($this->id_session);
 		
-		$response = $result->getResponse() ;
+		$response = $result->getResponse();
 		
 		if (isset($response->orders->orders[0]))
 		{
-
 
 			//$payu_order_customer = isset($response->orders->orders[0]->buyer) ? $response->orders->orders[0]->buyer : array();
 			$payu_order_shipping = isset($response->orders->orders[0]->buyer->delivery) ? $response->orders->orders[0]->buyer->delivery : array();
@@ -1840,7 +1854,6 @@ class PayU extends PaymentModule
 	 */
 	private function addNewAddress($address)
 	{
-
 		return;
 		/* if ((int)Country::getByIso($address['CountryCode']))
 			$address_country_id = Country::getByIso($address['CountryCode']);

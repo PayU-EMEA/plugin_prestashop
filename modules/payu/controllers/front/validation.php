@@ -16,17 +16,17 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$cart = $this->context->cart;
-		
+
 		//$id_session = Tools::getValue('sessionId');
-		$id_session = $this->context->cookie->__get("payu_order_id");
+		$id_session = $this->context->cookie->__get('payu_order_id');
 		$redirectUri = Tools::getValue('redirectUri');
 
 		$payu = new PayU();
 
 		$payu->id_session = $id_session;
 		$payu->id_cart = $cart->id;
-		
-		file_put_contents(_PS_MODULE_DIR_.'/../log/payu.log',print_r($payu, true));
+
+		file_put_contents(_PS_MODULE_DIR_.'/../log/payu.log', print_r($payu, true));
 
 		$payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 
