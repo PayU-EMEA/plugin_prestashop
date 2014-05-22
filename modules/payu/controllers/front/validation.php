@@ -19,7 +19,7 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 
 		//$id_session = Tools::getValue('sessionId');
 		$id_session = $this->context->cookie->__get('payu_order_id');
-		$redirectUri = Tools::getValue('redirectUri');
+		$redirect_uri = Tools::getValue('redirectUri');
 
 		$payu = new PayU();
 
@@ -30,6 +30,6 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 
 		$payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 
-		Tools::redirect($redirectUri);
+		Tools::redirect($redirect_uri);
 	}
 }

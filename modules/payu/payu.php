@@ -91,9 +91,9 @@ class PayU extends PaymentModule
 			require(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/backward.php');
 
 		$this->initializeOpenPayU();
-
+		
 		if (!Configuration::get('PAYU_PAYMENT_PLATFORM'))
-			$this->warning = ('Module is not configured.');
+			+ $this->warning = ('Module is not configured.');
 	}
 
 	/**
@@ -1387,11 +1387,11 @@ class PayU extends PaymentModule
 			}
 		}
 
-		$luForm = $live_update->renderPaymentForm(null);
+		$lu_form = $live_update->renderPaymentForm(null);
 
 		$this->savePayuTransaction($order_id, $cart->getOrderTotal(true, Cart::BOTH), Currency::getCurrency($cart->id_currency));
 
-		return $luForm;
+		return $lu_form;
 	}
 
 	/**
@@ -1429,13 +1429,17 @@ class PayU extends PaymentModule
 			{
 				if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 				{
-					$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-					//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, false, $country, $cart_products));
+					$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+							? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
+					//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+					//? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, false, $country, $cart_products));
 				}
 				else
 				{
-					$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-					//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, false, $country, $cart_products));
+					$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+							? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
+					//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+					//? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, false, $country, $cart_products));
 				}
 
 				//$tax_amount = $price - $price_tax_exc;
@@ -1483,13 +1487,17 @@ class PayU extends PaymentModule
 					{
 						if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 						{
-							$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cart_products));
-							//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
+							$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+									? 0 : $this->cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cart_products));
+							//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+							//? 0 : $this->cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
 						}
 						else
 						{
-							$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], true, $country, $cart_products));
-							//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE ? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
+							$price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+									? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], true, $country, $cart_products));
+							//$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+							//? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
 						}
 						//$tax_amount = $price - $price_tax_exc;
 					}
@@ -1779,7 +1787,9 @@ class PayU extends PaymentModule
 							$this->order->total_shipping_tax_incl = $order_carrier->shipping_cost_tax_incl;
 							$this->order->total_shipping_tax_excl = $order_carrier->shipping_cost_tax_excl;
 
-							if ((isset($payu_order['PaidAmount']) && $payu_order['OrderStatus'] == self::ORDER_STATUS_COMPLETE && $payu_order['PaymentStatus'] == 'PAYMENT_STATUS_END') && (int)$this->order->total_paid_real == 0)
+							if ((isset($payu_order['PaidAmount'])
+							&& $payu_order['OrderStatus'] == self::ORDER_STATUS_COMPLETE
+							&& $payu_order['PaymentStatus'] == 'PAYMENT_STATUS_END') && (int)$this->order->total_paid_real == 0)
 							{
 								$this->order->total_paid = $this->order->total_products_wt + $this->order->total_shipping_tax_incl;
 								$this->order->total_paid_tax_incl = $this->order->total_paid;
@@ -1954,7 +1964,8 @@ class PayU extends PaymentModule
 		if (Configuration::get('PAYU_EPAYMENT_IPN'))
 			return false;
 
-		if ($params['HASH'] != PayuSignature::generateHmac(Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($params, array('HASH'))))
+		if ($params['HASH'] != PayuSignature::generateHmac(
+				Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($params, array('HASH'))))
 			return false;
 
 		try {
@@ -1993,7 +2004,8 @@ class PayU extends PaymentModule
 				$date
 			);
 
-			$hash = PayuSignature::generateHmac(Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($response_params, array('HASH')));
+			$hash = PayuSignature::generateHmac(
+					Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($response_params, array('HASH')));
 
 			return array(
 				'date' => $date,

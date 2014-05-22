@@ -17,12 +17,12 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 	{
 		$payu = new PayU();
 
-		
+
 		$id_cart = Tools::getValue('id_cart');
 		//$id_payu_session = Tools::getValue('id_payu_session');
-		
-		$id_payu_session = $this->context->cookie->__get("payu_order_id");
-		
+
+		$id_payu_session = $this->context->cookie->__get('payu_order_id');
+
 		//$id_payu_session = Tools::getValue('sessionId');
 
 		if (Tools::getValue('error'))
@@ -32,12 +32,12 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 		$payu->id_session = $id_payu_session;
 
 		$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
-		
+
 		$id_order = (int)$order_payment['id_order'];
 		$payu->id_cart = (int)$order_payment['id_cart'];
 
 		// if order not validated yet
-        $cart_id = $payu->id_cart;
+		$cart_id = $payu->id_cart;
 		if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)
 		{
 			$cart = new Cart($payu->id_cart);

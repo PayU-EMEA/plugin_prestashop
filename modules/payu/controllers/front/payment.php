@@ -54,7 +54,9 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 				)
 			);
 			$this->setTemplate($template);
-		} else {
+		}
+		else
+		{
 			$this->context->smarty->assign(
 				array(
 					'message' => $this->payu->l('An error occurred while processing your order.')

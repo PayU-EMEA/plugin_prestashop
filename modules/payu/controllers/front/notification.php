@@ -16,11 +16,9 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
 	public function process()
 	{
-	    $body = Tools::file_get_contents ( 'php://input' );
-	    $data = Tools::stripslashes ( trim ( $body ) );
-	    
-	    $result = OpenPayU_Order::consumeNotification ( $data );
-		
+		$body = Tools::file_get_contents ( 'php://input' );
+		$data = Tools::stripslashes ( trim ( $body ) );
+		$result = OpenPayU_Order::consumeNotification ( $data );
 		$response = $result->getResponse();
 
 		if (isset($response->order->orderId))
@@ -51,12 +49,11 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 				$payu->id_order = $id_order;
 				$payu->updateOrderData();
 			}
-			
+
 			$rsp = OpenPayU::buildOrderNotifyResponse ( $response->order->orderId );
-			
-			header("Content-Type: application/json");
+
+			header('Content-Type: application/json');
 			echo $rsp;
-			
 		}
 
 		exit;
