@@ -93,7 +93,7 @@ class PayU extends PaymentModule
 		$this->initializeOpenPayU();
 		
 		if (!Configuration::get('PAYU_PAYMENT_PLATFORM'))
-			+ $this->warning = ('Module is not configured.');
+			$this->warning = ('Module is not configured.');
 	}
 
 	/**
