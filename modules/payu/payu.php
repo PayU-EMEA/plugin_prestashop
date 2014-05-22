@@ -990,7 +990,8 @@ class PayU extends PaymentModule
 	 */
 	private function toAmount($value)
 	{
-		return (int)($value * 100);
+		$val = $value * 100;
+		return (int)$val;
 	}
 
 	/**
@@ -1106,14 +1107,14 @@ class PayU extends PaymentModule
 		$total = 0;
 
 		$cart_products = $this->cart->getProducts();
-		
+
 		foreach ($cart_products as $product)
 		{
 
 			$price_wt = $this->toAmount($product['price_wt']);
 
 			$total += $this->toAmount($product['total_wt']);
-			
+
 			$items['products']['products'][] = array (
 					'quantity' => (int)$product['quantity'],
 					'name' => $product['name'],
@@ -1124,11 +1125,11 @@ class PayU extends PaymentModule
 
 		// Wrapping fees
 		$wrapping_fees_tax_inc = $wrapping_fees = 0;
-		if ((int)(Configuration::get('PS_GIFT_WRAPPING')) && $this->context->cart->gift)
+		if ((int)Configuration::get('PS_GIFT_WRAPPING') && $this->context->cart->gift)
 		{
 			$wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
 			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
-			
+
 			$items['products']['products'][] = array (
 					'quantity' => 1,
 					'name' => $this->l('Gift wrapping'),
@@ -1136,7 +1137,7 @@ class PayU extends PaymentModule
 			);
 
 			$total += $wrapping_fees_tax_inc;
-			
+
 		}
 
 		$carriers_list = $this->getCarriersListForCart($this->cart);
@@ -1197,14 +1198,14 @@ class PayU extends PaymentModule
 							'recipientPhone' => $address->phone ? $address->phone : $address->phone_mobile,
 							'recipientEmail' => $customer->email
 					);
-					
+
 				}
 
 				if (!empty($this->cart->id_address_invoice) && Configuration::get('PS_INVOICE'))
 				{
 					$address = new Address((int)$this->cart->id_address_invoice);
 					$country = new Country((int)$address->id_country);
-				
+
 					/* $customer_sheet['invoice'] = array (
 							'street' => $address->address1,
 							'postalCode' => $address->postcode,
@@ -1214,15 +1215,15 @@ class PayU extends PaymentModule
 							'recipientEmail' => $customer->email,
 							'tIN' => $address->vat_number
 							//'eInvoiceRequested' => (int)Configuration::get('PS_INVOICE') ? 'false' : 'true'
-					); */ 
+					);*/
 
 				}
 
 			}
 		}
-		
+
 		$ocreq = array();
-		
+
 		$ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
 		$ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
 		$ocreq['description'] = $this->l('Order for cart: ').$this->cart->id.$this->l(' from the store: ').Configuration::get('PS_SHOP_NAME');
@@ -1231,7 +1232,7 @@ class PayU extends PaymentModule
 		$ocreq['buyer'] = $customer_sheet;
 		$ocreq['customerIp'] = (
 			($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
-				!preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m', 
+				!preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
 						$_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']
 			);
 		$ocreq['notifyUrl'] = $order_notify_link;
@@ -1242,13 +1243,13 @@ class PayU extends PaymentModule
 		$ocreq['totalAmount'] = $grand_total;
 		$ocreq['extOrderId'] = 1;
 		$ocreq['shippingMethods'] = $carriers_list;
-		
+
 		file_put_contents(_PS_MODULE_DIR_.'/../log/createArray.log', print_r($ocreq, true));
 
 		try
 		{
 			$result = OpenPayU_Order::create($ocreq);
-			
+
 			file_put_contents(_PS_MODULE_DIR_.'/../log/create.log', print_r($result, true));
 
 			if ($result->getStatus () == 'SUCCESS')
@@ -1256,7 +1257,7 @@ class PayU extends PaymentModule
 
 				$context = Context::getContext();
 				$context->cookie->__set('payu_order_id', $result->getResponse ()->orderId);
-				
+
 				file_put_contents(_PS_MODULE_DIR_.'/../log/cookie.log', $context->cookie->__get('payu_order_id'));
 
 				$return_array = array (
@@ -1265,16 +1266,16 @@ class PayU extends PaymentModule
 						'sessionId' => $result->getResponse ()->orderId
 						//'lang' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
 				);
-				
+
 				/* $return_array = array(
 					'summaryUrl' => OpenPayU_Configuration::getSummaryUrl(),
 					'sessionId' => $_SESSION['sessionId'],
 					'oauthToken' => $token->getAccessToken(),
 					'langCode' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
-				); */
+				);*/
 			}
-		else
-		{
+			else
+			{
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage().' '
 					.$_SESSION['sessionId']), 1);
 			}
@@ -1444,7 +1445,7 @@ class PayU extends PaymentModule
 
 			if ((int)$selected_carrier->active == 1)
 			{
-				
+
 				$carrier_list['shippingMethods'][] = array (
 						'name' => $selected_carrier->name.' ('.$selected_carrier->id.')',
 						'country' => $country->iso_code,
@@ -1527,7 +1528,7 @@ class PayU extends PaymentModule
 			WHERE `id_session`="'.addslashes($id_session).'"');
 
 		if ($result)
-			return (int)($result['id_order']);
+			return (int)$result['id_order'];
 		else
 			return false;
 	}
@@ -1563,7 +1564,7 @@ class PayU extends PaymentModule
 
 		return false;
 	}
-	
+
 	/**
 	 * @param $id_session
 	 * @return bool
@@ -1729,9 +1730,9 @@ class PayU extends PaymentModule
 			Logger::addLog($this->displayName.' '.$this->l('Can not get order information - id_session is empty'), 1);
 
 		$result = OpenPayU_Order::retrieve($this->id_session);
-		
+
 		$response = $result->getResponse();
-		
+
 		if (isset($response->orders->orders[0]))
 		{
 
@@ -1781,7 +1782,7 @@ class PayU extends PaymentModule
 							}
 						}
 					}
-				} */
+				}*/
 
 				// Delivery address add
 				if (!empty($response->orders->orders[0]->buyer))
@@ -1797,7 +1798,7 @@ class PayU extends PaymentModule
 
 					if (!empty($new_delivery_address_id))
 						$this->order->id_address_delivery = $new_delivery_address_id;
-					
+
 				}
 
 				/*
@@ -1812,7 +1813,7 @@ class PayU extends PaymentModule
 
 					if (!empty($new_invoice_address_id))
 						$this->order->id_address_invoice = $new_invoice_address_id;
-				} */
+				}*/
 
 				$this->order->update();
 
@@ -1892,7 +1893,7 @@ class PayU extends PaymentModule
 			return $id_address;
 
 		$new_address->add();
-		return $new_address->id; */
+		return $new_address->id;*/
 	}
 
 	/**
