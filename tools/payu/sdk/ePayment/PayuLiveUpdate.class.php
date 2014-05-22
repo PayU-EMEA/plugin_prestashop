@@ -51,14 +51,10 @@ class PayuLu extends PayuSettings
 		$this->merchant_id = $merchant_id; // store the merchant id
 		$this->secret_key = $secret_key; // store the secretkey
 		if (empty($merchant_id) && empty($secret_key))
-		{
 			self::logError('MECHANT id and SECRET KEY missing');
-			return 0;
-		}
 		$this->all_errors[self::DEBUG_WARNING] = '';
 		$this->all_errors[self::DEBUG_ERROR] = '';
 		$this->all_errors[self::DEBUG_ALL] = '';
-		return 1;
 	}
 
 	/**
@@ -570,7 +566,6 @@ class PayuLu extends PayuSettings
 	/**
 	 * Sets the TESTORDER for the LU query (Order will be processed as a test)
 	 *
-	 * @param boolean testMode parameter is default TRUE
 	 * @return int 1 on success
 	 */
 	public function setTestMode()

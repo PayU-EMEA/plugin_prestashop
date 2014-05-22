@@ -367,7 +367,6 @@ class PayuProduct extends PayuSettings
 	/**
 	 * Read errors for the current class and assert if there are any more errors regarding the current product
 	 *
-	 * @return int 1 on success
 	 */
 	public function validate()
 	{
