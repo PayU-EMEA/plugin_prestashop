@@ -1707,7 +1707,8 @@ class PayU extends PaymentModule
 					break;
 				//case self::PAYMENT_STATUS_SENT :
 				case self::ORDER_V2_PENDING :
-					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT'))
+					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')
+						&& $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT'))
 					{
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
 						$history->addWithemail(false);
