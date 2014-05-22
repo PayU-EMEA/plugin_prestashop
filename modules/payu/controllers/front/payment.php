@@ -31,8 +31,12 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 		switch ($this->payu->getBusinessPartnerSetting('type'))
 		{
 			case PayU::BUSINESS_PARTNER_TYPE_EPAYMENT:
-				$result = array('luForm' => $this->payu->getLuForm($cart));
-				$template = 'lu-form.tpl';
+				$lu_form = $this->payu->getLuForm($cart);
+				if (!empty($lu_form))
+				{
+					$result = array('luForm' => $lu_form);
+					$template = 'lu-form.tpl';
+				}
 				break;
 			case PayU::BUSINESS_PARTNER_TYPE_PLATNOSCI:
 				$result = $this->payu->orderCreateRequest();

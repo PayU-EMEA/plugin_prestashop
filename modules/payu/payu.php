@@ -1299,8 +1299,12 @@ class PayU extends PaymentModule
 	{
 		$merchant_id = Configuration::get('PAYU_EPAYMENT_MERCHANT');
 		$secret_key = Configuration::get('PAYU_EPAYMENT_SECRET_KEY');
-		$live_update = new PayuLu($merchant_id, $secret_key);
 		$url = $this->getBusinessPartnerSetting('lu_url');
+
+		if (empty($merchant_id) || empty($secret_key) || empty($url))
+			return false;
+
+		$live_update = new PayuLu($merchant_id, $secret_key);
 		$live_update->setQueryUrl($url);
 
 		$this->validateOrder($cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
