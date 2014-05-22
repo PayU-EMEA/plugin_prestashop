@@ -36,8 +36,20 @@ abstract class PayuSettings
 	const PAY_OPTION_ALL = 'ALL';
 
 	protected $debug_level = 0;
-	protected $error_log = '';
-	protected $all_errors = array();
+
+	protected $error_log = array(
+		self::DEBUG_WARNING => array(),
+		self::DEBUG_ERROR => array(),
+		self::DEBUG_FATAL => array(),
+		self::DEBUG_ALL => array(),
+	);
+
+	protected $all_errors = array(
+		self::DEBUG_WARNING => array(),
+		self::DEBUG_ERROR => array(),
+		self::DEBUG_FATAL => array(),
+		self::DEBUG_ALL => array(),
+	);
 
 	/**
 	 * Log the errors according to the class
@@ -67,7 +79,7 @@ abstract class PayuSettings
 	 * Method will merge all the error logs
 	 *
 	 * @param array $new_log this is the new log to be added to the main list of errors
-	 * @return 1 on success
+	 * @return int 1 on success
 	 */
 	protected function mergeErrorLogs($new_log)
 	{
@@ -77,13 +89,13 @@ abstract class PayuSettings
 				$this->all_errors[$this->debug_level] = '';
 
 			if (!empty($new_log[self::DEBUG_WARNING]) && count($new_log[self::DEBUG_WARNING]) > 0)
-				$this->all_errors[self::DEBUG_ALL] .= $new_log[self::DEBUG_WARNING];
+				$this->all_errors[self::DEBUG_ALL][] = $new_log[self::DEBUG_WARNING];
 
 			if (!empty($new_log[self::DEBUG_ERROR]) && count($new_log[self::DEBUG_ERROR]) > 0)
-				$this->all_errors[self::DEBUG_ALL] .= $new_log[self::DEBUG_ERROR];
+				$this->all_errors[self::DEBUG_ALL][] = $new_log[self::DEBUG_ERROR];
 
 			if (!empty($new_log[self::DEBUG_FATAL]) && count($new_log[self::DEBUG_FATAL]) > 0)
-				$this->all_errors[self::DEBUG_ALL] .= $new_log[self::DEBUG_FATAL];
+				$this->all_errors[self::DEBUG_ALL][] = $new_log[self::DEBUG_FATAL];
 		}
 		return 1;
 	}
