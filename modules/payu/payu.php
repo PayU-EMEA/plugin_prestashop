@@ -91,6 +91,9 @@ class PayU extends PaymentModule
 			require(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/backward.php');
 
 		$this->initializeOpenPayU();
+
+		if (!Configuration::get('PAYU_PAYMENT_PLATFORM'))
+			$this->warning = ('Module is not configured.');
 	}
 
 	/**
@@ -152,6 +155,7 @@ class PayU extends PaymentModule
 	public function uninstall()
 	{
 		if (!parent::uninstall() ||
+			!Configuration::deleteByName('PAYU_PAYMENT_PLATFORM') ||
 			!Configuration::deleteByName('PAYU_NAME') ||
 			!Configuration::deleteByName('PAYU_ENVIRONMENT') ||
 			!Configuration::deleteByName('PAYU_SANDBOX_POS_ID') ||
