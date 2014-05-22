@@ -91,7 +91,7 @@ class PayU extends PaymentModule
 			require(_PS_MODULE_DIR_.$this->name.'/backward_compatibility/backward.php');
 
 		$this->initializeOpenPayU();
-		
+
 		if (!Configuration::get('PAYU_PAYMENT_PLATFORM'))
 			$this->warning = ('Module is not configured.');
 	}
@@ -1312,6 +1312,7 @@ class PayU extends PaymentModule
 			null, (int)$cart->id_currency, false, $cart->secure_key,
 			Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 		);
+
 		$this->current_order = $this->currentOrder;
 		$this->current_order_reference = $this->currentOrderReference;
 

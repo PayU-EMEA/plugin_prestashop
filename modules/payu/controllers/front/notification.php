@@ -40,7 +40,10 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 					null, (int)$cart->id_currency, false, $cart->secure_key,
 					Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 				);
-				$id_order = $payu->current_order = $payu->currentOrder;
+
+				//$id_order = $payu->current_order = $payu->currentOrder;
+				//file_put_contents(_PS_MODULE_DIR_.'/../log/isOrderIdNotification.log',$payu->id_order.'\n',FILE_APPEND);
+
 				$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
 			}
 

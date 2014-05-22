@@ -34,8 +34,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 				$lu_form = $this->payu->getLuForm($cart);
 				if (!empty($lu_form))
 				{
-					$result = array('luForm' => $lu_form);
-					$template = 'lu-form.tpl';
+						$result = array('luForm' => $lu_form);
+						$template = 'lu-form.tpl';
 				}
 				break;
 			case PayU::BUSINESS_PARTNER_TYPE_PLATNOSCI:

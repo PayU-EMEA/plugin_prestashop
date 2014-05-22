@@ -17,7 +17,6 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 	{
 		$payu = new PayU();
 
-
 		$id_cart = Tools::getValue('id_cart');
 		//$id_payu_session = Tools::getValue('id_payu_session');
 
@@ -51,8 +50,9 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 				Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 			);
 
-			$payu->id_order = $payu->current_order = $payu->currentOrder;
-			
+			//$payu->id_order = $payu->current_order = $payu->currentOrder;
+			//file_put_contents(_PS_MODULE_DIR_.'/../log/isOrderIdSuccess.log',$payu->id_order.'\n',FILE_APPEND);
+
 			$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
 		}
 
