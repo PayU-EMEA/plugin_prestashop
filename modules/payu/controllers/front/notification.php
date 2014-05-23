@@ -21,12 +21,16 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 		$result = OpenPayU_Order::consumeNotification ( $data );
 		$response = $result->getResponse();
 
+		file_put_contents(_PS_MODULE_DIR_.'/../log/notification.log', print_r($response, true)."\n", FILE_APPEND);
+
 		if (isset($response->order->orderId))
 		{
 			$payu = new PayU();
 			$payu->id_session = $response->order->orderId;
 			$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
 			$id_order = (int)$order_payment['id_order'];
+
+			file_put_contents(_PS_MODULE_DIR_.'/../log/notification.log', 'Order Id: '."\n", FILE_APPEND);
 
 			// if order not validated yet
 			if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)
@@ -41,9 +45,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 					Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 				);
 
-				//$id_order = $payu->current_order = $payu->currentOrder;
-				//file_put_contents(_PS_MODULE_DIR_.'/../log/isOrderIdNotification.log',$payu->id_order.'\n',FILE_APPEND);
-
+				$id_order = $payu->current_order = $payu->{'currentOrder'};
 				$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
 			}
 

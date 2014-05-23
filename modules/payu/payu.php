@@ -1245,16 +1245,12 @@ class PayU extends PaymentModule
 		//$ocreq['continueUrl'] = $order_complete_link;
 		$ocreq['currencyCode'] = $currency['iso_code'];
 		$ocreq['totalAmount'] = $grand_total;
-		$ocreq['extOrderId'] = 1;
+		$ocreq['extOrderId'] = $this->cart->id.'-'.microtime();
 		$ocreq['shippingMethods'] = $carriers_list;
-
-		file_put_contents(_PS_MODULE_DIR_.'/../log/createArray.log', print_r($ocreq, true));
 
 		try
 		{
 			$result = OpenPayU_Order::create($ocreq);
-
-			file_put_contents(_PS_MODULE_DIR_.'/../log/create.log', print_r($result, true));
 
 			if ($result->getStatus () == 'SUCCESS')
 			{
@@ -1704,7 +1700,7 @@ class PayU extends PaymentModule
 					$buyer = $response->orders->orders[0]->buyer;
 
 					if (isset($buyer->phone) && !empty($buyer->phone))
-						$payu_order_shipping->recipientPhone = $buyer->phone;
+						$payu_order_shipping->{'recipientPhone'} = $buyer->phone;
 
 					$payu_order_shipping_address = $payu_order_shipping;
 					$new_delivery_address_id = $this->addNewAddress($payu_order_shipping_address);
