@@ -31,7 +31,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 		switch ($this->payu->getBusinessPartnerSetting('type'))
 		{
 			case PayU::BUSINESS_PARTNER_TYPE_EPAYMENT:
-				$lu_form = $this->payu->getLuForm($cart);
+				$epayment_adapter = new EpaymentPrestaShopAdapter($this->payu);
+				$lu_form = $epayment_adapter->getLuForm($cart);
 				if (!empty($lu_form))
 				{
 						$result = array('luForm' => $lu_form);
