@@ -1859,7 +1859,7 @@ class PayU extends PaymentModule
 		if ($this->getBusinessPartnerSetting('type') !== self::BUSINESS_PARTNER_TYPE_EPAYMENT)
 			return false;
 
-		if (Configuration::get('PAYU_EPAYMENT_IPN'))
+		if (!Configuration::get('PAYU_EPAYMENT_IPN'))
 			return false;
 
 		if ($params['HASH'] != PayuSignature::generateHmac(
