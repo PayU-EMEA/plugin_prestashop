@@ -1644,7 +1644,7 @@ class PayU extends PaymentModule
 		{
 
 			//$payu_order_customer = isset($response->orders->orders[0]->buyer) ? $response->orders->orders[0]->buyer : array();
-			$payu_order_shipping = isset($response->orders->orders[0]->buyer->delivery) ? $response->orders->orders[0]->buyer->delivery : array();
+			$payu_order_shipping = isset($response->orders->orders[0]->buyer) ? $response->orders->orders[0]->buyer : array();
 			//$payu_order_invoice = isset($payu_order['Invoice']) ? $payu_order['Invoice'] : array();
 
 			if (!empty($this->id_order))
@@ -1700,29 +1700,28 @@ class PayU extends PaymentModule
 					$buyer = $response->orders->orders[0]->buyer;
 
 					if (isset($buyer->phone) && !empty($buyer->phone))
-						$payu_order_shipping->{'recipientPhone'} = $buyer->phone;
+						$buyer->delivery->{'recipientPhone'} = $buyer->phone;
 
-					$payu_order_shipping_address = $payu_order_shipping;
-					$new_delivery_address_id = $this->addNewAddress($payu_order_shipping_address);
+					$new_delivery_address_id = $this->addNewAddress($buyer->delivery);
 
 					if (!empty($new_delivery_address_id))
 						$this->order->id_address_delivery = $new_delivery_address_id;
 
+					// Invoice address add
+					if (isset($response->orders->orders[0]->buyer->invoice))
+					{
+						if (isset($buyer->phone) && !empty($buyer->phone))
+							$buyer->invoice->{'recipientPhone'} = $buyer->phone;
+
+						$new_invoice_address_id = $this->addNewAddress($buyer->invoice);
+
+						if (!empty($new_invoice_address_id))
+							$this->order->id_address_invoice = $new_invoice_address_id;
+					}
+
+
 				}
 
-				/*
-				// Invoice address add
-				if (isset($payu_order_invoice['Billing']))
-				{
-					if (isset($payu_order_customer['Phone']) && !empty($payu_order_customer['Phone']))
-						$payu_order_invoice['Billing']['Phone'] = $payu_order_customer['Phone'];
-
-					$payu_order_invoice_address = $payu_order_invoice['Billing'];
-					$new_invoice_address_id = $this->addNewAddress($payu_order_invoice_address);
-
-					if (!empty($new_invoice_address_id))
-						$this->order->id_address_invoice = $new_invoice_address_id;
-				}*/
 
 				$this->order->update();
 
@@ -1768,13 +1767,12 @@ class PayU extends PaymentModule
 	 */
 	private function addNewAddress($address)
 	{
-		return;
-		/* if ((int)Country::getByIso($address['CountryCode']))
-			$address_country_id = Country::getByIso($address['CountryCode']);
+		if ((int)Country::getByIso($address->countryCode))
+			$address_country_id = Country::getByIso($address->countryCode);
 		else
 			$address_country_id = Configuration::get('PS_COUNTRY_DEFAULT');
 
-		$shipping_recipient_name = explode(' ', $address['RecipientName']);
+		$shipping_recipient_name = explode(' ', $address->recipientName);
 
 		$new_address = new Address();
 		$new_address->id_customer = (int)$this->order->id_customer;
@@ -1784,25 +1782,20 @@ class PayU extends PaymentModule
 		$new_address->firstname = $shipping_recipient_name[0];
 		$new_address->lastname = $shipping_recipient_name[1];
 
-		$street = $address['Street'];
-		if (isset($address['HouseNumber']))
-			$street .= ' '.$address['HouseNumber'];
-		if (isset($address['ApartmentNumber']))
-			$street .= '/'.$address['ApartmentNumber'];
-
-		$new_address->address1 = trim($street);
-		$new_address->postcode = $address['PostalCode'];
-		$new_address->city = $address['City'];
-		$new_address->phone = $address['Phone'];
-		if (isset($address['TIN']))
-			$new_address->vat_number = $address['TIN'];
+		$new_address->address1 = trim($address->street);
+		$new_address->postcode = $address->postalCode;
+		if(!empty($address->city))
+			$new_address->city = $address->city;
+		$new_address->phone = $address->recipientPhone;
+		if (isset($address->tin))
+			$new_address->vat_number = $address->tin;
 		$new_address->deleted = 0;
 
 		if ($id_address = $this->checkIsAddressExists($new_address))
 			return $id_address;
 
 		$new_address->add();
-		return $new_address->id;*/
+		return $new_address->id;
 	}
 
 	/**
