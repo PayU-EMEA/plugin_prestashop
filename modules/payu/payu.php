@@ -1643,10 +1643,6 @@ class PayU extends PaymentModule
 		if (isset($response->orders->orders[0]))
 		{
 
-			//$payu_order_customer = isset($response->orders->orders[0]->buyer) ? $response->orders->orders[0]->buyer : array();
-			$payu_order_shipping = isset($response->orders->orders[0]->buyer) ? $response->orders->orders[0]->buyer : array();
-			//$payu_order_invoice = isset($payu_order['Invoice']) ? $payu_order['Invoice'] : array();
-
 			if (!empty($this->id_order))
 			{
 				$this->order = new Order($this->id_order);
@@ -1719,9 +1715,7 @@ class PayU extends PaymentModule
 							$this->order->id_address_invoice = $new_invoice_address_id;
 					}
 
-
 				}
-
 
 				$this->order->update();
 
@@ -1767,12 +1761,12 @@ class PayU extends PaymentModule
 	 */
 	private function addNewAddress($address)
 	{
-		if ((int)Country::getByIso($address->countryCode))
-			$address_country_id = Country::getByIso($address->countryCode);
+		if ((int)Country::getByIso($address->{'countryCode'}))
+			$address_country_id = Country::getByIso($address->{'countryCode'});
 		else
 			$address_country_id = Configuration::get('PS_COUNTRY_DEFAULT');
 
-		$shipping_recipient_name = explode(' ', $address->recipientName);
+		$shipping_recipient_name = explode(' ', $address->{'recipientName'});
 
 		$new_address = new Address();
 		$new_address->id_customer = (int)$this->order->id_customer;
@@ -1783,10 +1777,10 @@ class PayU extends PaymentModule
 		$new_address->lastname = $shipping_recipient_name[1];
 
 		$new_address->address1 = trim($address->street);
-		$new_address->postcode = $address->postalCode;
-		if(!empty($address->city))
+		$new_address->postcode = $address->{'postalCode'};
+		if (!empty($address->city))
 			$new_address->city = $address->city;
-		$new_address->phone = $address->recipientPhone;
+		$new_address->phone = $address->{'recipientPhone'};
 		if (isset($address->tin))
 			$new_address->vat_number = $address->tin;
 		$new_address->deleted = 0;
