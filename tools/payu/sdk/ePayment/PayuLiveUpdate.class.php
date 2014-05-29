@@ -27,8 +27,17 @@ class PayuLu extends PayuSettings
 	private $back_ref;
 	private $pay_method;
 	private $debug;
+	/**
+	 * @var PayuAddress
+	 */
 	private $billing_address;
+	/**
+	 * @var PayuAddress
+	 */
 	private $delivery_address;
+	/**
+	 * @var PayuAddress
+	 */
 	private $destination_address;
 	private $order_shipping;
 	private $all_products = array();
@@ -192,28 +201,28 @@ class PayuLu extends PayuSettings
 		);
 		$this->html_form_code .= $this->addInput(
 			'DESTINATION_COUNTRY',
-			(empty($this->destination_address->countryCode) ? '' : $this->destination_address->countryCode)
+			(empty($this->destination_address->country_code) ? '' : $this->destination_address->country_code)
 		);
 		$this->html_form_code .= $this->addInput(
 			'ORDER_SHIPPING',
 			(empty($this->order_shipping) ? '' : $this->order_shipping)
 		);
 
-		$this->html_form_code .= (!empty($this->billing_address->firstName) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->first_name) ? $this->addInput(
 			'BILL_FNAME',
-			$this->billing_address->firstName
+			$this->billing_address->first_name
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->lastName) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->last_name) ? $this->addInput(
 			'BILL_LNAME',
-			$this->billing_address->lastName
+			$this->billing_address->last_name
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->ciSerial) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->ci_serial) ? $this->addInput(
 			'BILL_CISERIAL',
-			$this->billing_address->ciSerial
+			$this->billing_address->ci_serial
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->ciNumber) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->ci_number) ? $this->addInput(
 			'BILL_CINUMBER',
-			$this->billing_address->ciNumber
+			$this->billing_address->ci_number
 		) : '');
 		$this->html_form_code .= (!empty($this->billing_address->cnp) ? $this->addInput(
 			'BILL_CNP',
@@ -223,21 +232,21 @@ class PayuLu extends PayuSettings
 			'BILL_COMPANY',
 			$this->billing_address->company
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->fiscalCode) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->fiscal_code) ? $this->addInput(
 			'BILL_FISCALCODE',
-			$this->billing_address->fiscalCode
+			$this->billing_address->fiscal_code
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->regNumber) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->reg_number) ? $this->addInput(
 			'BILL_REGNUMBER',
-			$this->billing_address->regNumber
+			$this->billing_address->reg_number
 		) : '');
 		$this->html_form_code .= (!empty($this->billing_address->bank) ? $this->addInput(
 			'BILL_BANK',
 			$this->billing_address->bank
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->bankAccount) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->bank_account) ? $this->addInput(
 			'BILL_BANKACCOUNT',
-			$this->billing_address->bankAccount
+			$this->billing_address->bank_account
 		) : '');
 		$this->html_form_code .= (!empty($this->billing_address->email) ? $this->addInput(
 			'BILL_EMAIL',
@@ -259,9 +268,9 @@ class PayuLu extends PayuSettings
 			'BILL_ADDRESS2',
 			$this->billing_address->address2
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->zipCode) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->zip_code) ? $this->addInput(
 			'BILL_ZIPCODE',
-			$this->billing_address->zipCode
+			$this->billing_address->zip_code
 		) : '');
 		$this->html_form_code .= (!empty($this->billing_address->city) ? $this->addInput(
 			'BILL_CITY',
@@ -271,26 +280,26 @@ class PayuLu extends PayuSettings
 			'BILL_STATE',
 			$this->billing_address->state
 		) : '');
-		$this->html_form_code .= (!empty($this->billing_address->countryCode) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->billing_address->country_code) ? $this->addInput(
 			'BILL_COUNTRYCODE',
-			$this->billing_address->countryCode
+			$this->billing_address->country_code
 		) : '');
 
-		$this->html_form_code .= (!empty($this->delivery_address->firstName) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->first_name) ? $this->addInput(
 			'DELIVERY_FNAME',
-			$this->delivery_address->firstName
+			$this->delivery_address->first_name
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->lastName) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->last_name) ? $this->addInput(
 			'DELIVERY_LNAME',
-			$this->delivery_address->lastName
+			$this->delivery_address->last_name
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->ciSerial) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->ci_serial) ? $this->addInput(
 			'DELIVERY_CISERIAL',
-			$this->delivery_address->ciSerial
+			$this->delivery_address->ci_serial
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->ciNumber) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->ci_number) ? $this->addInput(
 			'BILL_CINUMBER',
-			$this->delivery_address->ciNumber
+			$this->delivery_address->ci_number
 		) : '');
 		$this->html_form_code .= (!empty($this->delivery_address->cnp) ? $this->addInput(
 			'DELIVERY_CNP',
@@ -300,21 +309,21 @@ class PayuLu extends PayuSettings
 			'DELIVERY_COMPANY',
 			$this->delivery_address->company
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->fiscalCode) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->fiscal_code) ? $this->addInput(
 			'DELIVERY_FISCALCODE',
-			$this->delivery_address->fiscalCode
+			$this->delivery_address->fiscal_code
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->regNumber) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->reg_number) ? $this->addInput(
 			'DELIVERY_REGNUMBER',
-			$this->delivery_address->regNumber
+			$this->delivery_address->reg_number
 		) : '');
 		$this->html_form_code .= (!empty($this->delivery_address->bank) ? $this->addInput(
 			'DELIVERY_BANK',
 			$this->delivery_address->bank
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->bankAccount) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->bank_account) ? $this->addInput(
 			'DELIVERY_BANKACCOUNT',
-			$this->delivery_address->bankAccount
+			$this->delivery_address->bank_account
 		) : '');
 		$this->html_form_code .= (!empty($this->delivery_address->email) ? $this->addInput(
 			'DELIVERY_EMAIL',
@@ -336,9 +345,9 @@ class PayuLu extends PayuSettings
 			'DELIVERY_ADDRESS2',
 			$this->delivery_address->address2
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->zipCode) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->zip_code) ? $this->addInput(
 			'DELIVERY_ZIPCODE',
-			$this->delivery_address->zipCode
+			$this->delivery_address->zip_code
 		) : '');
 		$this->html_form_code .= (!empty($this->delivery_address->city) ? $this->addInput(
 			'DELIVERY_CITY',
@@ -348,9 +357,9 @@ class PayuLu extends PayuSettings
 			'DELIVERY_STATE',
 			$this->delivery_address->state
 		) : '');
-		$this->html_form_code .= (!empty($this->delivery_address->countryCode) ? $this->addInput(
+		$this->html_form_code .= (!empty($this->delivery_address->country_code) ? $this->addInput(
 			'DELIVERY_COUNTRYCODE',
-			$this->delivery_address->countryCode
+			$this->delivery_address->country_code
 		) : '');
 
 		$this->html_form_code .= $this->addInput('DISCOUNT', $this->discount);
@@ -519,7 +528,7 @@ class PayuLu extends PayuSettings
 			$type
 		);
 		$this->hash_string .= $this->addHashValue(
-			(empty($this->destination_address->countryCode) ? '' : $this->destination_address->countryCode),
+			(empty($this->destination_address->country_code) ? '' : $this->destination_address->country_code),
 			'DestinationCountryCode',
 			$type
 		);
