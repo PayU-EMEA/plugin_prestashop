@@ -13,42 +13,135 @@
 class PayuLu extends PayuSettings
 {
 
+	/**
+	 * @var string
+	 */
 	private $merchant_id = '';
+
+	/**
+	 * @var string
+	 */
 	private $secret_key = '';
+
+	/**
+	 * @var int
+	 */
 	private $auto_mode = 0;
+
+	/**
+	 * @var bool
+	 */
 	private $test_mode = false;
+
+	/**
+	 * @var string
+	 */
 	private $lu_query_url = '';
+
+	/**
+	 * @var float
+	 */
 	private $discount;
+
+	/**
+	 * @var string
+	 */
 	private $language;
+
+	/**
+	 * @var string
+	 */
 	private $order_ref;
+
+	/**
+	 * @var string date in "Y-m-d H:i:s" format
+	 */
 	private $order_date;
+
+	/**
+	 * @var string
+	 */
 	private $price_currency;
+
+	/**
+	 * @var string
+	 */
 	private $currency;
+
+	/**
+	 * @var string
+	 */
 	private $back_ref;
+
+	/**
+	 * @var string
+	 */
 	private $pay_method;
+
+	/**
+	 * @var int
+	 */
 	private $debug;
+
 	/**
 	 * @var PayuAddress
 	 */
 	private $billing_address;
+
 	/**
 	 * @var PayuAddress
 	 */
 	private $delivery_address;
+
 	/**
 	 * @var PayuAddress
 	 */
 	private $destination_address;
+
+	/**
+	 * @var string|mixed
+	 */
 	private $order_shipping;
+
+	/**
+	 * @var PayuProduct[]
+	 */
 	private $all_products = array();
+
+	/**
+	 * @var PayuProduct[]
+	 */
 	private $temp_prods = array();
+
+	/**
+	 * @var string
+	 */
 	private $html_form_code;
+
+	/**
+	 * @var string
+	 */
 	private $html_code;
+
+	/**
+	 * @var string
+	 */
 	private $hash_string;
+
+	/**
+	 * @var string
+	 */
 	private $hash;
+
+	/**
+	 * @var string|int
+	 */
 	private $order_timeout;
+
+	/**
+	 * @var string
+	 */
 	private $order_timeout_url;
-	public $explained;
 
 
 	/**
