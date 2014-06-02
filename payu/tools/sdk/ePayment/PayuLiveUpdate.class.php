@@ -522,11 +522,12 @@ class PayuLu extends PayuSettings
 	 */
 	private function makeHashString($type = 'plain')
 	{
-		$final_price_type = '';
-
 		$this->hash_string = $this->addHashValue($this->merchant_id, 'MerchantId', $type);
 		$this->hash_string .= $this->addHashValue($this->order_ref, 'OrderRef', $type);
 		$this->hash_string .= $this->addHashValue($this->order_date, 'OrderDate', $type);
+
+		$temp_prod = array();
+		$temp_prods = array();
 
 		foreach ($this->all_products as $product)
 		{
