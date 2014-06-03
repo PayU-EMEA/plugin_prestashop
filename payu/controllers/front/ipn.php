@@ -19,8 +19,12 @@ class PayUIpnModuleFrontController extends ModuleFrontController
 		$payu = new PayU();
 		$response = $payu->interpretIPN($_POST);
 
-		if ($response !== false)
+		if (isset($response['date'], $response['hash']))
 			echo '<EPAYMENT>'.$response['date'].'|'.$response['hash'].'</EPAYMENT>';
+		elseif (isset($response['error']))
+			echo '<EPAYMENT_ERROR>'.Tools::htmlentitiesUTF8($response['error']).'</EPAYMENT_ERROR>';
+		else
+			echo '<EPAYMENT_ERROR>Unknown error</EPAYMENT_ERROR>';
 
 		exit;
 	}

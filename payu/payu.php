@@ -1835,22 +1835,22 @@ class PayU extends PaymentModule
 	{
 		if (!isset($params['REFNOEXT'], $params['HASH'], $params['ORDERSTATUS'], $params['REFNO'], $params['IPN_TOTALGENERAL'], $params['CURRENCY'],
 		$params['HASH'], $params['IPN_PID'], $params['IPN_PNAME'], $params['IPN_DATE']))
-			return false;
+			return array('error' => 'One or more parameters are missing');
 
 		$order_id = (int)$params['REFNOEXT'];
 
 		if (empty($order_id))
-			return false;
+			return array('error' => 'Missing REFNOEXT');
 
 		if ($this->getBusinessPartnerSetting('type') !== self::BUSINESS_PARTNER_TYPE_EPAYMENT)
-			return false;
+			return array('error' => 'Incorrect business partner');
 
 		if (!Configuration::get('PAYU_EPAYMENT_IPN'))
-			return false;
+			return array('error' => 'IPN disabled');
 
 		if ($params['HASH'] != PayuSignature::generateHmac(
 				Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($params, array('HASH'))))
-			return false;
+			return array('error' => 'Invalid signature');
 
 		try {
 			$history = new OrderHistory();
