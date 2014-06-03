@@ -1833,6 +1833,10 @@ class PayU extends PaymentModule
 	 */
 	public function interpretIPN(Array $params)
 	{
+		if (!isset($params['REFNOEXT'], $params['HASH'], $params['ORDERSTATUS'], $params['REFNO'], $params['IPN_TOTALGENERAL'], $params['CURRENCY'],
+		$params['HASH'], $params['IPN_PID'], $params['IPN_PNAME'], $params['IPN_DATE']))
+			return false;
+
 		$order_id = (int)$params['REFNOEXT'];
 
 		if (empty($order_id))
