@@ -1802,6 +1802,19 @@ class PayU extends PaymentModule
 		if (!isset($parameters['order_ref']) || !is_numeric($parameters['order_ref']))
 			return true;
 
+		$order_id = (int)$parameters['order_ref'];
+
+		$history = new OrderHistory();
+		$history->id_order = $order_id;
+
+		$error = Tools::getValue('err');
+
+		if ($error)
+		{
+			$history->changeIdOrderState((int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'), $order_id);
+			$history->addWithemail(true);
+		}
+
 		// validate signature
 		if (true !== PayuSignature::validateSignature($server, Configuration::get('PAYU_EPAYMENT_SECRET_KEY')))
 			return false;
@@ -1809,11 +1822,6 @@ class PayU extends PaymentModule
 		// check if IPN is disabled
 		if (!Configuration::get('PAYU_EPAYMENT_IPN'))
 		{
-			$order_id = (int)$parameters['order_ref'];
-
-			$history = new OrderHistory();
-			$history->id_order = $order_id;
-
 			if (Tools::getIsset(Tools::getValue('TRS')) && Tools::getValue('TRS') === 'AUTH')
 			{
 				// mark order as complete
