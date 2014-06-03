@@ -387,7 +387,7 @@ class PayU extends PaymentModule
 			'PAYU_EPAYMENT_MERCHANT' => Configuration::get('PAYU_EPAYMENT_MERCHANT'),
 			'PAYU_EPAYMENT_SECRET_KEY' => Configuration::get('PAYU_EPAYMENT_SECRET_KEY'),
 			'PAYU_EPAYMENT_IPN' => Configuration::get('PAYU_EPAYMENT_IPN'),
-			'PAYU_EPAYMENT_IPN_URL' => $this->getModuleAddress(true, true).'ipn.php',
+			'PAYU_EPAYMENT_IPN_URL' => Context::getContext()->link->getModuleLink('payu', 'ipn'),
 			'PAYU_EPAYMENT_IPN_OPTIONS' => array(
 				array(
 					'id' => '1',
