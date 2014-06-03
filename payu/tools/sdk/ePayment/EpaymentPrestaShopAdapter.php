@@ -47,7 +47,7 @@ class EpaymentPrestaShopAdapter
 		$this->module->current_order = $this->module->currentOrder;
 		$this->module->current_order_reference = $this->module->currentOrderReference;
 
-		$live_update->setBackRef($this->module->getModuleAddress().'payment_return.php?order_ref='.$this->module->current_order);
+		$live_update->setBackRef(Context::getContext()->link->getModuleLink('payu', 'return', array('order_ref' => $this->module->current_order)));
 
 		if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 		{
