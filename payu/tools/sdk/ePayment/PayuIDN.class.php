@@ -142,7 +142,7 @@ class PayuIDN
 	 */
 	private function checkEmptyVar($string)
 	{
-		return Tools::strlen(trim($string)) == 0;
+		return strlen(trim($string)) == 0;
 	}
 
 	/**
@@ -158,18 +158,18 @@ class PayuIDN
 
 		if (!isset($this->all_errors[self::DEBUG_FATAL]) || !$this->all_errors[self::DEBUG_FATAL])
 		{
-			$process_string = Tools::strlen($this->merchant_id).$this->merchant_id;
-			$process_string .= Tools::strlen($this->payu_ref_no).$this->payu_ref_no;
-			$process_string .= Tools::strlen($this->order_amount).$this->order_amount;
-			$process_string .= Tools::strlen($this->order_currency).$this->order_currency;
+			$process_string = strlen($this->merchant_id).$this->merchant_id;
+			$process_string .= strlen($this->payu_ref_no).$this->payu_ref_no;
+			$process_string .= strlen($this->order_amount).$this->order_amount;
+			$process_string .= strlen($this->order_currency).$this->order_currency;
 			$idn_date = date('Y-m-d H:i:s', time());
-			$process_string .= Tools::strlen($idn_date).$idn_date;
+			$process_string .= strlen($idn_date).$idn_date;
 
 			if (!empty($this->order_charge_amount))
-				$process_string .= Tools::strlen($this->order_charge_amount).$this->order_charge_amount;
+				$process_string .= strlen($this->order_charge_amount).$this->order_charge_amount;
 
 			if (!empty($this->order_idn_prn))
-				$process_string .= Tools::strlen($this->order_idn_prn).$this->order_idn_prn;
+				$process_string .= strlen($this->order_idn_prn).$this->order_idn_prn;
 
 			$hash = PayuSignature::generateHmac($this->secret_key, $process_string);
 

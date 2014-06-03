@@ -135,8 +135,8 @@ class PayuIRN
 			$this->product_string .= 'PRODUCTS_IDS[]='.$product_id.'&';
 			$this->product_string .= 'PRODUCTS_QTY[]='.$product_qty.'';
 
-			$this->hash_product_ids .= Tools::strlen($product_id).$product_id;
-			$this->hash_product_qtys .= Tools::strlen($product_qty).$product_qty;
+			$this->hash_product_ids .= strlen($product_id).$product_id;
+			$this->hash_product_qtys .= strlen($product_qty).$product_qty;
 		}
 		else
 		{
@@ -162,7 +162,7 @@ class PayuIRN
 
 	private function checkEmptyVar($string)
 	{
-		return (Tools::strlen(trim($string)) == 0);
+		return (strlen(trim($string)) == 0);
 	}
 
 	/**
@@ -176,16 +176,16 @@ class PayuIRN
 		$this->mergeErrorLogs($this->error_log);
 		if (!$this->error_log[self::DEBUG_FATAL])
 		{
-			$process_string = Tools::strlen($this->_merchant_id).$this->_merchant_id;
-			$process_string .= Tools::strlen($this->payu_ref_no).$this->payu_ref_no;
-			$process_string .= Tools::strlen($this->order_amount).$this->order_amount;
-			$process_string .= Tools::strlen($this->order_currency).$this->order_currency;
+			$process_string = strlen($this->_merchant_id).$this->_merchant_id;
+			$process_string .= strlen($this->payu_ref_no).$this->payu_ref_no;
+			$process_string .= strlen($this->order_amount).$this->order_amount;
+			$process_string .= strlen($this->order_currency).$this->order_currency;
 			$irn_date = date('Y-m-d H:i:s', time());
-			$process_string .= Tools::strlen($irn_date).$irn_date;
+			$process_string .= strlen($irn_date).$irn_date;
 			$process_string .= $this->hash_product_ids;
 			$process_string .= $this->hash_product_qtys;
 			$process_string .= '00';
-			$process_string .= Tools::strlen($this->refund_amount).$this->refund_amount;
+			$process_string .= strlen($this->refund_amount).$this->refund_amount;
 
 			$hash = PayuSignature::generateHmac($this->_secret_key, $process_string);
 			$curl = curl_init();

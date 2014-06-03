@@ -285,30 +285,30 @@ class PayuProduct extends PayuSettings
 	 */
 	public function checkProduct()
 	{
-		if (Tools::strlen($this->product_name) > 155)
+		if (strlen($this->product_name) > 155)
 		{
 			$this->logError(
 				'Product Name for product with name '.$this->product_name.' must not exceede 155 chars. String was truncated.',
 				1
 			);
-			$this->product_name = Tools::substr($this->product_name, 0, 155);
+			$this->product_name = substr($this->product_name, 0, 155);
 		}
 
-		if (Tools::strlen($this->product_info) > 255)
+		if (strlen($this->product_info) > 255)
 		{
 			$this->logError(
 				'Product Info for product with name '.$this->product_name.' must not exceede 255 chars. String was truncated.',
 				1
 			);
-			$this->product_info = Tools::substr($this->product_info, 0, 255);
+			$this->product_info = substr($this->product_info, 0, 255);
 		}
 
-		if (Tools::strlen($this->product_code) > 50)
+		if (strlen($this->product_code) > 50)
 		{
 			$this->logError(
 				'Product Code for product with name '.$this->product_name.' must not exceede 50 chars. String was truncated.'
 			);
-			$this->product_code = Tools::substr($this->product_code, 0, 50);
+			$this->product_code = substr($this->product_code, 0, 50);
 		}
 
 		if ($this->product_price < 0 || !is_numeric($this->product_price) || $this->product_price == 0)
