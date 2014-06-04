@@ -653,6 +653,7 @@ class PayU extends PaymentModule
 			}
 		}
 
+		$this->context->smarty->assign('PS_ISOLD', version_compare(_PS_VERSION_, '1.6', 'lt'));
 		$this->context->smarty->assign('payu_delivery_errors', $delivery_errors);
 
 		$this->context->smarty->assign('payu_refund_errors', $refund_errors);
