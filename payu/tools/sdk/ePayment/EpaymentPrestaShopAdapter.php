@@ -45,22 +45,25 @@ class EpaymentPrestaShopAdapter
 		);
 
 		$this->module->current_order = $this->module->currentOrder;
-		$this->module->current_order_reference = $this->module->currentOrderReference;
-
-		$live_update->setBackRef(Context::getContext()->link->getModuleLink('payu', 'return', array('order_ref' => $this->module->current_order)));
 
 		if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 		{
+			$this->module->current_order_reference = '';
 			$internal_reference = '#'.str_pad($this->module->current_order, 6, '0', STR_PAD_LEFT);
 			$order_ref = $this->module->current_order.'|'.str_pad($this->module->current_order, 6, '0', STR_PAD_LEFT);
 			$order_id = $this->module->current_order;
+			$backref_url = $this->module->getModuleAddress().'backward_compatibility/return.php?order_ref='.$this->module->current_order;
 		}
 		else
 		{
+			$this->module->current_order_reference = $this->module->currentOrderReference;
 			$internal_reference = $this->module->currentOrderReference;
 			$order_ref = $this->module->currentOrder.'|'.$this->module->currentOrderReference;
 			$order_id = $this->module->currentOrder;
+			$backref_url = Context::getContext()->link->getModuleLink('payu', 'return', array('order_ref' => $this->module->current_order));
 		}
+
+		$live_update->setBackRef($backref_url);
 
 		$live_update->setOrderRef($order_ref);
 
