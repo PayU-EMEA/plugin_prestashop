@@ -579,7 +579,8 @@ class PayU extends PaymentModule
 
 				if (!isset($irn_response['RESPONSE_CODE']) || 1 != $irn_response['RESPONSE_CODE'])
 				{
-					$error = isset($irn_response['RESPONSE_MSG'])?$irn_response['RESPONSE_MSG']:(is_string($irn_response)?strip_tags($irn_response):'unknown');
+					$error = isset($irn_response['RESPONSE_MSG'])?$irn_response['RESPONSE_MSG']:
+						(is_string($irn_response['RESPONSE'])?strip_tags($irn_response['RESPONSE']):'unknown');
 					$refund_errors[] = $this->l('Refund error: ').$error;
 				}
 
