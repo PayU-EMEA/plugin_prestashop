@@ -825,6 +825,9 @@ class PayU extends PaymentModule
 	public function hookDisplayHeader()
 	{
 		$this->context->controller->addCSS($this->_path.'css/payu.css', 'all');
+
+		if (Tools::getValue('payu_order_error'))
+			return sprintf('<script>alert(%s);</script>', ToolsCore::jsonEncode($this->l('An error occurred when processing the order')));
 	}
 
 	/**
