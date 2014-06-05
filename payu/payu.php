@@ -448,13 +448,13 @@ class PayU extends PaymentModule
 		elseif (version_compare(_PS_VERSION_, '1.5', 'lt'))
 		{
 			$views = 'views/templates/';
-			if (filemtime(dirname(__FILE__).'/'.$name))
+			if (file_exists(dirname(__FILE__).'/'.$name))
 				return $this->display(__FILE__, $name);
-			elseif (filemtime(dirname(__FILE__).'/'.$views.'hook/'.$name))
+			elseif (file_exists(dirname(__FILE__).'/'.$views.'hook/'.$name))
 				return $this->display(__FILE__, $views.'hook/'.$name);
-			elseif (filemtime(dirname(__FILE__).'/'.$views.'front/'.$name))
+			elseif (file_exists(dirname(__FILE__).'/'.$views.'front/'.$name))
 				return $this->display(__FILE__, $views.'front/'.$name);
-			elseif (filemtime(dirname(__FILE__).'/'.$views.'admin/'.$name))
+			elseif (file_exists(dirname(__FILE__).'/'.$views.'admin/'.$name))
 				return $this->display(__FILE__, $views.'admin/'.$name);
 		}
 
