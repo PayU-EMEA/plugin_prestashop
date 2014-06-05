@@ -12,10 +12,10 @@
 <div class="row">
 <div class="col-xs-12 col-md-6">
 <p class="payment_module">
-    <a class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}" title="{l s='Pay with PayU' mod='payu'}">
-        <img src="{$image|escape:'htmlall':'UTF-8'}" alt="{l s='Pay with PayU' mod='payu'}" />
-        {l s='Pay with PayU' mod='payu'}
-    </a>
+	<a class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}" title="{l s='Pay with PayU' mod='payu'}">
+		<img src="{$image|escape:'htmlall':'UTF-8'}" alt="{l s='Pay with PayU' mod='payu'}" />
+		{l s='Pay with PayU' mod='payu'}
+	</a>
 </p>
 </div>
 </div>
