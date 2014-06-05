@@ -1,3 +1,5 @@
 .hide{display: none}
 .img-preview{margin: 10px 0}
 .error{color:red}
+p.payment_module a.payu{background-image: none;padding: 33px 40px 34px 20px}
+p.payment_module a.payu:after {display: block;content: "\f054";position: absolute;right: 15px;margin-top: -11px;top: 50%;font-family: "FontAwesome";font-size: 25px;height: 22px;width: 14px;color: #777777;}

@@ -656,12 +656,17 @@ class PayU extends PaymentModule
 			}
 		}
 
-		$this->context->smarty->assign('PS_ISOLD', version_compare(_PS_VERSION_, '1.6', 'lt'));
 		$this->context->smarty->assign('payu_delivery_errors', $delivery_errors);
 
 		$this->context->smarty->assign('payu_refund_errors', $refund_errors);
 
-		return $output.$this->fetchTemplate('/views/templates/admin/header.tpl');
+        if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
+            $template = $output.$this->fetchTemplate('/views/templates/admin/header.tpl');
+        } else {
+            $template = $output.$this->fetchTemplate('/views/templates/admin/header16.tpl');
+        }
+
+		return $template;
 	}
 
 	/**
@@ -847,7 +852,13 @@ class PayU extends PaymentModule
 
 		$this->context->smarty->assign(array('image' => $img, 'actionUrl' => $link));
 
-		return $this->fetchTemplate('/views/templates/hook/payment.tpl');
+        if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
+            $template = $this->fetchTemplate('/views/templates/hook/payment.tpl');
+        } else {
+            $template = $this->fetchTemplate('/views/templates/hook/payment16.tpl');
+        }
+
+		return $template;
 	}
 
 	/**
