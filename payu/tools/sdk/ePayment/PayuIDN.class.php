@@ -190,12 +190,20 @@ class PayuIDN
 			curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
 			$contents = curl_exec($curl);
 			curl_close($curl);
-			$contents = explode('|', $contents);
 
-			$return_array['RESPONSE_CODE'] = $contents[1];
-			$return_array['RESPONSE_MSG'] = $contents[2];
+			if (preg_match('#<EPAYMENT>(.+)\|(.+)\|(.+)\|(.+)\|(.+)</EPAYMENT>#i', $contents, $matches))
+			{
+				$retval = array(
+					'RESPONSE_CODE' => $matches[2],
+					'RESPONSE_MSG' => $matches[3],
+				);
+				return $retval;
+			}
 
-			return $return_array;
+			return array(
+				'RESPONSE_CODE' => '-1',
+				'RESPONSE_MSG' => 'Invalid response to IDN request: "'.substr($contents, 0, 20).'"',
+			);
 		}
 		else
 			return $this->all_errors[self::DEBUG_ALL];
