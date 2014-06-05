@@ -822,10 +822,7 @@ class PayU extends PaymentModule
 		return $this->fetchTemplate('/views/templates/hook/advertisement.tpl');
 	}
 
-	/**
-	 *
-	 */
-	public function hookDisplayHeader()
+	public function hookHeader()
 	{
 		$this->context->controller->addCSS($this->_path.'css/payu.css', 'all');
 
