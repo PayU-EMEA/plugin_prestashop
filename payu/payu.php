@@ -476,7 +476,7 @@ class PayU extends PaymentModule
 		$media = $this->getMediaResourcesList($lang_iso_code);
 
 		$output = '<script type="text/javascript">var business_platforms = '.Tools::jsonEncode($this->getBusinessPartnersPayU($media)).';</script>';
-        $output .= '<link type="text/css" rel="stylesheet" href="'._MODULE_DIR_.$this->name.'/css/payu.css" />';
+		$output .= '<link type="text/css" rel="stylesheet" href="'._MODULE_DIR_.$this->name.'/css/payu.css" />';
 
 		$vieworder = Tools::getValue('vieworder');
 		$id_order = Tools::getValue('id_order');
