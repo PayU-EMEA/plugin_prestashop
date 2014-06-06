@@ -468,8 +468,6 @@ class PayU extends PaymentModule
 	 */
 	public function hookBackOfficeHeader()
 	{
-		$this->context->controller->addCSS(_MODULE_DIR_.$this->name.'/css/payu.css');
-
 		$default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
 		$lang_iso_code = Language::getIsoById($default_lang);
 
