@@ -109,23 +109,23 @@ The main parameters for plugin configuration are as follows:
 
 ### Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)
 
-The tables below present the descriptions of the configuration form parameters.
-
-#### Main parameters
-
-The main parameters for plugin configuration are as follows:
+The tables below present the descriptions of the configuration form parameters. The main parameters for plugin configuration are as follows:
 
 | Parameter | Values | Description | 
 |:---------:|:------:|:-----------:|
 |Merchant|-|Unique ID of the merchant|
 |Secret Key|-|Key for securing communication|
-|IPN|On/Off|Instant Payment Notification makes possible the automated processing of each authorized order in the online payment system, being a link between the PayU servers and your servers. This notification method will allow the retrieval of transaction data in order to be processed in your own order management system.|
-|IPN URL|-|After an order gets authorized and approved, the PayU server sends a data structure containing all the order related info to a preset URL on your system. The data is sent through HTTP POST.|
-|IDN|On/Off|The Instant Delivery Notification facilitated automatic delivery confirmations from your system directly to the PayU system which automatically registers these confirmations on the PayU servers. As soon as your orders made to the PayU system are confirmed, a POST must be sent through your administration system to a URL provided by PayU, containing the identification data for transaction about to be confirmed.|
-|IRN|On/Off|Instant Refund/Reverse Notification makes it possible for you to automate the sending of reverse/refund requests for orders paid through PayU, directly from the order management application.|
+|IPN|On/Off|**Instant Payment Notification** makes possible the automated processing of each authorized order in the online payment system, being a link between the PayU servers and your servers. Wen your shop receives an _IPN_ for an order, if _IPN_ is set to _On_, the status of the order will become _Payment accepted_. If _IPN_ is set to _Off_ and your merchant account settings in PayU are in accordance with this, the status of the order will become _Payment accepted_ when the buyer is redirected from PayU payment page back to your shop.|
+|IPN URL|-|After an order gets authorized and approved, the PayU sends a data structure containing all the order related info to this URL on your system.|
+|IDN|On/Off|**Instant Delivery Notification** -- This request will be sent by your shop to PayU when you click _Confirm delivery_ in the order page. Confirming delivery triggers the capture of the order amount from the credit card. _Confirm delivery_ will be available for an order only if its status is _Payment accepted_ and _IDN_ is _On_. If PayU confirms the success of the IDN, the order status in your shop will be _Delivered_. If IDN fails for some reason, the status of the order will remain unchanged.|
+|IRN|On/Off|**Instant Refund/Reverse Notification** makes it possible for you to automate the sending of reverse/refund requests for orders paid through PayU, directly from your shop's order page. You may perform multiple refunds if your merchant account in the PayU platform allows it. If PayU confirms the success of the IRN, the status of the order in your shop will be _Refund_. If IRN fails for some reason, the status of the order will remain unchanged.|
 
+**Notes:**
 
-### Settings of external resources
+- The parameters must be set in accordance with your merchant account's settings in the PayU platform.
+- IPN, IDN and IRN will automatically change the status of the orders. When you manually change the status of the order, your shop will not send any notification to PayU.
+
+## Settings of external resources
 
 You can set external resources for the following:
 
