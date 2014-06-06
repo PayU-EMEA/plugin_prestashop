@@ -1289,9 +1289,7 @@ class PayU extends PaymentModule
 				);*/
 			}
 			else
-			{
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage()), 1);
-			}
 		}
 		catch(Exception $e){
 			Logger::addLog($this->displayName.' '.trim($e->getCode().' '.$e->getMessage()), 1);
