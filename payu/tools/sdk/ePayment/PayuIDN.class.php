@@ -152,8 +152,6 @@ class PayuIDN
 	 */
 	public function processRequest()
 	{
-		$return_array = array();
-
 		$this->validate();
 
 		if (!isset($this->all_errors[self::DEBUG_FATAL]) || !$this->all_errors[self::DEBUG_FATAL])
