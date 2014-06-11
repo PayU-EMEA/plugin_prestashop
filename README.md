@@ -9,16 +9,27 @@ define their payment options, see their purchase history, and manage personal pr
 
 ## Table of Contents
 
-[Prerequisites][1] <br />
-<!--[Installation][2]-->
+
+<!--topic urls:-->
+
+
+[3]: #configuration
+[3.1]: #business-area
+[3.2]: #configuration-parameters-poland
+[3.3]: #configuration-parameters-romania-turkey-russia-ukraine-hungary
+[3.4]: #settings-of-external-resources
+[Prerequisites](#prerequisites) <br />
+<!--[Installation][#installation]-->
  * 
-[Installing Manually][2.1]
+[Installing Manually](#installing-manually)
 
-<!--* [Installing from admin page][2.2]-->
+<!--* [Installing from admin page][#installing-from-admin-page]-->
 
-[Configuration][3]
-* [Configuration Parameters][3.1]
-
+[Configuration](#configuration)
+* [Business area](#business-area)
+* [Configuration Parameters (Poland)](#configuration-parameters-poland)
+* [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)](#configuration-parameters-romania-turkey-russia-ukraine-hungary)
+* [Settings of external resources](#settings-of-external-resources)
 
 ## Prerequisites
 
@@ -35,8 +46,8 @@ The following PHP extensions are required:
 
 <!--There are two ways in which you can install the plugin:
 
-* [manual installation][2.1] by copying and pasting folders from the repository
-* [installation from the admin page][2.2]
+* [manual installation](#installing-manually) by copying and pasting folders from the repository
+* [installation from the admin page](#installing-from-admin-page)
 
 See the sections below to find out about steps for each of the procedures.-->
 
@@ -44,11 +55,12 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Copy the folders(modules/payu and /tools/payu) from [the plugin repository][ext1] to your PrestaShop root folder on the server.
-2. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-3. Go to **Modules** > **Payments & Gateways**.
-4. Select **PayU** and click **Install**.
-
+1. Download plugin from [the plugin repository][ext1] to local directory.
+2. Create zip archive of internal directory (payu) which contains module
+3. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
+4. Go to **Modules** > **Modules**.
+5. **Add new module** and point archive contained plugin
+6. Load the plugin
 
 <!--### Installing from the administration page
 
@@ -65,7 +77,13 @@ To configure the PrestaShop plugin:
 
 **Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
 
-### Configuration Parameters
+### Business area
+
+This section define merchant business area. Other seection depends on this setup. It means that there might be different merchant configuration for Poland and Turkey merchant. 
+Details are described in next sections.
+
+
+### Configuration Parameters (Poland)
 
 The tables below present the descriptions of the configuration form parameters.
 
@@ -75,7 +93,6 @@ The main parameters for plugin configuration are as follows:
 
 | Parameter | Values | Description | 
 |:---------:|:------:|:-----------:|
-|Test Mode On|Yes/No|If you are in the test mode, the transactions are only simulated and no real payments are made. Use the test mode to see how the transactions work.|
 |Self-Return Enabled|Yes/No|If self-return is disabled, the payment must be confirmed manually.|
 |Order Validity Time|24h/12h/6h/1h/30min|Specifies the time during which the order is valid in the PayU system. When validity time expires, the order is cancelled, and you are notified that the transaction failed.|
 |Ship Abroad|Enabled/Disabled|If ship abroad is disabled, you can only choose the country of the shop for shipping.|
@@ -83,19 +100,32 @@ The main parameters for plugin configuration are as follows:
 
 #### Parameters of test and production environments
 
-The test environment is called *Sandbox* and you can adjust it separately from the production environment to see which configuration suits you the best.
-<!--To check the values of the parameters below, go to **Administration Panel** > **My shops** > **Your shop** > **POS** and click the name of a given POS.
--->
-**Important:** If you set the [**Test Mode On**][3.1.1] parameter to *Yes*, the transactions in your shop are only simulated. No real payments are made.
+**Important:** There is no test environment (*Sandbox*) for this version of module and you can set Test Payment method in your POS settings in the PayU system, before you deploy your shop to production enivronment.
 
 | Parameter | Description | 
 |:---------:|:-----------:|
 |POS ID|Unique ID of the POS|
-|Key|Unique MD5 key
 |Second Key| MD5 key for securing communication|
-|POS Auth Key|Transaction authorization key|
 
-#### Settings of external resources
+### Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)
+
+The tables below present the descriptions of the configuration form parameters. The main parameters for plugin configuration are as follows:
+
+| Parameter | Values | Description | 
+|:---------:|:------:|:-----------:|
+|Merchant|-|Unique ID of the merchant|
+|Secret Key|-|Key for securing communication|
+|IPN|On/Off|**Instant Payment Notification** makes possible the automated processing of each authorized order in the online payment system, being a link between the PayU servers and your servers. Wen your shop receives an _IPN_ for an order, if _IPN_ is set to _On_, the status of the order will become _Payment accepted_. If _IPN_ is set to _Off_ and your merchant account settings in PayU are in accordance with this, the status of the order will become _Payment accepted_ when the buyer is redirected from PayU payment page back to your shop.|
+|IPN URL|-|After an order gets authorized and approved, the PayU sends a data structure containing all the order related info to this URL on your system.|
+|IDN|On/Off|**Instant Delivery Notification** -- This request will be sent by your shop to PayU when you click _Confirm delivery_ in the order page. Confirming delivery triggers the capture of the order amount from the credit card. _Confirm delivery_ will be available for an order only if its status is _Payment accepted_ and _IDN_ is _On_. If PayU confirms the success of the IDN, the order status in your shop will be _Delivered_. If IDN fails for some reason, the status of the order will remain unchanged.|
+|IRN|On/Off|**Instant Refund/Reverse Notification** makes it possible for you to automate the sending of reverse/refund requests for orders paid through PayU, directly from your shop's order page. You may perform multiple refunds if your merchant account in the PayU platform allows it. If PayU confirms the success of the IRN, the status of the order in your shop will be _Refund_. If IRN fails for some reason, the status of the order will remain unchanged.|
+
+**Notes:**
+
+- The parameters must be set in accordance with your merchant account's settings in the PayU platform.
+- IPN, IDN and IRN will automatically change the status of the orders. When you manually change the status of the order, your shop will not send any notification to PayU.
+
+## Settings of external resources
 
 You can set external resources for the following:
 
@@ -108,22 +138,9 @@ You can set external resources for the following:
 
 <!--LINKS-->
 
-<!--topic urls:-->
-
-[1]: https://github.com/PayU/plugin_prestashop#prerequisites
-[2]: https://github.com/PayU/plugin_prestashop#installation
-[2.1]: https://github.com/PayU/plugin_prestashop#installing-manually
-[2.2]: https://github.com/PayU/plugin_prestashop#installing-from-admin-page
-[3]: https://github.com/PayU/plugin_prestashop#configuration
-[3.1]: https://github.com/PayU/plugin_prestashop#configuration-parameters
-[3.1.1]: https://github.com/PayU/plugin_prestashop#main-parameters
-[3.1.2]: https://github.com/PayU/plugin_prestashop#parameters-of-production-and-test-environments
-[3.1.3]: https://github.com/PayU/plugin_prestashop#settings-of-external-resources
-
-
 <!--external links:-->
 
-[ext1]: https://github.com/PayU/plugin_prestashop_144
+[ext1]: https://github.com/PayU/plugin_prestashop_144/tree/refactoring
 [ext2]: http://php.net/manual/en/book.curl.php
 [ext3]: http://php.net/manual/en/book.hash.php
 [ext4]: http://php.net/manual/en/book.xmlwriter.php
