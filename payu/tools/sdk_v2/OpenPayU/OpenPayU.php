@@ -10,7 +10,7 @@
  *	http://twitter.com/openpayu
  */
 
-if (!defined('OpenPayULIBRARY'))
+if (!defined('OPEN_PAYU_LIBRARY'))
 	exit;
 
 class OpenPayU extends OpenPayUBase
@@ -196,29 +196,29 @@ class OpenPayU extends OpenPayUBase
 	}
 
 	/**
-	 * @throws OpenPayUException_Authorization
+	 * @throws OpenPayUExceptionAuthorization
 	 */
 	public static function verifyBasicAuthCredentials()
 	{
 		if (isset($_SERVER['PHP_AUTH_USER']))
 			$user = $_SERVER['PHP_AUTH_USER'];
 		else
-			OpenPayUException_Authorization('Empty user name');
+			OpenPayUExceptionAuthorization('Empty user name');
 
 		if (isset($_SERVER['PHP_AUTH_PW']))
 			$password = $_SERVER['PHP_AUTH_PW'];
 		else
-			OpenPayUException_Authorization('Empty password');
+			OpenPayUExceptionAuthorization('Empty password');
 
 		if ($user !== OpenPayUConfiguration::getMerchantPosId() ||
 			$password !== OpenPayUConfiguration::getSignatureKey())
-			throw new OpenPayUException_Authorization('invalid credentials');
+			throw new OpenPayUExceptionAuthorization('invalid credentials');
 	}
 
 	/**
 	 * @param $data
 	 * @param $incomingSignature
-	 * @throws OpenPayUException_Authorization
+	 * @throws OpenPayUExceptionAuthorization
 	 */
 	public static function verifyDocumentSignature($data, $incoming_signature)
 	{
@@ -230,7 +230,7 @@ class OpenPayU extends OpenPayUBase
 				OpenPayUConfiguration::getSignatureKey(),
 				$sign->algorithm
 			))
-			throw new OpenPayUException_Authorization('Invalid signature - '.$sign->signature);
+			throw new OpenPayUExceptionAuthorization('Invalid signature - '.$sign->signature);
 	}
 
 	/**

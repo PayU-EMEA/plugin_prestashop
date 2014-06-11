@@ -10,61 +10,61 @@
  *	http://twitter.com/openpayu
  */
 
-if (!defined('OpenPayULIBRARY'))
+if (!defined('OPEN_PAYU_LIBRARY'))
 	exit;
 
 class OpenPayUBase extends OpenPayUNetwork
 {
 
 	/** @var string outputConsole message */
-	protected static $outputConsole = '';
+	protected static $output_console = '';
 
 	/**
 	 * Show outputConsole message
 	 * @access public
 	 */
-	public static function  printOutputConsole()
+	public static function printOutputConsole()
 	{
-		echo OpenPayU::$outputConsole;
+		echo OpenPayU::$output_console;
 	}
 
 	/**
-	 * Add $outputConsole message
+	 * Add $output_console message
 	 * @access public
 	 * @param string $header
 	 * @param string $text
 	 */
 	public static function addOutputConsole($header, $text = '')
 	{
-		OpenPayU::$outputConsole .= '<br/><strong>'.$header.':</strong><br />'.$text.'<br/>';
+		OpenPayU::$output_console .= '<br/><strong>'.$header.':</strong><br />'.$text.'<br/>';
 	}
 
 	/**
 	 * Function builds OpenPayU Request Document
 	 * @access public
 	 * @param string $data
-	 * @param string $startElement Name of Document Element
+	 * @param string $start_element Name of Document Element
 	 * @param string $version Xml Version
 	 * @param string $xml_encoding Xml Encoding
 	 * @return string
 	 */
-	public static function buildOpenPayURequestDocument($data, $startElement, $version = '1.0', $xml_encoding = 'UTF-8')
+	public static function buildOpenPayURequestDocument($data, $start_element, $version = '1.0', $xml_encoding = 'UTF-8')
 	{
-		return OpenPayUBase::buildOpenPayUDocument($data, $startElement, 1, $version, $xml_encoding);
+		return OpenPayUBase::buildOpenPayUDocument($data, $start_element, 1, $version, $xml_encoding);
 	}
 
 	/**
 	 * Function builds OpenPayU Response Document
 	 * @access public
 	 * @param string $data
-	 * @param string $startElement Name of Document Element
+	 * @param string $start_element Name of Document Element
 	 * @param string $version Xml Version
 	 * @param string $xml_encoding Xml Encoding
 	 * @return string
 	 */
-	public static function buildOpenPayUResponseDocument($data, $startElement, $version = '1.0', $xml_encoding = 'UTF-8')
+	public static function buildOpenPayUResponseDocument($data, $start_element, $version = '1.0', $xml_encoding = 'UTF-8')
 	{
-		return OpenPayUBase::buildOpenPayUDocument($data, $startElement, 0, $version, $xml_encoding);
+		return OpenPayUBase::buildOpenPayUDocument($data, $start_element, 0, $version, $xml_encoding);
 	}
 
 	/**
@@ -76,13 +76,16 @@ class OpenPayUBase extends OpenPayUNetwork
 	 */
 	public static function arr2xml(XMLWriter $xml, $data)
 	{
-		if (!empty($data) && is_array($data)) {
-			foreach ($data as $key => $value) {
-				if (is_array($value)) {
-					if (is_numeric($key)) {
+		if (!empty($data) && is_array($data))
+		{
+			foreach ($data as $key => $value)
+			{
+				if (is_array($value))
+				{
+					if (is_numeric($key))
 						self::arr2xml($xml, $value);
-					}
-else {
+					else
+					{
 						$xml->startElement($key);
 						self::arr2xml($xml, $value);
 						$xml->endElement();
@@ -106,17 +109,20 @@ else {
 	{
 		$fragment = '';
 
-		if (!empty($data) && is_array($data)) {
-			foreach ($data as $key => $value) {
-				if (is_array($value)) {
-					if (is_numeric($key)) {
+		if (!empty($data) && is_array($data))
+		{
+			foreach ($data as $key => $value)
+			{
+				if (is_array($value))
+				{
+					if (is_numeric($key))
 						$fragment .= OpenPayUBase::arr2form($value, $parent, $key);
-					}
-else {
+					else
+					{
 						$p = $parent != '' ? $parent.'.'.$key : $key;
-						if (is_numeric($index)) {
+						if (is_numeric($index))
 							$p .= '['.$index.']';
-						}
+
 						$fragment .= OpenPayUBase::arr2form($value, $p, $key);
 					}
 					continue;
@@ -140,20 +146,19 @@ else {
 	public static function read($xml)
 	{
 		$tree = null;
-		if(isset($xml))
+		if (isset($xml))
 		{
-			while ($xml->read()) {
-				if ($xml->nodeType == XMLReader::END_ELEMENT) {
+			while ($xml->read())
+			{
+				if ($xml->{'nodeType'} == XMLReader::END_ELEMENT)
 					return $tree;
-				}
-else if ($xml->nodeType == XMLReader::ELEMENT) {
-					if (!$xml->isEmptyElement) {
+				else if ($xml->{'nodeType'} == XMLReader::ELEMENT)
+				{
+					if (!$xml->{'isEmptyElement'})
 						$tree[$xml->name] = OpenPayUBase::read($xml);
-					}
 				}
-else if ($xml->nodeType == XMLReader::TEXT) {
+				else if ($xml->{'nodeType'} == XMLReader::TEXT)
 					$tree = $xml->value;
-				}
 			}
 		}
 		return $tree;
@@ -163,13 +168,13 @@ else if ($xml->nodeType == XMLReader::TEXT) {
 	 * Function builds OpenPayU Xml Document
 	 * @access public
 	 * @param string $data
-	 * @param string $startElement
+	 * @param string $start_element
 	 * @param integer $request
 	 * @param string $xml_version
 	 * @param string $xml_encoding
 	 * @return string $xml
 	 */
-	public static function buildOpenPayUDocument($data, $startElement, $request = 1, $xml_version = '1.0', $xml_encoding = 'UTF-8')
+	public static function buildOpenPayUDocument($data, $start_element, $request = 1, $xml_version = '1.0', $xml_encoding = 'UTF-8')
 	{
 		if (!is_array($data))
 			return false;
@@ -178,7 +183,7 @@ else if ($xml->nodeType == XMLReader::TEXT) {
 		$xml->openMemory();
 		$xml->startDocument($xml_version, $xml_encoding);
 
-		if(OpenPayUConfiguration::getApiVersion() < 2)
+		if (OpenPayUConfiguration::getApiVersion() < 2)
 		{
 			$xml->startElementNS(null, 'OpenPayU', 'http://www.openpayu.com/openpayu.xsd');
 			$header = $request == 1 ? 'HeaderRequest' : 'HeaderResponse';
@@ -196,11 +201,11 @@ else if ($xml->nodeType == XMLReader::TEXT) {
 			$xml->startElementNS(null, 'OpenPayU', 'http://www.openpayu.com/20/openpayu.xsd');
 
 		// domain level - open
-		if(OpenPayUConfiguration::getApiVersion() < 2)
-			$xml->startElement(OpenPayUDomain::getDomain4Message($startElement));
+		if (OpenPayUConfiguration::getApiVersion() < 2)
+			$xml->startElement(OpenPayUDomain::getDomain4Message($start_element));
 
 		// message level - open
-		$xml->startElement($startElement);
+		$xml->startElement($start_element);
 
 		OpenPayUUtil::convertArrayToXml($xml, $data);
 
@@ -210,7 +215,7 @@ else if ($xml->nodeType == XMLReader::TEXT) {
 		$xml->endElement();
 
 		// document level - close
-		if(OpenPayUConfiguration::getApiVersion() < 2)
+		if (OpenPayUConfiguration::getApiVersion() < 2)
 			$xml->endElement();
 
 		return $xml->outputMemory(true);
@@ -233,22 +238,22 @@ else if ($xml->nodeType == XMLReader::TEXT) {
 	 * Function builds OpenPayU Form
 	 * @access public
 	 * @param string $data
-	 * @param string $msgName
+	 * @param string $msg_name
 	 * @param string $version
 	 * @return string
 	 */
-	public static function buildOpenPayuForm($data, $msgName, $version = '1.0')
+	public static function buildOpenPayuForm($data, $msg_name, $version = '1.0')
 	{
 		if (!is_array($data))
 			return false;
 
 		$url = OpenPayUNetwork::getOpenPayuEndPoint();
 
-		$form = "<form method='post' action='".$url."'>\n";
+		$form = '<form method="post" action="'.$url.'">\n';
 		$form .= OpenPayUBase::buildFormFragmentInput('HeaderRequest.Version', $version);
-		$form .= OpenPayUBase::buildFormFragmentInput('HeaderRequest.Name', $msgName);
+		$form .= OpenPayUBase::buildFormFragmentInput('HeaderRequest.Name', $msg_name);
 		$form .= OpenPayUBase::arr2form($data, '', '');
-		$form .= "</form>";
+		$form .= '</form>';
 
 		return $form;
 	}

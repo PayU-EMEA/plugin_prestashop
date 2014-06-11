@@ -12,24 +12,24 @@
 
 class OpenPayUConfiguration
 {
-	private static $_availableEnvironment = array('custom', 'secure');
+	private static $available_environment = array('custom', 'secure');
 	public static $env = 'secure';
-	public static $merchantPosId = '';
-	public static $posAuthKey = '';
-	public static $clientId = '';
-	public static $clientSecret = '';
-	public static $signatureKey = '';
+	public static $merchant_pos_id = '';
+	public static $pos_auth_key = '';
+	public static $client_id = '';
+	public static $client_secret = '';
+	public static $signature_key = '';
 
-	public static $serviceUrl = '';
-	public static $summaryUrl = '';
-	public static $authUrl = '';
-	public static $serviceDomain = '';
+	public static $service_url = '';
+	public static $summary_url = '';
+	public static $auth_url = '';
+	public static $service_domain = '';
 
-	private static $apiVersion = 2;
-	private static $_availableHashAlgorithm = array('MD5', 'SHA', 'SHA1', 'SHA-1', 'SHA-256', 'SHA256', 'SHA_256');
-	private static $hashAlgorithm = 'SHA-1';
+	private static $api_version = 2;
+	private static $available_hash_algorithm = array('MD5', 'SHA', 'SHA1', 'SHA-1', 'SHA-256', 'SHA256', 'SHA_256');
+	private static $hash_algorithm = 'SHA-1';
 
-	private static $dataFormat = 'json';
+	private static $data_format = 'json';
 
 	private static $sender = 'Generic';
 
@@ -40,14 +40,14 @@ class OpenPayUConfiguration
 	/**
 	 * @access public
 	 * @param int $version
-	 * @throws OpenPayUException_Configuration
+	 * @throws OpenPayUExceptionConfiguration
 	 */
 	public static function setApiVersion($version)
 	{
 		if (empty($version))
-			throw new OpenPayUException_Configuration('Invalid API version');
+			throw new OpenPayUExceptionConfiguration('Invalid API version');
 
-		self::$apiVersion = (int)$version;
+		self::$api_version = (int)$version;
 	}
 
 	/**
@@ -55,20 +55,20 @@ class OpenPayUConfiguration
 	 */
 	public static function getApiVersion()
 	{
-		return self::$apiVersion;
+		return self::$api_version;
 	}
 
 	/**
 	 * @access public
 	 * @param string
-	 * @throws OpenPayUException_Configuration
+	 * @throws OpenPayUExceptionConfiguration
 	 */
 	public static function setHashAlgorithm($value)
 	{
-		if (!in_array($value, self::$_availableHashAlgorithm))
-			throw new OpenPayUException_Configuration($value.' - is not available');
+		if (!in_array($value, self::$available_hash_algorithm))
+			throw new OpenPayUExceptionConfiguration($value.' - is not available');
 
-		self::$hashAlgorithm = $value;
+		self::$hash_algorithm = $value;
 	}
 
 	/**
@@ -77,7 +77,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getHashAlgorithm()
 	{
-		return self::$hashAlgorithm;
+		return self::$hash_algorithm;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class OpenPayUConfiguration
 	 * @param string $value
 	 * @param string $domain
 	 * @param string $country
-	 * @throws OpenPayUException_Configuration
+	 * @throws OpenPayUExceptionConfiguration
 	 */
 	public static function setEnvironment($value = 'secure', $domain = 'payu.pl', $country = 'pl')
 	{
@@ -94,8 +94,8 @@ class OpenPayUConfiguration
 		$country = Tools::strtolower($country).'/';
 		$service = 'standard/';
 
-		if (!in_array($value, self::$_availableEnvironment))
-			throw new OpenPayUException_Configuration($value.' - is not valid environment');
+		if (!in_array($value, self::$available_environment))
+			throw new OpenPayUExceptionConfiguration($value.' - is not valid environment');
 
 		if (self::getApiVersion() >= 2)
 		{
@@ -110,18 +110,19 @@ class OpenPayUConfiguration
 			if (self::getApiVersion() >= 2)
 				$domain = 'payu.com/';
 
-			self::$serviceDomain = $domain;
+			self::$service_domain = $domain;
 
-			self::$serviceUrl = 'https://'.$value.'.'.$domain.$country.$service;
-			self::$summaryUrl = self::$serviceUrl.'co/summary';
-			self::$authUrl = self::$serviceUrl.'oauth/user/authorize';
+			self::$service_url = 'https://'.$value.'.'.$domain.$country.$service;
+			self::$summary_url = self::$service_url.'co/summary';
+			self::$auth_url = self::$service_url.'oauth/user/authorize';
 		}
-		else if ($value == 'custom') {
+		else if ($value == 'custom')
+		{
 			self::$env = $value;
 
-			self::$serviceUrl = $domain.$country.$service;
-			self::$summaryUrl = self::$serviceUrl.'co/summary';
-			self::$authUrl = self::$serviceUrl.'oauth/user/authorize';
+			self::$service_url = $domain.$country.$service;
+			self::$summary_url = self::$service_url.'co/summary';
+			self::$auth_url = self::$service_url.'oauth/user/authorize';
 		}
 	}
 
@@ -131,7 +132,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getServiceUrl()
 	{
-		return self::$serviceUrl;
+		return self::$service_url;
 	}
 
 	/**
@@ -140,7 +141,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getSummaryUrl()
 	{
-		return self::$summaryUrl;
+		return self::$summary_url;
 	}
 
 	/**
@@ -149,7 +150,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getAuthUrl()
 	{
-		return self::$authUrl;
+		return self::$auth_url;
 	}
 
 	/**
@@ -167,7 +168,7 @@ class OpenPayUConfiguration
 	 */
 	public static function setMerchantPosId($value)
 	{
-		self::$merchantPosId = trim($value);
+		self::$merchant_pos_id = trim($value);
 	}
 
 	/**
@@ -176,7 +177,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getMerchantPosId()
 	{
-		return self::$merchantPosId;
+		return self::$merchant_pos_id;
 	}
 
 	/**
@@ -185,7 +186,7 @@ class OpenPayUConfiguration
 	 */
 	public static function setPosAuthKey($value)
 	{
-		self::$posAuthKey = trim($value);
+		self::$pos_auth_key = trim($value);
 	}
 
 	/**
@@ -194,7 +195,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getPosAuthKey()
 	{
-		return self::$posAuthKey;
+		return self::$pos_auth_key;
 	}
 
 	/**
@@ -203,7 +204,7 @@ class OpenPayUConfiguration
 	 */
 	public static function setClientId($value)
 	{
-		self::$clientId = trim($value);
+		self::$client_id = trim($value);
 	}
 
 	/**
@@ -212,7 +213,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getClientId()
 	{
-		return self::$clientId;
+		return self::$client_id;
 	}
 
 	/**
@@ -221,7 +222,7 @@ class OpenPayUConfiguration
 	 */
 	public static function setClientSecret($value)
 	{
-		self::$clientSecret = trim($value);
+		self::$client_secret = trim($value);
 	}
 
 	/**
@@ -230,7 +231,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getClientSecret()
 	{
-		return self::$clientSecret;
+		return self::$client_secret;
 	}
 
 	/**
@@ -239,7 +240,7 @@ class OpenPayUConfiguration
 	 */
 	public static function setSignatureKey($value)
 	{
-		self::$signatureKey = trim($value);
+		self::$signature_key = trim($value);
 	}
 
 	/**
@@ -248,21 +249,19 @@ class OpenPayUConfiguration
 	 */
 	public static function getSignatureKey()
 	{
-		return self::$signatureKey;
+		return self::$signature_key;
 	}
 
 	/**
 	 * @access public
 	 * @return string
 	 */
-	public static function getDataFormat($withDot = false)
+	public static function getDataFormat($with_dot = false)
 	{
-		if ($withDot)
-		{
-			return ".".self::$dataFormat;
-		}
+		if ($with_dot)
+			return '.'.self::$data_format;
 
-		return self::$dataFormat;
+		return self::$data_format;
 	}
 
 	/**
@@ -287,7 +286,7 @@ class OpenPayUConfiguration
 	 */
 	public static function getFullSenderName()
 	{
-		return sprintf("%s@%s", self::getSender(), self::getSdkVersion());
+		return sprintf('%s@%s', self::getSender(), self::getSdkVersion());
 	}
 
 	/**
@@ -295,12 +294,13 @@ class OpenPayUConfiguration
 	 */
 	public static function getSdkVersion()
 	{
-		$composerFilePath = self::getComposerFilePath();
-		if (file_exists($composerFilePath)) {
-			$fileContent = Tools::file_get_contents($composerFilePath);
-			$composerData = Tools::jsonDecode($fileContent);
-			if (isset($composerData->version) && isset($composerData->extra[0]->engine) )
-				return sprintf("%s %s", $composerData->extra[0]->engine, $composerData->version);
+		$composer_file_path = self::getComposerFilePath();
+		if (file_exists($composer_file_path))
+		{
+			$file_content = Tools::file_get_contents($composer_file_path);
+			$composer_data = Tools::jsonDecode($file_content);
+			if (isset($composer_data->version) && isset($composer_data->extra[0]->engine))
+				return sprintf('%s %s', $composer_data->extra[0]->engine, $composer_data->version);
 		}
 		return self::DEFAULT_SDK_VERSION;
 	}

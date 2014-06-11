@@ -10,7 +10,7 @@
  *	http://twitter.com/openpayu
  */
 
-if (!defined('OpenPayULIBRARY'))
+if (!defined('OPEN_PAYU_LIBRARY'))
 	exit;
 
 class OpenPayUToken extends OpenPayU
@@ -42,7 +42,8 @@ class OpenPayUToken extends OpenPayU
 		$httpStatus = $response['code'];
 		$message = OpenPayUUtil::parseXmlDocument($response['response']);
 
-		if (isset($message['OpenPayU'][$messageName])) {
+		if (isset($message['OpenPayU'][$messageName]))
+		{
 			$status = $message['OpenPayU'][$messageName]['Status'];
 			$data['Status'] = $status;
 			unset($message['OpenPayU'][$messageName]['Status']);
@@ -59,9 +60,8 @@ class OpenPayUToken extends OpenPayU
 
 		if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 302)
 			return $result;
-		else {
+		else
 			OpenPayUHttp::throwHttpStatusException($httpStatus, $result);
-		}
 
 		return null;
 	}

@@ -10,7 +10,7 @@
  *	http://twitter.com/openpayu
  */
 
-if (!defined('OpenPayULIBRARY'))
+if (!defined('OPEN_PAYU_LIBRARY'))
 	exit;
 
 class OpenPayuOAuth extends OpenPayUBase

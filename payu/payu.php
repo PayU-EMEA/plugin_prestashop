@@ -1870,7 +1870,8 @@ class PayU extends PaymentModule
 				Configuration::get('PAYU_EPAYMENT_SECRET_KEY'), PayuSignature::signatureString($params, array('HASH'))))
 			return array('error' => 'Invalid signature');
 
-		try {
+		try
+		{
 			$history = new OrderHistory();
 			$history->id_order = $order_id;
 

@@ -18,41 +18,39 @@ class OpenPayUHttpCurl implements OpenPayUHttpProtocol
 	static $headers;
 
 	/**
-	 * @param $requestType
-	 * @param $pathUrl
+	 * @param $request_type
+	 * @param $path_url
 	 * @param $data
 	 * @param $signature
 	 * @return mixed
-	 * @throws OpenPayUException_Configuration
-	 * @throws OpenPayUException_Network
-	 * @throws OpenPayUException_Authorization
+	 * @throws OpenPayUExceptionConfiguration
+	 * @throws OpenPayUExceptionNetwork
+	 * @throws OpenPayUExceptionAuthorization
 	 */
-	public static function doRequest($requestType, $pathUrl, $data, $posId, $signatureKey)
+	public static function doRequest($request_type, $path_url, $data, $pos_id, $signature_key)
 	{
-		if (empty($pathUrl))
-			throw new OpenPayUException_Configuration('The end point is empty');
+		if (empty($path_url))
+			throw new OpenPayUExceptionConfiguration('The end point is empty');
 
-		if (empty($posId)) {
-			throw new OpenPayUException_Configuration('PosId is empty');
-		}
+		if (empty($pos_id))
+			throw new OpenPayUExceptionConfiguration('PosId is empty');
 
-		if (empty($signatureKey)) {
-			throw new OpenPayUException_Configuration('SignatureKey is empty');
-		}
+		if (empty($signature_key))
+			throw new OpenPayUExceptionConfiguration('SignatureKey is empty');
 
-		$userNameAndPassword = $posId.":".$signatureKey;
+		$user_name_and_password = $pos_id.':'.$signature_key;
 
 		$header = array();
 
-		if(OpenPayUConfiguration::getApiVersion() >= 2)
+		if (OpenPayUConfiguration::getApiVersion() >= 2)
 		{
 			$header[] = 'Content-Type:application/json';
 			$header[] = 'Accept:application/json';
 		}
 
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $pathUrl);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $requestType);
+		curl_setopt($ch, CURLOPT_URL, $path_url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request_type);
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 		curl_setopt($ch, CURLOPT_HEADER, false);
@@ -65,17 +63,17 @@ class OpenPayUHttpCurl implements OpenPayUHttpProtocol
 		curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		curl_setopt($ch, CURLOPT_USERPWD, $userNameAndPassword);
+		curl_setopt($ch, CURLOPT_USERPWD, $user_name_and_password);
 
 		$response = curl_exec($ch);
-		$httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-		if($response === false)
-			throw new OpenPayUException_Network(curl_error($ch));
+		if ($response === false)
+			throw new OpenPayUExceptionNetwork(curl_error($ch));
 
 		curl_close($ch);
 
-		return array('code' => $httpStatus, 'response' => trim($response));
+		return array('code' => $http_status, 'response' => trim($response));
 	}
 
 	/**
@@ -85,9 +83,9 @@ class OpenPayUHttpCurl implements OpenPayUHttpProtocol
 	 */
 	public static function getSignature($headers)
 	{
-		foreach($headers as $name => $value)
+		foreach ($headers as $name => $value)
 		{
-			if(preg_match('/X-OpenPayU-Signature/i', $name))
+			if (preg_match('/X-OpenPayU-Signature/i', $name))
 				return $value;
 		}
 	}
@@ -100,9 +98,9 @@ class OpenPayUHttpCurl implements OpenPayUHttpProtocol
 	public static function readHeader($ch, $header)
 	{
 		is_string($ch);
-		if( preg_match('/([^:]+): (.+)/m', $header, $match) ) {
+
+		if (preg_match('/([^:]+): (.+)/m', $header, $match))
 			self::$headers[$match[1]] = trim($match[2]);
-		}
 
 		return Tools::strlen($header);
 	}

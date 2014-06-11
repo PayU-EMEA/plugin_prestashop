@@ -12,7 +12,7 @@
 
 include_once('OpenPayUdomain.php');
 
-define('OpenPayULIBRARY', true);
+define('OPEN_PAYU_LIBRARY', true);
 /*
 these files are obsolete and will be removed in future.
 valid only for SDK 0.x

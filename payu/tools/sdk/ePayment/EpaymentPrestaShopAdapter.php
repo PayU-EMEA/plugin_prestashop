@@ -71,7 +71,7 @@ class EpaymentPrestaShopAdapter
 		$default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
 		$lang_iso_code = Language::getIsoById($default_lang);
 		$live_update->setPaymentCurrency($currency['iso_code']);
-		$live_update->setLanguage(strtoupper($lang_iso_code));
+		$live_update->setLanguage(Tools::strtoupper($lang_iso_code));
 
 		$payu_product = new PayuProduct();
 		$payu_product->setName('Payment for order '.$internal_reference);
@@ -101,7 +101,7 @@ class EpaymentPrestaShopAdapter
 					$billing->setAddress2($address->address2);
 					$billing->setZipCode($address->postcode);
 					$billing->setCity($address->city);
-					$billing->setCountryCode(strtoupper($country->iso_code));
+					$billing->setCountryCode(Tools::strtoupper($country->iso_code));
 
 					$live_update->setBillingAddress($billing);
 				}
@@ -120,7 +120,7 @@ class EpaymentPrestaShopAdapter
 					$delivery->setAddress2($address->address2);
 					$delivery->setZipCode($address->postcode);
 					$delivery->setCity($address->city);
-					$delivery->setCountryCode(strtoupper($country->iso_code));
+					$delivery->setCountryCode(Tools::strtoupper($country->iso_code));
 					$live_update->setDeliveryAddress($delivery);
 				}
 			}

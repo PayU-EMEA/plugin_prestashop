@@ -10,7 +10,7 @@
  *	http://twitter.com/openpayu
  */
 
-define('OpenPayULIBRARY', true);
+define('OPEN_PAYU_LIBRARY', true);
 
 include_once('openpayu_domain.php');
 include_once('OpenPayU/OpenPayUException.php');

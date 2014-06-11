@@ -17,38 +17,41 @@ class OpenPayUUtil
 	 * @access public
 	 * @param string $data
 	 * @param string $algorithm
-	 * @param string $merchantPosId
-	 * @param string $signatureKey
-	 * @return string $signData
-	 * @throws OpenPayUException_Configuration
+	 * @param string $merchant_pos_id
+	 * @param string $signature_key
+	 * @return string $sign_data
+	 * @throws OpenPayUExceptionConfiguration
 	 */
-	public static function generateSignData($data, $algorithm = 'SHA', $merchantPosId = '', $signatureKey = '')
+	public static function generateSignData($data, $algorithm = 'SHA', $merchant_pos_id = '', $signature_key = '')
 	{
-		if (empty($signatureKey))
-			throw new OpenPayUException_Configuration('Merchant Signature Key should not be null or empty.');
+		if (empty($signature_key))
+			throw new OpenPayUExceptionConfiguration('Merchant Signature Key should not be null or empty.');
 
-		if (empty($merchantPosId))
-			throw new OpenPayUException_Configuration('MerchantPosId should not be null or empty.');
+		if (empty($merchant_pos_id))
+			throw new OpenPayUExceptionConfiguration('MerchantPosId should not be null or empty.');
 
 		$signature = '';
 
-		$data = $data.$signatureKey;
+		$data = $data.$signature_key;
 
-		if ($algorithm == 'MD5') {
+		if ($algorithm == 'MD5')
 			$signature = md5($data);
-		}
-else if (in_array($algorithm, array('SHA', 'SHA1', 'SHA-1'))) {
+
+		else if (in_array($algorithm, array('SHA', 'SHA1', 'SHA-1')))
+		{
 			$signature = sha1($data);
 			$algorithm = 'SHA-1';
 		}
-else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
+
+		else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256')))
+		{
 			$signature = hash('sha256', $data);
 			$algorithm = 'SHA-256';
 		}
 
-		$signData = 'sender='.$merchantPosId.';signature='.$signature.';algorithm='.$algorithm.';content=DOCUMENT';
+		$sign_data = 'sender='.$merchant_pos_id.';signature='.$signature.';algorithm='.$algorithm.';content=DOCUMENT';
 
-		return $signData;
+		return $sign_data;
 	}
 
 	/**
@@ -61,46 +64,44 @@ else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
 		if (empty($data))
 			return null;
 
-		$signatureData = array();
+		$signature_data = array();
 
 		$list = explode(';', rtrim($data, ';'));
 		if (empty($list))
 			return null;
 
-		foreach ($list as $value) {
+		foreach ($list as $value)
+		{
 			$explode = explode('=', $value);
-			$signatureData[$explode[0]] = $explode[1];
+			$signature_data[$explode[0]] = $explode[1];
 		}
 
-		return (object)$signatureData;
+		return (object)$signature_data;
 	}
 
 	/**
 	 * Function returns signature validate
 	 * @param $message
 	 * @param $signature
-	 * @param $signatureKey
+	 * @param $signature_key
 	 * @param $algorithm
 	 * @return bool
 	 */
-	public static function verifySignature($message, $signature, $signatureKey, $algorithm = 'MD5')
+	public static function verifySignature($message, $signature, $signature_key, $algorithm = 'MD5')
 	{
 		$hash = '';
 
-		if (isset($signature)) {
-			if ($algorithm == 'MD5') {
-				$hash = md5($message.$signatureKey);
-			}
-else if (in_array($algorithm, array('SHA', 'SHA1', 'SHA-1'))) {
-				$hash = sha1($message.$signatureKey);
-			}
-else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
-				$hash = hash('sha256', $message.$signatureKey);
-			}
+		if (isset($signature))
+		{
+			if ($algorithm == 'MD5')
+				$hash = md5($message.$signature_key);
+			else if (in_array($algorithm, array('SHA', 'SHA1', 'SHA-1')))
+				$hash = sha1($message.$signature_key);
+			else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256')))
+				$hash = hash('sha256', $message.$signature_key);
 
-			if (strcmp($signature, $hash) == 0) {
+			if (strcmp($signature, $hash) == 0)
 				return true;
-			}
 		}
 
 		return false;
@@ -110,16 +111,16 @@ else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
 	 * Function builds OpenPayU Json Document
 	 * @access public
 	 * @param string $data
-	 * @param string $rootElement
+	 * @param string $root_element
 	 * @return string $xml
 	 */
-	public static function buildJsonFromArray($data, $rootElement = '')
+	public static function buildJsonFromArray($data, $root_element = '')
 	{
 		if (!is_array($data))
 			return null;
 
-		if (!empty($rootElement))
-			$data = array($rootElement => $data);
+		if (!empty($root_element))
+			$data = array($root_element => $data);
 
 		$data = self::setSenderProperty($data);
 
@@ -130,13 +131,13 @@ else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
 	 * Function builds OpenPayU Xml Document
 	 * @access public
 	 * @param string $data
-	 * @param string $rootElement
+	 * @param string $root_element
 	 * @param string $version
 	 * @param string $encoding
-	 * @param string $rootElementXsi
+	 * @param string $root_element_xsi
 	 * @return string $xml
 	 */
-	public static function buildXmlFromArray($data, $rootElement, $version = '1.0', $encoding = 'UTF-8', $rootElementXsi = null)
+	public static function buildXmlFromArray($data, $root_element, $version = '1.0', $encoding = 'UTF-8', $root_element_xsi = null)
 	{
 		if (!is_array($data))
 			return null;
@@ -150,11 +151,12 @@ else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
 		$xml->startDocument($version, $encoding);
 		$xml->startElementNS(null, 'OpenPayU', 'http://www.openpayu.com/20/openpayu.xsd');
 
-		$xml->startElement($rootElement);
+		$xml->startElement($root_element);
 
-		if (!empty($rootElementXsi)) {
+		if (!empty($root_element_xsi))
+		{
 			$xml->startAttributeNs('xsi', 'type', 'http://www.w3.org/2001/XMLSchema-instance');
-			$xml->text($rootElementXsi);
+			$xml->text($root_element_xsi);
 			$xml->endAttribute();
 		}
 
@@ -175,13 +177,16 @@ else if (in_array($algorithm, array('SHA-256', 'SHA256', 'SHA_256'))) {
 	 */
 	public static function convertArrayToXml(XMLWriter $xml, $data)
 	{
-		if (!empty($data) && is_array($data)) {
-			foreach ($data as $key => $value) {
-				if (is_array($value)) {
-					if (is_numeric($key)) {
+		if (!empty($data) && is_array($data))
+		{
+			foreach ($data as $key => $value)
+			{
+				if (is_array($value))
+				{
+					if (is_numeric($key))
 						self::convertArrayToXml($xml, $value);
-					}
-else {
+					else
+					{
 						$xml->startElement($key);
 						self::convertArrayToXml($xml, $value);
 						$xml->endElement();
@@ -215,9 +220,9 @@ else {
 	 */
 	public static function convertXmlToArray($xml)
 	{
-		$xmlObject = simplexml_load_string($xml);
-		$xmlArray = array( $xmlObject->getName() => (array)$xmlObject );
-		return Tools::jsonDecode(Tools::jsonEncode($xmlArray),1);
+		$xml_object = simplexml_load_string($xml);
+		$xml_array = array( $xml_object->getName() => (array)$xml_object );
+		return Tools::jsonDecode(Tools::jsonEncode($xml_array), 1);
 	}
 
 	/**
@@ -239,27 +244,25 @@ else {
 	 */
 	public static function parseArrayToObject($array)
 	{
-		if (!is_array($array)) {
+		if (!is_array($array))
 			return $array;
-		}
 
-		if (self::isAssocArray($array)){
+		if (self::isAssocArray($array))
 			$object = new stdClass();
-		}
-		else{
+		else
 			$object = array();
-		}
 
-		if (is_array($array) && count($array) > 0) {
-			foreach ($array as $name => $value) {
+		if (is_array($array) && count($array) > 0)
+		{
+			foreach ($array as $name => $value)
+			{
 				$name = trim($name);
-				if (isset($name)){
-					if (is_numeric($name)){
+				if (isset($name))
+				{
+					if (is_numeric($name))
 						$object[] = self::parseArrayToObject($value);
-					}
-					else{
+					else
 						$object->$name = self::parseArrayToObject($value);
-					}
 				}
 			}
 			return $object;
@@ -273,17 +276,18 @@ else {
 	 */
 	public static function getRequestHeaders()
 	{
-		if(!function_exists('apache_request_headers')) {
+		if (!function_exists('apache_request_headers'))
+		{
 				$headers = array();
-				foreach($_SERVER as $key => $value) {
-					if(Tools::substr($key, 0, 5) == 'HTTP_') {
+				foreach ($_SERVER as $key => $value)
+				{
+					if (Tools::substr($key, 0, 5) == 'HTTP_')
 						$headers[str_replace(' ', '-', ucwords(str_replace('_', ' ', Tools::strtolower(Tools::substr($key, 5)))))] = $value;
-					}
 				}
 				return $headers;
-		}else{
-			return apache_request_headers();
 		}
+		else
+			return apache_request_headers();
 	}
 
 	/**
@@ -291,33 +295,32 @@ else {
 	 * @param string $namespace
 	 * @return string
 	 */
-	public static function convertArrayToHtmlForm($array, $namespace = "", &$outputFields)
+	public static function convertArrayToHtmlForm($array, $namespace = '', &$output_fields)
 	{
 		$i = 0;
-		$htmlOutput = "";
+		$html_output = '';
 		$assoc = self::isAssocArray($array);
 
-		foreach ($array as $key => $value) {
+		foreach ($array as $key => $value)
+		{
 
 			//Temporary important changes only for order by form method
 			$key = self::changeFormFieldFormat($namespace, $key);
 
-			if ($namespace && $assoc) {
+			if ($namespace && $assoc)
 				$key = $namespace.'.'.$key;
-			}
-elseif ($namespace && !$assoc) {
+			elseif ($namespace && !$assoc)
 				$key = $namespace.'['.$i++.']';
-			}
 
-			if (is_array($value)) {
-				$htmlOutput .= self::convertArrayToHtmlForm($value, $key, $outputFields);
-			}
-else {
-				$htmlOutput .= sprintf("<input type=\"hidden\" name=\"%s\" value=\"%s\" />\n", $key, $value);
-				$outputFields[$key] = $value;
+			if (is_array($value))
+				$html_output .= self::convertArrayToHtmlForm($value, $key, $output_fields);
+			else
+			{
+				$html_output .= sprintf('<input type="hidden" name="%s" value="%s" />\n', $key, $value);
+				$output_fields[$key] = $value;
 			}
 		}
-		return $htmlOutput;
+		return $html_output;
 	}
 
 	/**
@@ -326,9 +329,9 @@ else {
 	 */
 	public static function isAssocArray($arr)
 	{
-		$arrKeys = array_keys($arr);
-		sort($arrKeys, SORT_NUMERIC);
-		return $arrKeys !== range(0, count($arr) - 1);
+		$arr_keys = array_keys($arr);
+		sort($arr_keys, SORT_NUMERIC);
+		return $arr_keys !== range(0, count($arr) - 1);
 	}
 
 	/**
@@ -340,9 +343,9 @@ else {
 	{
 		$key = Tools::ucfirst($key);
 
-		if ($key === $namespace && $key[Tools::strlen($key) - 1] == 's') {
+		if ($key === $namespace && $key[Tools::strlen($key) - 1] == 's')
 			return Tools::substr($key, 0, -1);
-		}
+
 		return $key;
 	}
 

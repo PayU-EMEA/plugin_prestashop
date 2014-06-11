@@ -15,27 +15,27 @@ class OpenPayUException extends Exception
 
 }
 
-class OpenPayUException_Configuration extends  OpenPayUException
+class OpenPayUExceptionConfiguration extends  OpenPayUException
 {
 
 }
 
-class OpenPayUException_Network extends  OpenPayUException
+class OpenPayUExceptionNetwork extends  OpenPayUException
 {
 
 }
 
-class OpenPayUException_ServerError extends  OpenPayUException
+class OpenPayUExceptionServerError extends  OpenPayUException
 {
 
 }
 
-class OpenPayUException_ServerMaintenance extends  OpenPayUException
+class OpenPayUExceptionServerMaintenance extends  OpenPayUException
 {
 
 }
 
-class OpenPayUException_Authorization extends  OpenPayUException
+class OpenPayUExceptionAuthorization extends  OpenPayUException
 {
 
 }

@@ -17,11 +17,9 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 	public function process()
 	{
 		$body = Tools::file_get_contents ( 'php://input' );
-		$data = Tools::stripslashes ( trim ( $body ) );
+		$data = trim( $body );
 		$result = OpenPayUOrder::consumeNotification ( $data );
 		$response = $result->getResponse();
-
-		file_put_contents(_PS_MODULE_DIR_.'/../log/notification.log', print_r($response, true)."\n", FILE_APPEND);
 
 		if (isset($response->order->orderId))
 		{
@@ -29,8 +27,6 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 			$payu->id_session = $response->order->orderId;
 			$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
 			$id_order = (int)$order_payment['id_order'];
-
-			file_put_contents(_PS_MODULE_DIR_.'/../log/notification.log', 'Order Id: '."\n", FILE_APPEND);
 
 			// if order not validated yet
 			if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)

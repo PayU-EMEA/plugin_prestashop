@@ -17,10 +17,10 @@ class OpenPayUResult
 	private $success = 0;
 	private $request = '';
 	private $response = '';
-	private $sessionId = '';
+	private $session_id = '';
 	private $message = '';
-	private $countryCode = '';
-	private $reqId = '';
+	private $country_code = '';
+	private $req_id = '';
 
 	/**
 	 * @access public
@@ -118,7 +118,7 @@ class OpenPayUResult
 	 */
 	public function getSessionId()
 	{
-		return $this->sessionId;
+		return $this->session_id;
 	}
 
 	/**
@@ -127,7 +127,7 @@ class OpenPayUResult
 	 */
 	public function setSessionId($value)
 	{
-		$this->sessionId = $value;
+		$this->session_id = $value;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class OpenPayUResult
 	 */
 	public function getCountryCode()
 	{
-		return $this->countryCode;
+		return $this->country_code;
 	}
 
 	/**
@@ -163,7 +163,7 @@ class OpenPayUResult
 	 */
 	public function setCountryCode($value)
 	{
-		$this->countryCode = $value;
+		$this->country_code = $value;
 	}
 
 	/**
@@ -172,7 +172,7 @@ class OpenPayUResult
 	 */
 	public function getReqId()
 	{
-		return $this->reqId;
+		return $this->req_id;
 	}
 
 	/**
@@ -181,17 +181,17 @@ class OpenPayUResult
 	 */
 	public function setReqId($value)
 	{
-		$this->reqId = $value;
+		$this->req_id = $value;
 	}
 
 	public function init($attributes)
 	{
 		$attributes = OpenPayUUtil::parseArrayToObject($attributes);
 
-		if (!empty($attributes)) {
-			foreach ($attributes as $name => $value) {
+		if (!empty($attributes))
+		{
+			foreach ($attributes as $name => $value)
 				$this->set($name, $value);
-			}
 		}
 	}
 
@@ -208,18 +208,23 @@ class OpenPayUResult
 		return null;
 	}
 
-	public function __call($methodName, $args) {
-		if (preg_match('~^(set|get)([A-Z])(.*)$~', $methodName, $matches)) {
+	public function __call($method_name, $args)
+	{
+		if (preg_match('~^(set|get)([A-Z])(.*)$~', $method_name, $matches))
+		{
+
 			$property = Tools::strtolower($matches[2]).$matches[3];
-			if (!property_exists($this, $property)) {
+
+			if (!property_exists($this, $property))
 				throw new Exception('Property '.$property.' not exists');
-			}
-			switch($matches[1]) {
+
+			switch ($matches[1])
+			{
 				case 'get':
-					$this->checkArguments($args, 0, 0, $methodName);
+					$this->checkArguments($args, 0, 0, $method_name);
 					return $this->get($property);
 				case 'default':
-					throw new Exception('Method '.$methodName.' not exists');
+					throw new Exception('Method '.$method_name.' not exists');
 			}
 		}
 	}

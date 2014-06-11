@@ -12,5 +12,5 @@
 
 interface OpenPayUHttpProtocol
 {
-	public static function doRequest($requestType, $pathUrl, $fieldsList, $posId, $signatureKey);
+	public static function doRequest($request_type, $path_url, $fields_ist, $pos_id, $signature_key);
 }

@@ -641,7 +641,7 @@ class PayuLu extends PayuSettings
 
 	private function checkEmptyVar($string)
 	{
-		return (strlen(trim($string)) == 0);
+		return (Tools::strlen(trim($string)) == 0);
 	}
 
 	/**
@@ -795,7 +795,7 @@ class PayuLu extends PayuSettings
 		if (!empty($this->hash_string))
 		{
 			if ($debug === true)
-				return 'Hover on the substring for explanation:<br/><style>.puHidden{display:none;}.puInline{display: block;float: left;}</style>'
+				return 'Hover on the Tools::substring for explanation:<br/><style>.puHidden{display:none;}.puInline{display: block;float: left;}</style>'
 					.$this->makeHashString('HTML').' <script type="javascript"></script>';
 		else
 			return $this->hash_string;
@@ -928,10 +928,10 @@ class PayuLu extends PayuSettings
 					$name
 				).'\').style.display=\'block\';this.style.border=\'1px solid\'" onmouseout="document.getElementById(\''.md5(
 					$name
-				).'\').style.display=\'none\';this.style.border=\'0\'"><b style="color:red">'.strlen(
+				).'\').style.display=\'none\';this.style.border=\'0\'"><b style="color:red">'.Tools::strlen(
 					$string
 				).'</b>'.$string.'<strong id="'.md5($name).'" class="puHidden"></strong></div>';
-			$return_value = strlen($string).$string;
+			$return_value = Tools::strlen($string).$string;
 		}
 
 		if ($type == 'HTML')
@@ -949,7 +949,7 @@ class PayuLu extends PayuSettings
 
 	private function addInput($string, $value)
 	{
-		return '<input type="hidden" name="'.strtoupper($string).'" value="'.htmlentities(
+		return '<input type="hidden" name="'.Tools::strtoupper($string).'" value="'.htmlentities(
 			$value,
 			ENT_COMPAT,
 			'UTF-8'

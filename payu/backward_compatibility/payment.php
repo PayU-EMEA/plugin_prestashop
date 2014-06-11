@@ -58,7 +58,8 @@ if (!empty($result))
 	$smarty->assign(array('link' => $payu->getModuleAddress().'backward_compatibility/validation.php'));
 
 	echo $payu->fetchTemplate($template);
-} else {
+}
+else{
 	$smarty->assign(
 		array(
 			'message' => $payu->l('An error occurred while processing your order.')

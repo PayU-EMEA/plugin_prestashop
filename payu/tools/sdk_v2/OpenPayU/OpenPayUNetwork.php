@@ -13,7 +13,7 @@
 class OpenPayUNetwork
 {
 	/** @var string OpenPayU EndPoint Url */
-	protected static $openPayuEndPointUrl = '';
+	protected static $open_payu_end_point_url = '';
 
 	/**
 	 * The function sets EndPointUrl param of OpenPayU
@@ -22,7 +22,7 @@ class OpenPayUNetwork
 	 */
 	public static function setOpenPayuEndPoint($ep)
 	{
-		self::$openPayuEndPointUrl = $ep;
+		self::$open_payu_end_point_url = $ep;
 	}
 
 	/**
@@ -32,7 +32,7 @@ class OpenPayUNetwork
 	 */
 	public static function getOpenPayuEndPoint()
 	{
-		return self::$openPayuEndPointUrl;
+		return self::$open_payu_end_point_url;
 	}
 
 	/**
@@ -53,14 +53,14 @@ class OpenPayUNetwork
 	 * @access public
 	 * @deprecated
 	 * @return string
-	 * @throws OpenPayUException_Configuration
+	 * @throws OpenPayUExceptionConfiguration
 	 */
-	public static function OpenPayUException_Configuration()
+	public static function openPayUExceptionConfiguration()
 	{
-		if (empty(self::$openPayuEndPointUrl))
-			throw new OpenPayUException_Configuration('OpenPayUNetwork::$openPayuEndPointUrl is empty');
+		if (empty(self::$open_payu_end_point_url))
+			throw new OpenPayUExceptionConfiguration('OpenPayUNetwork::$open_payu_end_point_url is empty');
 
-		return self::$openPayuEndPointUrl;
+		return self::$open_payu_end_point_url;
 	}
 
 	/**
@@ -69,64 +69,61 @@ class OpenPayUNetwork
 	 * @deprecated
 	 * @param string $doc
 	 * @return string
-	 * @throws OpenPayUException_Configuration
+	 * @throws OpenPayUExceptionConfiguration
 	 */
 	public static function sendOpenPayuDocument($doc)
 	{
-
-		if (empty(self::$openPayuEndPointUrl))
-			throw new OpenPayUException_Configuration('OpenPayUNetwork::$openPayuEndPointUrl is empty');
+		if (empty(self::$open_payu_end_point_url))
+			throw new OpenPayUExceptionConfiguration('OpenPayUNetwork::$open_payu_end_point_url is empty');
 
 		if (!self::isCurlInstalled())
-			throw new OpenPayUException_Configuration('cURL is not available');
+			throw new OpenPayUExceptionConfiguration('cURL is not available');
 
 		$xml = urlencode($doc);
-		return OpenPayU::sendData(self::$openPayuEndPointUrl, 'DOCUMENT='.$xml);
+		return OpenPayU::sendData(self::$open_payu_end_point_url, 'DOCUMENT='.$xml);
 	}
 
 	/**
 	 * This function sends auth data to the EndPointUrl OpenPayU
 	 * @access public
 	 * @param string $doc
-	 * @param integer $merchantPosId
-	 * @param string $signatureKey
+	 * @param integer $merchant_pos_id
+	 * @param string $signature_key
 	 * @param string $algorithm
 	 * @return string
-	 * @throws OpenPayUException_Configuration
+	 * @throws OpenPayUExceptionConfiguration
 	 * @deprecated
 	 */
-	public static function sendOpenPayuDocumentAuth($doc, $merchantPosId, $signatureKey, $algorithm = 'MD5')
+	public static function sendOpenPayuDocumentAuth($doc, $merchant_pos_id, $signature_key, $algorithm = 'MD5')
 	{
-		if (empty(self::$openPayuEndPointUrl))
-			throw new OpenPayUException_Configuration('OpenPayUNetwork::$openPayuEndPointUrl is empty');
+		if (empty(self::$open_payu_end_point_url))
+			throw new OpenPayUExceptionConfiguration('OpenPayUNetwork::$open_payu_end_point_url is empty');
 
-		if (empty($signatureKey))
-			throw new OpenPayUException_Configuration('Merchant Signature Key should not be null or empty.');
+		if (empty($signature_key))
+			throw new OpenPayUExceptionConfiguration('Merchant Signature Key should not be null or empty.');
 
-		if (empty($merchantPosId))
-			throw new OpenPayUException_Configuration('MerchantPosId should not be null or empty.');
+		if (empty($merchant_pos_id))
+			throw new OpenPayUExceptionConfiguration('MerchantPosId should not be null or empty.');
 
-		$tosigndata = $doc.$signatureKey;
+		$tosigndata = $doc.$signature_key;
 		$xml = urlencode($doc);
 		$signature = '';
-		if ($algorithm == 'MD5') {
+		if ($algorithm == 'MD5')
 			$signature = md5($tosigndata);
-		}
-else if ($algorithm == 'SHA') {
+		else if ($algorithm == 'SHA')
 			$signature = sha1($tosigndata);
-		}
-else if ($algorithm == 'SHA-256' || $algorithm == 'SHA256' || $algorithm == 'SHA_256') {
+		else if ($algorithm == 'SHA-256' || $algorithm == 'SHA256' || $algorithm == 'SHA_256')
 			$signature = hash('sha256', $tosigndata);
-		}
-		$authData = 'sender='.$merchantPosId .
-			';signature='.$signature .
-			';algorithm='.$algorithm .
+
+		$auth_data = 'sender='.$merchant_pos_id.
+			';signature='.$signature.
+			';algorithm='.$algorithm.
 			';content=DOCUMENT';
 
 		if (!self::isCurlInstalled())
-			throw new OpenPayUException_Configuration('curl is not available');
+			throw new OpenPayUExceptionConfiguration('curl is not available');
 
-		return OpenPayU::sendDataAuth(self::$openPayuEndPointUrl, 'DOCUMENT='.$xml, $authData);
+		return OpenPayU::sendDataAuth(self::$open_payu_end_point_url, 'DOCUMENT='.$xml, $auth_data);
 	}
 
 	/**
@@ -135,10 +132,10 @@ else if ($algorithm == 'SHA-256' || $algorithm == 'SHA256' || $algorithm == 'SHA
 	 * @deprecated
 	 * @param string $url
 	 * @param string $doc
-	 * @param string $authData
+	 * @param string $auth_data
 	 * @return string $response
 	 */
-	public static function sendDataAuth($url, $doc, $authData)
+	public static function sendDataAuth($url, $doc, $auth_data)
 	{
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POST, 1);
@@ -150,7 +147,7 @@ else if ($algorithm == 'SHA-256' || $algorithm == 'SHA256' || $algorithm == 'SHA
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-OpenPayU-Signature:'.$authData));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-OpenPayU-Signature:'.$auth_data));
 
 		$response = curl_exec($ch);
 

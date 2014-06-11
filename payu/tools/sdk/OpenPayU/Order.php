@@ -10,7 +10,7 @@
  *	http://twitter.com/openpayu
  */
 
-if (!defined('OpenPayULIBRARY'))
+if (!defined('OPEN_PAYU_LIBRARY'))
 	exit;
 
 class OpenPayUOrder extends OpenPayU
@@ -119,11 +119,13 @@ class OpenPayUOrder extends OpenPayU
 		$result->setRequest($req);
 		$result->setResponse($response);
 
-		try {
+		try
+		{
 			$assoc = OpenPayU::parseOpenPayUDocument($response);
 			$result->setResponse($assoc);
 		} 
-		catch (Exception $ex) {
+		catch (Exception $ex)
+		{
 			if ($debug)
 				OpenPayU::addOutputConsole('OrderRetrieveResponse parse result exception', $ex->getMessage());
 		}

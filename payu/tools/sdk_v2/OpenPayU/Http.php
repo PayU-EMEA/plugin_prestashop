@@ -13,75 +13,79 @@
 class OpenPayUHttp
 {
 	/**
-	 * @param $pathUrl
+	 * @param $path_url
 	 * @param $data
 	 * @return mixed
 	 */
-	public static function post($pathUrl, $data)
+	public static function post($path_url, $data)
 	{
-		//$signature = OpenPayUUtil::generateSignData($data, OpenPayUConfiguration::getHashAlgorithm(), OpenPayUConfiguration::getMerchantPosId(), OpenPayUConfiguration::getSignatureKey());
+		//$signature = OpenPayUUtil::generateSignData($data,
+		//OpenPayUConfiguration::getHashAlgorithm(), OpenPayUConfiguration::getMerchantPosId(),
+		//OpenPayUConfiguration::getSignatureKey());
 
-		$posId = OpenPayUConfiguration::getMerchantPosId();
-		$sigantureKey = OpenPayUConfiguration::getSignatureKey();
+		$pos_id = OpenPayUConfiguration::getMerchantPosId();
+		$siganture_key = OpenPayUConfiguration::getSignatureKey();
 
-		$response = OpenPayUHttpCurl::doRequest('POST', $pathUrl, $data, $posId, $sigantureKey);
+		$response = OpenPayUHttpCurl::doRequest('POST', $path_url, $data, $pos_id, $siganture_key);
 
 		return $response;
 	}
 
-	public static function postWithSignature($pathUrl, $data)
+	public static function postWithSignature($path_url, $data)
 	{
-		//$signature = OpenPayUUtil::generateSignData($data, OpenPayUConfiguration::getHashAlgorithm(), OpenPayUConfiguration::getMerchantPosId(), OpenPayUConfiguration::getSignatureKey());
+		//$signature = OpenPayUUtil::generateSignData($data, OpenPayUConfiguration::getHashAlgorithm(),
+		//OpenPayUConfiguration::getMerchantPosId(),
+		//OpenPayUConfiguration::getSignatureKey());
 
-		$posId = OpenPayUConfiguration::getMerchantPosId();
-		$sigantureKey = OpenPayUConfiguration::getSignatureKey();
+		$pos_id = OpenPayUConfiguration::getMerchantPosId();
+		$siganture_key = OpenPayUConfiguration::getSignatureKey();
 
-		$response = OpenPayUHttpCurl::doRequest('POST', $pathUrl, $data, $posId, $sigantureKey);
-
-		return $response;
-	}
-
-	/**
-	 * @param $pathUrl
-	 * @param $data
-	 * @return mixed
-	 */
-	public static function get($pathUrl, $data)
-	{
-		$posId = OpenPayUConfiguration::getMerchantPosId();
-		$sigantureKey = OpenPayUConfiguration::getSignatureKey();
-
-		$response = OpenPayUHttpCurl::doRequest('GET', $pathUrl, $data, $posId, $sigantureKey);
+		$response = OpenPayUHttpCurl::doRequest('POST', $path_url, $data, $pos_id, $siganture_key);
 
 		return $response;
 	}
 
 	/**
-	 * @param $pathUrl
+	 * @param $path_url
 	 * @param $data
 	 * @return mixed
 	 */
-	public static function put($pathUrl, $data)
+	public static function get($path_url, $data)
 	{
-		$posId = OpenPayUConfiguration::getMerchantPosId();
-		$sigantureKey = OpenPayUConfiguration::getSignatureKey();
+		$pos_id = OpenPayUConfiguration::getMerchantPosId();
+		$siganture_key = OpenPayUConfiguration::getSignatureKey();
 
-		$response = OpenPayUHttpCurl::doRequest('PUT', $pathUrl, $data, $posId, $sigantureKey);
+		$response = OpenPayUHttpCurl::doRequest('GET', $path_url, $data, $pos_id, $siganture_key);
 
 		return $response;
 	}
 
 	/**
-	 * @param $pathUrl
+	 * @param $path_url
 	 * @param $data
 	 * @return mixed
 	 */
-	public static function delete($pathUrl, $data)
+	public static function put($path_url, $data)
 	{
-		$posId = OpenPayUConfiguration::getMerchantPosId();
-		$sigantureKey = OpenPayUConfiguration::getSignatureKey();
+		$pos_id = OpenPayUConfiguration::getMerchantPosId();
+		$siganture_key = OpenPayUConfiguration::getSignatureKey();
 
-		$response = OpenPayUHttpCurl::doRequest('DELETE', $pathUrl, $data, $posId, $sigantureKey);
+		$response = OpenPayUHttpCurl::doRequest('PUT', $path_url, $data, $pos_id, $siganture_key);
+
+		return $response;
+	}
+
+	/**
+	 * @param $path_url
+	 * @param $data
+	 * @return mixed
+	 */
+	public static function delete($path_url, $data)
+	{
+		$pos_id = OpenPayUConfiguration::getMerchantPosId();
+		$siganture_key = OpenPayUConfiguration::getSignatureKey();
+
+		$response = OpenPayUHttpCurl::doRequest('DELETE', $path_url, $data, $pos_id, $siganture_key);
 
 		return $response;
 	}
@@ -89,33 +93,34 @@ class OpenPayUHttp
 	/**
 	 *
 	 *
-	 * @param $statusCode
+	 * @param $status_code
 	 * @param null $message
 	 * @throws OpenPayUException
-	 * @throws OpenPayUException_Authorization
-	 * @throws OpenPayUException_Network
-	 * @throws OpenPayUException_ServerMaintenance
-	 * @throws OpenPayUException_ServerError
+	 * @throws OpenPayUExceptionAuthorization
+	 * @throws OpenPayUExceptionNetwork
+	 * @throws OpenPayUExceptionServerMaintenance
+	 * @throws OpenPayUExceptionServerError
 	 */
-	public static function throwHttpStatusException($statusCode, $message = null)
+	public static function throwHttpStatusException($status_code, $message = null)
 	{
-		switch ($statusCode) {
+		switch ($status_code)
+		{
 			default:
-				throw new OpenPayUException_Network('Unexpected HTTP code response', $statusCode);
+				throw new OpenPayUExceptionNetwork('Unexpected HTTP code response', $status_code);
 			case 400:
-				throw new OpenPayUException(trim($message->Status->StatusCode.(isset($message->Status->StatusDesc) ?
-					' - '.$message->Status->StatusDesc : '')), $statusCode);
+				throw new OpenPayUException(trim($message->{'Status'}->{'StatusCode'}.(isset($message->{'Status'}->{'StatusDesc'}) ?
+					' - '.$message->{'Status'}->{'StatusDesc'} : '')), $status_code);
 			case 403:
-				throw new OpenPayUException_Authorization(trim($message->Status->StatusCode), $statusCode);
+				throw new OpenPayUExceptionAuthorization(trim($message->{'Status'}->{'StatusCode'}), $status_code);
 			case 404:
-				throw new OpenPayUException_Network('The end point of the url not found');
+				throw new OpenPayUExceptionNetwork('The end point of the url not found');
 			case 408:
-				throw new OpenPayUException_ServerError('Request timeout', $statusCode);
+				throw new OpenPayUExceptionServerError('Request timeout', $status_code);
 			case 500:
-				throw new OpenPayUException_ServerError('Server Error: ['.(isset($message->Status->StatusDesc) ?
-					$message->Status->StatusDesc : '').']', $statusCode);
+				throw new OpenPayUExceptionServerError('Server Error: ['.(isset($message->{'Status'}->{'StatusDesc'}) ?
+					$message->{'Status'}->{'StatusDesc'} : '').']', $status_code);
 			case 503:
-				throw new OpenPayUException_ServerMaintenance('Service unavailable', $statusCode);
+				throw new OpenPayUExceptionServerMaintenance('Service unavailable', $status_code);
 		}
 	}
 }

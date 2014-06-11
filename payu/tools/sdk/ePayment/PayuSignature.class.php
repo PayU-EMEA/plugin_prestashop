@@ -22,7 +22,7 @@ class PayuSignature
 	public static function generateHmac($key, $data)
 	{
 		$b = 64; // byte length for md5
-		if (strlen($key) > $b)
+		if (Tools::strlen($key) > $b)
 			$key = pack('H*', md5($key));
 
 		$key = str_pad($key, $b, chr(0x00));
@@ -80,7 +80,7 @@ class PayuSignature
 	 */
 	protected static function convertString($string)
 	{
-		return mb_strlen($string, '8bit').$string;
+		return mb_Tools::strlen($string, '8bit').$string;
 	}
 
 	/**
@@ -130,7 +130,7 @@ class PayuSignature
 
 		$url .= $server['PHP_SELF'];
 		$url .= '?'.$query_string;
-		$url = strlen($url).$url;
+		$url = Tools::strlen($url).$url;
 
 		$check_signature = self::generateHmac($key, $url);
 
