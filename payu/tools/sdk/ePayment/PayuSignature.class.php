@@ -80,7 +80,7 @@ class PayuSignature
 	 */
 	protected static function convertString($string)
 	{
-		return mb_Tools::strlen($string, '8bit').$string;
+		return mb_strlen($string, '8bit').$string;
 	}
 
 	/**
