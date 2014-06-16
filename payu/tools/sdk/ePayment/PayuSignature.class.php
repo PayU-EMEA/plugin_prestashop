@@ -104,18 +104,6 @@ class PayuSignature
 	 */
 	public static function validateSignature(Array $server, $key)
 	{
-		parse_str($server['QUERY_STRING'], $params);
-
-		if (!isset($params['ctrl']) || empty($key))
-			return false;
-
-		$string_signature = $params['ctrl'];
-
-		unset($params['ctrl']);
-
-		$query_string = http_build_query($params);
-		$query_string = str_replace('+', '%20', $query_string);
-
 		$url = '';
 
 		if (!isset($server['HTTPS']) || $server['HTTPS'] != 'on')
@@ -128,9 +116,21 @@ class PayuSignature
 		if ($server['SERVER_PORT'] != '80')
 			$url .= ':'.$server['SERVER_PORT'];
 
-		$url .= $server['PHP_SELF'];
-		$url .= '?'.$query_string;
-		$url = Tools::strlen($url).$url;
+		$url .= $server['REQUEST_URI'];
+
+		$url_parts = parse_url($url);
+		parse_str($url_parts['query'], $query);
+		if (!isset($query['ctrl']) || empty($key))
+			return false;
+		$string_signature = $query['ctrl'];
+		unset($query['ctrl']);
+		$query_string = '';
+		foreach ($query as $k => $v)
+			$query_string .= '&'.rawurlencode($k).'='.rawurlencode($v);
+
+		$query_string = substr($query_string, 1);
+		$url = $url_parts['scheme'].'://'.$url_parts['host'].$url_parts['path'].'?'.$query_string;
+		$url = strlen($url).$url;
 
 		$check_signature = self::generateHmac($key, $url);
 
