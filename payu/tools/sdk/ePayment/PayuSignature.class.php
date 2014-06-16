@@ -98,26 +98,12 @@ class PayuSignature
 	}
 
 	/**
-	 * @param $server
-	 * @param $key
+	 * @param string $url
+	 * @param string $key
 	 * @return bool
 	 */
-	public static function validateSignature(Array $server, $key)
+	public static function validateSignedUrl($url, $key)
 	{
-		$url = '';
-
-		if (!isset($server['HTTPS']) || $server['HTTPS'] != 'on')
-			$url .= 'http://';
-		else
-			$url .= 'https://';
-
-		$url .= $server['SERVER_NAME'];
-
-		if ($server['SERVER_PORT'] != '80')
-			$url .= ':'.$server['SERVER_PORT'];
-
-		$url .= $server['REQUEST_URI'];
-
 		$url_parts = parse_url($url);
 		parse_str($url_parts['query'], $query);
 		if (!isset($query['ctrl']) || empty($key))

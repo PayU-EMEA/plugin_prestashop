@@ -1803,12 +1803,12 @@ class PayU extends PaymentModule
 	}
 
 	/**
-	 * @param $server
+	 * @param string $url
 	 * @return bool
 	 */
-	public function interpretReturnParameters($server)
+	public function interpretReturnParameters($url)
 	{
-		parse_str($server['QUERY_STRING'], $parameters);
+		parse_str(parse_url($url, PHP_URL_QUERY), $parameters);
 
 		if (!isset($parameters['order_ref']) || !is_numeric($parameters['order_ref']))
 			return true;
@@ -1827,7 +1827,7 @@ class PayU extends PaymentModule
 		}
 
 		// validate signature
-		if (true !== PayuSignature::validateSignature($server, Configuration::get('PAYU_EPAYMENT_SECRET_KEY')))
+		if (true !== PayuSignature::validateSignedUrl($url, Configuration::get('PAYU_EPAYMENT_SECRET_KEY')))
 			return false;
 
 		// check if IPN is disabled
