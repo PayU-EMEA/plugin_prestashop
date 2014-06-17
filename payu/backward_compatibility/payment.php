@@ -34,8 +34,7 @@ $_SESSION['sessionId'] = md5($payu->cart->id.rand().rand().rand().rand());
 switch ($payu->getBusinessPartnerSetting('type'))
 {
 	case PayU::BUSINESS_PARTNER_TYPE_EPAYMENT:
-		$adapter = new EpaymentPrestaShopAdapter($payu);
-		$result = array('luForm' => $adapter->getLuForm($cart));
+		$result = array('luForm' => $payu->getLuForm($cart));
 		$template = 'lu-form.tpl';
 		break;
 	case PayU::BUSINESS_PARTNER_TYPE_PLATNOSCI:
