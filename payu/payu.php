@@ -1318,7 +1318,7 @@ class PayU extends PaymentModule
 			Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 		);
 
-		$this->current_order = $this->currentOrder;
+		$this->current_order = $this->{'currentOrder'};
 
 		if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 		{
@@ -1330,10 +1330,10 @@ class PayU extends PaymentModule
 		}
 		else
 		{
-			$this->current_order_reference = $this->currentOrderReference;
-			$internal_reference = $this->currentOrderReference;
-			$order_ref = $this->currentOrder.'|'.$this->currentOrderReference;
-			$order_id = $this->currentOrder;
+			$this->current_order_reference = $this->{'currentOrderReference'};
+			$internal_reference = $this->{'currentOrderReference'};
+			$order_ref = $this->{'currentOrder'}.'|'.$this->{'currentOrderReference'};
+			$order_id = $this->{'currentOrder'};
 			$backref_url = Context::getContext()->link->getModuleLink('payu', 'return', array('order_ref' => $this->current_order));
 		}
 
