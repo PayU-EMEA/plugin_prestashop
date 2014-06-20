@@ -114,9 +114,9 @@ class PayuSignature
 		foreach ($query as $k => $v)
 			$query_string .= '&'.rawurlencode($k).'='.rawurlencode($v);
 
-		$query_string = substr($query_string, 1);
+		$query_string = Tools::substr($query_string, 1);
 		$url = $url_parts['scheme'].'://'.$url_parts['host'].$url_parts['path'].'?'.$query_string;
-		$url = strlen($url).$url;
+		$url = Tools::strlen($url).$url;
 
 		$check_signature = self::generateHmac($key, $url);
 
