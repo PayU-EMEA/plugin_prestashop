@@ -1885,7 +1885,7 @@ class PayU extends PaymentModule
 		else
 			$address_country_id = Configuration::get('PS_COUNTRY_DEFAULT');
 
-		$address->{'recipientName'} = preg_replace('/\s+/', ' ',$address->{'recipientName'});
+		$address->{'recipientName'} = preg_replace('/\s+/', ' ', $address->{'recipientName'});
 		$shipping_recipient_name = explode(' ', $address->{'recipientName'});
 
 		$new_address = new Address();
