@@ -17,7 +17,18 @@ include(dirname(__FILE__).'/../../../header.php');
 
 $payu = new PayU();
 
-$success = $payu->interpretReturnParameters($_SERVER);
+$url = '';
+
+if (Configuration::get('PS_SSL_ENABLED'))
+	$url .= 'https://';
+else
+	$url .= 'http://';
+
+$url .= $payu->getShopDomainAddress();
+
+$url .= $_SERVER['REQUEST_URI'];
+
+$success = $payu->interpretReturnParameters($url);
 
 if (version_compare(_PS_VERSION_, '1.5', 'lt'))
 	Tools::redirect('history.php'.($success?'':'?payu_order_error=1'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');

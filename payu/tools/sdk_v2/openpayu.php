@@ -37,4 +37,3 @@ include_once(_PS_MODULE_DIR_.'/payu/tools/sdk/ePayment/PayuLiveUpdate.class.php'
 include_once(_PS_MODULE_DIR_.'/payu/tools/sdk/ePayment/PayuSignature.class.php');
 include_once(_PS_MODULE_DIR_.'/payu/tools/sdk/ePayment/PayuIDN.class.php');
 include_once(_PS_MODULE_DIR_.'/payu/tools/sdk/ePayment/PayuIRN.class.php');
-include_once(_PS_MODULE_DIR_.'/payu/tools/sdk/ePayment/EpaymentPrestaShopAdapter.php');
