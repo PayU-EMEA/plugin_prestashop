@@ -1,4 +1,4 @@
-# PayU plugin for Prestashop since 1.4.4  (alpha release)
+# PayU plugin for Prestashop since 1.4.4
 -------
 ``This plugin is released under the GPL license.``
 
