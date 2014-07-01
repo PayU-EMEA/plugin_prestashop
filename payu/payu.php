@@ -1700,16 +1700,15 @@ class PayU extends PaymentModule
 			else
 				$order_state_id = $this->order->current_state;
 
-			$history = new OrderHistory();
-			$history->id_order = $this->order->id;
-			$history->date_add = date('Y-m-d H:i:s');
-
 			switch ($status)
 			{
 				//case self::PAYMENT_STATUS_END :
 				case self::ORDER_V2_COMPLETED :
 					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'))
 					{
+						$history = new OrderHistory();
+						$history->id_order = $this->order->id;
+						$history->date_add = date('Y-m-d H:i:s');
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
 						$history->addWithemail(true);
 					}
@@ -1718,6 +1717,9 @@ class PayU extends PaymentModule
 				case self::ORDER_V2_CANCELED :
 					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'))
 					{
+						$history = new OrderHistory();
+						$history->id_order = $this->order->id;
+						$history->date_add = date('Y-m-d H:i:s');
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'), $this->order->id);
 						$history->addWithemail(true);
 					}
@@ -1726,6 +1728,9 @@ class PayU extends PaymentModule
 				case self::ORDER_V2_REJECTED :
 					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'))
 					{
+						$history = new OrderHistory();
+						$history->id_order = $this->order->id;
+						$history->date_add = date('Y-m-d H:i:s');
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'), $this->order->id);
 						$history->addWithemail(true);
 					}
@@ -1735,6 +1740,9 @@ class PayU extends PaymentModule
 					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')
 						&& $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT'))
 					{
+						$history = new OrderHistory();
+						$history->id_order = $this->order->id;
+						$history->date_add = date('Y-m-d H:i:s');
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
 						$history->addWithemail(false);
 					}
