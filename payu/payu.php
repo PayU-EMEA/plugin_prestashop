@@ -479,7 +479,46 @@ class PayU extends PaymentModule
 		$vieworder = Tools::getValue('vieworder');
 		$id_order = Tools::getValue('id_order');
 
-		if (false !== $vieworder && false !== $id_order && $this->getBusinessPartnerSetting('type') === self::BUSINESS_PARTNER_TYPE_EPAYMENT)
+		//refund Order V2
+		if (false !== $vieworder && false !== $id_order && $this->getBusinessPartnerSetting('type') === self::BUSINESS_PARTNER_TYPE_PLATNOSCI)
+		{
+			$order = new Order($id_order);
+			$order_payment = $this->getOrderPaymentByOrderId($id_order);
+
+			if (version_compare(_PS_VERSION_, '1.5', 'lt'))
+			{
+				$order_state = OrderHistory::getLastOrderState($id_order);
+				$order_state_id = $order_state->id;
+			}
+			else
+				$order_state_id = $order->current_state;
+
+			if ($order->module = 'payu')
+			{
+				switch ($order_state_id)
+				{
+					case Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED'):
+					case Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'):
+						$refundable = true;
+						$deliverable = false;
+						break;
+					case Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'):
+						$refundable = true;
+						$deliverable = true;
+						break;
+					default:
+						$refundable = false;
+						$deliverable = false;
+				}
+			}
+			else
+			{
+				$refundable = false;
+				$deliverable = false;
+			}
+		}
+		//refund ePayment
+		else if (false !== $vieworder && false !== $id_order && $this->getBusinessPartnerSetting('type') === self::BUSINESS_PARTNER_TYPE_EPAYMENT)
 		{
 			$order = new Order($id_order);
 
@@ -516,15 +555,16 @@ class PayU extends PaymentModule
 				$refundable = false;
 				$deliverable = false;
 			}
+
+			$refundable = $refundable && Configuration::get('PAYU_EPAYMENT_IRN');
+			$deliverable = $deliverable && Configuration::get('PAYU_EPAYMENT_IDN');
+
 		}
 		else
 		{
 			$refundable = false;
 			$deliverable = false;
 		}
-
-		$refundable = $refundable && Configuration::get('PAYU_EPAYMENT_IRN');
-		$deliverable = $deliverable && Configuration::get('PAYU_EPAYMENT_IDN');
 
 		$refund_type = Tools::getValue('payu_refund_type');
 		$refund_amount = $refund_type === 'full' ? $order->total_paid : (float)Tools::getValue('payu_refund_amount');
@@ -567,32 +607,27 @@ class PayU extends PaymentModule
 				else
 					$refund_curreny = $currency['iso_code'];
 
-				$irn = new PayuIRN(Configuration::get('PAYU_EPAYMENT_MERCHANT'), Configuration::get('PAYU_EPAYMENT_SECRET_KEY'));
-				$irn->setQueryUrl($this->getBusinessPartnerSetting('irn_url'));
-				$irn->setPayuReference($ref_no);
-				$irn->setOrderAmount($payu_trans['payu_amount']);
-				$irn->setRefundAmount($refund_amount);
-				$irn->setOrderCurrency($refund_curreny);
-
-				$irn_response = $irn->processRequest();
-
-				if (!isset($irn_response['RESPONSE_CODE']) || 1 != $irn_response['RESPONSE_CODE'])
+				if ($this->getBusinessPartnerSetting('type') === self::BUSINESS_PARTNER_TYPE_PLATNOSCI)
 				{
-					$error = isset($irn_response['RESPONSE_MSG'])?$irn_response['RESPONSE_MSG']:
-						(is_string($irn_response['RESPONSE'])?strip_tags($irn_response['RESPONSE']):'unknown');
-					$refund_errors[] = $this->l('Refund error: ').$error;
-				}
 
-				if (empty($refund_errors))
-				{   //  change order status
+					$refund = $this->payuOrderRefund($refund_amount, $order_payment['id_session']);
+
+					if (!empty($refund))
+					{
+						if (!($refund[0] === true))
+							$refund_errors[] = $this->l('Refund error: '.$refund[1]);
+					}
+					else
+						$refund_errors[] = $this->l('Refund error...');
+
+					if (empty($refund_errors))
+					{   //  change order status
 					// Create new OrderHistory
 					$history = new OrderHistory();
 					$history->id_order = (int)$id_order;
 					$history->id_employee = (int)$this->context->employee->id;
 
 					$use_existings_payment = false;
-					/*if (!$order->hasInvoice())
-						$use_existings_payment = true;*/
 					$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'), $id_order, $use_existings_payment);
 					$history->addWithemail(true, array());
 
@@ -600,6 +635,47 @@ class PayU extends PaymentModule
 						Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
 					else
 						Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
+					}
+
+				}
+				else
+				{
+
+					$irn = new PayuIRN(Configuration::get('PAYU_EPAYMENT_MERCHANT'), Configuration::get('PAYU_EPAYMENT_SECRET_KEY'));
+					$irn->setQueryUrl($this->getBusinessPartnerSetting('irn_url'));
+					$irn->setPayuReference($ref_no);
+					$irn->setOrderAmount($payu_trans['payu_amount']);
+					$irn->setRefundAmount($refund_amount);
+					$irn->setOrderCurrency($refund_curreny);
+
+					$irn_response = $irn->processRequest();
+
+					if (!isset($irn_response['RESPONSE_CODE']) || 1 != $irn_response['RESPONSE_CODE'])
+					{
+						$error = isset($irn_response['RESPONSE_MSG'])?$irn_response['RESPONSE_MSG']:
+							(is_string($irn_response['RESPONSE'])?strip_tags($irn_response['RESPONSE']):'unknown');
+						$refund_errors[] = $this->l('Refund error: ').$error;
+					}
+
+					if (empty($refund_errors))
+					{   //  change order status
+						// Create new OrderHistory
+						$history = new OrderHistory();
+						$history->id_order = (int)$id_order;
+						$history->id_employee = (int)$this->context->employee->id;
+
+						$use_existings_payment = false;
+						/*if (!$order->hasInvoice())
+							$use_existings_payment = true;*/
+						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'), $id_order, $use_existings_payment);
+						$history->addWithemail(true, array());
+
+						if (version_compare(_PS_VERSION_, '1.5', 'lt'))
+							Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
+						else
+							Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order='.$id_order.'&token='.Tools::getValue('token'));
+					}
+
 				}
 			}
 		}
@@ -665,6 +741,34 @@ class PayU extends PaymentModule
 			$template = $output.$this->fetchTemplate('/views/templates/admin/header16.tpl');
 
 		return $template;
+	}
+
+	public function payuOrderRefund($value, $ref_no)
+	{
+		try {
+
+			$refund = OpenPayURefund::create(
+				$ref_no,
+				'PayU Refund',
+				round($value * 100)
+			);
+
+			if ($refund->getStatus() == 'SUCCESS')
+				return array(true);
+			else
+			{
+				Logger::addLog($this->displayName.' Order Refund error: ', 1);
+				return array(false, 'Status code: '.$refund->getStatus());
+			}
+
+		} catch (OpenPayUException $e)
+		{
+			Logger::addLog($this->displayName.' Order Refund error: '.$e->getMessage(), 1);
+			return array(false,$e->getMessage());
+		}
+
+		return false;
+
 	}
 
 	/**
