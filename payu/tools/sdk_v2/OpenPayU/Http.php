@@ -106,19 +106,19 @@ class OpenPayUHttp
 		switch ($status_code)
 		{
 			default:
-				throw new OpenPayUExceptionNetwork('Unexpected HTTP code response', $status_code);
+				throw new OpenPayUExceptionNetwork('Unexpected HTTP code response: '.$status_code, $status_code);
 			case 400:
-				throw new OpenPayUException(trim($message->{'Status'}->{'StatusCode'}.(isset($message->{'Status'}->{'StatusDesc'}) ?
-					' - '.$message->{'Status'}->{'StatusDesc'} : '')), $status_code);
+				throw new OpenPayUException(trim($message->{'status'}->{'statusCode'}.(isset($message->{'status'}->{'statusDesc'}) ?
+					' - '.$message->{'status'}->{'statusDesc'} : '')), $status_code);
 			case 403:
-				throw new OpenPayUExceptionAuthorization(trim($message->{'Status'}->{'StatusCode'}), $status_code);
+				throw new OpenPayUExceptionAuthorization(trim($message->{'status'}->{'statusCode'}), $status_code);
 			case 404:
 				throw new OpenPayUExceptionNetwork('The end point of the url not found');
 			case 408:
 				throw new OpenPayUExceptionServerError('Request timeout', $status_code);
 			case 500:
-				throw new OpenPayUExceptionServerError('Server Error: ['.(isset($message->{'Status'}->{'StatusDesc'}) ?
-					$message->{'Status'}->{'StatusDesc'} : '').']', $status_code);
+				throw new OpenPayUExceptionServerError('Server Error: ['.(isset($message->{'status'}->{'statusDesc'}) ?
+					$message->{'status'}->{'statusDesc'} : '').']', $status_code);
 			case 503:
 				throw new OpenPayUExceptionServerMaintenance('Service unavailable', $status_code);
 		}
