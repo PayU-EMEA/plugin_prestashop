@@ -1,3 +1,7 @@
+# Release binary to install in Prestashop
+
+https://github.com/PayU/plugin_prestashop/releases/download/2.1.0/payu.zip
+
 # PayU plugin for Prestashop since 1.4.4
 -------
 ``This plugin is released under the GPL license.``
