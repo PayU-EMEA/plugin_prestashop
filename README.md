@@ -17,6 +17,9 @@ define their payment options, see their purchase history, and manage personal pr
 [3.2]: #configuration-parameters-poland
 [3.3]: #configuration-parameters-romania-turkey-russia-ukraine-hungary
 [3.4]: #settings-of-external-resources
+
+[Features](#features)
+
 [Prerequisites](#prerequisites) <br />
 <!--[Installation][#installation]-->
  * 
@@ -29,6 +32,14 @@ define their payment options, see their purchase history, and manage personal pr
 * [Configuration Parameters (Poland)](#configuration-parameters-poland)
 * [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)](#configuration-parameters-romania-turkey-russia-ukraine-hungary)
 * [Settings of external resources](#settings-of-external-resources)
+
+## Feaures
+The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
+
+* Creating a payment order (with discounts included)
+* Cancelling a payment order
+* Conducting a refund operation (for a whole or partial order)
+
 
 ## Prerequisites
 
