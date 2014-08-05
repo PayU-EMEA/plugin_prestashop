@@ -154,7 +154,6 @@ class PayU extends PaymentModule
 	 */
 	public function uninstall()
 	{
-        $this->deleteOrderStatussesOnUinstall();
 		if (!parent::uninstall() ||
             !$this->deleteOrderStatussesOnUinstall() ||
 			!Configuration::deleteByName('PAYU_PAYMENT_PLATFORM') ||
