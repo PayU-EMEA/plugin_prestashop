@@ -137,7 +137,7 @@ class PayU extends PaymentModule
 					array('en' => 'PayU payment started', 'pl' => 'Płatność PayU rozpoczęta', 'ro' => 'PayU payment started',
 						'ru' => 'PayU payment started', 'ua' => 'PayU payment started', 'hu' => 'PayU payment started',
 						'tr' => 'PayU payment started'))) &&
-				Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', $this->addNewOrderState('PAYMENT_PAYU_AWAITING_STATE',
+				Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', $this->addNewOrderState('PAYU_PAYMENT_STATUS_SENT',
 					array('en' => 'PayU payment awaits for reception', 'pl' => 'Płatność PayU oczekuje na odbiór',
 						'ro' => 'PayU payment awaits for reception', 'ru' => 'PayU payment awaits for reception',
 						'ua' => 'PayU payment awaits for reception', 'hu' => 'PayU payment awaits for reception',
@@ -154,6 +154,7 @@ class PayU extends PaymentModule
 	 */
 	public function uninstall()
 	{
+        $this->deleteOrderStatussesOnUinstall();
 		if (!parent::uninstall() ||
 			!Configuration::deleteByName('PAYU_PAYMENT_PLATFORM') ||
 			!Configuration::deleteByName('PAYU_NAME') ||
@@ -271,6 +272,31 @@ class PayU extends PaymentModule
 			);
 		');
 	}
+
+
+    /**
+     * @return bool
+     */
+    private function deleteOrderStatussesOnUinstall()
+    {
+        if(Db::getInstance()->Execute("DELETE FROM "._DB_PREFIX_."order_state WHERE id_order_state = ( SELECT value
+        FROM "._DB_PREFIX_."configuration
+        WHERE name =  'PAYU_PAYMENT_STATUS_SENT' )") &&
+
+            Db::getInstance()->Execute("DELETE FROM "._DB_PREFIX_."order_state_lang WHERE id_order_state = ( SELECT value
+        FROM "._DB_PREFIX_."configuration
+        WHERE name =  'PAYU_PAYMENT_STATUS_SENT' )") &&
+
+            Db::getInstance()->Execute("DELETE FROM "._DB_PREFIX_."order_state WHERE id_order_state = ( SELECT value
+        FROM "._DB_PREFIX_."configuration
+        WHERE name =  'PAYU_PAYMENT_STATUS_PENDING' )") &&
+
+            Db::getInstance()->Execute("DELETE FROM "._DB_PREFIX_."order_state_lang WHERE id_order_state = ( SELECT value
+        FROM "._DB_PREFIX_."configuration
+        WHERE name =  'PAYU_PAYMENT_STATUS_PENDING' )")) return true;
+
+    }
+
 
 	/**
 	 * @return string
