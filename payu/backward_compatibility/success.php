@@ -18,7 +18,9 @@ include(dirname(__FILE__).'/../../../header.php');
 $payu = new PayU();
 
 $id_cart = Tools::getValue('id_cart');
-$id_payu_session = Tools::getValue('id_payu_session');
+
+global $cookie;
+$id_payu_session =  $cookie->__get('payu_order_id');
 
 if (Tools::getValue('error'))
 	Tools::redirect('order.php?error='.Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');

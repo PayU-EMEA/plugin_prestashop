@@ -25,6 +25,5 @@ $payu->id_cart = $cart->id;
 $payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 
 header(
-	'Location: '.OpenPayUConfiguration::getSummaryUrl().'?sessionId='.$id_session.'&oauth_token='.
-	Tools::getValue('oauth_token').'&lang='.Tools::getValue('lang')
+    'Location: '.Tools::getValue('redirectUri')
 );

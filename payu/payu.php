@@ -72,7 +72,7 @@ class PayU extends PaymentModule
 	{
 		$this->name = 'payu';
 		$this->tab = 'payments_gateways';
-		$this->version = '2.0.1';
+		$this->version = '2.0.3';
 		$this->author = 'PayU';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1384,7 +1384,7 @@ class PayU extends PaymentModule
 		$ocreq['notifyUrl'] = $order_notify_link;
 		$ocreq['cancelUrl'] = $order_cancel_link;
 		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
-		//$ocreq['continueUrl'] = $order_complete_link;
+		$ocreq['continueUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
 		$ocreq['currencyCode'] = $currency['iso_code'];
 		$ocreq['totalAmount'] = $grand_total;
 		$ocreq['extOrderId'] = $this->cart->id.'-'.microtime();
