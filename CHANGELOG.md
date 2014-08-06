@@ -1,3 +1,9 @@
+## 2.0.3
+* Prestashop 1.4.4 compatibility fixed
+
+## 2.0.2
+* Order statuses change
+
 ## 2.0.1
 
 * Order V2
