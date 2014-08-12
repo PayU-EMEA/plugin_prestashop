@@ -72,10 +72,10 @@ class PayU extends PaymentModule
 	{
 		$this->name = 'payu';
 		$this->tab = 'payments_gateways';
-		$this->version = '2.0.3';
+		$this->version = '2.0.4';
 		$this->author = 'PayU';
 		$this->need_instance = 0;
-		$this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
+		$this->ps_versions_compliancy = array('min' => '1.4.0', 'max' => '1.6');
 
 		$this->currencies = true;
 		$this->currencies_mode = 'radio';
@@ -1254,20 +1254,29 @@ class PayU extends PaymentModule
 
 		$cart_products = $this->cart->getProducts();
 
-		foreach ($cart_products as $product)
-		{
+        //discounts and cart rules
+        if($this->cart->getCartRules()){
+            $items['products']['products'][] = array (
+                'quantity' => 1,
+                'name' => 'Order id '.$this->cart->id,
+                'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
+            );
+        }else{
+            foreach ($cart_products as $product)
+            {
 
-			$price_wt = $this->toAmount($product['price_wt']);
+                $price_wt = $this->toAmount($product['price_wt']);
 
-			$total += $this->toAmount($product['total_wt']);
+                $total += $this->toAmount($product['total_wt']);
 
-			$items['products']['products'][] = array (
-					'quantity' => (int)$product['quantity'],
-					'name' => $product['name'],
-					'unitPrice' => $price_wt
-			);
+                $items['products']['products'][] = array (
+                    'quantity' => (int)$product['quantity'],
+                    'name' => $product['name'],
+                    'unitPrice' => $price_wt
+                );
 
-		}
+            }
+        };
 
 		// Wrapping fees
 		$wrapping_fees_tax_inc = $wrapping_fees = 0;

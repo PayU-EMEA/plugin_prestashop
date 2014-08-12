@@ -1,3 +1,6 @@
+## 2.0.4
+* Cart rules included
+
 ## 2.0.3
 * Prestashop 1.4.4 compatibility fixed
 
