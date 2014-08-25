@@ -1136,8 +1136,9 @@ class PayU extends PaymentModule
 	 */
 	private function toAmount($value)
 	{
-		$val = $value * 100;
-		return (int)$val;
+        $val = $value * 100;
+        $round = (int)round($val);
+        return $round;
 	}
 
 	/**
@@ -1409,7 +1410,6 @@ class PayU extends PaymentModule
 				$context = Context::getContext();
 				$context->cookie->__set('payu_order_id', $result->getResponse ()->orderId);
 
-				file_put_contents(_PS_MODULE_DIR_.'/../log/cookie.log', $context->cookie->__get('payu_order_id'));
 
 				$return_array = array (
 						'redirectUri' => urldecode($result->getResponse ()->redirectUri),
