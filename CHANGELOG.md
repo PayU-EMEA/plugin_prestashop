@@ -1,3 +1,6 @@
+##2.1.1
+* Openpayu_php SDK 2.1 compatible
+
 ## 2.0.4
 * Cart rules included
 
