@@ -25,8 +25,7 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 
 		$payu->id_session = $id_session;
 		$payu->id_cart = $cart->id;
-
-		file_put_contents(_PS_MODULE_DIR_.'/../log/payu.log', print_r($payu, true));
+//        file_put_contents(_PS_MODULE_DIR_.'/../log/payu.log', print_r($payu->id_session, true), FILE_APPEND);
 
 		$payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 

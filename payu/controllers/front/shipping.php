@@ -18,7 +18,7 @@ class PayUShippingModuleFrontController extends ModuleFrontController
 		if (Tools::getIsset('DOCUMENT'))
 		{
 			$data = Tools::getValue('DOCUMENT');
-			$result = OpenPayUOrder::consumeMessage($data, false);
+			$result = OpenPayU_Order::consumeMessage($data, false);
 
 			if ($result->getMessage() == 'ShippingCostRetrieveRequest')
 			{

@@ -18,7 +18,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 	{
 		$body = Tools::file_get_contents ( 'php://input' );
 		$data = trim( $body );
-		$result = OpenPayUOrder::consumeNotification ( $data );
+		$result = OpenPayU_Order::consumeNotification ( $data );
 		$response = $result->getResponse();
 
 		if (isset($response->order->orderId))
@@ -27,7 +27,6 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 			$payu->id_session = $response->order->orderId;
 			$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
 			$id_order = (int)$order_payment['id_order'];
-
 			// if order not validated yet
 			if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)
 			{
@@ -42,7 +41,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 				);
 
 				$id_order = $payu->current_order = $payu->{'currentOrder'};
-				$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
+                $payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
 			}
 
 			if (!empty($id_order))
@@ -51,10 +50,8 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 				$payu->updateOrderData();
 			}
 
-			$rsp = OpenPayU::buildOrderNotifyResponse ( $response->order->orderId );
-
-			header('Content-Type: application/json');
-			echo $rsp;
+                //the response should be status 200
+                header("HTTP/1.1 200 OK");
 		}
 
 		exit;

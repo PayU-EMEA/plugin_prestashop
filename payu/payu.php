@@ -14,7 +14,7 @@
 if (!defined('_PS_VERSION_'))
 	exit;
 
-include_once(_PS_MODULE_DIR_.'/payu/tools/sdk_v2/openpayu.php');
+include_once(_PS_MODULE_DIR_.'/payu/tools/sdk_v21/openpayu.php');
 
 class PayU extends PaymentModule
 {
@@ -228,11 +228,11 @@ class PayU extends PaymentModule
 	 */
 	protected function initializeOpenPayU()
 	{
-		OpenPayUConfiguration::setApiVersion ( 2 );
-		OpenPayUConfiguration::setEnvironment('secure');
-		OpenPayUConfiguration::setMerchantPosId(Configuration::get('PAYU_POS_ID'));
-		OpenPayUConfiguration::setSignatureKey(Configuration::get('PAYU_SIGNATURE_KEY'));
-		OpenPayUConfiguration::setSender('Prestashop ver '._PS_VERSION_.'/Plugin ver '.$this->version);
+		OpenPayU_Configuration::setApiVersion ( 2 );
+		OpenPayU_Configuration::setEnvironment('secure');
+		OpenPayU_Configuration::setMerchantPosId(Configuration::get('PAYU_POS_ID'));
+		OpenPayU_Configuration::setSignatureKey(Configuration::get('PAYU_SIGNATURE_KEY'));
+		OpenPayU_Configuration::setSender('Prestashop ver '._PS_VERSION_.'/Plugin ver '.$this->version);
 	}
 
 	/**
@@ -773,7 +773,7 @@ class PayU extends PaymentModule
 	{
 		try {
 
-			$refund = OpenPayURefund::create(
+			$refund = OpenPayU_Refund::create(
 				$ref_no,
 				'PayU Refund',
 				round($value * 100)
@@ -787,7 +787,7 @@ class PayU extends PaymentModule
 				return array(false, 'Status code: '.$refund->getStatus());
 			}
 
-		} catch (OpenPayUException $e)
+		} catch (OpenPayU_Exception $e)
 		{
 			Logger::addLog($this->displayName.' Order Refund error: '.$e->getMessage(), 1);
 			return array(false,$e->getMessage());
@@ -1051,9 +1051,9 @@ class PayU extends PaymentModule
 		if (!empty($status) && !empty($this->id_session))
 		{
 			if ($status == self::ORDER_STATUS_CANCEL)
-				$result = OpenPayUOrder::cancel($this->id_session, false);
+				$result = OpenPayU_Order::cancel($this->id_session, false);
 			elseif ($status == self::ORDER_STATUS_COMPLETE)
-				$result = OpenPayUOrder::updateStatus($this->id_session, $status, false);
+				$result = OpenPayU_Order::updateStatus($this->id_session, $status, false);
 
 			if ($result->getSuccess())
 			{
@@ -1257,7 +1257,7 @@ class PayU extends PaymentModule
 
         //discounts and cart rules
         if($this->cart->getCartRules()){
-            $items['products']['products'][] = array (
+            $items['products'][] = array (
                 'quantity' => 1,
                 'name' => 'Order id '.$this->cart->id,
                 'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
@@ -1270,7 +1270,7 @@ class PayU extends PaymentModule
 
                 $total += $this->toAmount($product['total_wt']);
 
-                $items['products']['products'][] = array (
+                $items['products'][] = array (
                     'quantity' => (int)$product['quantity'],
                     'name' => $product['name'],
                     'unitPrice' => $price_wt
@@ -1286,7 +1286,7 @@ class PayU extends PaymentModule
 			$wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
 			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
 
-			$items['products']['products'][] = array (
+			$items['products'][] = array (
 					'quantity' => 1,
 					'name' => $this->l('Gift wrapping'),
 					'unitPrice' => $wrapping_fees
@@ -1380,7 +1380,7 @@ class PayU extends PaymentModule
 
 		$ocreq = array();
 
-		$ocreq['merchantPosId'] = OpenPayUConfiguration::getMerchantPosId();
+		$ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
 		$ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
 		$ocreq['description'] = $this->l('Order for cart: ').$this->cart->id.$this->l(' from the store: ').Configuration::get('PS_SHOP_NAME');
 		$ocreq['validityTime'] = (int)Configuration::get('PAYU_VALIDITY_TIME');
@@ -1393,16 +1393,16 @@ class PayU extends PaymentModule
 			);
 		$ocreq['notifyUrl'] = $order_notify_link;
 		$ocreq['cancelUrl'] = $order_cancel_link;
-		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
+//		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
 		$ocreq['continueUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
 		$ocreq['currencyCode'] = $currency['iso_code'];
 		$ocreq['totalAmount'] = $grand_total;
 		$ocreq['extOrderId'] = $this->cart->id.'-'.microtime();
-		$ocreq['shippingMethods'] = $carriers_list;
+		$ocreq['shippingMethods'] = $carriers_list['shippingMethods'];
 
 		try
 		{
-			$result = OpenPayUOrder::create($ocreq);
+			$result = OpenPayU_Order::create($ocreq);
 
 			if ($result->getStatus () == 'SUCCESS')
 			{
@@ -1413,13 +1413,13 @@ class PayU extends PaymentModule
 
 				$return_array = array (
 						'redirectUri' => urldecode($result->getResponse ()->redirectUri),
-						//'summaryUrl' => OpenPayUConfiguration::getSummaryUrl (),
+						//'summaryUrl' => OpenPayU_Configuration::getSummaryUrl (),
 						'sessionId' => $result->getResponse ()->orderId
 						//'lang' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
 				);
 
 				/* $return_array = array(
-					'summaryUrl' => OpenPayUConfiguration::getSummaryUrl(),
+					'summaryUrl' => OpenPayU_Configuration::getSummaryUrl(),
 					'sessionId' => $_SESSION['sessionId'],
 					'oauthToken' => $token->getAccessToken(),
 					'langCode' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
@@ -1902,11 +1902,11 @@ class PayU extends PaymentModule
 		if (empty($this->id_session))
 			Logger::addLog($this->displayName.' '.$this->l('Can not get order information - id_session is empty'), 1);
 
-		$result = OpenPayUOrder::retrieve($this->id_session);
+		$result = OpenPayU_Order::retrieve($this->id_session);
 
 		$response = $result->getResponse();
 
-		if (isset($response->orders->orders[0]))
+		if (isset($response->orders[0]))
 		{
 
 			if (!empty($this->id_order))
@@ -1956,10 +1956,10 @@ class PayU extends PaymentModule
 				}*/
 
 				// Delivery address add
-				if (!empty($response->orders->orders[0]->buyer))
+				if (!empty($response->orders[0]->buyer))
 				{
 
-					$buyer = $response->orders->orders[0]->buyer;
+					$buyer = $response->orders[0]->buyer;
 
 					if (isset($buyer->phone) && !empty($buyer->phone))
 						$buyer->delivery->{'recipientPhone'} = $buyer->phone;
@@ -1970,7 +1970,7 @@ class PayU extends PaymentModule
 						$this->order->id_address_delivery = $new_delivery_address_id;
 
 					// Invoice address add
-					if (isset($response->orders->orders[0]->buyer->invoice))
+					if (isset($response->orders[0]->buyer->invoice))
 					{
 						if (isset($buyer->phone) && !empty($buyer->phone))
 							$buyer->invoice->{'recipientPhone'} = $buyer->phone;
@@ -1986,7 +1986,7 @@ class PayU extends PaymentModule
 				$this->order->update();
 
 				// Update order state
-				$this->updateOrderState(isset($response->orders->orders[0]->status) ? $response->orders->orders[0]->status : null);
+				$this->updateOrderState(isset($response->orders[0]->status) ? $response->orders[0]->status : null);
 			}
 		}
 	}
