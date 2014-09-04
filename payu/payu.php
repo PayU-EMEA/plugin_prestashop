@@ -72,10 +72,10 @@ class PayU extends PaymentModule
 	{
 		$this->name = 'payu';
 		$this->tab = 'payments_gateways';
-		$this->version = '2.1.1';
+		$this->version = '2.1.2';
 		$this->author = 'PayU';
 		$this->need_instance = 0;
-		$this->ps_versions_compliancy = array('min' => '1.4.0', 'max' => '1.6');
+		$this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
 
 		$this->currencies = true;
 		$this->currencies_mode = 'radio';
@@ -1247,37 +1247,30 @@ class PayU extends PaymentModule
 	 */
 	public function orderCreateRequest()
 	{
-		$currency = Currency::getCurrency($this->cart->id_currency);
-		$return_array = array();
+        $currency = Currency::getCurrency($this->cart->id_currency);
+        $return_array = array();
 
-		$items = array();
-		$total = 0;
+        $items = array();
+        $total = 0;
 
-		$cart_products = $this->cart->getProducts();
+        $cart_products = $this->cart->getProducts();
 
         //discounts and cart rules
-        if($this->cart->getCartRules()){
-            $items['products'][] = array (
-                'quantity' => 1,
-                'name' => 'Order id '.$this->cart->id,
-                'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
-            );
-        }else{
-            foreach ($cart_products as $product)
-            {
-
-                $price_wt = $this->toAmount($product['price_wt']);
-
-                $total += $this->toAmount($product['total_wt']);
-
-                $items['products'][] = array (
-                    'quantity' => (int)$product['quantity'],
-                    'name' => $product['name'],
-                    'unitPrice' => $price_wt
+        if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
+            if ($this->cart->getCartRules()) {
+                $items['products'][] = array(
+                    'quantity' => 1,
+                    'name' => 'Order id ' . $this->cart->id,
+                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
                 );
-
+            }else{
+                $items['products'] = $this->addProductsToOrder($cart_products, $total);
             }
-        };
+        }else{
+            $items['products'] = $this->addProductsToOrder($cart_products, $total);
+        }
+
+
 
 		// Wrapping fees
 		$wrapping_fees_tax_inc = $wrapping_fees = 0;
@@ -1434,6 +1427,21 @@ class PayU extends PaymentModule
 
 		return $return_array;
 	}
+
+    public function addProductsToOrder($cartProducts, &$total){
+        foreach ($cartProducts as $product) {
+
+            $price_wt = $this->toAmount($product['price_wt']);
+            $total += $this->toAmount($product['total_wt']);
+            $items[] = array(
+                'quantity' => (int)$product['quantity'],
+                'name' => $product['name'],
+                'unitPrice' => $price_wt
+            );
+        }
+        return $items;
+
+    }
 
 	/**
 	 * @param CartCore $cart

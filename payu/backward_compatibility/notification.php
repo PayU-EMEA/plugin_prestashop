@@ -16,43 +16,42 @@ include(dirname(__FILE__).'/../../../init.php');
 include(dirname(__FILE__).'/../../../header.php');
 
 ob_clean();
-if (Tools::getIsset('DOCUMENT'))
-{
-	$data = Tools::getValue('DOCUMENT');
-	$result = OpenPayU_Order::consumeMessage($data, false);
 
-	if ($result->getSuccess() && $result->getMessage() == 'OrderNotifyRequest')
-	{
-		$payu = new PayU();
-		$payu->id_session = $result->getSessionId();
-		$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
-		$id_order = (int)$order_payment['id_order'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $body = Tools::file_get_contents('php://input');
+    $data = trim($body);
+    $result = OpenPayU_Order::consumeNotification($data);
+    $response = $result->getResponse();
 
-		/*if order not validated yet*/
-		if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)
-		{
-			$cart = new Cart($order_payment['id_cart']);
+    if (isset($response->order->orderId)) {
+        $payu = new PayU();
+        $payu->id_session = $response->order->orderId;
+        $order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
+        $id_order = (int)$order_payment['id_order'];
+        // if order not validated yet
+        if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW) {
+            $cart = new Cart($order_payment['id_cart']);
 
-			$payu->validateOrder(
-				$cart->id, Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-				$cart->getOrderTotal(true, Cart::BOTH), 'PayU cart ID: '.$cart->id.', sessionId: '.$payu->id_session,
-				null,
-				null, false, $cart->secure_key
-			);
+            $payu->validateOrder(
+                $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+                $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
+                'PayU cart ID: ' . $cart->id . ', sessionId: ' . $payu->id_session,
+                null, (int)$cart->id_currency, false, $cart->secure_key,
+                Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
+            );
 
-			$id_order = $payu->current_order = $payu->currentOrder;
-			$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
-		}
+            $id_order = $payu->current_order = $payu->{'currentOrder'};
+            $payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
+        }
 
-		if (!empty($id_order))
-		{
-			$payu->id_order = $id_order;
-			$payu->updateOrderData();
+        if (!empty($id_order)) {
+            $payu->id_order = $id_order;
+            $payu->updateOrderData();
+        }
 
-			header('Content-Type:text/xml');
-			echo $result->getResponse();
-		}
-	}
+        //the response should be status 200
+        header("HTTP/1.1 200 OK");
+    }
 }
 ob_end_flush();
 exit;

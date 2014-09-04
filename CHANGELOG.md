@@ -1,3 +1,6 @@
+##2.1.2
+* Notifications in Presta 1.4.4 fixed
+
 ##2.1.1
 * Openpayu_php SDK 2.1 compatible
 
