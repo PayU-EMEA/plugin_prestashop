@@ -530,7 +530,7 @@ class PayU extends PaymentModule
 						break;
 					case Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'):
 						$refundable = true;
-						$deliverable = true;
+						$deliverable = false;
 						break;
 					default:
 						$refundable = false;
