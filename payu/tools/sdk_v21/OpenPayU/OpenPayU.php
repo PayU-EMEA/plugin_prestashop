@@ -82,7 +82,7 @@ class OpenPayU extends OpenPayUBase
      * @param string $message
      * @return string $xml
      */
-    public static function verifyResponse($data, $message)
+    public static function verifyResponse($data, $message='')
     {
         $document = OpenPayU_Util::parseXmlDocument(stripslashes($data));
         $status = null;
