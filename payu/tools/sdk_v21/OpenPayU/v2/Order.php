@@ -158,7 +158,7 @@ class OpenPayU_Order extends OpenPayU
      * @param string $messageName
      * @return null|OpenPayU_Result
      */
-    public static function verifyResponse($response, $messageName)
+    public static function verifyResponse($response, $messageName='')
     {
         $data = array();
         $httpStatus = $response['code'];
