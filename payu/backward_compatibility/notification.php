@@ -26,6 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($response->order->orderId)) {
         $payu = new PayU();
         $payu->id_session = $response->order->orderId;
+
+        if(isset($response->properties[0]) && !empty($response->properties[0])){
+            if($response->properties[0]->name == 'PAYMENT_ID' && isset($response->properties[0]->value)){
+                $payu->id_payment = $response->properties[0]->value;
+            }
+        }
+
         $order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
         $id_order = (int)$order_payment['id_order'];
         // if order not validated yet
@@ -42,6 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $id_order = $payu->current_order = $payu->{'currentOrder'};
             $payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
+        }
+
+        if($response->order->status == PayU::ORDER_V2_COMPLETED){
+            $payu->addMsgToOrder('payment_id: '.$payu->id_payment, $id_order);
         }
 
         if (!empty($id_order)) {
