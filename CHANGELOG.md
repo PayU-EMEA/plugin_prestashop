@@ -1,3 +1,6 @@
+##2.1.3
+* Payment id visible in admin panel after payment is completed
+
 ##2.1.2
 * Notifications in Presta 1.4.4 fixed
 
