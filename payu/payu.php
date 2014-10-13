@@ -65,7 +65,6 @@ class PayU extends PaymentModule
 	public $id_session = '';
 	public $id_order = null;
     public $id_payment = null;
-    public $id_pay = null;
 
 	/**
 	 *
