@@ -41,7 +41,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 				$payu->validateOrder(
 					$cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
 					$cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-					'PayU cart ID: '.$cart->id.', sessionId: '.$payu->id_session,
+					'PayU cart ID: '.$cart->id.', orderId: '.$payu->id_session,
 					null, (int)$cart->id_currency, false, $cart->secure_key,
 					Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 				);
