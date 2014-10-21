@@ -1377,7 +1377,7 @@ class PayU extends PaymentModule
 		$ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
 		$ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
 		$ocreq['description'] = $this->l('Order for cart: ').$this->cart->id.$this->l(' from the store: ').Configuration::get('PS_SHOP_NAME');
-		$ocreq['validityTime'] = (int)Configuration::get('PAYU_VALIDITY_TIME');
+		$ocreq['validityTime'] = 60 * (int)Configuration::get('PAYU_VALIDITY_TIME');
 		$ocreq['products'] = $items['products'];
 		$ocreq['buyer'] = $customer_sheet;
 		$ocreq['customerIp'] = (
