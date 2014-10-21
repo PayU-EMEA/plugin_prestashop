@@ -1,3 +1,6 @@
+##2.1.4
+* Fixed validityTime
+
 ##2.1.3
 * Payment id visible in admin panel after payment is completed
 
