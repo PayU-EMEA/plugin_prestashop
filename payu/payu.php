@@ -2218,8 +2218,17 @@ class PayU extends PaymentModule
                 return array($items, $total);
             }
         } else {
-            $items['products'] = $this->addProductsToOrder($cart_products, $total);
-            return array($items, $total);
+            if ($this->cart->getDiscounts()) {
+                $items['products'][] = array(
+                    'quantity' => 1,
+                    'name' => 'Order id ' . $this->cart->id,
+                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
+                );
+                return array($items, $total);
+            } else {
+                $items['products'] = $this->addProductsToOrder($cart_products, $total);
+                return array($items, $total);
+            }
         }
     }
 }
