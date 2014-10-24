@@ -1252,172 +1252,42 @@ class PayU extends PaymentModule
         $return_array = array();
 
         $items = array();
-        $total = 0;
 
         $cart_products = $this->cart->getProducts();
 
         //discounts and cart rules
-        if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
-            if ($this->cart->getCartRules()) {
-                $items['products'][] = array(
-                    'quantity' => 1,
-                    'name' => 'Order id ' . $this->cart->id,
-                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
-                );
-            }else{
-                $items['products'] = $this->addProductsToOrder($cart_products, $total);
-            }
-        }else{
-            $items['products'] = $this->addProductsToOrder($cart_products, $total);
-        }
+        list($items, $total) = $this->getDiscountsAndCartRules($items, $cart_products);
 
-
-
-		// Wrapping fees
-		$wrapping_fees_tax_inc = $wrapping_fees = 0;
-		if ((int)Configuration::get('PS_GIFT_WRAPPING') && $this->context->cart->gift)
-		{
-			$wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
-			$wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
-
-			$items['products'][] = array (
-					'quantity' => 1,
-					'name' => $this->l('Gift wrapping'),
-					'unitPrice' => $wrapping_fees
-			);
-
-			$total += $wrapping_fees_tax_inc;
-
-		}
+        // Wrapping fees
+        list($wrapping_fees_tax_inc, $items, $total) = $this->getWrappingFees($items, $total);
 
 		$carriers_list = $this->getCarriersListForCart($this->cart);
-
-		if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc < $total)
-		{
-			$grand_total = $total;
-			//$discount_total = $total - $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
-		}
-		else
-		{
-			$grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc;
-			//$discount_total = 0;
-		}
-
-		if (version_compare(_PS_VERSION_, '1.5', 'gt'))
-		{
-			$order_complete_link = $this->context->link->getModuleLink('payu', 'success');
-			$order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
-			$order_cancel_link = $this->context->link->getPageLink('order.php', true);
-		}
-		else
-		{
-			$link = new Link();
-			$order_complete_link = $this->getModuleAddress().'backward_compatibility/success.php';
-			$order_notify_link = $this->getModuleAddress().'backward_compatibility/notification.php';
-			$order_cancel_link = $link->getPageLink(__PS_BASE_URI__.'order.php');
-		}
-
-		if (!empty($this->cart->id_customer))
-		{
+        $grand_total = $this->getGrandTotal($wrapping_fees_tax_inc, $total);
+        list($order_complete_link, $order_notify_link, $order_cancel_link) = $this->getLinks();
+        if (!empty($this->cart->id_customer)){
 			$customer = new Customer((int)$this->cart->id_customer);
 
-			if ($customer->email)
-			{
-				$customer_sheet = array(
-					'email' => $customer->email,
-					'firstName' => $customer->firstname,
-					'lastName' => $customer->lastname
-				);
-
-				if (!empty($this->cart->id_address_delivery))
-				{
-					$address = new Address((int)$this->cart->id_address_delivery);
-					$country = new Country((int)$address->id_country);
-
-					if (empty($address->phone))
-						$customer_sheet['phone'] = $address->phone_mobile;
-					else
-						$customer_sheet['phone'] = $address->phone;
-
-					$customer_sheet['delivery'] = array (
-							'street' => $address->address1,
-							'postalCode' => $address->postcode,
-							'city' => $address->city,
-							'countryCode' => Tools::strtoupper($country->iso_code),
-							'recipientName' => trim($address->firstname.' '.$address->lastname),
-							'recipientPhone' => $address->phone ? $address->phone : $address->phone_mobile,
-							'recipientEmail' => $customer->email
-					);
-
-				}
-
-				if (!empty($this->cart->id_address_invoice) && Configuration::get('PS_INVOICE'))
-				{
-					$address = new Address((int)$this->cart->id_address_invoice);
-					$country = new Country((int)$address->id_country);
-
-					/* $customer_sheet['invoice'] = array (
-							'street' => $address->address1,
-							'postalCode' => $address->postcode,
-							'city' => $address->city,
-							'countryCode' => Tools::strtoupper($country->iso_code),
-							'recipientName' => trim($address->firstname.' '.$address->lastname),
-							'recipientEmail' => $customer->email,
-							'tIN' => $address->vat_number
-							//'eInvoiceRequested' => (int)Configuration::get('PS_INVOICE') ? 'false' : 'true'
-					);*/
-
-				}
+			if ($customer->email){
+                $customer_sheet = $this->getCustomer($customer);
 
 			}
 		}
 
-		$ocreq = array();
+        //prepare data for OrderCreateRequest
+        $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list);
 
-		$ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
-		$ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
-		$ocreq['description'] = $this->l('Order for cart: ').$this->cart->id.$this->l(' from the store: ').Configuration::get('PS_SHOP_NAME');
-		$ocreq['validityTime'] = 60 * (int)Configuration::get('PAYU_VALIDITY_TIME');
-		$ocreq['products'] = $items['products'];
-		$ocreq['buyer'] = $customer_sheet;
-		$ocreq['customerIp'] = (
-			($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
-				!preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
-						$_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']
-			);
-		$ocreq['notifyUrl'] = $order_notify_link;
-		$ocreq['cancelUrl'] = $order_cancel_link;
-//		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
-		$ocreq['continueUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
-		$ocreq['currencyCode'] = $currency['iso_code'];
-		$ocreq['totalAmount'] = $grand_total;
-		$ocreq['extOrderId'] = $this->cart->id.'-'.microtime();
-		$ocreq['shippingMethods'] = $carriers_list['shippingMethods'];
-
-		try
-		{
+		try{
 			$result = OpenPayU_Order::create($ocreq);
-
-			if ($result->getStatus () == 'SUCCESS')
-			{
+			if ($result->getStatus () == 'SUCCESS'){
 
 				$context = Context::getContext();
 				$context->cookie->__set('payu_order_id', $result->getResponse ()->orderId);
 
-
 				$return_array = array (
 						'redirectUri' => urldecode($result->getResponse ()->redirectUri),
-						//'summaryUrl' => OpenPayU_Configuration::getSummaryUrl (),
 						'sessionId' => $result->getResponse ()->orderId
-						//'lang' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
 				);
 
-				/* $return_array = array(
-					'summaryUrl' => OpenPayU_Configuration::getSummaryUrl(),
-					'sessionId' => $_SESSION['sessionId'],
-					'oauthToken' => $token->getAccessToken(),
-					'langCode' => Tools::strtolower(Language::getIsoById($this->cart->id_lang))
-				);*/
 			}
 			else
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage()), 1);
@@ -2185,5 +2055,171 @@ class PayU extends PaymentModule
             $msg->private = 1;
             $msg->add();
 
+    }
+
+    /**
+     * @param $wrapping_fees_tax_inc
+     * @param $total
+     * @return int
+     */
+    private function getGrandTotal($wrapping_fees_tax_inc, $total)
+    {
+        if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc < $total) {
+            $grand_total = $total;
+            return $grand_total;
+            //$discount_total = $total - $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
+        } else {
+            $grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc;
+            return $grand_total;
+            //$discount_total = 0;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function getLinks()
+    {
+        if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
+            $order_complete_link = $this->context->link->getModuleLink('payu', 'success');
+            $order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
+            $order_cancel_link = $this->context->link->getPageLink('order.php', true);
+            return array($order_complete_link, $order_notify_link, $order_cancel_link);
+        } else {
+            $link = new Link();
+            $order_complete_link = $this->getModuleAddress() . 'backward_compatibility/success.php';
+            $order_notify_link = $this->getModuleAddress() . 'backward_compatibility/notification.php';
+            $order_cancel_link = $link->getPageLink(__PS_BASE_URI__ . 'order.php');
+            return array($order_complete_link, $order_notify_link, $order_cancel_link);
+        }
+    }
+
+    /**
+     * @param $customer
+     * @return array
+     */
+    private function getCustomer($customer)
+    {
+        $customer_sheet = array(
+            'email' => $customer->email,
+            'firstName' => $customer->firstname,
+            'lastName' => $customer->lastname
+        );
+
+        if (!empty($this->cart->id_address_delivery)) {
+            $address = new Address((int)$this->cart->id_address_delivery);
+            $country = new Country((int)$address->id_country);
+
+            if (empty($address->phone))
+                $customer_sheet['phone'] = $address->phone_mobile;
+            else
+                $customer_sheet['phone'] = $address->phone;
+
+            $customer_sheet['delivery'] = array(
+                'street' => $address->address1,
+                'postalCode' => $address->postcode,
+                'city' => $address->city,
+                'countryCode' => Tools::strtoupper($country->iso_code),
+                'recipientName' => trim($address->firstname . ' ' . $address->lastname),
+                'recipientPhone' => $address->phone ? $address->phone : $address->phone_mobile,
+                'recipientEmail' => $customer->email
+            );
+
+        }
+
+        if (!empty($this->cart->id_address_invoice) && Configuration::get('PS_INVOICE')) {
+            $address = new Address((int)$this->cart->id_address_invoice);
+            $country = new Country((int)$address->id_country);
+            return $customer_sheet;
+        }
+        return $customer_sheet;
+    }
+
+    /**
+     * @param $items
+     * @param $customer_sheet
+     * @param $order_notify_link
+     * @param $order_cancel_link
+     * @param $order_complete_link
+     * @param $currency
+     * @param $grand_total
+     * @param $carriers_list
+     * @return array
+     */
+    private function prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list)
+    {
+        $ocreq = array();
+
+        $ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
+        $ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
+        $ocreq['description'] = $this->l('Order for cart: ') . $this->cart->id . $this->l(' from the store: ') . Configuration::get('PS_SHOP_NAME');
+        $ocreq['validityTime'] = 60 * (int)Configuration::get('PAYU_VALIDITY_TIME');
+        $ocreq['products'] = $items['products'];
+        $ocreq['buyer'] = $customer_sheet;
+        $ocreq['customerIp'] = (
+        ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
+            !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
+                $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']
+        );
+        $ocreq['notifyUrl'] = $order_notify_link;
+        $ocreq['cancelUrl'] = $order_cancel_link;
+//		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
+        $ocreq['continueUrl'] = $order_complete_link . '?id_cart=' . $this->cart->id;
+        $ocreq['currencyCode'] = $currency['iso_code'];
+        $ocreq['totalAmount'] = $grand_total;
+        $ocreq['extOrderId'] = $this->cart->id . '-' . microtime();
+        $ocreq['shippingMethods'] = $carriers_list['shippingMethods'];
+        return $ocreq;
+    }
+
+    /**
+     * @param $items
+     * @param $total
+     * @return array
+     */
+    private function getWrappingFees($items, $total)
+    {
+        $wrapping_fees_tax_inc = $wrapping_fees = 0;
+        if ((int)Configuration::get('PS_GIFT_WRAPPING') && $this->context->cart->gift) {
+            $wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
+            $wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
+
+            $items['products'][] = array(
+                'quantity' => 1,
+                'name' => $this->l('Gift wrapping'),
+                'unitPrice' => $wrapping_fees
+            );
+
+            $total += $wrapping_fees_tax_inc;
+            return array($wrapping_fees_tax_inc, $items, $total);
+
+        }
+        return array($wrapping_fees_tax_inc, $items, $total);
+    }
+
+    /**
+     * @param $items
+     * @param $cart_products
+     * @return array
+     */
+    private function getDiscountsAndCartRules($items, $cart_products)
+    {
+        $total = '';
+        if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
+            if ($this->cart->getCartRules()) {
+                $items['products'][] = array(
+                    'quantity' => 1,
+                    'name' => 'Order id ' . $this->cart->id,
+                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
+                );
+                return array($items, $total);
+            } else {
+                $items['products'] = $this->addProductsToOrder($cart_products, $total);
+                return array($items, $total);
+            }
+        } else {
+            $items['products'] = $this->addProductsToOrder($cart_products, $total);
+            return array($items, $total);
+        }
     }
 }
