@@ -65,12 +65,13 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Download plugin from [the plugin repository][ext1] to local directory.
-2. **Create zip archive of internal directory (payu) which contains module**
-3. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-4. Go to **Modules** > **Modules**.
-5. **Add new module** and point archive contained plugin
-6. Load the plugin
+1. Download plugin from [the plugin repository][ext1] to local directory as zip.
+2. Unzip locally downloaded file
+3. **Create zip archive of payu directory**
+4. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
+5. Go to **Modules** > **Modules**.
+6. **Add new module** and point archive contained plugin (created at point 3)
+7. Load the plugin
 
 <!--### Installing from the administration page
 
