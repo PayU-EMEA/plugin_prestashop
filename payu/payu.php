@@ -1047,27 +1047,26 @@ class PayU extends PaymentModule
 	 * @param $status
 	 * @return bool
 	 */
-	private function sendPaymentUpdate($status)
-	{
-		if (!empty($status) && !empty($this->id_session))
-		{
+	private function sendPaymentUpdate($status){
+		if (!empty($status) && !empty($this->id_session)){
 			if ($status == self::ORDER_STATUS_CANCEL)
-				$result = OpenPayU_Order::cancel($this->id_session, false);
-			elseif ($status == self::ORDER_STATUS_COMPLETE)
-				$result = OpenPayU_Order::updateStatus($this->id_session, $status, false);
+				$result = OpenPayU_Order::cancel($this->id_session);
+			elseif ($status == self::ORDER_STATUS_COMPLETE){
+                $status_update = array(
+                    "orderId" => $this->id_session,
+                    "orderStatus" => $status
+                );
+                $result = OpenPayU_Order::statusUpdate($status_update);
+            }
 
-			if ($result->getSuccess())
-			{
+			if ($result->getSuccess()){
 				$this->updateOrderData();
 				return true;
-			}
-			else
-			{
+			}else{
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage().' '.$this->id_session), 1);
 				return false;
 			}
 		}
-
 		return false;
 	}
 
