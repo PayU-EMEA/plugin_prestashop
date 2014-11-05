@@ -1,7 +1,7 @@
 # PayU plugin for Prestashop since 1.4.4
 ``This plugin is released under the GPL license.``
 
-**If you have any questions or issues feel free to contact our technical support: tech@payu.pl.**
+**If you have any questions or issues, feel free to contact our technical support: tech@payu.pl.**
 
 PayU account is a web application designed as an e-wallet for shoppers willing to open an account, 
 define their payment options, see their purchase history, and manage personal profiles.
