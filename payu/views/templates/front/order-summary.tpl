@@ -18,7 +18,7 @@
 {l s='You selected Pay with PayU. Click the Confirm order button to go to the PayU site.' mod='payu'}
     <p class="cart_navigation">
         {if $id_customer > 0}
-            <a href="{$base_dir_ssl|escape:'htmlall':'UTF-8'}order.php?step=3" class="button_large">{l s='Back to the payment methods' mod='payu'}</a>
+            <a href="{$base_dir_ssl|escape:'htmlall':'UTF-8'}{$return_page}" class="button_large">{l s='Back to the payment methods' mod='payu'}</a>
         {/if}
         <input type="submit" name="submit" value="{l s='Confirm order' mod='payu'}" class="exclusive_large" />
     </p>

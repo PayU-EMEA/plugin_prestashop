@@ -13,6 +13,9 @@
 
 class PayUPaymentModuleFrontController extends ModuleFrontController
 {
+    private $returnPagePS1_4 = 'order.php?step=3';
+    private $returnPagePS1_6 = 'index.php?controller=order&step=3';
+
 	public function initContent()
 	{
 		parent::initContent();
@@ -54,7 +57,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 		{
 			$this->context->smarty->assign(
 				$result + array(
-					'id_customer' => $this->context->cookie->id_customer
+					'id_customer' => $this->context->cookie->id_customer ,
+                    'return_page' => $this->getReturnPage()
 				)
 			);
 			$this->setTemplate($template);
@@ -69,4 +73,12 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 			$this->setTemplate('error.tpl');
 		}
 	}
+
+    private function getReturnPage()
+    {
+        if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
+            return $this->$returnPagePS1_6;
+        }
+         return $this->returnPagePS1_4;
+    }
 }
