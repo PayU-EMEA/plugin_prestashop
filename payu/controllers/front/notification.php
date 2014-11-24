@@ -25,10 +25,8 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 			$payu = new PayU();
 			$payu->id_session = $response->order->orderId;
 
-            if(isset($response->properties[0]) && !empty($response->properties[0])){
-                 if($response->properties[0]->name == 'PAYMENT_ID' && isset($response->properties[0]->value)){
+            if($this->checkIfPaymentIdIsPresent($response)){
                      $payu->id_payment = $response->properties[0]->value;
-                 }
             }
 
 			$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
@@ -66,4 +64,13 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
 		exit;
 	}
+
+    private function checkIfPaymentIdIsPresent($response){
+        if(isset($response->properties) && !empty($response->properties) && is_array($response->properties)){
+            if(isset($response->properties[0]) && isset($response->properties[0]->name) && isset($response->properties[0]->value) && $response->properties[0]->name == 'PAYMENT_ID'){
+                return true;
+            }
+        }
+        return false;
+    }
 }
