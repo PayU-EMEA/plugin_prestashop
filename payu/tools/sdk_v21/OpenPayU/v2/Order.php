@@ -133,7 +133,7 @@ class OpenPayU_Order extends OpenPayU
      */
     public static function consumeNotification($data)
     {
-        $sslConnection = self::isSecureConnection();;
+        $sslConnection = self::isSecureConnection();
 
         if (empty($data)) {
             throw new OpenPayU_Exception('Empty value of data');
@@ -198,7 +198,7 @@ class OpenPayU_Order extends OpenPayU
      */
     public static function hostedOrderForm($order, $params = array())
     {
-        $orderFormUrl = OpenPayU_Configuration::getServiceUrl() . 'order';
+        $orderFormUrl = OpenPayU_Configuration::getServiceUrl() . 'orders';
 
         $usortedFormFieldValuesAsArray = array();
         $htmlFormFields = OpenPayU_Util::convertArrayToHtmlForm($order, "", $usortedFormFieldValuesAsArray);

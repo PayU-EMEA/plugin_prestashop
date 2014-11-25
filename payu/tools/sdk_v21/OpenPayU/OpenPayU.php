@@ -150,7 +150,7 @@ class OpenPayU extends OpenPayUBase
      */
     public static function getOrderRetrieveResponse($data)
     {
-        $response = OpenPayU::parseXmlDocument(stripslashes($data));
+        $response = OpenPayU::parseOpenPayUDocument(stripslashes($data));
 
         $document = $response['OpenPayU']['OrderDomainResponse']['OrderRetrieveResponse'];
 
