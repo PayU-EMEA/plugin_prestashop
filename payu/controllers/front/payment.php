@@ -77,7 +77,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function getReturnPage()
     {
         if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
-            return $this->$returnPagePS1_6;
+            return $this->returnPagePS1_6;
         }
          return $this->returnPagePS1_4;
     }
