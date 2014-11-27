@@ -1,4 +1,9 @@
 ##2.1.4
+ * Fixed return to payment methods button for Prestashop 1.6+
+ * Added translations for Prestashop 1.6+
+ * Fixed bugs
+
+##2.1.4
 * Fixed validityTime
 
 ##2.1.3
