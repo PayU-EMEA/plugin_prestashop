@@ -15,6 +15,8 @@ if (!defined('_PS_VERSION_'))
 	exit;
 
 include_once(_PS_MODULE_DIR_.'/payu/tools/sdk_v21/openpayu.php');
+include_once(_PS_MODULE_DIR_.'/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
+
 
 class PayU extends PaymentModule
 {
@@ -73,7 +75,7 @@ class PayU extends PaymentModule
 	{
 		$this->name = 'payu';
 		$this->tab = 'payments_gateways';
-		$this->version = '2.1.5';
+		$this->version = '2.1.6';
 		$this->author = 'PayU';
 		$this->need_instance = 0;
 		$this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1286,7 +1288,6 @@ class PayU extends PaymentModule
 						'redirectUri' => urldecode($result->getResponse ()->redirectUri),
 						'sessionId' => $result->getResponse ()->orderId
 				);
-
 			}
 			else
 				Logger::addLog($this->displayName.' '.trim($result->getError().' '.$result->getMessage()), 1);
@@ -1625,11 +1626,21 @@ class PayU extends PaymentModule
 	 */
 	public function updateOrderPaymentStatusBySessionId($status)
 	{
-		return Db::getInstance()->execute('
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Update w bazie w order_payu_payments na status '.$status, $this->id_session);
+        return Db::getInstance()->execute('
 			UPDATE `'._DB_PREFIX_.'order_payu_payments`
 			SET id_order = "'.(int)$this->id_order.'", status = "'.addslashes($status).'", update_at = NOW()
 			WHERE `id_session`="'.addslashes($this->id_session).'"');
 	}
+
+    public function checkIfStatusCompleted($id_session){
+        $result = Db::getInstance()->getRow('
+			SELECT status FROM `'._DB_PREFIX_.'order_payu_payments`
+			WHERE `id_session`="'.addslashes($id_session).'"');
+        if ($result['status'] == PayU::ORDER_V2_COMPLETED)
+            return true;
+        return false;
+    }
 
 	/**
 	 * @param string $status
@@ -1707,28 +1718,28 @@ class PayU extends PaymentModule
 	 */
 	private function updateOrderState($status)
 	{
-		if (!empty($this->order->id))
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Wejście..', $this->id_session);
+		if (!empty($this->order->id) && !empty($status))
 		{
-			if (version_compare(_PS_VERSION_, '1.5', 'lt'))
-			{
-				$order_state = OrderHistory::getLastOrderState($this->order->id);
-				$order_state_id = $order_state->id;
-			}
-			else
-				$order_state_id = $this->order->current_state;
+            SimplePayuLogger::addLog('notification',  __FUNCTION__,'Status zamówienia w PayU: '.$status, $this->id_session);
+            $order_state_id = $this->getCurrentPrestaOrderState();
 
-			switch ($status)
+            switch ($status)
 			{
 				//case self::PAYMENT_STATUS_END :
 				case self::ORDER_V2_COMPLETED :
-					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'))
+//					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'))
+					if (!$this->checkIfStatusCompleted($this->id_session) && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'))
 					{
 						$history = new OrderHistory();
 						$history->id_order = $this->order->id;
 						$history->date_add = date('Y-m-d H:i:s');
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
-						$history->addWithemail(true);
-					}
+                        SimplePayuLogger::addLog('notification',  __FUNCTION__,'Dodanie do historii zamówienia statusu: '.Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->id_session);
+                        $history->addWithemail(true);
+                        SimplePayuLogger::addLog('notification',  __FUNCTION__,'Poszedł email...', $this->id_session);
+
+                    }
 					break;
 				//case self::PAYMENT_STATUS_CANCEL :
 				case self::ORDER_V2_CANCELED :
@@ -1761,12 +1772,17 @@ class PayU extends PaymentModule
 						$history->id_order = $this->order->id;
 						$history->date_add = date('Y-m-d H:i:s');
 						$history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
-						$history->addWithemail(false);
+                        SimplePayuLogger::addLog('notification',  __FUNCTION__,'Dodanie do historii zamówienia statusu: '.Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->id_session);
+
+                        $history->addWithemail(false);
 					}
 					break;
 			}
-
-			return $this->updateOrderPaymentStatusBySessionId($status);
+            SimplePayuLogger::addLog('notification',  __FUNCTION__,'Sprawdzenie w bazie, czy status jest completed...', $this->id_session);
+            if(!$this->checkIfStatusCompleted($this->id_session)){
+                SimplePayuLogger::addLog('notification',  __FUNCTION__,'Status nie jest jeszcze completed, następuje przejście do aktualizacji statusu w bazie...', $this->id_session);
+                return $this->updateOrderPaymentStatusBySessionId($status);
+            }
 		}
 
 		return false;
@@ -1777,7 +1793,8 @@ class PayU extends PaymentModule
 	 */
 	public function updateOrderData()
 	{
-		if (empty($this->id_session))
+        SimplePayuLogger::addLog('notification',  __FUNCTION__,'Wejście ', $this->id_session);
+        if (empty($this->id_session))
 			Logger::addLog($this->displayName.' '.$this->l('Can not get order information - id_session is empty'), 1);
 
 		$result = OpenPayU_Order::retrieve($this->id_session);
@@ -1819,12 +1836,15 @@ class PayU extends PaymentModule
 					}
 
 				}
-
-				$this->order->update();
-
-				// Update order state
-				$this->updateOrderState(isset($response->orders[0]->status) ? $response->orders[0]->status : null);
-			}
+                SimplePayuLogger::addLog('notification',  __FUNCTION__,'Potwierdzenie obecności zamówienia w systemie PayU. Przejście do aktualizacji statusu zamówienia...', $this->id_session);
+                if($this->getCurrentPrestaOrderState() != 2){
+                    SimplePayuLogger::addLog('notification',  __FUNCTION__,'Status zamówienia w sklepie NIE jest jeszcze COMPLETED, następuje przejście do aktualizacji statusu...', $this->id_session);
+                    if($this->order->update()){
+                        SimplePayuLogger::addLog('notification',  __FUNCTION__,'Sklep zaktualizował stan zamówienia, przejście do aktualizacji statusu Payu na: '.$response->orders[0]->status, $this->id_session);
+                        $this->updateOrderState(isset($response->orders[0]->status) ? $response->orders[0]->status : null);
+                    }
+                }
+            }
 		}
 	}
 
@@ -2047,6 +2067,8 @@ class PayU extends PaymentModule
 	}
 
     public function addMsgToOrder($message, $prestaOrderId){
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Dodanie info o payment_id', $this->id_session);
+
         $msg = new Message();
         $message = strip_tags($message, '<br>');
             $msg->message = $message;
@@ -2162,7 +2184,6 @@ class PayU extends PaymentModule
         );
         $ocreq['notifyUrl'] = $order_notify_link;
         $ocreq['cancelUrl'] = $order_cancel_link;
-//		$ocreq['completeUrl'] = $order_complete_link.'?id_cart='.$this->cart->id;
         $ocreq['continueUrl'] = $order_complete_link . '?id_cart=' . $this->cart->id;
         $ocreq['currencyCode'] = $currency['iso_code'];
         $ocreq['totalAmount'] = $grand_total;
@@ -2229,5 +2250,18 @@ class PayU extends PaymentModule
                 return array($items, $total);
             }
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getCurrentPrestaOrderState()
+    {
+        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
+            $order_state = OrderHistory::getLastOrderState($this->order->id);
+            $order_state_id = $order_state->id;
+            return $order_state_id;
+        } else
+            $order_state_id = $this->order->current_state;return $order_state_id;
     }
 }

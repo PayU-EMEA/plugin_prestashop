@@ -1,3 +1,12 @@
+##2.1.6
+ * Basic logging feature added for notification path tracking
+ * Multiply orders and status changes bug fixed
+
+##2.1.5
+ * Fixed return to payment methods button for Prestashop 1.6+
+ * Added translations for Prestashop 1.6+
+ * Fixed bugs
+
 ##2.1.4
  * Fixed return to payment methods button for Prestashop 1.6+
  * Added translations for Prestashop 1.6+
