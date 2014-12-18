@@ -1,7 +1,7 @@
 <?php
 
 define('LOG_DIR', _PS_MODULE_DIR_.'payu/log/');
-define('LOG_LEVEL', 1);
+define('LOG_LEVEL', 0);
 
 class SimplePayuLogger {
 
