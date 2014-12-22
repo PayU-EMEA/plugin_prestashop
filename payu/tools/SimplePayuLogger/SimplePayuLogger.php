@@ -13,22 +13,22 @@ class SimplePayuLogger {
 
     public static function addLog($type, $function,$message, $order_id = ''){
         if(LOG_LEVEL == 1){
-            $file = static::$logFile;
+            $file = self::$logFile;
             if(is_array($type)){
                 foreach ($type as $t){
                     switch ($t){
-                        case static::PAYU_LOG_TYPE_NOTIFICATION:
-                            $file = LOG_DIR.static::PAYU_LOG_TYPE_NOTIFICATION.'.log';
+                        case self::PAYU_LOG_TYPE_NOTIFICATION:
+                            $file = LOG_DIR.self::PAYU_LOG_TYPE_NOTIFICATION.'.log';
                             self::writeToLog($function, $message, $order_id, $file);
                             break;
-                        case static::PAYU_LOG_TYPE_ORDER:
-                            $file = LOG_DIR.static::PAYU_LOG_TYPE_ORDER.'.log';
+                        case self::PAYU_LOG_TYPE_ORDER:
+                            $file = LOG_DIR.self::PAYU_LOG_TYPE_ORDER.'.log';
                             self::writeToLog($function, $message, $order_id, $file);
                             break;
                     }
                 }
             }else{
-                $file = LOG_DIR.static::PAYU_LOG_TYPE_NOTIFICATION.'.log';
+                $file = LOG_DIR.self::PAYU_LOG_TYPE_NOTIFICATION.'.log';
                 self::writeToLog($function, $message, $order_id, $file);
             }
         }
@@ -36,7 +36,7 @@ class SimplePayuLogger {
 
     public static function formatMessage($message)
     {
-        return "[".static::getTimestamp()."] {$message}".PHP_EOL;
+        return "[".self::getTimestamp()."] {$message}".PHP_EOL;
     }
 
     public  static function getTimestamp()
@@ -44,7 +44,7 @@ class SimplePayuLogger {
         $originalTime = microtime(true);
         $micro = sprintf("%06d", ($originalTime - floor($originalTime)) * 1000000);
         $date = new DateTime(date('Y-m-d H:i:s.'.$micro, $originalTime));
-        return $date->format(static::CUSTOM_DATE_FORMAT);
+        return $date->format(self::CUSTOM_DATE_FORMAT);
     }
 
     /**
@@ -58,11 +58,11 @@ class SimplePayuLogger {
             fopen($logFile, 'a');
         };
 
-        if (!static::$logFile) {
+        if (!self::$logFile) {
             throw new RuntimeException('Cannot open' . $logFile . ' file!');
         }
         $msg = ' <' . $order_id . '> ' . ' {' . $function . '} ' . $message;
-        file_put_contents($logFile, static::formatMessage($msg), FILE_APPEND);
+        file_put_contents($logFile, self::formatMessage($msg), FILE_APPEND);
     }
 
 
