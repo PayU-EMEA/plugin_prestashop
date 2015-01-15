@@ -31,10 +31,13 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
             if ($this->checkIfPaymentIdIsPresent($response)) {
                 $payu->id_payment = $response->properties[0]->value;
+                SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->id_payment, $payu->id_session);
             }
 
             $order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
             $id_order = (int)$order_payment['id_order'];
+            SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($order_payment, true), $payu->id_session);
+
             // if order not validated yet
             if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW) {
                 $cart = new Cart($order_payment['id_cart']);
