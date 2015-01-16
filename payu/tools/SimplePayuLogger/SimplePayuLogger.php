@@ -1,34 +1,24 @@
 <?php
 
-define('LOG_DIR', _PS_MODULE_DIR_.'payu/log/');
+define('LOG_DIR', _PS_MODULE_DIR_ . 'payu/log/');
 define('LOG_LEVEL', 0);
 
-class SimplePayuLogger {
-
-    const PAYU_LOG_TYPE_NOTIFICATION = 'notification';
-    const PAYU_LOG_TYPE_ORDER = 'order';
-
+class SimplePayuLogger
+{
     const CUSTOM_DATE_FORMAT = 'Y-m-d G:i:s.u';
     public static $logFile = 'payu.log';
 
-    public static function addLog($type, $function,$message, $order_id = ''){
-        if(LOG_LEVEL == 1){
+    public static function addLog($type, $function, $message, $order_id = '')
+    {
+        if (LOG_LEVEL == 1) {
             $file = self::$logFile;
-            if(is_array($type)){
-                foreach ($type as $t){
-                    switch ($t){
-                        case self::PAYU_LOG_TYPE_NOTIFICATION:
-                            $file = LOG_DIR.self::PAYU_LOG_TYPE_NOTIFICATION.'.log';
-                            self::writeToLog($function, $message, $order_id, $file);
-                            break;
-                        case self::PAYU_LOG_TYPE_ORDER:
-                            $file = LOG_DIR.self::PAYU_LOG_TYPE_ORDER.'.log';
-                            self::writeToLog($function, $message, $order_id, $file);
-                            break;
-                    }
+            if (is_array($type)) {
+                foreach ($type as $t) {
+                    $file = LOG_DIR . $type . '.log';
+                    self::writeToLog($function, $message, $order_id, $file);
                 }
-            }else{
-                $file = LOG_DIR.self::PAYU_LOG_TYPE_NOTIFICATION.'.log';
+            } else {
+                $file = LOG_DIR . $type . '.log';
                 self::writeToLog($function, $message, $order_id, $file);
             }
         }
@@ -36,14 +26,14 @@ class SimplePayuLogger {
 
     public static function formatMessage($message)
     {
-        return "[".self::getTimestamp()."] {$message}".PHP_EOL;
+        return "[" . self::getTimestamp() . "] {$message}" . PHP_EOL;
     }
 
-    public  static function getTimestamp()
+    public static function getTimestamp()
     {
         $originalTime = microtime(true);
         $micro = sprintf("%06d", ($originalTime - floor($originalTime)) * 1000000);
-        $date = new DateTime(date('Y-m-d H:i:s.'.$micro, $originalTime));
+        $date = new DateTime(date('Y-m-d H:i:s.' . $micro, $originalTime));
         return $date->format(self::CUSTOM_DATE_FORMAT);
     }
 
