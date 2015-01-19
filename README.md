@@ -67,7 +67,7 @@ See the sections below to find out about steps for each of the procedures.-->
 
 To install the plugin, copy folders from the repository and activate the plugin on the administration page:
 
-1. Download plugin from [the plugin repository][ext1] to local directory as zip.
+1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
 2. Unzip locally downloaded file
 3. **Create zip archive of payu directory**
 4. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
