@@ -634,7 +634,7 @@ class PayuLu extends PayuSettings
 		);
 		$this->hash_string .= $final_price_type;
 
-		$this->hash_string .= $this->addHashValue('PRESTASHOP', 'CUSTOM_PLUGIN');
+		$this->hash_string .= $this->addHashValue('PRESTASHOP', 'CUSTOM_PLUGIN',$type);
 
 		return $this->hash_string;
 	}
