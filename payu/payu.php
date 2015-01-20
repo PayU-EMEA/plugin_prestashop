@@ -67,6 +67,7 @@ class PayU extends PaymentModule
     public $payu_order_id = '';
     public $id_order = null;
     public $payu_payment_id = null;
+    public $status_completed = false;
 
     /**
      *
@@ -75,7 +76,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.3';
+        $this->version = '2.1.6.4';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1650,6 +1651,15 @@ class PayU extends PaymentModule
      */
     private function updateOrderState($status)
     {
+        if ($status === self::ORDER_V2_COMPLETED) {
+            if (!$this->status_completed) {
+                SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('I havent been here yet, i will mark my territory! No other thread should go further! '), $this->payu_order_id);
+                $this->status_completed = true;
+            } else {
+                SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Status is already completed, Im getting out of here! '), $this->payu_order_id);
+                exit;
+            }
+        }
         SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance '), $this->payu_order_id);
         if (!empty($this->order->id) && !empty($status)) {
             SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Payu order status: ') . $status, $this->payu_order_id);
@@ -1718,26 +1728,30 @@ class PayU extends PaymentModule
     /**
      *
      */
-    public function updateOrderData()
+    public function updateOrderData($response_notification)
     {
         SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance:'), $this->payu_order_id);
         if (empty($this->payu_order_id))
             Logger::addLog($this->displayName . ' ' . $this->l('Can not get order information - id_session is empty'), 1);
 
-        $result = OpenPayU_Order::retrieve($this->payu_order_id);
+//        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Preparing to OpenPayU_Order::retrieve'), $this->payu_order_id);
+//        $result = OpenPayU_Order::retrieve($this->payu_order_id);
+//        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Done OpenPayU_Order::retrieve'), $this->payu_order_id);
 
-        $response = $result->getResponse();
+        $result = $response_notification;
 
-        if (isset($response->orders[0])) {
+        $response = $result;
+//        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($response, true), $this->payu_order_id);
+        if (isset($response->order)) {
 
             if (!empty($this->id_order)) {
                 $this->order = new Order($this->id_order);
 
 
                 // Delivery address add
-                if (!empty($response->orders[0]->buyer)) {
+                if (!empty($response->order->buyer)) {
 
-                    $buyer = $response->orders[0]->buyer;
+                    $buyer = $response->order->buyer;
 
                     if (isset($buyer->phone) && !empty($buyer->phone))
                         $buyer->delivery->{'recipientPhone'} = $buyer->phone;
@@ -1748,7 +1762,7 @@ class PayU extends PaymentModule
                         $this->order->id_address_delivery = $new_delivery_address_id;
 
                     // Invoice address add
-                    if (isset($response->orders[0]->buyer->invoice)) {
+                    if (isset($response->order->buyer->invoice)) {
                         if (isset($buyer->phone) && !empty($buyer->phone))
                             $buyer->invoice->{'recipientPhone'} = $buyer->phone;
 
@@ -1763,8 +1777,8 @@ class PayU extends PaymentModule
                 if ($this->getCurrentPrestaOrderState() != 2) {
                     SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop order statusIS NOT COMPLETED, go to status actualization'), $this->payu_order_id);
                     if ($this->order->update()) {
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop actualized order status, go to PayU status actualization to: ') . $response->orders[0]->status, $this->payu_order_id);
-                        $this->updateOrderState(isset($response->orders[0]->status) ? $response->orders[0]->status : null);
+                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop actualized order status, go to PayU status actualization to: ') . $response->order->status, $this->payu_order_id);
+                        $this->updateOrderState(isset($response->order->status) ? $response->order->status : null);
                     }
                 }
             }

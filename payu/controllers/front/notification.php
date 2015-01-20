@@ -23,7 +23,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         $result = OpenPayU_Order::consumeNotification($data);
         $response = $result->getResponse();
         SimplePayuLogger::addLog('notification', 'Przychodząca notyfikacja...', $response->order->orderId);
-        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($data, true), $response->order->orderId);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $response->order->orderId);
 
         if (isset($response->order->orderId)) {
             $payu = new PayU();
@@ -63,7 +63,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
             if (!empty($id_order)) {
                 $payu->id_order = $id_order;
-                $payu->updateOrderData();
+                $payu->updateOrderData($response);
             }
 
             //the response should be status 200
