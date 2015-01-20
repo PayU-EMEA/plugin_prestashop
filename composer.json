@@ -13,6 +13,6 @@
     }
   ],
   "require": {
-    "payu/payu_php_lib": "2.1.*"
+    "payu/payu_php_lib": "@dev"
   }
 }
