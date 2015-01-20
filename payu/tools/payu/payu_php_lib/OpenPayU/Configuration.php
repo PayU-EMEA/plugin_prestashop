@@ -286,7 +286,7 @@ class OpenPayU_Configuration
         if (file_exists($composerFilePath)) {
             $fileContent = file_get_contents($composerFilePath);
             $composerData = json_decode($fileContent);
-            if (isset($composerData->version) && isset($composerData->extra[0]->engine) )
+            if (isset($composerData->version) && isset($composerData->extra[0]->engine))
                 return sprintf("%s %s", $composerData->extra[0]->engine, $composerData->version);
         }
         return self::DEFAULT_SDK_VERSION;
@@ -297,6 +297,6 @@ class OpenPayU_Configuration
      */
     private static function getComposerFilePath()
     {
-        return realpath(dirname(__FILE__)) .'/../../'.self::COMPOSER_JSON;
+        return realpath(dirname(__FILE__)) . '/../../' . self::COMPOSER_JSON;
     }
 }

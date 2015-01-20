@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenPayU
  *
@@ -10,7 +11,6 @@
  * http://twitter.com/openpayu
  *
  */
-
 class OpenPayU_Refund extends OpenPayU
 {
     /**
@@ -37,7 +37,7 @@ class OpenPayU_Refund extends OpenPayU
         if (!empty($amount))
             $refund['refund']['amount'] = (int)$amount;
 
-        $pathUrl = OpenPayU_Configuration::getServiceUrl().'orders/'. $refund['orderId'] . '/refund';
+        $pathUrl = OpenPayU_Configuration::getServiceUrl() . 'orders/' . $refund['orderId'] . '/refund';
 
         $data = OpenPayU_Util::buildJsonFromArray($refund);
 
@@ -54,7 +54,7 @@ class OpenPayU_Refund extends OpenPayU
      * @param string $messageName
      * @return null|OpenPayU_Result
      */
-    public static function verifyResponse($response, $messageName='')
+    public static function verifyResponse($response, $messageName = '')
     {
         $data = array();
         $httpStatus = $response['code'];
@@ -74,7 +74,8 @@ class OpenPayU_Refund extends OpenPayU
         $result = self::build($data);
 
         if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 302 || $httpStatus ==
-            400 || $httpStatus == 404)
+            400 || $httpStatus == 404
+        )
             return $result;
         else {
             OpenPayU_Http::throwHttpStatusException($httpStatus, $result);

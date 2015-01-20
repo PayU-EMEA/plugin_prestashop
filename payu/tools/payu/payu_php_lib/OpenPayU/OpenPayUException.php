@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenPayU Exception
  *
@@ -10,34 +11,32 @@
  * http://twitter.com/openpayu
  *
  */
-
-
 class OpenPayU_Exception extends Exception
 {
 
 }
 
-class OpenPayU_Exception_Configuration extends  OpenPayU_Exception
+class OpenPayU_Exception_Configuration extends OpenPayU_Exception
 {
 
 }
 
-class OpenPayU_Exception_Network extends  OpenPayU_Exception
+class OpenPayU_Exception_Network extends OpenPayU_Exception
 {
 
 }
 
-class OpenPayU_Exception_ServerError extends  OpenPayU_Exception
+class OpenPayU_Exception_ServerError extends OpenPayU_Exception
 {
 
 }
 
-class OpenPayU_Exception_ServerMaintenance extends  OpenPayU_Exception
+class OpenPayU_Exception_ServerMaintenance extends OpenPayU_Exception
 {
 
 }
 
-class OpenPayU_Exception_Authorization extends  OpenPayU_Exception
+class OpenPayU_Exception_Authorization extends OpenPayU_Exception
 {
 
 }

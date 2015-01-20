@@ -14,7 +14,7 @@
 if (!defined('_PS_VERSION_'))
     exit;
 
-include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk_v21/openpayu.php');
+include_once(_PS_MODULE_DIR_ . '/payu/tools/payu/payu_php_lib/openpayu.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
 
 
@@ -75,7 +75,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.2';
+        $this->version = '2.1.6.3';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');

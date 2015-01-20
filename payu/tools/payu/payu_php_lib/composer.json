@@ -1,0 +1,17 @@
+{
+  "name": "PayU/payu_php_lib",
+  "description": "PayU php library",
+  "minimum-stability": "stable",
+  "license": "LGPL-3.0",
+  "authors": [
+    {
+      "name": "PayU",
+      "homepage": "http://developers.payu.com/"
+    }
+  ],
+  "require": {
+    "php": ">=5.2.1",
+    "ext-curl": "*",
+    "ext-hash": "*"
+  }
+}

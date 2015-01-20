@@ -135,8 +135,7 @@ class OpenPayUBase extends OpenPayUNetwork
     public static function read($xml)
     {
         $tree = null;
-        if(isset($xml))
-        {
+        if (isset($xml)) {
             while ($xml->read()) {
                 if ($xml->nodeType == XMLReader::END_ELEMENT) {
                     return $tree;
@@ -171,8 +170,7 @@ class OpenPayUBase extends OpenPayUNetwork
         $xml->openMemory();
         $xml->startDocument($xml_version, $xml_encoding);
 
-        if(OpenPayU_Configuration::getApiVersion() < 2)
-        {
+        if (OpenPayU_Configuration::getApiVersion() < 2) {
             $xml->startElementNS(null, 'OpenPayU', 'http://www.openpayu.com/openpayu.xsd');
             $header = $request == 1 ? 'HeaderRequest' : 'HeaderResponse';
 
@@ -184,12 +182,11 @@ class OpenPayUBase extends OpenPayUNetwork
             $xml->writeElement('Version', $xml_version);
 
             $xml->endElement();
-        }
-        else
+        } else
             $xml->startElementNS(null, 'OpenPayU', 'http://www.openpayu.com/20/openpayu.xsd');
 
         // domain level - open
-        if(OpenPayU_Configuration::getApiVersion() < 2)
+        if (OpenPayU_Configuration::getApiVersion() < 2)
             $xml->startElement(OpenPayUDomain::getDomain4Message($startElement));
 
         // message level - open
@@ -203,7 +200,7 @@ class OpenPayUBase extends OpenPayUNetwork
         $xml->endElement();
 
         // document level - close
-        if(OpenPayU_Configuration::getApiVersion() < 2)
+        if (OpenPayU_Configuration::getApiVersion() < 2)
             $xml->endElement();
 
         return $xml->outputMemory(true);
