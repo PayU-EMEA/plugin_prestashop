@@ -25,9 +25,9 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 			Tools::redirect('order.php?error='.Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
 
 		$payu->id_cart = $id_cart;
-		$payu->id_session = $id_payu_session;
+		$payu->payu_order_id = $id_payu_session;
 
-		$order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
+		$order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
 
 		$id_order = (int)$order_payment['id_order'];
 		$payu->id_cart = (int)$order_payment['id_cart'];
@@ -42,7 +42,7 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 			$payu->validateOrder(
 				$cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
 				$cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-				'PayU cart ID: '.$cart_id.', sessionId: '.$payu->id_session,
+				'PayU cart ID: ' . $cart_id . ', sessionId: ' . $payu->payu_order_id,
 				null, (int)$cart->id_currency, false, $cart->secure_key,
 				Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
 			);

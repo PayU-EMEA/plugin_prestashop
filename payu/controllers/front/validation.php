@@ -23,13 +23,13 @@ class PayUValidationModuleFrontController extends ModuleFrontController
 
         $payu = new PayU();
 
-        $payu->id_session = $id_session;
+        $payu->payu_order_id = $id_session;
         $payu->id_cart = $cart->id;
-        SimplePayuLogger::addLog('order', __FUNCTION__, 'validation.php ' . $payu->l('Entrance'), $payu->id_session);
+        SimplePayuLogger::addLog('order', __FUNCTION__, 'validation.php ' . $payu->l('Entrance'), $payu->payu_order_id);
 
         $payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
 
-        SimplePayuLogger::addLog('order', __FUNCTION__, $payu->l('Process redirect to redirectUrl: ') . $redirect_uri, $payu->id_session);
+        SimplePayuLogger::addLog('order', __FUNCTION__, $payu->l('Process redirect to redirectUrl: ') . $redirect_uri, $payu->payu_order_id);
         Tools::redirect($redirect_uri);
     }
 }

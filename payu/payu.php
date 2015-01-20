@@ -63,10 +63,10 @@ class PayU extends PaymentModule
 
     public $cart = null;
     public $id_cart = null;
-    private $order = null;
-    public $id_session = '';
+    public $order = null;
+    public $payu_order_id = '';
     public $id_order = null;
-    public $id_payment = null;
+    public $payu_payment_id = null;
 
     /**
      *
@@ -75,7 +75,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.1';
+        $this->version = '2.1.6.2';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -990,9 +990,9 @@ class PayU extends PaymentModule
         )
             return null;
 
-        $this->id_session = $order_payment['id_session'];
+        $this->payu_order_id = $order_payment['id_session'];
 
-        if (Tools::isSubmit('submitpayustatus') && $this->id_session && $order_payment['status'] == self::PAYMENT_STATUS_SENT) {
+        if (Tools::isSubmit('submitpayustatus') && $this->payu_order_id && $order_payment['status'] == self::PAYMENT_STATUS_SENT) {
             if (trim(Tools::getValue('PAYU_PAYMENT_STATUS')) &&
                 $this->sendPaymentUpdate(trim(Tools::getValue('PAYU_PAYMENT_STATUS')))
             )
@@ -1015,12 +1015,12 @@ class PayU extends PaymentModule
      */
     private function sendPaymentUpdate($status)
     {
-        if (!empty($status) && !empty($this->id_session)) {
+        if (!empty($status) && !empty($this->payu_order_id)) {
             if ($status == self::ORDER_STATUS_CANCEL)
-                $result = OpenPayU_Order::cancel($this->id_session);
+                $result = OpenPayU_Order::cancel($this->payu_order_id);
             elseif ($status == self::ORDER_STATUS_COMPLETE) {
                 $status_update = array(
-                    "orderId" => $this->id_session,
+                    "orderId" => $this->payu_order_id,
                     "orderStatus" => $status
                 );
                 $result = OpenPayU_Order::statusUpdate($status_update);
@@ -1030,7 +1030,7 @@ class PayU extends PaymentModule
                 $this->updateOrderData();
                 return true;
             } else {
-                Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage() . ' ' . $this->id_session), 1);
+                Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage() . ' ' . $this->payu_order_id), 1);
                 return false;
             }
         }
@@ -1212,7 +1212,7 @@ class PayU extends PaymentModule
      */
     public function orderCreateRequest()
     {
-        SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('Entrance'), $this->id_session);
+        SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('Entrance'), $this->payu_order_id);
         $currency = Currency::getCurrency($this->cart->id_currency);
         $return_array = array();
 
@@ -1242,11 +1242,11 @@ class PayU extends PaymentModule
         $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list);
 
         try {
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateRequest: ', $this->id_session);
-            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->id_session);
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateRequest: ', $this->payu_order_id);
+            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id);
             $result = OpenPayU_Order::create($ocreq);
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateResponse: ', $this->id_session);
-            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->id_session);
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateResponse: ', $this->payu_order_id);
+            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id);
             if ($result->getStatus() == 'SUCCESS') {
 
                 $context = Context::getContext();
@@ -1561,11 +1561,11 @@ class PayU extends PaymentModule
      */
     public function updateOrderPaymentStatusBySessionId($status)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('DB update: ') . 'order_payu_payments ' . $this->l('status changed to: ') . $status, $this->id_session);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('DB update: ') . 'order_payu_payments ' . $this->l('status changed to: ') . $status, $this->payu_order_id);
         return Db::getInstance()->execute('
 			UPDATE `' . _DB_PREFIX_ . 'order_payu_payments`
 			SET id_order = "' . (int)$this->id_order . '", status = "' . addslashes($status) . '", update_at = NOW()
-			WHERE `id_session`="' . addslashes($this->id_session) . '"');
+			WHERE `id_session`="' . addslashes($this->payu_order_id) . '"');
     }
 
     public function checkIfStatusCompleted($id_session)
@@ -1584,10 +1584,10 @@ class PayU extends PaymentModule
      */
     public function addOrderSessionId($status = '')
     {
-        SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('DB Insert ') . $this->l('Prestashop order id: ') . $this->id_order . $this->l('Prestashop cart id: ') . $this->id_cart, $this->id_session);
+        SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('DB Insert ') . $this->l('Prestashop order id: ') . $this->id_order . $this->l('Prestashop cart id: ') . $this->id_cart, $this->payu_order_id);
         if (Db::getInstance()->execute('
 			INSERT INTO `' . _DB_PREFIX_ . 'order_payu_payments` (`id_order`, `id_cart`, `id_session`,  `status`,  `create_at`)
-				VALUES ("' . (int)$this->id_order . '", "' . (int)$this->id_cart . '",  "' . $this->id_session . '",   "' . addslashes($status) . '", NOW())')
+				VALUES ("' . (int)$this->id_order . '", "' . (int)$this->id_cart . '",  "' . $this->payu_order_id . '",   "' . addslashes($status) . '", NOW())')
         )
             return (int)Db::getInstance()->Insert_ID();
 
@@ -1650,23 +1650,23 @@ class PayU extends PaymentModule
      */
     private function updateOrderState($status)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance '), $this->id_session);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance '), $this->payu_order_id);
         if (!empty($this->order->id) && !empty($status)) {
-            SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Payu order status: ') . $status, $this->id_session);
+            SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Payu order status: ') . $status, $this->payu_order_id);
             $order_state_id = $this->getCurrentPrestaOrderState();
 
             switch ($status) {
                 //case self::PAYMENT_STATUS_END :
                 case self::ORDER_V2_COMPLETED :
 //					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'))
-                    if (!$this->checkIfStatusCompleted($this->id_session) && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
+                    if (!$this->checkIfStatusCompleted($this->payu_order_id) && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
                         $history = new OrderHistory();
                         $history->id_order = $this->order->id;
                         $history->date_add = date('Y-m-d H:i:s');
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Addition to Prestashop order status history: ') . Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->id_session);
+                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Addition to Prestashop order status history: ') . Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->payu_order_id);
                         $history->addWithemail(true);
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Email sent'), $this->id_session);
+                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Email sent'), $this->payu_order_id);
 
                     }
                     break;
@@ -1699,15 +1699,15 @@ class PayU extends PaymentModule
                         $history->id_order = $this->order->id;
                         $history->date_add = date('Y-m-d H:i:s');
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Addition to Prestashop order status history: ') . Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->id_session);
+                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Addition to Prestashop order status history: ') . Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->payu_order_id);
 
                         $history->addWithemail(false);
                     }
                     break;
             }
-            SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Check if status is completed in DB: '), $this->id_session);
-            if (!$this->checkIfStatusCompleted($this->id_session)) {
-                SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Status in DB is not COMPLETED, going to change status id DB '), $this->id_session);
+            SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Check if status is completed in DB: '), $this->payu_order_id);
+            if (!$this->checkIfStatusCompleted($this->payu_order_id)) {
+                SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Status in DB is not COMPLETED, going to change status id DB '), $this->payu_order_id);
                 return $this->updateOrderPaymentStatusBySessionId($status);
             }
         }
@@ -1720,11 +1720,11 @@ class PayU extends PaymentModule
      */
     public function updateOrderData()
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance:'), $this->id_session);
-        if (empty($this->id_session))
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance:'), $this->payu_order_id);
+        if (empty($this->payu_order_id))
             Logger::addLog($this->displayName . ' ' . $this->l('Can not get order information - id_session is empty'), 1);
 
-        $result = OpenPayU_Order::retrieve($this->id_session);
+        $result = OpenPayU_Order::retrieve($this->payu_order_id);
 
         $response = $result->getResponse();
 
@@ -1759,11 +1759,11 @@ class PayU extends PaymentModule
                     }
 
                 }
-                SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Order exists in PayU system '), $this->id_session);
+                SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Order exists in PayU system '), $this->payu_order_id);
                 if ($this->getCurrentPrestaOrderState() != 2) {
-                    SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop order statusIS NOT COMPLETED, go to status actualization'), $this->id_session);
+                    SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop order statusIS NOT COMPLETED, go to status actualization'), $this->payu_order_id);
                     if ($this->order->update()) {
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop actualized order status, go to PayU status actualization to: ') . $response->orders[0]->status, $this->id_session);
+                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop actualized order status, go to PayU status actualization to: ') . $response->orders[0]->status, $this->payu_order_id);
                         $this->updateOrderState(isset($response->orders[0]->status) ? $response->orders[0]->status : null);
                     }
                 }
@@ -1987,7 +1987,7 @@ class PayU extends PaymentModule
 
     public function addMsgToOrder($message, $prestaOrderId)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Addition of PAYMENT_ID info'), $this->id_session);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Addition of PAYMENT_ID info'), $this->payu_order_id);
 
         $msg = new Message();
         $message = strip_tags($message, '<br>');
@@ -2093,7 +2093,7 @@ class PayU extends PaymentModule
 
         $ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
         $ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
-        $ocreq['description'] = $this->l('Order for cart: ') . $this->cart->id . $this->l(' from the store: ') . Configuration::get('PS_SHOP_NAME');
+        $ocreq['description'] = $this->l('Order for cart: ') . ' ' . $this->cart->id . ' ' . $this->l(' from the store: ') . ' ' . Configuration::get('PS_SHOP_NAME');
         $ocreq['validityTime'] = 60 * (int)Configuration::get('PAYU_VALIDITY_TIME');
         $ocreq['products'] = $items['products'];
         $ocreq['buyer'] = $customer_sheet;

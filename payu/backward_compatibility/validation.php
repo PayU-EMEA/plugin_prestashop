@@ -19,7 +19,7 @@ $id_session = Tools::getValue('sessionId');
 
 $payu = new PayU();
 
-$payu->id_session = $id_session;
+$payu->payu_order_id = $id_session;
 $payu->id_cart = $cart->id;
 
 $payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);

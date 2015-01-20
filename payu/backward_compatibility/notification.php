@@ -25,15 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (isset($response->order->orderId)) {
         $payu = new PayU();
-        $payu->id_session = $response->order->orderId;
+        $payu->payu_order_id = $response->order->orderId;
 
         if(isset($response->properties[0]) && !empty($response->properties[0])){
             if($response->properties[0]->name == 'PAYMENT_ID' && isset($response->properties[0]->value)){
-                $payu->id_payment = $response->properties[0]->value;
+                $payu->payu_payment_id = $response->properties[0]->value;
             }
         }
 
-        $order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
+        $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
         $id_order = (int)$order_payment['id_order'];
         // if order not validated yet
         if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW) {
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $payu->validateOrder(
                 $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
                 $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-                'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->id_session,
+                'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
                 null, (int)$cart->id_currency, false, $cart->secure_key,
                 Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
             );
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         if($response->order->status == PayU::ORDER_V2_COMPLETED){
-            $payu->addMsgToOrder('payment_id: '.$payu->id_payment, $id_order);
+            $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
         }
 
         if (!empty($id_order)) {

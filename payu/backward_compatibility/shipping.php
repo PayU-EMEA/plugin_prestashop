@@ -33,7 +33,7 @@ if (Tools::getIsset('DOCUMENT'))
 		if (!empty($id_cart))
 		{
 			$payu->id_cart = $id_cart;
-			$payu->id_session = $id_payu_session;
+			$payu->payu_order_id = $id_payu_session;
 			$payu->id_request = $result->getReqId();
 
 			$xml = $payu->shippingCostRetrieveRequest($iso_country_code);

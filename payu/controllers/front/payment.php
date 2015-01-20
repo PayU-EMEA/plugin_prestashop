@@ -41,7 +41,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 }
                 break;
             case PayU::BUSINESS_PARTNER_TYPE_PLATNOSCI:
-                SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php ' . $this->payu->l('Entrance'), $this->payu->id_session);
+                SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php ' . $this->payu->l('Entrance'), $this->payu->payu_order_id);
 
 
                 $result = $this->payu->orderCreateRequest();
@@ -62,7 +62,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     'return_page' => $this->getReturnPage()
                 )
             );
-            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Go to: ') . $this->context->link->getModuleLink('payu', 'validation') . ' used template: ' . $template . ' ' . $this->payu->l('Return page: ') . $this->getReturnPage(), $this->payu->id_session);
+            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Go to: ') . $this->context->link->getModuleLink('payu', 'validation') . ' used template: ' . $template . ' ' . $this->payu->l('Return page: ') . $this->getReturnPage(), $this->payu->payu_order_id);
             $this->setTemplate($template);
         } else {
             $this->context->smarty->assign(
@@ -70,7 +70,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     'message' => $this->payu->l('An error occurred while processing your order.')
                 )
             );
-            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('An error occurred while processing your order.'), $this->payu->id_session);
+            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('An error occurred while processing your order.'), $this->payu->payu_order_id);
             $this->setTemplate('error.tpl');
         }
     }

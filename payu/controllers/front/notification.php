@@ -27,16 +27,16 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
         if (isset($response->order->orderId)) {
             $payu = new PayU();
-            $payu->id_session = $response->order->orderId;
+            $payu->payu_order_id = $response->order->orderId;
 
             if ($this->checkIfPaymentIdIsPresent($response)) {
-                $payu->id_payment = $response->properties[0]->value;
-                SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->id_payment, $payu->id_session);
+                $payu->payu_payment_id = $response->properties[0]->value;
+                SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->payu_payment_id, $payu->payu_order_id);
             }
 
-            $order_payment = $payu->getOrderPaymentBySessionId($payu->id_session);
+            $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
             $id_order = (int)$order_payment['id_order'];
-            SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($order_payment, true), $payu->id_session);
+            SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($order_payment, true), $payu->payu_order_id);
 
             // if order not validated yet
             if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW) {
@@ -45,7 +45,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
                 $payu->validateOrder(
                     $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
                     $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-                    'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->id_session,
+                    'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
                     null, (int)$cart->id_currency, false, $cart->secure_key,
                     Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
                 );
@@ -58,7 +58,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
             if ($response->order->status == PayU::ORDER_V2_COMPLETED) {
                 SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . $response->order->status, $response->order->orderId);
-                $payu->addMsgToOrder('payment_id: ' . $payu->id_payment, $id_order);
+                $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
             }
 
             if (!empty($id_order)) {
