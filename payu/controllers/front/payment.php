@@ -70,7 +70,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     'message' => $this->payu->l('An error occurred while processing your order.')
                 )
             );
-            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('An error occurred while processing your order.'), $this->payu->payu_order_id);
+            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Result is empty: An error occurred while processing your order.'), $this->payu->payu_order_id);
             $this->setTemplate('error.tpl');
         }
     }
