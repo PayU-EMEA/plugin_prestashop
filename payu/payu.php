@@ -1257,9 +1257,13 @@ class PayU extends PaymentModule
                     'redirectUri' => urldecode($result->getResponse()->redirectUri),
                     'sessionId' => $result->getResponse()->orderId
                 );
-            } else
+            } else {
+                SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) doesnt return SUCCESS! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
                 Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
+            }
+
         } catch (Exception $e) {
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
             Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
         }
 
