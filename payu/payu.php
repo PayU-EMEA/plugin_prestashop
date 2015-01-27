@@ -76,7 +76,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.5';
+        $this->version = '2.1.6.6';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1249,7 +1249,6 @@ class PayU extends PaymentModule
             SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateResponse: ', $this->payu_order_id);
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id);
             if ($result->getStatus() == 'SUCCESS') {
-
                 $context = Context::getContext();
                 $context->cookie->__set('payu_order_id', $result->getResponse()->orderId);
 
@@ -1266,7 +1265,7 @@ class PayU extends PaymentModule
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
             Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
         }
-
+        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($return_array, true));
         return $return_array;
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 define('LOG_DIR', _PS_MODULE_DIR_ . 'payu/log/');
-define('LOG_LEVEL', 0);
+define('LOG_LEVEL', 1);
 
 class SimplePayuLogger
 {
@@ -11,6 +11,7 @@ class SimplePayuLogger
     public static function addLog($type, $function, $message, $order_id = '')
     {
         if (LOG_LEVEL == 1) {
+            set_error_handler(array('SimplePayuLogger', 'runtimeErrorHandler'));
             $file = self::$logFile;
             if (is_array($type)) {
                 foreach ($type as $t) {
@@ -53,6 +54,28 @@ class SimplePayuLogger
         }
         $msg = ' <' . $order_id . '> ' . ' {' . $function . '} ' . $message;
         file_put_contents($logFile, self::formatMessage($msg), FILE_APPEND);
+    }
+
+    public static function runtimeErrorHandler($type, $message, $file, $line)
+    {
+        switch ($type) {
+            case E_ERROR:
+                self::addLog('error', $type . ' runtimeError in ' . $file, 'In line: ' . $line . ' with message: ' . $message);
+                break;
+
+            case E_WARNING:
+                self::addLog('error', $type . ' runtimeError in ' . $file, 'In line: ' . $line . ' with message: ' . $message);
+                break;
+
+            case E_NOTICE:
+                self::addLog('error', $type . ' runtimeError in ' . $file, 'In line: ' . $line . ' with message: ' . $message);
+                break;
+
+            default:
+                self::addLog('error', $type . ' runtimeError in ' . $file, 'In line: ' . $line . ' with message: ' . $message);
+                break;
+        }
+        return true;
     }
 
 
