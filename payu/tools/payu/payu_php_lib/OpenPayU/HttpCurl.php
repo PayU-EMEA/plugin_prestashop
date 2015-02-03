@@ -1,5 +1,4 @@
 <?php
-
 /**
  * OpenPayU_HttpCurl
  *
@@ -39,11 +38,12 @@ class OpenPayU_HttpCurl implements OpenPayU_HttpProtocol
             throw new OpenPayU_Exception_Configuration('SignatureKey is empty');
         }
 
-        $userNameAndPassword = $posId . ":" . $signatureKey;
+        $userNameAndPassword = $posId.":".$signatureKey;
 
         $header = array();
 
-        if (OpenPayU_Configuration::getApiVersion() >= 2) {
+        if(OpenPayU_Configuration::getApiVersion() >= 2)
+        {
             $header[] = 'Content-Type:application/json';
             $header[] = 'Accept:application/json';
         }
@@ -58,18 +58,16 @@ class OpenPayU_HttpCurl implements OpenPayU_HttpProtocol
         curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'OpenPayU_HttpCurl::readHeader');
         curl_setopt($ch, CURLOPT_POSTFIELDS, (OpenPayU_Configuration::getApiVersion() < 2) ? 'DOCUMENT=' . urlencode($data) : $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_USERPWD, $userNameAndPassword);
 
         $response = curl_exec($ch);
         $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if ($response === false)
+        if($response === false)
             throw new OpenPayU_Exception_Network(curl_error($ch));
 
         curl_close($ch);
@@ -84,8 +82,9 @@ class OpenPayU_HttpCurl implements OpenPayU_HttpProtocol
      */
     public static function getSignature($headers)
     {
-        foreach ($headers as $name => $value) {
-            if (preg_match('/X-OpenPayU-Signature/i', $name) || preg_match('/OpenPayu-Signature/i', $name))
+        foreach($headers as $name => $value)
+        {
+            if(preg_match('/X-OpenPayU-Signature/i', $name) || preg_match('/OpenPayu-Signature/i', $name))
                 return $value;
         }
     }
@@ -97,7 +96,7 @@ class OpenPayU_HttpCurl implements OpenPayU_HttpProtocol
      */
     public static function readHeader($ch, $header)
     {
-        if (preg_match('/([^:]+): (.+)/m', $header, $match)) {
+        if( preg_match('/([^:]+): (.+)/m', $header, $match) ) {
             self::$headers[$match[1]] = trim($match[2]);
         }
 

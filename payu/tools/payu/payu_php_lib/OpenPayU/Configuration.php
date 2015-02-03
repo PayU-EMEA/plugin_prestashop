@@ -25,7 +25,7 @@ class OpenPayU_Configuration
     public static $authUrl = '';
     public static $serviceDomain = '';
 
-    private static $apiVersion = 2;
+    private static $apiVersion = 2.1;
     private static $_availableHashAlgorithm = array('MD5', 'SHA', 'SHA1', 'SHA-1', 'SHA-256', 'SHA256', 'SHA_256');
     private static $hashAlgorithm = 'SHA-1';
 
@@ -37,7 +37,19 @@ class OpenPayU_Configuration
     const DEFAULT_SDK_VERSION = 'PHP SDK 2.1.0';
 
 
-    /**
+   /**
+     * Set allowed ciphers for CURL SSL requests
+     * 
+     * @link http://curl.haxx.se/libcurl/c/CURLOPT_SSL_CIPHER_LIST.html See CURL documentation for details
+     * 
+     * @param string $serviceHttpAllowedCiphers
+     */
+    public static function setServiceSslCipherList($serviceHttpAllowedCiphers) 
+    {
+        self::$_serviceSslCipherList = $serviceHttpAllowedCiphers;
+    }
+
+   /**
      * @access public
      * @param int $version
      * @throws OpenPayU_Exception_Configuration
@@ -286,7 +298,7 @@ class OpenPayU_Configuration
         if (file_exists($composerFilePath)) {
             $fileContent = file_get_contents($composerFilePath);
             $composerData = json_decode($fileContent);
-            if (isset($composerData->version) && isset($composerData->extra[0]->engine))
+            if (isset($composerData->version) && isset($composerData->extra[0]->engine) )
                 return sprintf("%s %s", $composerData->extra[0]->engine, $composerData->version);
         }
         return self::DEFAULT_SDK_VERSION;
@@ -297,6 +309,6 @@ class OpenPayU_Configuration
      */
     private static function getComposerFilePath()
     {
-        return realpath(dirname(__FILE__)) . '/../../' . self::COMPOSER_JSON;
+        return realpath(dirname(__FILE__)) .'/../../'.self::COMPOSER_JSON;
     }
 }
