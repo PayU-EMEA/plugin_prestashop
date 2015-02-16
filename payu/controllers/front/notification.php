@@ -22,43 +22,22 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         $data = trim($body);
         $result = OpenPayU_Order::consumeNotification($data);
         $response = $result->getResponse();
-        SimplePayuLogger::addLog('notification', 'Przychodząca notyfikacja...', $response->order->orderId);
-        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $response->order->orderId);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $response->order->orderId, 'Incoming notification: ');
 
         if (isset($response->order->orderId)) {
             $payu = new PayU();
             $payu->payu_order_id = $response->order->orderId;
 
-            if ($this->checkIfPaymentIdIsPresent($response)) {
-                $payu->payu_payment_id = $response->properties[0]->value;
-                SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->payu_payment_id, $payu->payu_order_id);
-            }
-
             $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
             $id_order = (int)$order_payment['id_order'];
-            SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($order_payment, true), $payu->payu_order_id);
 
             // if order not validated yet
             if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW) {
-                $cart = new Cart($order_payment['id_cart']);
-
-                $payu->validateOrder(
-                    $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-                    $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-                    'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
-                    null, (int)$cart->id_currency, false, $cart->secure_key,
-                    Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
-                );
-
-                $id_order = $payu->current_order = $payu->{'currentOrder'};
-
-                SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . PayU::PAYMENT_STATUS_NEW, $response->order->orderId);
-                $payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
+                $id_order = $this->createOrder($order_payment, $payu, $response);
             }
 
-            if ($response->order->status == PayU::ORDER_V2_COMPLETED) {
-                SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . $response->order->status, $response->order->orderId);
-                $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
+            if ($this->checkIfPaymentIdIsPresent($response) && $response->order->status == PayU::ORDER_V2_COMPLETED) {
+                $this->addPaymentIdToOrder($response, $payu, $id_order);
             }
 
             if (!empty($id_order)) {
@@ -81,5 +60,43 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
             }
         }
         return false;
+    }
+
+    /**
+     * @param $order_payment
+     * @param $payu
+     * @param $response
+     * @return mixed
+     */
+    private function createOrder($order_payment, Payu $payu, $response)
+    {
+        $cart = new Cart($order_payment['id_cart']);
+
+        $payu->validateOrder(
+            $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+            $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
+            'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
+            null, (int)$cart->id_currency, false, $cart->secure_key,
+            Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
+        );
+
+        $id_order = $payu->current_order = $payu->currentOrder;
+
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . PayU::PAYMENT_STATUS_NEW, $response->order->orderId);
+        $payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
+        return $id_order;
+    }
+
+    /**
+     * @param $response
+     * @param $payu
+     * @param $id_order
+     */
+    private function addPaymentIdToOrder($response, Payu $payu, $id_order)
+    {
+        $payu->payu_payment_id = $response->properties[0]->value;
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->payu_payment_id, $payu->payu_order_id);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . $response->order->status, $response->order->orderId);
+        $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
     }
 }

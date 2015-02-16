@@ -76,7 +76,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.8';
+        $this->version = '2.1.6.9';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1243,11 +1243,9 @@ class PayU extends PaymentModule
         $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list);
 
         try {
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateRequest: ', $this->payu_order_id);
-            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id);
+            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
             $result = OpenPayU_Order::create($ocreq);
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'OrderCreateResponse: ', $this->payu_order_id);
-            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id);
+            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
             if ($result->getStatus() == 'SUCCESS') {
                 $context = Context::getContext();
                 $context->cookie->__set('payu_order_id', $result->getResponse()->orderId);
@@ -1257,7 +1255,7 @@ class PayU extends PaymentModule
                     'sessionId' => $result->getResponse()->orderId
                 );
             } else {
-                SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) doesnt return SUCCESS! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
+                SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
                 Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
             }
 
@@ -1265,7 +1263,7 @@ class PayU extends PaymentModule
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
             Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
         }
-        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($return_array, true));
+        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($return_array, true), 'Return to payment.php with OrderCreateResponse data: ');
         return $return_array;
     }
 
@@ -1505,10 +1503,11 @@ class PayU extends PaymentModule
      */
     public function getOrderIdBySessionId($id_session)
     {
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('DB query: ') . 'SELECT `id_order` FROM `' . _DB_PREFIX_ . 'order_payu_payments` WHERE `id_session`="' . addslashes($id_session) . '"', $this->payu_order_id);
         $result = Db::getInstance()->getRow('
 			SELECT `id_order` FROM `' . _DB_PREFIX_ . 'order_payu_payments`
 			WHERE `id_session`="' . addslashes($id_session) . '"');
-
+        SimplePayuLogger::addLog('notification', __FUNCTION__,  print_r($result, true), $this->payu_order_id, $this->l('DB query result '));
         if ($result)
             return (int)$result['id_order'];
         else
@@ -1521,10 +1520,11 @@ class PayU extends PaymentModule
      */
     public function getOrderPaymentByOrderId($id_order)
     {
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('DB query: ') . 'SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments` WHERE `id_order`="' . addslashes($id_order) . '"', $this->payu_order_id);
         $result = Db::getInstance()->getRow('
 			SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments`
 			WHERE `id_order`="' . addslashes($id_order) . '"');
-
+        SimplePayuLogger::addLog('notification', __FUNCTION__,  print_r($result, true), $this->payu_order_id, $this->l('DB query result '));
         if ($result)
             return $result;
 
@@ -1537,10 +1537,12 @@ class PayU extends PaymentModule
      */
     public function getOrderPaymentBySessionId($id_session)
     {
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('DB query: ') . 'SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments WHERE `id_session`="' . addslashes($id_session) . '"', $this->payu_order_id);
         $result = Db::getInstance()->getRow('
 			SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments`
 			WHERE `id_session`="' . addslashes($id_session) . '"');
 
+        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $this->payu_order_id, $this->l('DB query result '));
         if ($result)
             return $result;
 
@@ -1565,7 +1567,9 @@ class PayU extends PaymentModule
      */
     public function updateOrderPaymentStatusBySessionId($status)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('DB update: ') . 'order_payu_payments ' . $this->l('status changed to: ') . $status, $this->payu_order_id);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, '
+			UPDATE `' . _DB_PREFIX_ . 'order_payu_payments` SET id_order = "' . (int)$this->id_order . '", status = "' . addslashes($status) . '", update_at = NOW()
+			WHERE `id_session`="' . addslashes($this->payu_order_id) . '"', $this->payu_order_id);
         return Db::getInstance()->execute('
 			UPDATE `' . _DB_PREFIX_ . 'order_payu_payments`
 			SET id_order = "' . (int)$this->id_order . '", status = "' . addslashes($status) . '", update_at = NOW()
@@ -1588,10 +1592,12 @@ class PayU extends PaymentModule
      */
     public function addOrderSessionId($status = '')
     {
-        SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('DB Insert ') . $this->l('Prestashop order id: ') . $this->id_order . $this->l('Prestashop cart id: ') . $this->id_cart, $this->payu_order_id);
+        SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('DB Insert ') . '
+			INSERT INTO `' . _DB_PREFIX_ . 'order_payu_payments` (`id_order`, `id_cart`, `id_session`,  `status`,  `create_at`)
+				VALUES ("' . (int)$this->currentOrder . '", "' . (int)$this->id_cart . '",  "' . $this->payu_order_id . '",   "' . addslashes($status) . '", NOW())', $this->payu_order_id);
         if (Db::getInstance()->execute('
 			INSERT INTO `' . _DB_PREFIX_ . 'order_payu_payments` (`id_order`, `id_cart`, `id_session`,  `status`,  `create_at`)
-				VALUES ("' . (int)$this->id_order . '", "' . (int)$this->id_cart . '",  "' . $this->payu_order_id . '",   "' . addslashes($status) . '", NOW())')
+				VALUES ("' . (int)$this->currentOrder . '", "' . (int)$this->id_cart . '",  "' . $this->payu_order_id . '",   "' . addslashes($status) . '", NOW())')
         )
             return (int)Db::getInstance()->Insert_ID();
 
@@ -1744,7 +1750,7 @@ class PayU extends PaymentModule
             $raw = OpenPayU_Order::retrieve($this->payu_order_id);
             $result = $raw->getResponse();
         }
-        SimplePayuLogger::addLog('backward', __FUNCTION__, print_r($result, true), $this->payu_order_id);
+        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderRetrieve response object: ');
 
 
         $response = $result;
@@ -1787,7 +1793,7 @@ class PayU extends PaymentModule
                 if ($this->getCurrentPrestaOrderState() != 2) {
                     SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop order statusIS NOT COMPLETED, go to status actualization'), $this->payu_order_id);
                     if ($this->order->update()) {
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop actualized order status, go to PayU status actualization to: ') . $payu_order->status, $this->payu_order_id);
+                        SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop updated order status, go to PayU status update to: ') . $payu_order->status, $this->payu_order_id);
                         $this->updateOrderState(isset($payu_order->status) ? $payu_order->status : null);
                     }
                 }
