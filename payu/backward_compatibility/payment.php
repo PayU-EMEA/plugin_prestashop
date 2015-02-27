@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenPayU
  *
@@ -10,7 +11,6 @@
  * http://twitter.com/openpayu
  *
  */
-
 include(dirname(__FILE__).'/../../../config/config.inc.php');
 include(dirname(__FILE__).'/../../../init.php');
 include(dirname(__FILE__).'/../../../header.php');
@@ -38,8 +38,31 @@ switch ($payu->getBusinessPartnerSetting('type'))
 		$template = 'lu-form.tpl';
 		break;
 	case PayU::BUSINESS_PARTNER_TYPE_PLATNOSCI:
+
 		$result = $payu->orderCreateRequest();
-		$template = 'order-summary.tpl';
+
+
+		if($result){
+			$payu->id_cart = $cart->id;
+			$payu->payu_order_id = $result['orderId'];
+			$payu->validateOrder(
+				$cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+				$cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
+				'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
+				null, (int)$cart->id_currency, false, $cart->secure_key,
+				Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
+			);
+			$payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
+			Tools::redirect($result['redirectUri'], '');
+		}else{
+			$this->context->smarty->assign(
+				array(
+					'message' => $this->payu->l('An error occurred while processing your order.')
+				)
+			);
+			$this->setTemplate('error.tpl');
+		}
+
 		break;
 	default:
 		/*incorrect partner*/

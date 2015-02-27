@@ -14,7 +14,6 @@
 include(dirname(__FILE__).'/../../../config/config.inc.php');
 include(dirname(__FILE__).'/../../../init.php');
 include(dirname(__FILE__).'/../../../header.php');
-include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
 
 ob_clean();
 
@@ -23,8 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = trim($body);
     $result = OpenPayU_Order::consumeNotification($data);
     $response = $result->getResponse();
-    SimplePayuLogger::addLog('notification', 'Przychodząca notyfikacja...', $response->order->orderId);
-    SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $response->order->orderId);
 
     if (isset($response->order->orderId)) {
         $payu = new PayU();

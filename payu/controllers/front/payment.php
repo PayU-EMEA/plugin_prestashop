@@ -17,9 +17,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private $returnPagePS1_4 = 'order.php?step=3';
     private $returnPagePS1_6 = 'index.php?controller=order&step=3';
 
+    const TEMPLATE_PLATNOSCI = 'lu-form.tpl';
+    const TEMPLATE_EPAYMENT = 'order-summary.tpl';
+    const TEMPLATE_ERROR = 'error.tpl';
+
     public function initContent()
     {
         parent::initContent();
+        SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance.. PHP version:  '.phpversion(), '');
 
         $cart = $this->context->cart;
         $products = $cart->getProducts();
@@ -37,18 +42,35 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 $lu_form = $this->payu->getLuForm($cart);
                 if (!empty($lu_form)) {
                     $result = array('luForm' => $lu_form);
-                    $template = 'lu-form.tpl';
+                    $template = self::TEMPLATE_EPAYMENT;
                 }
                 break;
             case PayU::BUSINESS_PARTNER_TYPE_PLATNOSCI:
-                SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php ' . $this->payu->l('Entrance'), $this->payu->payu_order_id);
-
-
                 $result = $this->payu->orderCreateRequest();
-                $this->context->smarty->assign(
-                    array('url_address' => $this->context->link->getModuleLink('payu', 'validation'))
-                );
-                $template = 'order-summary.tpl';
+
+                if($result){
+                    $this->payu->id_cart = $cart->id;
+                    $this->payu->payu_order_id = $result['orderId'];
+                    $this->payu->validateOrder(
+                        $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+                        $cart->getOrderTotal(true, Cart::BOTH), $this->payu->displayName,
+                        'PayU cart ID: ' . $cart->id . ', orderId: ' . $this->payu->payu_order_id,
+                        null, (int)$cart->id_currency, false, $cart->secure_key,
+                        Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
+                    );
+                    $this->payu->addOrderSessionId(PayU::PAYMENT_STATUS_NEW);
+                    SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to summary...', $result['orderId']);
+                    Tools::redirect($result['redirectUri']);
+                }else{
+                    SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Result is empty: An error occurred while processing your order.'), '');
+                    $this->context->smarty->assign(
+                        array(
+                            'message' => $this->payu->l('An error occurred while processing your order.')
+                        )
+                    );
+                    SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Result is empty: An error occurred while processing your order.'), '');
+                    $this->setTemplate(self::TEMPLATE_ERROR);
+                }
                 break;
             default:
                 //  incorrect partner
@@ -62,7 +84,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     'return_page' => $this->getReturnPage()
                 )
             );
-            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Go to: ') . $this->context->link->getModuleLink('payu', 'validation') . ' used template: ' . $template . ' ' . $this->payu->l('Return page: ') . $this->getReturnPage(), $this->payu->payu_order_id);
             $this->setTemplate($template);
         } else {
             $this->context->smarty->assign(
@@ -70,8 +91,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     'message' => $this->payu->l('An error occurred while processing your order.')
                 )
             );
-            SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Result is empty: An error occurred while processing your order.'), $this->payu->payu_order_id);
-            $this->setTemplate('error.tpl');
+            $this->setTemplate(self::TEMPLATE_ERROR);
         }
     }
 

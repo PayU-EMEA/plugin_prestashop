@@ -76,7 +76,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.9';
+        $this->version = '2.1.6.10';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1213,6 +1213,7 @@ class PayU extends PaymentModule
      */
     public function orderCreateRequest()
     {
+
         SimplePayuLogger::addLog('order', __FUNCTION__, $this->l('Entrance'), $this->payu_order_id);
         $currency = Currency::getCurrency($this->cart->id_currency);
         $return_array = array();
@@ -1223,7 +1224,6 @@ class PayU extends PaymentModule
 
         //discounts and cart rules
         list($items, $total) = $this->getDiscountsAndCartRules($items, $cart_products);
-
         // Wrapping fees
         list($wrapping_fees_tax_inc, $items, $total) = $this->getWrappingFees($items, $total);
 
@@ -1238,7 +1238,6 @@ class PayU extends PaymentModule
 
             }
         }
-
         //prepare data for OrderCreateRequest
         $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list);
 
@@ -1252,7 +1251,7 @@ class PayU extends PaymentModule
 
                 $return_array = array(
                     'redirectUri' => urldecode($result->getResponse()->redirectUri),
-                    'sessionId' => $result->getResponse()->orderId
+                    'orderId' => $result->getResponse()->orderId
                 );
             } else {
                 SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
@@ -1263,7 +1262,6 @@ class PayU extends PaymentModule
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
             Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
         }
-        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($return_array, true), 'Return to payment.php with OrderCreateResponse data: ');
         return $return_array;
     }
 
@@ -1666,7 +1664,6 @@ class PayU extends PaymentModule
                 $this->status_completed = true;
             } else {
                 SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Status is already completed, Im getting out of here! '), $this->payu_order_id);
-                exit;
             }
         }
         SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance '), $this->payu_order_id);
@@ -2149,6 +2146,7 @@ class PayU extends PaymentModule
      */
     private function getWrappingFees($items, $total)
     {
+
         $wrapping_fees_tax_inc = $wrapping_fees = 0;
         if ((int)Configuration::get('PS_GIFT_WRAPPING') && $this->context->cart->gift) {
             $wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
@@ -2188,6 +2186,7 @@ class PayU extends PaymentModule
                 return array($items, $total);
             }
         } else {
+
             if ($this->cart->getDiscounts()) {
                 $items['products'][] = array(
                     'quantity' => 1,
