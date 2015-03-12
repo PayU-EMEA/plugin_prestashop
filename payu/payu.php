@@ -1771,8 +1771,10 @@ class PayU extends PaymentModule
 
                     $new_delivery_address_id = $this->addNewAddress($buyer->delivery);
 
-                    if (!empty($new_delivery_address_id))
+                    if (!empty($new_delivery_address_id)) {
                         $this->order->id_address_delivery = $new_delivery_address_id;
+                        $this->updateCustomizationAddress($new_delivery_address_id);
+                    }
 
                     // Invoice address add
                     if (isset($payu_order->buyer->invoice)) {
@@ -2213,5 +2215,14 @@ class PayU extends PaymentModule
         } else
             $order_state_id = $this->order->current_state;
         return $order_state_id;
+    }
+
+    private function updateCustomizationAddress($id_address)
+    {
+        Db::getInstance()->execute('
+        UPDATE '._DB_PREFIX_.'customization pc
+          INNER JOIN '._DB_PREFIX_.'orders po ON po.id_cart = pc.id_cart
+            SET pc.id_address_delivery = '.(int)$id_address.'
+        WHERE po.id_order = '.$this->id_order);
     }
 }
