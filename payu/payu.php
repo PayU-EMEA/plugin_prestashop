@@ -76,7 +76,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.6.10';
+        $this->version = '2.1.7';
         $this->author = 'PayU';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -1805,7 +1805,7 @@ class PayU extends PaymentModule
      *
      * @return int
      */
-    private function checkIsAddressExists($address)
+    private function checkIfAddressExists($address)
     {
         $check_address = Db::getInstance()->executeS('
 			SELECT `id_address`
@@ -1851,8 +1851,7 @@ class PayU extends PaymentModule
         $new_address->alias = $this->l('PayU address') . ': ' . $this->order->id . ' ' . time();
         $new_address->firstname = $shipping_recipient_name[0];
         $new_address->lastname = $shipping_recipient_name[1];
-
-        $new_address->address1 = trim($address->street);
+        $new_address->address1 = str_replace('null/null', '', trim($address->street));
         $new_address->postcode = $address->{'postalCode'};
         if (!empty($address->city))
             $new_address->city = $address->city;
@@ -1861,7 +1860,7 @@ class PayU extends PaymentModule
             $new_address->vat_number = $address->tin;
         $new_address->deleted = 0;
 
-        if ($id_address = $this->checkIsAddressExists($new_address))
+        if ($id_address = $this->checkIfAddressExists($new_address))
             return $id_address;
 
         $new_address->add();
