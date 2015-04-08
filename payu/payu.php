@@ -1522,7 +1522,6 @@ class PayU extends PaymentModule
         $result = Db::getInstance()->getRow('
 			SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments`
 			WHERE `id_order`="' . addslashes($id_order) . '"');
-        SimplePayuLogger::addLog('notification', __FUNCTION__,  print_r($result, true), $this->payu_order_id, $this->l('DB query result '));
         if ($result)
             return $result;
 
