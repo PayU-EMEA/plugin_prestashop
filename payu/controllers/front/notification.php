@@ -36,13 +36,13 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
                 $id_order = $this->createOrder($order_payment, $payu, $response);
             }
 
-            if ($this->checkIfPaymentIdIsPresent($response) && $response->order->status == PayU::ORDER_V2_COMPLETED) {
-                $this->addPaymentIdToOrder($response, $payu, $id_order);
-            }
-
             if (!empty($id_order)) {
                 $payu->id_order = $id_order;
                 $payu->updateOrderData($response);
+            }
+
+            if ($this->checkIfPaymentIdIsPresent($response) && $response->order->status == PayU::ORDER_V2_COMPLETED) {
+                $this->addPaymentIdToOrder($response, $payu, $id_order);
             }
 
             //the response should be status 200
@@ -97,6 +97,16 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         $payu->payu_payment_id = $response->properties[0]->value;
         SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->payu_payment_id, $payu->payu_order_id);
         SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . $response->order->status, $response->order->orderId);
-        $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
+
+        if (version_compare(_PS_VERSION_, '1.5', 'ge')) {
+            $order = new Order($id_order);
+
+            $payment = $order->getOrderPaymentCollection();
+            $payments = $payment->getAll();
+            $payments[$payment->count() - 1]->transaction_id = $payu->payu_payment_id;
+            $payments[$payment->count() - 1]->update();
+        } else {
+            $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
+        }
     }
 }
