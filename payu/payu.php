@@ -14,7 +14,7 @@
 if (!defined('_PS_VERSION_'))
     exit;
 
-include_once(_PS_MODULE_DIR_ . '/payu/tools/payu/payu_php_lib/openpayu.php');
+include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/openpayu.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
 
 

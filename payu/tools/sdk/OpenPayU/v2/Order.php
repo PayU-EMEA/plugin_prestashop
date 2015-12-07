@@ -1,15 +1,12 @@
 <?php
 
 /**
- * OpenPayU Order module
+ * OpenPayU Standard Library
  *
- * @copyright  Copyright (c) 2014 PayU
+ * @copyright  Copyright (c) 2011-2015 PayU
  * @license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
- *
  * http://www.payu.com
  * http://developers.payu.com
- * http://twitter.com/openpayu
- *
  */
 
 /**
@@ -133,8 +130,6 @@ class OpenPayU_Order extends OpenPayU
      */
     public static function consumeNotification($data)
     {
-        $sslConnection = self::isSecureConnection();
-
         if (empty($data)) {
             throw new OpenPayU_Exception('Empty value of data');
         }
@@ -142,11 +137,7 @@ class OpenPayU_Order extends OpenPayU
         $headers = OpenPayU_Util::getRequestHeaders();
         $incomingSignature = OpenPayU_HttpCurl::getSignature($headers);
 
-        if ($sslConnection) {
-            self::verifyBasicAuthCredentials();
-        } else {
-            self::verifyDocumentSignature($data, $incomingSignature);
-        }
+        self::verifyDocumentSignature($data, $incomingSignature);
 
         return OpenPayU_Order::verifyResponse(array('response' => $data, 'code' => 200), 'OrderNotifyRequest');
     }
@@ -158,28 +149,30 @@ class OpenPayU_Order extends OpenPayU
      * @param string $messageName
      * @return null|OpenPayU_Result
      */
-    public static function verifyResponse($response, $messageName = '')
+    public static function verifyResponse($response, $messageName)
     {
         $data = array();
         $httpStatus = $response['code'];
 
         $message = OpenPayU_Util::convertJsonToArray($response['response'], true);
 
-        if (isset($message[$messageName])) {
-            $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
+        $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
+
+        if (json_last_error() == JSON_ERROR_SYNTAX) {
+            $data['response'] = $response['response'];
+        } elseif (isset($message[$messageName])) {
             unset($message[$messageName]['Status']);
             $data['response'] = $message[$messageName];
         } elseif (isset($message)) {
             $data['response'] = $message;
-            $data['status'] = isset($message['status']['statusCode']) ? $message['status']['statusCode'] : null;
             unset($message['status']);
         }
 
         $result = self::build($data);
 
-        if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 301 || $httpStatus == 302 || $httpStatus
-            == 400 || $httpStatus == 404
-        ) {
+            if ($httpStatus == 200 || $httpStatus == 201 || $httpStatus == 422 || $httpStatus == 301 || $httpStatus == 302 || $httpStatus
+                == 400 || $httpStatus == 404)
+        {
             return $result;
         } else {
             OpenPayU_Http::throwHttpStatusException($httpStatus, $result);

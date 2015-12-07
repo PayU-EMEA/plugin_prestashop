@@ -1,187 +1,208 @@
 <?php
+
 /**
- *	OpenPayU
+ * OpenPayU Standard Library
  *
- *	@author    PayU
- *	@copyright Copyright (c) 2011-2014 PayU
- *	@license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
- *	http://www.payu.com
- *	http://developers.payu.com
- *	http://twitter.com/openpayu
+ * @copyright  Copyright (c) 2011-2015 PayU
+ * @license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ * http://www.payu.com
+ * http://developers.payu.com
  */
 
-class OpenPayUConfiguration
+class OpenPayU_Configuration
 {
-	public static $env = 'sandbox';
-	public static $merchant_pos_id = '';
-	public static $pos_auth_key = '';
-	public static $client_id = '';
-	public static $client_secret = '';
-	public static $signature_key = '';
+    private static $_availableEnvironment = array('custom', 'secure');
+    private static $_availableHashAlgorithm = array('MD5', 'SHA', 'SHA1', 'SHA-1', 'SHA-256', 'SHA256', 'SHA_256');
 
-	public static $service_url = '';
-	public static $summary_url = '';
-	public static $auth_url = '';
-	public static $service_domain = '';
+    private static $env = 'secure';
+    private static $merchantPosId = '';
+    private static $signatureKey = '';
 
-	/**
-	 * @access public
-	 * @param string $value
-	 * @param string $domain
-	 * @param string $country
-	 * @throws Exception
-	 */
-	public static function setEnvironment($value = 'sandbox', $domain = 'payu.pl', $country = 'pl')
-	{
-		$value = Tools::strtolower($value);
-		$domain = Tools::strtolower($domain);
-		$country = Tools::strtolower($country);
+    private static $serviceUrl = '';
+    private static $serviceDomain = '';
+    private static $apiVersion = '2.1';
+    private static $hashAlgorithm = 'SHA-1';
 
-		if ($value == 'sandbox' || $value == 'secure')
-		{
-			self::$env = $value;
-			self::$service_domain = $domain;
+    private static $sender = 'Generic';
 
-			self::$service_url = 'https://'.$value.'.'.$domain.'/'.$country.'/standard/';
-			self::$summary_url = self::$service_url.'co/summary';
-			self::$auth_url = self::$service_url.'oauth/user/authorize';
-		}
-		else if ($value == 'custom')
-		{
-			self::$env = $value;
+    const COMPOSER_JSON = "/composer.json";
+    const DEFAULT_SDK_VERSION = 'PHP SDK 2.1.4';
 
-			self::$service_url = $domain.'/'.$country.'/standard/';
-			self::$summary_url = self::$service_url.'co/summary';
-			self::$auth_url = self::$service_url.'oauth/user/authorize';
-		}
-		else
-			throw new Exception('Invalid value:'.$value.' for environment. Proper values are: "sandbox" or "secure".');
-	}
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getServiceUrl()
-	{
-		return self::$service_url;
-	}
+    /**
+     * @access public
+     * @param string $version
+     * @throws OpenPayU_Exception_Configuration
+     */
+    public static function setApiVersion($version)
+    {
+        if (empty($version)) {
+            throw new OpenPayU_Exception_Configuration('Invalid API version');
+        }
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getSummaryUrl()
-	{
-		return self::$summary_url;
-	}
+        self::$apiVersion = (string)$version;
+    }
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getAuthUrl()
-	{
-		return self::$auth_url;
-	}
+    /**
+     * @return string
+     */
+    public static function getApiVersion()
+    {
+        return self::$apiVersion;
+    }
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getEnvironment()
-	{
-		return self::$env;
-	}
+    /**
+     * @access public
+     * @param string
+     * @throws OpenPayU_Exception_Configuration
+     */
+    public static function setHashAlgorithm($value)
+    {
+        if (!in_array($value, self::$_availableHashAlgorithm)) {
+            throw new OpenPayU_Exception_Configuration('Hash algorithm "' . $value . '"" is not available');
+        }
 
-	/**
-	 * @access public
-	 * @param string
-	 */
-	public static function setMerchantPosid($value)
-	{
-		self::$merchant_pos_id = trim($value);
-	}
+        self::$hashAlgorithm = $value;
+    }
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getMerchantPosid()
-	{
-		return self::$merchant_pos_id;
-	}
+    /**
+     * @access public
+     * @return string
+     */
+    public static function getHashAlgorithm()
+    {
+        return self::$hashAlgorithm;
+    }
 
-	/**
-	 * @access public
-	 * @param string
-	 */
-	public static function setPosAuthkey($value)
-	{
-		self::$pos_auth_key = trim($value);
-	}
+    /**
+     * @access public
+     * @param string $environment
+     * @param string $domain
+     * @param string $api
+     * @param string $version
+     * @throws OpenPayU_Exception_Configuration
+     */
+    public static function setEnvironment($environment = 'secure', $domain = 'payu.com', $api = 'api/', $version = 'v2_1/')
+    {
+        $environment = strtolower($environment);
+        $domain = strtolower($domain) . '/';
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getPosAuthkey()
-	{
-		return self::$pos_auth_key;
-	}
+        if (!in_array($environment, self::$_availableEnvironment)) {
+            throw new OpenPayU_Exception_Configuration($environment . ' - is not valid environment');
+        }
 
-	/**
-	 * @access public
-	 * @param string
-	 */
-	public static function setClientId($value)
-	{
-		self::$client_id = trim($value);
-	}
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getClientId()
-	{
-		return self::$client_id;
-	}
+        if ($environment == 'secure') {
+            self::$env = $environment;
+            self::$serviceDomain = $domain;
+            self::$serviceUrl = 'https://' . $environment . '.' . $domain . $api . $version;
+        } else if ($environment == 'custom') {
+            self::$env = $environment;
+            self::$serviceUrl = $domain . $api . $version;
+        }
+    }
 
-	/**
-	 * @access public
-	 * @param string
-	 */
-	public static function setClientSecret($value)
-	{
-		self::$client_secret = trim($value);
-	}
+    /**
+     * @access public
+     * @return string
+     */
+    public static function getServiceUrl()
+    {
+        return self::$serviceUrl;
+    }
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getClientSecret()
-	{
-		return self::$client_secret;
-	}
+    /**
+     * @access public
+     * @return string
+     */
+    public static function getEnvironment()
+    {
+        return self::$env;
+    }
 
-	/**
-	 * @access public
-	 * @param string
-	 */
-	public static function setSignatureKey($value)
-	{
-		self::$signature_key = trim($value);
-	}
+    /**
+     * @access public
+     * @param string
+     */
+    public static function setMerchantPosId($value)
+    {
+        self::$merchantPosId = trim($value);
+    }
 
-	/**
-	 * @access public
-	 * @return string
-	 */
-	public static function getSignatureKey()
-	{
-		return self::$signature_key;
-	}
+    /**
+     * @access public
+     * @return string
+     */
+    public static function getMerchantPosId()
+    {
+        return self::$merchantPosId;
+    }
 
+    /**
+     * @access public
+     * @param string
+     */
+    public static function setSignatureKey($value)
+    {
+        self::$signatureKey = trim($value);
+    }
+
+    /**
+     * @access public
+     * @return string
+     */
+    public static function getSignatureKey()
+    {
+        return self::$signatureKey;
+    }
+
+    /**
+     * @access public
+     * @param string $sender
+     */
+    public static function setSender($sender)
+    {
+        self::$sender = $sender;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSender()
+    {
+        return self::$sender;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getFullSenderName()
+    {
+        return sprintf("%s@%s", self::getSender(), self::getSdkVersion());
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSdkVersion()
+    {
+        $composerFilePath = self::getComposerFilePath();
+        if (file_exists($composerFilePath)) {
+            $fileContent = file_get_contents($composerFilePath);
+            $composerData = json_decode($fileContent);
+            if (isset($composerData->version) && isset($composerData->extra[0]->engine)) {
+                return sprintf("%s %s", $composerData->extra[0]->engine, $composerData->version);
+            }
+        }
+
+        return self::DEFAULT_SDK_VERSION;
+    }
+
+    /**
+     * @return string
+     */
+    private static function getComposerFilePath()
+    {
+        return realpath(dirname(__FILE__)) . '/../../' . self::COMPOSER_JSON;
+    }
 }
