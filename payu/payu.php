@@ -825,7 +825,7 @@ class PayU extends PaymentModule
         $payment_options = array(
             'cta_text' => $this->l('Pay with PayU'),
             'logo' => $this->getPayButtonUrl(),
-            'action' => $this->context->link->getModuleLink($this->name, 'payment', array(), true)
+            'action' => $this->context->link->getModuleLink('payu', 'payment')
         );
 
         return $payment_options;
