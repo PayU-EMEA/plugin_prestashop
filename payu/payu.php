@@ -120,11 +120,6 @@ class PayU extends PaymentModule
             (version_compare(_PS_VERSION_, '1.5', 'lt') || $this->registerHook('shoppingCart')) &&
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('adminOrder') &&
-            Configuration::updateValue('PAYU_ENVIRONMENT', 'sandbox') &&
-            Configuration::updateValue('PAYU_SANDBOX_POS_ID', '') &&
-            Configuration::updateValue('PAYU_SANDBOX_POS_AUTH_KEY', '') &&
-            Configuration::updateValue('PAYU_SANDBOX_CLIENT_SECRET', '') &&
-            Configuration::updateValue('PAYU_SANDBOX_SIGNATURE_KEY', '') &&
             Configuration::updateValue('PAYU_POS_ID', '') &&
             Configuration::updateValue('PAYU_POS_AUTH_KEY', '') &&
             Configuration::updateValue('PAYU_CLIENT_SECRET', '') &&
@@ -162,11 +157,6 @@ class PayU extends PaymentModule
             !$this->deleteOrderStatussesOnUinstall() ||
             !Configuration::deleteByName('PAYU_PAYMENT_PLATFORM') ||
             !Configuration::deleteByName('PAYU_NAME') ||
-            !Configuration::deleteByName('PAYU_ENVIRONMENT') ||
-            !Configuration::deleteByName('PAYU_SANDBOX_POS_ID') ||
-            !Configuration::deleteByName('PAYU_SANDBOX_POS_AUTH_KEY') ||
-            !Configuration::deleteByName('PAYU_SANDBOX_CLIENT_SECRET') ||
-            !Configuration::deleteByName('PAYU_SANDBOX_SIGNATURE_KEY') ||
             !Configuration::deleteByName('PAYU_POS_ID') ||
             !Configuration::deleteByName('PAYU_POS_AUTH_KEY') ||
             !Configuration::deleteByName('PAYU_CLIENT_SECRET') ||
@@ -312,16 +302,10 @@ class PayU extends PaymentModule
         $errors = array();
 
         if (Tools::isSubmit('submit' . $this->name)) {
-            if (!Configuration::updateValue('PAYU_ENVIRONMENT', Tools::getValue('PAYU_ENVIRONMENT')) ||
-                !Configuration::updateValue('PAYU_PAYMENT_PLATFORM', Tools::getValue('PAYU_PAYMENT_PLATFORM')) ||
+            if (!Configuration::updateValue('PAYU_PAYMENT_PLATFORM', Tools::getValue('PAYU_PAYMENT_PLATFORM')) ||
                 !Configuration::updateValue('PAYU_SELF_RETURN', (int)Tools::getValue('PAYU_SELF_RETURN')) ||
                 !Configuration::updateValue('PAYU_VALIDITY_TIME', Tools::getValue('PAYU_VALIDITY_TIME')) ||
                 !Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', (int)Tools::getValue('PAYU_ONE_STEP_CHECKOUT')) ||
-                !Configuration::updateValue('PAYU_SANDBOX_POS_ID', Tools::getValue('PAYU_SANDBOX_POS_ID')) ||
-                !Configuration::updateValue('PAYU_SANDBOX_POS_AUTH_KEY', Tools::getValue('PAYU_SANDBOX_POS_AUTH_KEY')) ||
-                !Configuration::updateValue('PAYU_SANDBOX_CLIENT_ID', Tools::getValue('PAYU_SANDBOX_CLIENT_ID')) ||
-                !Configuration::updateValue('PAYU_SANDBOX_CLIENT_SECRET', Tools::getValue('PAYU_SANDBOX_CLIENT_SECRET')) ||
-                !Configuration::updateValue('PAYU_SANDBOX_SIGNATURE_KEY', Tools::getValue('PAYU_SANDBOX_SIGNATURE_KEY')) ||
                 !Configuration::updateValue('PAYU_POS_ID', Tools::getValue('PAYU_POS_ID')) ||
                 !Configuration::updateValue('PAYU_POS_AUTH_KEY', Tools::getValue('PAYU_POS_AUTH_KEY')) ||
                 !Configuration::updateValue('PAYU_CLIENT_ID', Tools::getValue('PAYU_CLIENT_ID')) ||
@@ -370,17 +354,6 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_PLATFORM_PLATNOSCI' => self::BUSINESS_PARTNER_TYPE_PLATNOSCI,
             'PAYU_PAYMENT_PLATFORM' => Configuration::get('PAYU_PAYMENT_PLATFORM'),
             'PAYU_PAYMENT_PLATFORM_OPTIONS' => $this->getBusinessPartnersList(),
-            'PAYU_ENVIRONMENT' => Configuration::get('PAYU_ENVIRONMENT'),
-            'PAYU_ENVIRONMENT_OPTIONS' => array(
-                array(
-                    'id' => 'sandbox',
-                    'name' => $this->l('Yes')
-                ),
-                array(
-                    'id' => 'secure',
-                    'name' => $this->l('No')
-                )
-            ),
             'PAYU_SELF_RETURN' => Configuration::get('PAYU_SELF_RETURN'),
             'PAYU_SELF_RETURN_OPTIONS' => array(
                 array(
@@ -405,11 +378,6 @@ class PayU extends PaymentModule
                     'name' => $this->l('No')
                 )
             ),
-            'PAYU_SANDBOX_POS_ID' => Configuration::get('PAYU_SANDBOX_POS_ID'),
-            'PAYU_SANDBOX_POS_AUTH_KEY' => Configuration::get('PAYU_SANDBOX_POS_AUTH_KEY'),
-            'PAYU_SANDBOX_CLIENT_ID' => Configuration::get('PAYU_SANDBOX_CLIENT_ID'),
-            'PAYU_SANDBOX_CLIENT_SECRET' => Configuration::get('PAYU_SANDBOX_CLIENT_SECRET'),
-            'PAYU_SANDBOX_SIGNATURE_KEY' => Configuration::get('PAYU_SANDBOX_SIGNATURE_KEY'),
             'PAYU_POS_ID' => Configuration::get('PAYU_POS_ID'),
             'PAYU_POS_AUTH_KEY' => Configuration::get('PAYU_POS_AUTH_KEY'),
             'PAYU_CLIENT_ID' => Configuration::get('PAYU_CLIENT_ID'),
@@ -1227,7 +1195,7 @@ class PayU extends PaymentModule
         // Wrapping fees
         list($wrapping_fees_tax_inc, $items, $total) = $this->getWrappingFees($items, $total);
 
-        $carriers_list = $this->getCarriersListForCart($this->cart);
+        $carrier = $this->getCarrier($this->cart);
         $grand_total = $this->getGrandTotal($wrapping_fees_tax_inc, $total);
         list($order_complete_link, $order_notify_link, $order_cancel_link) = $this->getLinks();
         if (!empty($this->cart->id_customer)) {
@@ -1239,8 +1207,7 @@ class PayU extends PaymentModule
             }
         }
         //prepare data for OrderCreateRequest
-        $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list);
-
+        $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier);
         try {
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
             $result = OpenPayU_Order::create($ocreq);
@@ -1250,7 +1217,7 @@ class PayU extends PaymentModule
                 $context->cookie->__set('payu_order_id', $result->getResponse()->orderId);
 
                 $return_array = array(
-                    'redirectUri' => urldecode($result->getResponse()->redirectUri),
+                    'redirectUri' => urldecode($result->getResponse()->redirectUri.'&lang='.Language::getIsoById($this->context->language->id)),
                     'orderId' => $result->getResponse()->orderId
                 );
             } else {
@@ -1386,13 +1353,12 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getCarriersListForCart()
+    public function getCarrier()
     {
-        $carrier_list = array();
+        $carrier_list = null;
 
-        //$currency = Currency::getCurrency($this->cart->id_currency);
         $country_code = Tools::strtoupper(Configuration::get('PS_LOCALE_COUNTRY'));
         $country = new Country(Country::getByIso($country_code));
         $cart_products = $this->cart->getProducts();
@@ -1416,78 +1382,19 @@ class PayU extends PaymentModule
                 if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
                     $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
                         ? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-                    //$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                    //? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, false, $country, $cart_products));
                 } else {
                     $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
                         ? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-                    //$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                    //? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, false, $country, $cart_products));
                 }
 
-                //$tax_amount = $price - $price_tax_exc;
-            } else {
-                $price = 0;
-                //$price_tax_exc = 0;
-                //$tax_amount = 0;
-            }
+                if ((int)$selected_carrier->active == 1) {
 
-            if ((int)$selected_carrier->active == 1) {
+                    $carrier_list = array(
+                        'name' => $selected_carrier->name . ' (' . $selected_carrier->id . ')',
+                        'quantity' => 1,
+                        'unitPrice' => $this->toAmount($price)
+                    );
 
-                $carrier_list['shippingMethods'][] = array(
-                    'name' => $selected_carrier->name . ' (' . $selected_carrier->id . ')',
-                    'country' => $country->iso_code,
-                    'price' => $this->toAmount($price)
-                );
-
-            }
-        } else {
-            $i = 0;
-            if ((int)$this->context->cookie->id_customer > 0) {
-                $customer = new Customer((int)$this->context->cookie->id_customer);
-                $address = new Address((int)$this->cart->id_address_delivery);
-                $id_zone = Address::getZoneById((int)$address->id);
-                $carriers = Carrier::getCarriersForOrder($id_zone, $customer->getGroups());
-            } else
-                $carriers = Carrier::getCarriers((int)$this->cart->id_lang, true);
-
-            if ($carriers) {
-                foreach ($carriers as $carrier) {
-                    $c = new Carrier((int)$carrier['id_carrier']);
-
-                    $shipping_method = $c->getShippingMethod();
-
-                    if ($free_shipping == false) {
-                        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-                            $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                                ? 0 : $this->cart->getOrderShippingCost((int)$carrier['id_carrier'], true, $country, $cart_products));
-                            //$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                            //? 0 : $this->cart->getOrderShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
-                        } else {
-                            $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                                ? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], true, $country, $cart_products));
-                            //$price_tax_exc = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                            //? 0 : $this->cart->getPackageShippingCost((int)$carrier['id_carrier'], false, $country, $cart_products));
-                        }
-                        //$tax_amount = $price - $price_tax_exc;
-                    } else {
-                        $price = 0;
-                        //$price_tax_exc = 0;
-                        //$tax_amount = 0;
-                    }
-
-                    if ($carrier['id_carrier'] != $this->cart->id_carrier) {
-                        if ((int)$carrier['active'] == 1) {
-
-                            $carrier_list['shippingMethods'][] = array(
-                                'name' => $carrier['name'] . ' (' . $carrier['id_carrier'] . ')',
-                                'country' => $country->iso_code,
-                                'price' => $this->toAmount($price)
-                            );
-
-                            $i++;
-                        }
-                    }
                 }
             }
         }
@@ -1671,9 +1578,7 @@ class PayU extends PaymentModule
             $order_state_id = $this->getCurrentPrestaOrderState();
 
             switch ($status) {
-                //case self::PAYMENT_STATUS_END :
                 case self::ORDER_V2_COMPLETED :
-//					if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'))
                     if (!$this->checkIfStatusCompleted($this->payu_order_id) && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
                         $history = new OrderHistory();
                         $history->id_order = $this->order->id;
@@ -1685,7 +1590,6 @@ class PayU extends PaymentModule
 
                     }
                     break;
-                //case self::PAYMENT_STATUS_CANCEL :
                 case self::ORDER_V2_CANCELED :
                     if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')) {
                         $history = new OrderHistory();
@@ -1695,7 +1599,6 @@ class PayU extends PaymentModule
                         $history->addWithemail(true);
                     }
                     break;
-                //case self::PAYMENT_STATUS_REJECT :
                 case self::ORDER_V2_REJECTED :
                     if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_REJECTED')) {
                         $history = new OrderHistory();
@@ -1705,7 +1608,6 @@ class PayU extends PaymentModule
                         $history->addWithemail(true);
                     }
                     break;
-                //case self::PAYMENT_STATUS_SENT :
                 case self::ORDER_V2_PENDING :
                     if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')
                         && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT')
@@ -1730,66 +1632,34 @@ class PayU extends PaymentModule
         return false;
     }
 
-    /**
-     *
-     */
     public function updateOrderData($response_notification = null)
     {
         SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Entrance:'), $this->payu_order_id);
-        if (empty($this->payu_order_id))
+        if (empty($this->payu_order_id)) {
             Logger::addLog($this->displayName . ' ' . $this->l('Can not get order information - id_session is empty'), 1);
+        }
 
         $result=null;
-        if($response_notification)
-            $result = $response_notification;
-        else{
+
+        if ($response_notification) {
+            $response = $response_notification;
+        } else {
             $raw = OpenPayU_Order::retrieve($this->payu_order_id);
-            $result = $raw->getResponse();
+            $response = $raw->getResponse();
         }
+
         SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderRetrieve response object: ');
 
-
-        $response = $result;
-//        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($response, true), $this->payu_order_id);
-        $payu_order=null;
-        isset($response_notification)?($payu_order=$response->order):($payu_order=$response->orders[0]);
+        $payu_order = isset($response_notification) ? $response->order : $response->orders[0];
 
         if (isset($payu_order)) {
 
             if (!empty($this->id_order)) {
                 $this->order = new Order($this->id_order);
 
-
-                // Delivery address add
-                if (!empty($payu_order->buyer)) {
-
-                    $buyer = $payu_order->buyer;
-
-                    if (isset($buyer->phone) && !empty($buyer->phone))
-                        $buyer->delivery->{'recipientPhone'} = $buyer->phone;
-
-                    $new_delivery_address_id = $this->addNewAddress($buyer->delivery);
-
-                    if (!empty($new_delivery_address_id)) {
-                        $this->order->id_address_delivery = $new_delivery_address_id;
-                        $this->updateCustomizationAddress($new_delivery_address_id);
-                    }
-
-                    // Invoice address add
-                    if (isset($payu_order->buyer->invoice)) {
-                        if (isset($buyer->phone) && !empty($buyer->phone))
-                            $buyer->invoice->{'recipientPhone'} = $buyer->phone;
-
-                        $new_invoice_address_id = $this->addNewAddress($buyer->invoice);
-
-                        if (!empty($new_invoice_address_id))
-                            $this->order->id_address_invoice = $new_invoice_address_id;
-                    }
-
-                }
                 SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Order exists in PayU system '), $this->payu_order_id);
                 if ($this->getCurrentPrestaOrderState() != 2) {
-                    SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop order statusIS NOT COMPLETED, go to status actualization'), $this->payu_order_id);
+                    SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop order status IS NOT COMPLETED, go to status actualization'), $this->payu_order_id);
                     if ($this->order->update()) {
                         SimplePayuLogger::addLog('notification', __FUNCTION__, $this->l('Prestashop updated order status, go to PayU status update to: ') . $payu_order->status, $this->payu_order_id);
                         $this->updateOrderState(isset($payu_order->status) ? $payu_order->status : null);
@@ -2032,14 +1902,12 @@ class PayU extends PaymentModule
      */
     private function getGrandTotal($wrapping_fees_tax_inc, $total)
     {
-        if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc < $total) {
+        if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH)) + $wrapping_fees_tax_inc < $total) {
             $grand_total = $total;
             return $grand_total;
-            //$discount_total = $total - $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING));
         } else {
-            $grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING)) + $wrapping_fees_tax_inc;
+            $grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH)) + $wrapping_fees_tax_inc;
             return $grand_total;
-            //$discount_total = 0;
         }
     }
 
@@ -2111,31 +1979,30 @@ class PayU extends PaymentModule
      * @param $order_complete_link
      * @param $currency
      * @param $grand_total
-     * @param $carriers_list
+     * @param $carrier
      * @return array
      */
-    private function prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carriers_list)
+    private function prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier)
     {
         $ocreq = array();
 
         $ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
-        $ocreq['orderUrl'] = $this->context->link->getPageLink('guest-tracking.php', true);
         $ocreq['description'] = $this->l('Order for cart: ') . ' ' . $this->cart->id . ' ' . $this->l(' from the store: ') . ' ' . Configuration::get('PS_SHOP_NAME');
         $ocreq['validityTime'] = 60 * (int)Configuration::get('PAYU_VALIDITY_TIME');
         $ocreq['products'] = $items['products'];
+        if ($carrier && is_array($carrier)) {
+            array_push($ocreq['products'], $carrier);
+        }
         $ocreq['buyer'] = $customer_sheet;
-        $ocreq['customerIp'] = (
-        ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
-            !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
-                $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']
-        );
+        $ocreq['customerIp'] = $this->getIP();
         $ocreq['notifyUrl'] = $order_notify_link;
         $ocreq['cancelUrl'] = $order_cancel_link;
         $ocreq['continueUrl'] = $order_complete_link . '?id_cart=' . $this->cart->id;
         $ocreq['currencyCode'] = $currency['iso_code'];
         $ocreq['totalAmount'] = $grand_total;
-        $ocreq['extOrderId'] = $this->cart->id . '-' . microtime();
-        $ocreq['shippingMethods'] = $carriers_list['shippingMethods'];
+        $ocreq['extOrderId'] = $this->cart->id . '-' . uniqid(true);
+        $ocreq['settings']['invoiceDisabled'] = true;
+
         return $ocreq;
     }
 
@@ -2178,7 +2045,7 @@ class PayU extends PaymentModule
                 $items['products'][] = array(
                     'quantity' => 1,
                     'name' => 'Order id ' . $this->cart->id,
-                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
+                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH))
                 );
                 return array($items, $total);
             } else {
@@ -2191,7 +2058,7 @@ class PayU extends PaymentModule
                 $items['products'][] = array(
                     'quantity' => 1,
                     'name' => 'Order id ' . $this->cart->id,
-                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING))
+                    'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH))
                 );
                 return array($items, $total);
             } else {
@@ -2199,6 +2066,17 @@ class PayU extends PaymentModule
                 return array($items, $total);
             }
         }
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getIP()
+    {
+        return ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
+            !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
+                $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
     }
 
     /**

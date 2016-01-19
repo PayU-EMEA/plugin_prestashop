@@ -2,12 +2,10 @@
  * PayU
  * 
  * @author    PayU
- * @copyright Copyright (c) 2014 PayU
+ * @copyright Copyright (c) 2016 PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
- * http://openpayu.com
- * http://twitter.com/openpayu
 *}
 <div id="payu-wrapper">
 <form id="_form" class="defaultForm payu" action="{$smarty.server.REQUEST_URI|escape:'htmlall':'UTF-8'}" method="post" enctype="multipart/form-data">
@@ -27,14 +25,6 @@
 <br>
 <fieldset id="fieldset_1" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
     <legend>{l s='Main settings' mod='payu'}</legend>
-    <!--<label>{l s='Test Mode On' mod='payu'}</label>
-    <div class="margin-form">
-        <select name="PAYU_ENVIRONMENT" id="PAYU_ENVIRONMENT">
-            {foreach from=$PAYU_ENVIRONMENT_OPTIONS item=option}
-                <option value="{$option.id|escape:'htmlall':'UTF-8'}" {if $option.id == $PAYU_ENVIRONMENT}selected="selected"{/if}>{$option.name|escape:'htmlall':'UTF-8'}</option>
-            {/foreach}
-        </select>
-    </div>-->
     <div class="clear"></div>
     <label>{l s='Self-Return Enabled' mod='payu'}</label>
     <div class="margin-form">
@@ -79,37 +69,7 @@
     <div class="clear"></div>
 </fieldset>
 <br>
-<!-- <fieldset id="fieldset_2" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
-    <legend>{l s='Environment settings (Test)' mod='payu'}</legend>
-    <label>{l s='POS ID' mod='payu'}</label>
-    <div class="margin-form">
-        <input type="text" name="PAYU_SANDBOX_POS_ID" id="PAYU_SANDBOX_POS_ID" value="{$PAYU_SANDBOX_POS_ID|escape:'htmlall':'UTF-8'}" size="10">
-    </div>
-    <div class="clear"></div>
-    <label>{l s='Key (MD5)' mod='payu'}</label>
-    <div class="margin-form">
-        <input type="text" name="PAYU_SANDBOX_CLIENT_SECRET" id="PAYU_SANDBOX_CLIENT_SECRET" value="{$PAYU_SANDBOX_CLIENT_SECRET|escape:'htmlall':'UTF-8'}" size="32">
-    </div>
-    <div class="clear"></div>
-    <label>{l s='Second key (MD5)' mod='payu'}</label>
-    <div class="margin-form">
-        <input type="text" name="PAYU_SANDBOX_SIGNATURE_KEY" id="PAYU_SANDBOX_SIGNATURE_KEY" value="{$PAYU_SANDBOX_SIGNATURE_KEY|escape:'htmlall':'UTF-8'}" size="32">
-    </div>
-    <div class="clear"></div>
-    <label>{l s='Pos Auth Key' mod='payu'}</label>
-    <div class="margin-form">
-        <input type="text" name="PAYU_SANDBOX_POS_AUTH_KEY" id="PAYU_SANDBOX_POS_AUTH_KEY" value="{$PAYU_SANDBOX_POS_AUTH_KEY|escape:'htmlall':'UTF-8'}" size="10">
-    </div>
-    <div class="clear"></div>
-    <div class="small"><sup>*</sup> {l s='Required field' mod='payu'}</div>
-    <label></label>
-    <div class="margin-form">
-        <input type="hidden" name="submitpayu" value="1" />
-        <input type="submit" class="button" name="submitButton" value="{l s='Save' mod='payu'}" />
-    </div>
-    <div class="clear"></div>
-</fieldset>
-<br> -->
+
 <fieldset id="fieldset_3" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
     <legend>{l s='Environment settings' mod='payu'}</legend>
     <label>{l s='POS ID' mod='payu'}</label>
@@ -117,24 +77,12 @@
         <input type="text" name="PAYU_POS_ID" id="PAYU_POS_ID" value="{$PAYU_POS_ID|escape:'htmlall':'UTF-8'}" size="10">
         <sup>*</sup>
     </div>
-    <!-- <div class="clear"></div>
-    <label>{l s='Key (MD5)' mod='payu'}</label>
-    <div class="margin-form">
-        <input type="text" name="PAYU_CLIENT_SECRET" id="PAYU_CLIENT_SECRET" value="{$PAYU_CLIENT_SECRET|escape:'htmlall':'UTF-8'}" size="32">
-        <sup>*</sup>
-    </div> -->
     <div class="clear"></div>
     <label>{l s='Second key (MD5)' mod='payu'}</label>
     <div class="margin-form">
         <input type="text" name="PAYU_SIGNATURE_KEY" id="PAYU_SIGNATURE_KEY" value="{$PAYU_SIGNATURE_KEY|escape:'htmlall':'UTF-8'}" size="32">
         <sup>*</sup>
     </div>
-    <!-- <div class="clear"></div>
-    <label>{l s='Pos Auth Key' mod='payu'}</label>
-    <div class="margin-form">
-        <input type="text" name="PAYU_POS_AUTH_KEY" id="PAYU_POS_AUTH_KEY" value="{$PAYU_POS_AUTH_KEY|escape:'htmlall':'UTF-8'}" size="10">
-        <sup>*</sup>
-    </div> -->
     <div class="clear"></div>
     <div class="small"><sup>*</sup> {l s='Required field' mod='payu'}</div>
     <label></label>

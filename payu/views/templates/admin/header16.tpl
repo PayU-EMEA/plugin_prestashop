@@ -2,12 +2,10 @@
  * PayU
  * 
  * @author    PayU
- * @copyright Copyright (c) 2014 PayU
+ * @copyright Copyright (c) 2016 PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
- * http://openpayu.com
- * http://twitter.com/openpayu
 *}
 <script type="text/javascript" src="{$module_dir|escape:'htmlall':'UTF-8'}js/back_office.js"></script>
 
