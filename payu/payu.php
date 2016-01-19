@@ -115,6 +115,7 @@ class PayU extends PaymentModule
             $this->createPaymentTable() &&
             $this->registerHook('header') &&
             $this->registerHook('payment') &&
+            $this->registerHook('displayPaymentEU') &&
             $this->registerHook('paymentReturn') &&
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('adminOrder') &&
@@ -819,6 +820,17 @@ class PayU extends PaymentModule
         return $template;
     }
 
+    public function hookDisplayPaymentEU()
+    {
+        $payment_options = array(
+            'cta_text' => $this->l('Pay with PayU'),
+            'logo' => $this->getPayButtonUrl(),
+            'action' => $this->context->link->getModuleLink($this->name, 'payment', array(), true)
+        );
+
+        return $payment_options;
+    }
+
     /**
      * @return null|string
      */
@@ -896,7 +908,7 @@ class PayU extends PaymentModule
 
         return $this->fetchTemplate('/views/templates/front/', 'payment_return');
     }
-    
+
     /**
      * Convert to amount
      *
