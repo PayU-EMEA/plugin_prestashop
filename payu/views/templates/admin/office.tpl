@@ -219,36 +219,5 @@
     <div class="clear"></div>
 </fieldset>
 
-<br>
-<fieldset id="fieldset_6">
-    <legend>{l s='External resources' mod='payu'}</legend>
-    <label>{l s='Payment button' mod='payu'}</label>
-    <div class="margin-form">
-        <select name="PAYU_PAYMENT_BUTTON" id="PAYU_PAYMENT_BUTTON">
-            {foreach from=$PAYU_PAYMENT_BUTTON_OPTIONS item=option}
-                <option value="{$option.id|escape:'htmlall':'UTF-8'}" {if $option.id == $PAYU_PAYMENT_BUTTON}selected="selected"{/if}>{$option.name|escape:'htmlall':'UTF-8'}</option>
-            {/foreach}
-        </select>
-        <div class="img-preview"><img id="PAYU_PAYMENT_BUTTON_PREVIEW" src="{$PAYU_PAYMENT_BUTTON|escape:'htmlall':'UTF-8'}" alt="" /></div>
-    </div>
-    <div class="clear"></div>
-    <label>{l s='Payment advert' mod='payu'}</label>
-    <div class="margin-form">
-        <select name="PAYU_PAYMENT_ADVERT" id="PAYU_PAYMENT_ADVERT">
-            {foreach from=$PAYU_PAYMENT_ADVERT_OPTIONS item=option}
-                <option value="{$option.id|escape:'htmlall':'UTF-8'}" {if $option.id == $PAYU_PAYMENT_ADVERT}selected="selected"{/if}>{$option.name|escape:'htmlall':'UTF-8'}</option>
-            {/foreach}
-        </select>
-        <div class="img-preview"><img id="PAYU_PAYMENT_ADVERT_PREVIEW" src="{$PAYU_PAYMENT_ADVERT|escape:'htmlall':'UTF-8'}" alt="" /></div>
-    </div>
-    <div class="clear"></div>
-    <div class="small"><sup>*</sup> {l s='Required field' mod='payu'}</div>
-    <label></label>
-    <div class="margin-form">
-        <input type="hidden" name="submitpayu" value="1" />
-        <input type="submit" class="button" name="submitButton" value="{l s='Save' mod='payu'}" />
-    </div>
-    <div class="clear"></div>
-</fieldset>
 </form>
 </div>

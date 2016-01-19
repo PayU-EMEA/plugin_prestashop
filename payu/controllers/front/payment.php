@@ -17,7 +17,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private $returnPagePS1_4 = 'order.php?step=3';
     private $returnPagePS1_6 = 'index.php?controller=order&step=3';
 
-    const TEMPLATE_PLATNOSCI = 'lu-form.tpl';
     const TEMPLATE_EPAYMENT = 'order-summary.tpl';
     const TEMPLATE_ERROR = 'error.tpl';
 

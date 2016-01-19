@@ -61,6 +61,8 @@ class PayU extends PaymentModule
     const BUSINESS_PARTNER_TYPE_EPAYMENT = 'epayment';
     const BUSINESS_PARTNER_TYPE_PLATNOSCI = 'platnosci';
 
+    const PAY_BUTTON = 'https://static.payu.com/{lang}/standard/partners/buttons/payu_account_button_01.png';
+
     public $cart = null;
     public $id_cart = null;
     public $order = null;
@@ -111,13 +113,9 @@ class PayU extends PaymentModule
             in_array('curl', get_loaded_extensions()) &&
             $this->createInitialDbTable() &&
             $this->createPaymentTable() &&
-            $this->registerHook('leftColumn') &&
-            $this->registerHook('rightColumn') &&
             $this->registerHook('header') &&
             $this->registerHook('payment') &&
             $this->registerHook('paymentReturn') &&
-            (version_compare(_PS_VERSION_, '1.5', 'ge') || $this->registerHook('shoppingCartExtra')) &&
-            (version_compare(_PS_VERSION_, '1.5', 'lt') || $this->registerHook('shoppingCart')) &&
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('adminOrder') &&
             Configuration::updateValue('PAYU_POS_ID', '') &&
@@ -174,9 +172,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_PAYMENT_STATUS_COMPLETED') ||
             !Configuration::deleteByName('PAYU_PAYMENT_STATUS_CANCELED') ||
             !Configuration::deleteByName('PAYU_PAYMENT_STATUS_REJECTED') ||
-            !Configuration::deleteByName('PAYU_PAYMENT_STATUS_DELIVERED') ||
-            !Configuration::deleteByName('PAYU_PAYMENT_ADVERT') ||
-            !Configuration::deleteByName('PAYU_PAYMENT_BUTTON')
+            !Configuration::deleteByName('PAYU_PAYMENT_STATUS_DELIVERED')
         )
             return false;
 
@@ -318,7 +314,6 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_REJECTED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_DELIVERED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_DELIVERED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_BUTTON', Tools::getValue('PAYU_PAYMENT_BUTTON')) ||
-                !Configuration::updateValue('PAYU_PAYMENT_ADVERT', Tools::getValue('PAYU_PAYMENT_ADVERT')) ||
 
                 !Configuration::updateValue('PAYU_EPAYMENT_MERCHANT', Tools::getValue('PAYU_EPAYMENT_MERCHANT')) ||
                 !Configuration::updateValue('PAYU_EPAYMENT_SECRET_KEY', Tools::getValue('PAYU_EPAYMENT_SECRET_KEY')) ||
@@ -342,12 +337,6 @@ class PayU extends PaymentModule
      */
     public function displayForm()
     {
-        // Get default Language
-        $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
-        $lang_iso_code = Language::getIsoById($default_lang);
-
-        $media = $this->getMediaResourcesList($lang_iso_code);
-
         // Load current value
         $this->context->smarty->assign(array(
             'PAYU_PAYMENT_PLATFORM_EPAYMENT' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
@@ -427,11 +416,7 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_COMPLETED' => Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'),
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
             'PAYU_PAYMENT_STATUS_REJECTED' => Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'),
-            'PAYU_PAYMENT_STATUS_DELIVERED' => Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED'),
-            'PAYU_PAYMENT_BUTTON' => Configuration::get('PAYU_PAYMENT_BUTTON'),
-            'PAYU_PAYMENT_BUTTON_OPTIONS' => $this->getMediaButtonsResourcesList($media),
-            'PAYU_PAYMENT_ADVERT' => Configuration::get('PAYU_PAYMENT_ADVERT'),
-            'PAYU_PAYMENT_ADVERT_OPTIONS' => $this->getMediaAdvertsResourcesList($media)
+            'PAYU_PAYMENT_STATUS_DELIVERED' => Configuration::get('PAYU_PAYMENT_STATUS_DELIVERED')
         ));
 
         return $this->hookBackOfficeHeader() . $this->fetchTemplate('/views/templates/admin/office.tpl');
@@ -466,12 +451,8 @@ class PayU extends PaymentModule
      */
     public function hookBackOfficeHeader()
     {
-        $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
-        $lang_iso_code = Language::getIsoById($default_lang);
 
-        $media = $this->getMediaResourcesList($lang_iso_code);
-
-        $output = '<script type="text/javascript">var business_platforms = ' . Tools::jsonEncode($this->getBusinessPartnersPayU($media)) . ';</script>';
+        $output = '<script type="text/javascript">var business_platforms = ' . Tools::jsonEncode($this->getBusinessPartnersPayU()) . ';</script>';
         $output .= '<link type="text/css" rel="stylesheet" href="' . _MODULE_DIR_ . $this->name . '/css/payu.css" />';
 
         $vieworder = Tools::getValue('vieworder');
@@ -787,51 +768,47 @@ class PayU extends PaymentModule
      */
     private function getBusinessPartnersPayU()
     {
-        $business_partners = $this->jsonOpenPayU('business_partners');
-        $business_partners = Tools::jsonDecode(Tools::jsonEncode($business_partners), true);
-
-        if (empty($business_partners))
-            $business_partners = array(
-                'payu_pl' => array(
-                    'name' => 'PayU Poland - PayU',
-                    'type' => self::BUSINESS_PARTNER_TYPE_PLATNOSCI,
-                ),
-                'payu_ro_epayment' => array(
-                    'name' => 'PayU Romania - ePayment',
-                    'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
-                    'lu_url' => 'https://secure.epayment.ro/order/lu.php',
-                    'idn_url' => 'https://secure.epayment.ro/order/idn.php',
-                    'irn_url' => 'https://secure.epayment.ro/order/irn.php'
-                ),
-                'payu_ru_epayment' => array(
-                    'name' => 'PayU Russia - ePayment',
-                    'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
-                    'lu_url' => 'https://secure.payu.ru/order/lu.php',
-                    'idn_url' => 'https://secure.payu.ru/order/idn.php',
-                    'irn_url' => 'https://secure.payu.ru/order/irn.php'
-                ),
-                'payu_ua_epayment' => array(
-                    'name' => 'PayU Ukraine - ePayment',
-                    'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
-                    'lu_url' => 'https://secure.payu.ua/order/lu.php',
-                    'idn_url' => 'https://secure.payu.ua/order/idn.php',
-                    'irn_url' => 'https://secure.payu.ua/order/irn.php'
-                ),
-                'payu_tr_epayment' => array(
-                    'name' => 'PayU Turkey - ePayment',
-                    'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
-                    'lu_url' => 'https://secure.payu.com.tr/order/lu.php',
-                    'idn_url' => 'https://secure.payu.com.tr/order/idn.php',
-                    'irn_url' => 'https://secure.payu.com.tr/order/irn.php'
-                ),
-                'payu_hu_epayment' => array(
-                    'name' => 'PayU Hungary - ePayment',
-                    'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
-                    'lu_url' => 'https://secure.payu.hu/order/lu.php',
-                    'idn_url' => 'https://secure.payu.hu/order/idn.php',
-                    'irn_url' => 'https://secure.payu.hu/order/irn.php'
-                ),
-            );
+        $business_partners = array(
+            'payu_pl' => array(
+                'name' => 'PayU Poland - PayU',
+                'type' => self::BUSINESS_PARTNER_TYPE_PLATNOSCI,
+            ),
+            'payu_ro_epayment' => array(
+                'name' => 'PayU Romania - ePayment',
+                'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
+                'lu_url' => 'https://secure.epayment.ro/order/lu.php',
+                'idn_url' => 'https://secure.epayment.ro/order/idn.php',
+                'irn_url' => 'https://secure.epayment.ro/order/irn.php'
+            ),
+            'payu_ru_epayment' => array(
+                'name' => 'PayU Russia - ePayment',
+                'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
+                'lu_url' => 'https://secure.payu.ru/order/lu.php',
+                'idn_url' => 'https://secure.payu.ru/order/idn.php',
+                'irn_url' => 'https://secure.payu.ru/order/irn.php'
+            ),
+            'payu_ua_epayment' => array(
+                'name' => 'PayU Ukraine - ePayment',
+                'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
+                'lu_url' => 'https://secure.payu.ua/order/lu.php',
+                'idn_url' => 'https://secure.payu.ua/order/idn.php',
+                'irn_url' => 'https://secure.payu.ua/order/irn.php'
+            ),
+            'payu_tr_epayment' => array(
+                'name' => 'PayU Turkey - ePayment',
+                'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
+                'lu_url' => 'https://secure.payu.com.tr/order/lu.php',
+                'idn_url' => 'https://secure.payu.com.tr/order/idn.php',
+                'irn_url' => 'https://secure.payu.com.tr/order/irn.php'
+            ),
+            'payu_hu_epayment' => array(
+                'name' => 'PayU Hungary - ePayment',
+                'type' => self::BUSINESS_PARTNER_TYPE_EPAYMENT,
+                'lu_url' => 'https://secure.payu.hu/order/lu.php',
+                'idn_url' => 'https://secure.payu.hu/order/idn.php',
+                'irn_url' => 'https://secure.payu.hu/order/irn.php'
+            ),
+        );
 
         return $business_partners;
     }
@@ -870,77 +847,23 @@ class PayU extends PaymentModule
     /**
      * @return mixed
      */
-    public function hookDisplayRightColumn()
-    {
-        return $this->hookDisplayLeftColumn();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function hookDisplayLeftColumn()
-    {
-        $img = Configuration::get('PAYU_PAYMENT_ADVERT');
-
-        if (Configuration::get('PS_SSL_ENABLED'))
-            $img = str_replace('http://', 'https://', $img);
-
-        $this->context->smarty->assign('image', $img);
-
-        return $this->fetchTemplate('/views/templates/hook/advertisement.tpl');
-    }
-
-    public function hookHeader()
-    {
-        $this->context->controller->addCSS($this->_path . 'css/payu.css', 'all');
-
-        if (Tools::getValue('payu_order_error'))
-            return sprintf('<script>alert(%s);</script>', ToolsCore::jsonEncode($this->l('An error occurred when processing the order')));
-    }
-
-    /**
-     * @return mixed
-     */
     public function hookPayment()
     {
-        $img = Configuration::get('PAYU_PAYMENT_BUTTON');
-
-        if (Configuration::get('PS_SSL_ENABLED'))
-            $img = str_replace('http://', 'https://', $img);
-
-        if (version_compare(_PS_VERSION_, '1.5', 'lt'))
+        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
             $link = $this->getModuleAddress() . 'backward_compatibility/payment.php';
-        else
+        } else {
             $link = $this->context->link->getModuleLink('payu', 'payment');
+        }
 
-        $this->context->smarty->assign(array('image' => $img, 'actionUrl' => $link));
+        $this->context->smarty->assign(array('image' => $this->getPayButtonUrl(), 'actionUrl' => $link));
 
-        if (version_compare(_PS_VERSION_, '1.6', 'lt'))
+        if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
             $template = $this->fetchTemplate('/views/templates/hook/payment.tpl');
-        else
+        } else {
             $template = $this->fetchTemplate('/views/templates/hook/payment16.tpl');
+        }
 
         return $template;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function hookShoppingCartExtra()
-    {
-        return $this->hookShoppingCart();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function hookShoppingCart()
-    {
-        $img = Configuration::get('PAYU_PAYMENT_BUTTON');
-
-        $this->context->smarty->assign(array('image' => $img));
-
-        return $this->fetchTemplate('/views/templates/hook/cart.tpl');
     }
 
     /**
@@ -1021,38 +944,7 @@ class PayU extends PaymentModule
         return $this->fetchTemplate('/views/templates/front/', 'payment_return');
     }
 
-    /**
-     * Return PayU json data
-     *
-     * @param string|null $section Section to return from json, or null to return all
-     * @param string $lang language ISO code
-     * @return stdClass
-     */
-    private function jsonOpenPayU($section = null, $lang = 'en')
-    {
-        static $cache = array();
-
-        if (!isset($cache[$lang])) {
-            $url = 'http://openpayu.com/' . trim($lang) . '/goods/json';
-
-            $c = curl_init();
-            curl_setopt($c, CURLOPT_URL, $url);
-            curl_setopt($c, CURLOPT_POST, 0);
-            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-            $content = curl_exec($c);
-            $curl_info = curl_getinfo($c);
-            curl_close($c);
-
-            if ($curl_info['http_code'] != 200 && $lang != 'en')
-                return $this->mediaOpenPayU('en');
-
-            $cache[$lang] = Tools::jsonDecode($content);
-        }
-
-        return $section === null ? $cache[$lang] : (isset($cache[$lang]->$section) ? $cache[$lang]->$section : null);
-    }
-
-    /**
+     /**
      * Return PayU media data from json
      *
      * @param string $lang
@@ -2068,7 +1960,6 @@ class PayU extends PaymentModule
         }
     }
 
-
     /**
      * @return string
      */
@@ -2077,6 +1968,15 @@ class PayU extends PaymentModule
         return ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
             !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
                 $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
+    }
+
+    /**
+     * @return string
+     */
+    private function getPayButtonUrl()
+    {
+        $lang = Language::getIsoById($this->context->language->id) == 'pl' ? 'pl' : 'en';
+        return str_replace('{lang}', $lang, self::PAY_BUTTON);
     }
 
     /**
