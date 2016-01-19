@@ -715,53 +715,6 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @param $lang_iso_code
-     * @return stdObject
-     */
-    public function getMediaResourcesList($lang_iso_code)
-    {
-        $media_resources = $this->mediaOpenPayU($lang_iso_code);
-
-        return $media_resources;
-    }
-
-    /**
-     * @param $media_resources
-     * @return array|null
-     */
-    public function getMediaButtonsResourcesList($media_resources)
-    {
-        $list = array();
-
-        if (empty($media_resources->buttons))
-            return null;
-
-        foreach ($media_resources->buttons as $button)
-            $list[] = array('id' => $button, 'name' => $button);
-
-        return $list;
-    }
-
-    /**
-     * @param $media_resources
-     * @return array|null
-     */
-    public function getMediaAdvertsResourcesList($media_resources)
-    {
-        $list = array();
-
-        if (empty($media_resources->adverts))
-            return null;
-
-        foreach ($media_resources->adverts as $group) {
-            foreach ($group as $advert)
-                $list[] = array('id' => $advert, 'name' => $advert);
-        }
-
-        return $list;
-    }
-
-    /**
      * Return PayU business partners
      *
      * @return array
@@ -943,18 +896,7 @@ class PayU extends PaymentModule
 
         return $this->fetchTemplate('/views/templates/front/', 'payment_return');
     }
-
-     /**
-     * Return PayU media data from json
-     *
-     * @param string $lang
-     * @return stdClass
-     */
-    private function mediaOpenPayU($lang = 'en')
-    {
-        return $this->jsonOpenPayU('media', $lang);
-    }
-
+    
     /**
      * Convert to amount
      *
