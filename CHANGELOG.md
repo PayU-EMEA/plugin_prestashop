@@ -1,3 +1,11 @@
+##2.1.9 / 2.2.0
+ * Remove invoice and shipping information on summary page
+ * Prevent mass click on pay button
+ * Compatible with Advanced UE compliance module
+ * Update PayU SDK
+ * Update logotypes
+ * Cleanup code
+
 ##2.1.6
  * Basic logging feature added for notification path tracking
  * Multiply orders and status changes bug fixed
