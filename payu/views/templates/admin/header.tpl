@@ -15,8 +15,8 @@
 			<legend><img src="{$module_dir|escape:'htmlall':'UTF-8'}/logo.gif" alt="" />{l s='Make a full or partial refund' mod='payu'}</legend>
 			<form action="" method="post" onsubmit="return confirm('{l s='Do you really want to submit the refund request?' mod='payu'}');">
 				<select name="payu_refund_type" id="payu_refund_type">
-					<option value="full"{if $payu_refund_type eq "full"} selected="selected"{/if}>Full refund</option>
-					<option value="partial"{if $payu_refund_type eq "partial"} selected="selected"{/if}>Partial refund</option>
+					<option value="full"{if $payu_refund_type eq "full"} selected="selected"{/if}>{l s='Full refund' mod='payu'}</option>
+					<option value="partial"{if $payu_refund_type eq "partial"} selected="selected"{/if}>{l s='Partial refund' mod='payu'}</option>
 				</select>
 				<label style="float: none">
 					amount

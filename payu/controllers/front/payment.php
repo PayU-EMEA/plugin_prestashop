@@ -61,13 +61,13 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to summary...', $result['orderId']);
                     Tools::redirect($result['redirectUri']);
                 }else{
-                    SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Result is empty: An error occurred while processing your order.'), '');
+                    SimplePayuLogger::addLog('order', __FUNCTION__, 'Result is empty: An error occurred while processing your order.', '');
                     $this->context->smarty->assign(
                         array(
                             'message' => $this->payu->l('An error occurred while processing your order.')
                         )
                     );
-                    SimplePayuLogger::addLog('order', __FUNCTION__, $this->payu->l('Result is empty: An error occurred while processing your order.'), '');
+                    SimplePayuLogger::addLog('order', __FUNCTION__, 'Result is empty: An error occurred while processing your order.', '');
                     $this->setTemplate(self::TEMPLATE_ERROR);
                 }
                 break;
