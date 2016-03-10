@@ -1,3 +1,6 @@
+##2.2.2
+ * Fix for accept/reject waiting_for_confirmation payment 
+ 
 ##2.1.9 / 2.2.0
  * Remove invoice and shipping information on summary page
  * Prevent mass click on pay button
