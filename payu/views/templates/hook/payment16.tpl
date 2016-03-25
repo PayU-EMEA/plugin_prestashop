@@ -8,7 +8,7 @@
  * http://www.payu.com
 *}
 <div class="row">
-	<div class="col-xs-12 col-md-6">
+	<div class="col-xs-12">
 		<p class="payment_module">
 			<a class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}" title="{l s='Pay with PayU' mod='payu'}">
 				<img src="{$image|escape:'htmlall':'UTF-8'}" alt="{l s='Pay with PayU' mod='payu'}" />

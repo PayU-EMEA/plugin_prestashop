@@ -78,7 +78,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.2';
+        $this->version = '2.2.3-DEV';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -647,6 +647,15 @@ class PayU extends PaymentModule
             $template = $output . $this->fetchTemplate('/views/templates/admin/header16.tpl');
 
         return $template;
+    }
+
+    public function hookHeader()
+    {
+        if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
+            Tools::addCSS(($this->_path) . 'css/payu.css', 'all');
+        } else {
+            $this->context->controller->addCSS(($this->_path) . 'css/payu.css', 'all');
+        }
     }
 
     public function payuOrderRefund($value, $ref_no)

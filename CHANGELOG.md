@@ -1,3 +1,6 @@
+##2.2.3-DEV
+ * beautiful pay buttons
+
 ##2.2.2
  * Fix for accept/reject waiting_for_confirmation payment 
  
