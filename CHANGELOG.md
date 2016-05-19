@@ -1,4 +1,4 @@
-##2.2.3-DEV
+##2.2.3
  * beautiful pay buttons
  * fix return to OPC (one Page Checkout)
 
