@@ -21,8 +21,10 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 
 		$id_payu_session = $this->context->cookie->__get('payu_order_id');
 
-		if (Tools::getValue('error'))
-			Tools::redirect('order.php?error='.Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+		if (Tools::getValue('error')) {
+			$opc = (bool)Configuration::get('PS_ORDER_PROCESS_TYPE');
+			Tools::redirect('order'.($opc ? '-opc' : '').'.php?error='.Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+		}
 
 		$payu->id_cart = $id_cart;
 		$payu->payu_order_id = $id_payu_session;

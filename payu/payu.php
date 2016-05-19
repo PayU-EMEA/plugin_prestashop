@@ -1618,9 +1618,10 @@ class PayU extends PaymentModule
     private function getLinks()
     {
         if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
+            $opc = (bool)Configuration::get('PS_ORDER_PROCESS_TYPE');
             $order_complete_link = $this->context->link->getModuleLink('payu', 'success');
             $order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
-            $order_cancel_link = $this->context->link->getPageLink('order.php', true);
+            $order_cancel_link = $this->context->link->getPageLink('order'.($opc ? '-opc' : '').'.php', true);
             return array($order_complete_link, $order_notify_link, $order_cancel_link);
         } else {
             $link = new Link();
