@@ -1,3 +1,7 @@
+##2.3.0
+ * Update PayU SDK
+ * Add support for OAuth
+
 ##2.2.3
  * beautiful pay buttons
  * fix return to OPC (one Page Checkout)

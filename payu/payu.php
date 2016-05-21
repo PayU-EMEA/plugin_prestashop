@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * PayU module
  *
@@ -16,6 +16,7 @@ if (!defined('_PS_VERSION_'))
 
 include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/openpayu.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
+include_once(_PS_MODULE_DIR_ . '/payu/tools/PayuOauthCache/OauthCachePresta.php');
 
 
 class PayU extends PaymentModule
@@ -78,7 +79,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.3';
+        $this->version = '2.3.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -122,6 +123,8 @@ class PayU extends PaymentModule
             $this->registerHook('adminOrder') &&
             Configuration::updateValue('PAYU_POS_ID', '') &&
             Configuration::updateValue('PAYU_POS_AUTH_KEY', '') &&
+            Configuration::updateValue('PAYU_OAUTH_CLIENT_ID', '') &&
+            Configuration::updateValue('PAYU_OAUTH_CLIENT_SECRET', '') &&
             Configuration::updateValue('PAYU_CLIENT_SECRET', '') &&
             Configuration::updateValue('PAYU_SIGNATURE_KEY', '') &&
             Configuration::updateValue('PAYU_EPAYMENT_MERCHANT', '') &&
@@ -157,6 +160,8 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_NAME') ||
             !Configuration::deleteByName('PAYU_POS_ID') ||
             !Configuration::deleteByName('PAYU_POS_AUTH_KEY') ||
+            !Configuration::deleteByName('PAYU_OAUTH_CLIENT_ID') ||
+            !Configuration::deleteByName('PAYU_OAUTH_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_SIGNATURE_KEY') ||
             !Configuration::deleteByName('PAYU_EPAYMENT_MERCHANT') ||
@@ -212,10 +217,14 @@ class PayU extends PaymentModule
      */
     protected function initializeOpenPayU()
     {
-        OpenPayU_Configuration::setApiVersion(2);
         OpenPayU_Configuration::setEnvironment('secure');
         OpenPayU_Configuration::setMerchantPosId(Configuration::get('PAYU_POS_ID'));
         OpenPayU_Configuration::setSignatureKey(Configuration::get('PAYU_SIGNATURE_KEY'));
+        if (Configuration::get('PAYU_OAUTH_CLIENT_SECRET') && Configuration::get('PAYU_OAUTH_CLIENT_ID')) {
+            OpenPayU_Configuration::setOauthClientId(Configuration::get('PAYU_OAUTH_CLIENT_ID'));
+            OpenPayU_Configuration::setOauthClientSecret(Configuration::get('PAYU_OAUTH_CLIENT_SECRET'));
+            OpenPayU_Configuration::setOauthTokenCache(new OauthCachePresta());
+        }
         OpenPayU_Configuration::setSender('Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version);
     }
 
@@ -234,7 +243,6 @@ class PayU extends PaymentModule
 					`update_at` datetime
 				)');
     }
-
 
     /**
      * @return mixed
@@ -272,6 +280,8 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_ONE_STEP_CHECKOUT', (int)Tools::getValue('PAYU_ONE_STEP_CHECKOUT')) ||
                 !Configuration::updateValue('PAYU_POS_ID', Tools::getValue('PAYU_POS_ID')) ||
                 !Configuration::updateValue('PAYU_POS_AUTH_KEY', Tools::getValue('PAYU_POS_AUTH_KEY')) ||
+                !Configuration::updateValue('PAYU_OAUTH_CLIENT_ID', Tools::getValue('PAYU_OAUTH_CLIENT_ID')) ||
+                !Configuration::updateValue('PAYU_OAUTH_CLIENT_SECRET', Tools::getValue('PAYU_OAUTH_CLIENT_SECRET')) ||
                 !Configuration::updateValue('PAYU_CLIENT_ID', Tools::getValue('PAYU_CLIENT_ID')) ||
                 !Configuration::updateValue('PAYU_CLIENT_SECRET', Tools::getValue('PAYU_CLIENT_SECRET')) ||
                 !Configuration::updateValue('PAYU_SIGNATURE_KEY', Tools::getValue('PAYU_SIGNATURE_KEY')) ||
@@ -336,6 +346,8 @@ class PayU extends PaymentModule
             ),
             'PAYU_POS_ID' => Configuration::get('PAYU_POS_ID'),
             'PAYU_POS_AUTH_KEY' => Configuration::get('PAYU_POS_AUTH_KEY'),
+            'PAYU_OAUTH_CLIENT_ID' => Configuration::get('PAYU_OAUTH_CLIENT_ID'),
+            'PAYU_OAUTH_CLIENT_SECRET' => Configuration::get('PAYU_OAUTH_CLIENT_SECRET'),
             'PAYU_CLIENT_ID' => Configuration::get('PAYU_CLIENT_ID'),
             'PAYU_CLIENT_SECRET' => Configuration::get('PAYU_CLIENT_SECRET'),
             'PAYU_SIGNATURE_KEY' => Configuration::get('PAYU_SIGNATURE_KEY'),
