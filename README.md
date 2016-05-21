@@ -78,9 +78,7 @@ The main parameters for plugin configuration are as follows:
 |Order Validity Time|24h/12h/6h/1h/30min|Specifies the time during which the order is valid in the PayU system. When validity time expires, the order is cancelled, and you are notified that the transaction failed.|
 |OneStepCheckout Enabled|Yes/No|Specifies whether buying from cart via Payu is enabled. <br><br> **Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.|
 
-#### Parameters of test and production environments
-
-**Important:** There is no test environment (*Sandbox*) for this version of module and you can set Test Payment method in your POS settings in the PayU system, before you deploy your shop to production enivronment.
+#### POS Parameters
 
 | Parameter | Description | 
 |:---------:|:-----------:|
