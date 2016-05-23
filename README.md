@@ -10,7 +10,7 @@ define their payment options, see their purchase history, and manage personal pr
 
 * [Features](#features)
 * [Prerequisites](#prerequisites) 
-* [Installing](#installing-manually)
+* [Installing](#installation)
 * [Configuration](#configuration)
     * [Business area](#business-area)
     * [Configuration Parameters (Poland)](#configuration-parameters-poland)
