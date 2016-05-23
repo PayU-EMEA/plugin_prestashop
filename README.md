@@ -35,9 +35,7 @@ The following PHP extensions are required:
 
 ## Installation
 
-### Installing Manually
-
-To install the plugin, copy folders from the repository and activate the plugin on the administration page:
+### Option 1 - recommended for users without FTP access to their PrestShop installation
 
 1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
 2. Unzip locally downloaded file
@@ -47,6 +45,10 @@ To install the plugin, copy folders from the repository and activate the plugin 
 6. **Add new module** and point archive contained plugin (created at point 3)
 7. Load the plugin
 
+### Option 2 - recommended for users with FTP access to their PrestaShop installation
+1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
+2. Unzip locally downloaded file
+3. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
 
 ## Configuration
 
