@@ -19,7 +19,7 @@
 					<option value="partial"{if $payu_refund_type eq "partial"} selected="selected"{/if}>{l s='Partial refund' mod='payu'}</option>
 				</select>
 				<label style="float: none">
-					amount
+					{l s='amount' mod='payu'}
 					<input type="text" id="payu_refund_amount" name="payu_refund_amount" value="{$payu_refund_amount|escape:'htmlall':'UTF-8'}"/>
 				</label>
 				<input type="submit" name="submitPayuRefund" class="button" value="{l s='Perform refund' mod='payu'}"/>

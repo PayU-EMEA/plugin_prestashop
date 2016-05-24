@@ -69,41 +69,43 @@
             <div class="clear"></div>
         </fieldset>
         <br>
-        <fieldset id="fieldset_3" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
-            <legend>{l s='Environment settings' mod='payu'}</legend>
-            <label>{l s='POS ID' mod='payu'}:</label>
-            <div class="margin-form">
-                <input type="text" name="PAYU_POS_ID" id="PAYU_POS_ID" value="{$PAYU_POS_ID|escape:'htmlall':'UTF-8'}" size="10">
-                <sup>*</sup>
-            </div>
-            <div class="clear"></div>
-            <label>{l s='Second key (MD5)' mod='payu'}:</label>
-            <div class="margin-form">
-                <input type="text" name="PAYU_SIGNATURE_KEY" id="PAYU_SIGNATURE_KEY" value="{$PAYU_SIGNATURE_KEY|escape:'htmlall':'UTF-8'}" size="32">
-                <sup>*</sup>
-            </div>
-            <div class="clear"></div>
-            <label>{l s='OAuth - client_id' mod='payu'}:</label>
-            <div class="margin-form">
-                <input type="text" name="PAYU_OAUTH_CLIENT_ID" id="PAYU_OAUTH_CLIENT_ID" value="{$PAYU_OAUTH_CLIENT_ID|escape:'htmlall':'UTF-8'}" size="10">
-                <sup>*</sup>
-            </div>
-            <div class="clear"></div>
-            <label>{l s='OAuth - client_secret' mod='payu'}:</label>
-            <div class="margin-form">
-                <input type="text" name="PAYU_OAUTH_CLIENT_SECRET" id="PAYU_OAUTH_CLIENT_SECRET" value="{$PAYU_OAUTH_CLIENT_SECRET|escape:'htmlall':'UTF-8'}" size="32">
-                <sup>*</sup>
-            </div>
-            <div class="clear"></div>
-            <div class="small"><sup>*</sup> {l s='Required field' mod='payu'}</div>
+        {foreach from=$currencies item=currency}
+            <fieldset id="fieldset_3" class="hide {$PAYU_PAYMENT_PLATFORM_PLATNOSCI|escape:'htmlall':'UTF-8'}">
+                <legend>{l s='Environment settings' mod='payu'} - {$currency.name} ({$currency.iso_code})</legend>
+                <label>{l s='POS ID' mod='payu'}:</label>
+                <div class="margin-form">
+                    <input type="text" name="PAYU_MC_POS_ID[{$currency.iso_code}]" id="PAYU_MC_POS_ID_{$currency.iso_code}" value="{$PAYU_MC_POS_ID[$currency.iso_code]|escape:'htmlall':'UTF-8'}" size="10">
+                    <sup>*</sup>
+                </div>
+                <div class="clear"></div>
+                <label>{l s='Second key (MD5)' mod='payu'}:</label>
+                <div class="margin-form">
+                    <input type="text" name="PAYU_MC_SIGNATURE_KEY[{$currency.iso_code}]" id="PAYU_MC_SIGNATURE_KEY_{$currency.iso_code}" value="{$PAYU_MC_SIGNATURE_KEY[$currency.iso_code]|escape:'htmlall':'UTF-8'}" size="32">
+                    <sup>*</sup>
+                </div>
+                <div class="clear"></div>
+                <label>{l s='OAuth - client_id' mod='payu'}:</label>
+                <div class="margin-form">
+                    <input type="text" name="PAYU_MC_OAUTH_CLIENT_ID[{$currency.iso_code}]" id="PAYU_MC_OAUTH_CLIENT_ID_{$currency.iso_code}" value="{$PAYU_MC_OAUTH_CLIENT_ID[$currency.iso_code]|escape:'htmlall':'UTF-8'}" size="10">
+                    <sup>*</sup>
+                </div>
+                <div class="clear"></div>
+                <label>{l s='OAuth - client_secret' mod='payu'}:</label>
+                <div class="margin-form">
+                    <input type="text" name="PAYU_MC_OAUTH_CLIENT_SECRET[{$currency.iso_code}]" id="PAYU_MC_OAUTH_CLIENT_SECRET_{$currency.iso_code}" value="{$PAYU_MC_OAUTH_CLIENT_SECRET[$currency.iso_code]|escape:'htmlall':'UTF-8'}" size="32">
+                    <sup>*</sup>
+                </div>
+                <div class="clear"></div>
+                <div class="small"><sup>*</sup> {l s='Required field' mod='payu'}</div>
 
-            <div class="margin-form">
-                <input type="hidden" name="submitpayu" value="1" />
-                <input type="submit" class="button" name="submitButton" value="{l s='Save' mod='payu'}" />
-            </div>
-            <div class="clear"></div>
-        </fieldset>
-        <br>
+                <div class="margin-form">
+                    <input type="hidden" name="submitpayu" value="1" />
+                    <input type="submit" class="button" name="submitButton" value="{l s='Save' mod='payu'}" />
+                </div>
+                <div class="clear"></div>
+            </fieldset>
+            <br>
+        {/foreach}
         <fieldset id="fieldset_4" class="hide {$PAYU_PAYMENT_PLATFORM_EPAYMENT|escape:'htmlall':'UTF-8'}">
             <legend>{l s='Environment settings' mod='payu'}</legend>
             <label>{l s='Merchant' mod='payu'}</label>

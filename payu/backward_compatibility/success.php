@@ -3,7 +3,7 @@
  * OpenPayU
  *
  * @copyright  Copyright (c) 2013 PayU
- * @license	http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ * @license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
  * http://openpayu.com
@@ -11,46 +11,38 @@
  *
  */
 
-include(dirname(__FILE__).'/../../../config/config.inc.php');
-include(dirname(__FILE__).'/../../../init.php');
-include(dirname(__FILE__).'/../../../header.php');
+include(dirname(__FILE__) . '/../../../config/config.inc.php');
+include(dirname(__FILE__) . '/../../../init.php');
+include(dirname(__FILE__) . '/../../../header.php');
 
 $payu = new PayU();
 
 $id_cart = Tools::getValue('id_cart');
 
 global $cookie;
-$id_payu_session =  $cookie->__get('payu_order_id');
+$id_payu_session = $cookie->__get('payu_order_id');
 
-if (Tools::getValue('error'))
-	Tools::redirect('order.php?error='.Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
 
-$payu->id_cart = $id_cart;
-$payu->payu_order_id = $id_payu_session;
-
-$order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
-$id_order = (int)$order_payment['id_order'];
-
-/* if order not validated yet */
-if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW)
-{
-	$cart = new Cart($payu->id_cart);
-	$payu->validateOrder(
-		$cart->id, Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-		$cart->getOrderTotal(true, Cart::BOTH), 'PayU cart ID: ' . $cart->id . ', sessionId: ' . $payu->payu_order_id, null,
-		null, false, $cart->secure_key
-	);
-
-	$payu->id_order = $payu->current_order = $payu->currentOrder;
-	$payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
+if (Tools::getValue('error')) {
+    $opc = (bool)Configuration::get('PS_ORDER_PROCESS_TYPE');
+    Tools::redirect('order' . ($opc ? '-opc' : '') . '.php?error=' . Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
 }
 
-$id_order = $payu->getOrderIdBySessionId($id_payu_session);
+$order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
+if ($order_payment) {
+    $payu->id_order = (int)$order_payment['id_order'];
+    $payu->id_cart = (int)$order_payment['id_cart'];
 
-if (!empty($id_order))
-{
-	$payu->id_order = $id_order;
-	$payu->updateOrderData();
+    if (Cart::isGuestCartByCartId($payu->id_cart)) {
+        $order = new Order($payu->id_order);
+        $customer = new Customer((int)$order->id_customer);
+        $redirectLink = 'guest-tracking.php?id_order=' . $order->reference . '&email=' . urlencode($customer->email);
+    } else {
+        $redirectLink = 'order-detail.php?id_order=' . $payu->id_order;
+    }
+
+    $payu->updateOrderData();
+    Tools::redirect($redirectLink, __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
 }
 
 Tools::redirect('history.php', __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
