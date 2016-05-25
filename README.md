@@ -100,9 +100,11 @@ For each currency defined in Presta please configure the below parameters.
 ##### Exemplary configuration
 
 Presta:
+
 ![presta_pos_config][img1]
 
 POS configuration in PayU merchant panel:
+
 ![pos_configuration_keys][img2]
 
 
