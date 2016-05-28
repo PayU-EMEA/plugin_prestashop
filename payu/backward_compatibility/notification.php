@@ -11,58 +11,67 @@
  *
  */
 
-include(dirname(__FILE__).'/../../../config/config.inc.php');
-include(dirname(__FILE__).'/../../../init.php');
-include(dirname(__FILE__).'/../../../header.php');
+include(dirname(__FILE__) . '/../../../config/config.inc.php');
+include(dirname(__FILE__) . '/../../../init.php');
+include(dirname(__FILE__) . '/../../../header.php');
+
+function PayU_extractCurrencyCode($data)
+{
+    $decodeData = json_decode($data);
+    return $decodeData->order->currencyCode;
+}
+
+function PayU_getPaymentId($response)
+{
+    if (isset($response->properties)) {
+        return PayU_extractPaymentIdFromProperties($response->properties);
+    }
+    return false;
+}
+
+function PayU_extractPaymentIdFromProperties($properties)
+{
+    if (is_array($properties)) {
+        foreach ($properties as $property) {
+            if ($property->name == 'PAYMENT_ID') {
+                return $property->value;
+            }
+        }
+    }
+
+    return false;
+}
 
 ob_clean();
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $body = Tools::file_get_contents('php://input');
     $data = trim($body);
+
+    $payu = new PayU();
+    $payu->initializeOpenPayU(PayU_extractCurrencyCode($data));
+
     $result = OpenPayU_Order::consumeNotification($data);
     $response = $result->getResponse();
 
     if (isset($response->order->orderId)) {
-        $payu = new PayU();
         $payu->payu_order_id = $response->order->orderId;
-
-        if(isset($response->properties[0]) && !empty($response->properties[0])){
-            if($response->properties[0]->name == 'PAYMENT_ID' && isset($response->properties[0]->value)){
-                $payu->payu_payment_id = $response->properties[0]->value;
-            }
-        }
-
         $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
-        $id_order = (int)$order_payment['id_order'];
-        // if order not validated yet
-        if ($id_order == 0 && $order_payment['status'] == PayU::PAYMENT_STATUS_NEW) {
-            $cart = new Cart($order_payment['id_cart']);
 
-            $payu->validateOrder(
-                $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-                $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-                'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
-                null, (int)$cart->id_currency, false, $cart->secure_key,
-                Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
-            );
-
-            $id_order = $payu->current_order = $payu->{'currentOrder'};
-            $payu->updateOrderPaymentStatusBySessionId(PayU::PAYMENT_STATUS_INIT);
-        }
-
-        if($response->order->status == PayU::ORDER_V2_COMPLETED){
-            $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
-        }
-
-        if (!empty($id_order)) {
-            $payu->id_order = $id_order;
+        if ($order_payment) {
+            $payu->id_order = (int)$order_payment['id_order'];
             $payu->updateOrderData($response);
+
+            $paymentId = PayU_getPaymentId($response);
+
+            if ($paymentId !== false && $response->order->status == PayU::ORDER_V2_COMPLETED) {
+                $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
+            }
         }
 
         //the response should be status 200
         header("HTTP/1.1 200 OK");
     }
 }
+
 ob_end_flush();
 exit;

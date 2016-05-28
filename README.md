@@ -11,6 +11,7 @@ define their payment options, see their purchase history, and manage personal pr
 * [Features](#features)
 * [Prerequisites](#prerequisites) 
 * [Installing](#installation)
+* [Upgrading](#upgrade)
 * [Configuration](#configuration)
     * [Business area](#business-area)
     * [Configuration Parameters (Poland)](#configuration-parameters-poland)
@@ -50,6 +51,11 @@ The following PHP extensions are required:
 2. Unzip locally downloaded file
 3. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
 
+## Upgrade
+
+1. Update plugin files according to [Installing](#installation)
+2. Go to **Advanced Parameters** > **Performance** adn click **Clear cache** 
+
 ## Configuration
 
 To configure the PrestaShop plugin:
@@ -82,12 +88,25 @@ The main parameters for plugin configuration are as follows:
 
 #### POS Parameters
 
+For each currency defined in Presta please configure the below parameters.
+
 | Parameter | Description | 
 |:---------:|:-----------:|
 |POS ID|Unique ID of the POS|
 |Second Key|MD5 key for securing communication|
 |OAuth - client_id|client_id for OAuth|
 |OAuth - client_secret|client_secret for OAuth|
+
+##### Exemplary configuration
+
+Presta:
+
+![presta_pos_config][img1]
+
+POS configuration in PayU merchant panel:
+
+![pos_configuration_keys][img2]
+
 
 ### Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)
 
@@ -110,9 +129,9 @@ The tables below present the descriptions of the configuration form parameters. 
 <!--LINKS-->
 
 <!--external links:-->
-
-[ext1]: https://github.com/PayU/plugin_prestashop_144/tree/refactoring
 [ext2]: http://php.net/manual/en/book.curl.php
 [ext3]: http://php.net/manual/en/book.hash.php
 
 <!--images:-->
+[img1]: https://raw.github.com/PayU/plugin_prestashop/multicurrency/readme_images/presta_pos_config.png
+[img2]: https://raw.github.com/PayU/plugin_prestashop/multicurrency/readme_images/pos_configuration_keys.png

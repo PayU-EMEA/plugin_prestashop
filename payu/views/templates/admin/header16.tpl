@@ -17,12 +17,12 @@
 			<form action="" method="post" onsubmit="return confirm('{l s='Do you really want to submit the refund request?' mod='payu'}');">
 				<div class="col-lg-4">
 				<select name="payu_refund_type" id="payu_refund_type">
-					<option value="full"{if $payu_refund_type eq "full"} selected="selected"{/if}>Full refund</option>
-					<option value="partial"{if $payu_refund_type eq "partial"} selected="selected"{/if}>Partial refund</option>
+					<option value="full"{if $payu_refund_type eq "full"} selected="selected"{/if}>{l s='Full refund' mod='payu'}</option>
+					<option value="partial"{if $payu_refund_type eq "partial"} selected="selected"{/if}>{l s='Partial refund' mod='payu'}</option>
 				</select>
 				</div>
 				<div class="col-lg-1" style="text-align: right">
-					amount
+					{l s='amount' mod='payu'}
 				</div>
 				<div class="col-lg-4">
 					<input type="text" id="payu_refund_amount" name="payu_refund_amount" value="{$payu_refund_amount|escape:'htmlall':'UTF-8'}"/>
