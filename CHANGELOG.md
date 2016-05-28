@@ -1,3 +1,6 @@
+##2.3.1
+ * Add multicurrency support
+
 ##2.3.0
  * Update PayU SDK
  * Add support for OAuth
