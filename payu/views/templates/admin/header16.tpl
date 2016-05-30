@@ -7,8 +7,6 @@
  *
  * http://www.payu.com
 *}
-<script type="text/javascript" src="{$module_dir|escape:'htmlall':'UTF-8'}js/back_office.js"></script>
-
 {if $show_refund}
 	{capture assign=refund_fieldset}
 		<div class="well">

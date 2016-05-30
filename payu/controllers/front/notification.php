@@ -36,7 +36,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
                 $paymentId = $this->getPaymentId($response);
 
-                if ($paymentId !== false && $response->order->status == PayU::ORDER_V2_COMPLETED) {
+                if ($paymentId !== false && $response->order->status == OpenPayuOrderStatus::STATUS_COMPLETED) {
                     $this->addPaymentIdToOrder($payu, $paymentId);
                 }
             }
@@ -55,7 +55,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
     {
         $payu->payu_payment_id = $paymentId;
         SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->payu_payment_id, $payu->payu_order_id);
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . PayU::ORDER_V2_COMPLETED, $payu->payu_order_id);
+        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . OpenPayuOrderStatus::STATUS_COMPLETED, $payu->payu_order_id);
 
         if (version_compare(_PS_VERSION_, '1.5', 'ge')) {
             $order = new Order($payu->id_order);

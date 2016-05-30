@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $paymentId = PayU_getPaymentId($response);
 
-            if ($paymentId !== false && $response->order->status == PayU::ORDER_V2_COMPLETED) {
+            if ($paymentId !== false && $response->order->status == OpenPayuOrderStatus::STATUS_COMPLETED) {
                 $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $id_order);
             }
         }
