@@ -19,13 +19,6 @@ include_once(_PS_MODULE_DIR_ . '/payu/tools/PayuOauthCache/OauthCachePresta.php'
 
 class PayU extends PaymentModule
 {
-    /**
-     * PayU - order statuses
-     *
-     * @var string
-     */
-    const ORDER_STATUS_COMPLETE = 'ORDER_STATUS_COMPLETE';
-    const ORDER_STATUS_CANCEL = 'ORDER_STATUS_CANCEL';
 
     const PAY_BUTTON = 'https://static.payu.com/{lang}/standard/partners/buttons/payu_account_button_01.png';
 
@@ -35,7 +28,6 @@ class PayU extends PaymentModule
     public $payu_order_id = '';
     public $id_order = null;
     public $payu_payment_id = null;
-    public $status_completed = false;
 
     public function __construct()
     {
@@ -58,8 +50,9 @@ class PayU extends PaymentModule
 
         $this->confirm_uninstall = $this->l('Are you sure you want to uninstall? You will lose all your settings!');
 
-        if (version_compare(_PS_VERSION_, '1.5', 'lt'))
+        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
             require(_PS_MODULE_DIR_ . $this->name . '/backward_compatibility/backward.php');
+        }
 
     }
 
@@ -484,10 +477,10 @@ class PayU extends PaymentModule
         $this->configureOpuByIdOrder($this->id_order);
 
         if (!empty($status) && !empty($this->payu_order_id)) {
-            if ($status == self::ORDER_STATUS_CANCEL) {
+            if ($status == OpenPayuOrderStatus::STATUS_CANCELED) {
                 $result = OpenPayU_Order::cancel($this->payu_order_id);
 
-            } elseif ($status == self::ORDER_STATUS_COMPLETE) {
+            } elseif ($status == OpenPayuOrderStatus::STATUS_COMPLETED) {
                 $status_update = array(
                     "orderId" => $this->payu_order_id,
                     "orderStatus" => OpenPayuOrderStatus::STATUS_COMPLETED
@@ -569,8 +562,8 @@ class PayU extends PaymentModule
     private function getPaymentAcceptanceStatusesList()
     {
         return array(
-            array('id' => self::ORDER_STATUS_COMPLETE, 'name' => $this->l('Payment accepted')),
-            array('id' => self::ORDER_STATUS_CANCEL, 'name' => $this->l('Payment rejected'))
+            array('id' => OpenPayuOrderStatus::STATUS_COMPLETED, 'name' => $this->l('Payment accepted')),
+            array('id' => OpenPayuOrderStatus::STATUS_CANCELED, 'name' => $this->l('Payment rejected'))
         );
     }
 
