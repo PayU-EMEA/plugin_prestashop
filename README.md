@@ -133,5 +133,5 @@ The tables below present the descriptions of the configuration form parameters. 
 [ext3]: http://php.net/manual/en/book.hash.php
 
 <!--images:-->
-[img1]: https://raw.github.com/PayU/plugin_prestashop/multicurrency/readme_images/presta_pos_config.png
-[img2]: https://raw.github.com/PayU/plugin_prestashop/multicurrency/readme_images/pos_configuration_keys.png
+[img1]: https://raw.github.com/PayU/plugin_prestashop/master/readme_images/presta_pos_config.png
+[img2]: https://raw.github.com/PayU/plugin_prestashop/master/readme_images/pos_configuration_keys.png
