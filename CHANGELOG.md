@@ -1,3 +1,8 @@
+##2.3.2
+ * Remove ePayment support
+ * Remove unused parameters
+ * Cleanup code
+
 ##2.3.1
  * Add multicurrency support
 
