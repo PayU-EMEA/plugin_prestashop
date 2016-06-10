@@ -1,3 +1,7 @@
+##2.4.0
+ * New integration method - payment methods displayed on Prestashop checkout summary page
+ * Cleanup code
+
 ##2.3.2
  * Remove ePayment support
  * Remove unused parameters

@@ -22,7 +22,12 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
         $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
 
         if (Tools::getValue('error')) {
-            Tools::redirect($this->getRedirectLink($payu->id_cart, $order_payment['id_order']), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+            Tools::redirect(
+                $this->getRedirectLink($payu->id_cart, $order_payment['id_order'], 'error=' . Tools::getValue('error')),
+                __PS_BASE_URI__,
+                null,
+                'HTTP/1.1 301 Moved Permanently'
+            );
         }
 
         if ($order_payment) {
@@ -37,14 +42,14 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 
     }
 
-    private function getRedirectLink($id_cart, $id_order)
+    private function getRedirectLink($id_cart, $id_order, $params = null)
     {
         if (Cart::isGuestCartByCartId($id_cart)) {
             $order = new Order($id_order);
             $customer = new Customer((int)$order->id_customer);
-            return 'index.php?controller=guest-tracking&id_order=' . $order->reference . '&email=' . urlencode($customer->email);
+            return 'index.php?controller=guest-tracking&id_order=' . $order->reference . '&email=' . urlencode($customer->email) . ($params != null ? '&' . $params : '');;
         } else {
-            return 'index.php?controller=order-detail&id_order=' . $id_order;
+            return 'index.php?controller=order-detail&id_order=' . $id_order . ($params != null ? '&' . $params : '');
         }
 
     }

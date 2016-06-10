@@ -19,7 +19,7 @@ The PayU payments Prestashop plugin adds the PayU payment option and enables you
 * Cancelling a payment order
 * Receive a payment order (when auto-receive is disable)
 * Conducting a refund operation (for a whole or partial order)
-
+* Display payment methods on Presta checkout summary page (only for Prestashop 1.5 and 1.6)
 
 ## Prerequisites
 
@@ -64,6 +64,14 @@ To configure the PrestaShop plugin:
 ### Configuration Parameters
 
 The tables below present the descriptions of the configuration form parameters.
+
+#### Integration method
+Works only Prestashop 1.5 and 1.6
+
+| Parameter | Description | 
+|:---------:|:-----------:|
+|Payment methods displayed on Presta checkout summary page|If "No" then Prestashop will redirect to PayU payment page|
+
 
 #### POS Parameters
 

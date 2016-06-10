@@ -20,7 +20,9 @@ include_once(_PS_MODULE_DIR_ . '/payu/tools/PayuOauthCache/OauthCachePresta.php'
 class PayU extends PaymentModule
 {
 
-    const PAY_BUTTON = 'https://static.payu.com/{lang}/standard/partners/buttons/payu_account_button_01.png';
+    const CONDITION_PL = 'http://static.payu.com/sites/terms/files/payu_terms_of_service_single_transaction_pl_pl.pdf';
+    const CONDITION_EN = 'http://static.payu.com/sites/terms/files/payu_terms_of_service_single_transaction_pl_en.pdf';
+    const CONDITION_CS = 'http://static.payu.com/sites/terms/files/Podmínky pro provedení jednorázové platební transakce v PayU.pdf';
 
     public $cart = null;
     public $id_cart = null;
@@ -31,10 +33,9 @@ class PayU extends PaymentModule
 
     public function __construct()
     {
-
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.3.2';
+        $this->version = '2.4.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -82,7 +83,8 @@ class PayU extends PaymentModule
                 array('en' => 'PayU payment awaits for reception', 'pl' => 'Płatność PayU oczekuje na odbiór'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', 6) &&
-            Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', 7)
+            Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', 7) &&
+            Configuration::updateValue('PAYU_RETRIEVE', false)
         );
     }
 
@@ -99,7 +101,8 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_MC_POS_ID') ||
             !Configuration::deleteByName('PAYU_MC_SIGNATURE_KEY') ||
             !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_ID') ||
-            !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_SECRET')
+            !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_SECRET') ||
+            !Configuration::deleteByName('PAYU_RETRIEVE')
         )
             return false;
 
@@ -185,7 +188,6 @@ class PayU extends PaymentModule
 				)');
     }
 
-
     /**
      * @return string
      */
@@ -203,7 +205,8 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', (int)Tools::getValue('PAYU_PAYMENT_STATUS_SENT')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
-                !Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_REJECTED'))
+                !Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_REJECTED')) ||
+                !Configuration::updateValue('PAYU_RETRIEVE', (bool)Tools::getValue('PAYU_RETRIEVE'))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -239,6 +242,17 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_COMPLETED' => Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'),
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
             'PAYU_PAYMENT_STATUS_REJECTED' => Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'),
+            'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE'),
+            'PAYU_RETRIEVE_OPTIONS' => array(
+                array(
+                    'id' => '1',
+                    'name' => $this->l('Yes')
+                ),
+                array(
+                    'id' => '0',
+                    'name' => $this->l('No')
+                )
+            ),
             'currencies' => $currency_list = Currency::getCurrencies(),
         ));
 
@@ -366,8 +380,10 @@ class PayU extends PaymentModule
     {
         if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
             Tools::addCSS(($this->_path) . 'css/payu.css', 'all');
+            Tools::addJS(($this->_path) . 'js/payu.js', 'all');
         } else {
             $this->context->controller->addCSS(($this->_path) . 'css/payu.css', 'all');
+            $this->context->controller->addJS(($this->_path) . 'js/payu.js', 'all');
         }
     }
 
@@ -411,7 +427,10 @@ class PayU extends PaymentModule
             $link = $this->context->link->getModuleLink('payu', 'payment');
         }
 
-        $this->context->smarty->assign(array('image' => $this->getPayButtonUrl(), 'actionUrl' => $link));
+        $this->context->smarty->assign(array(
+            'image' => Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/payu_logo.png'),
+            'actionUrl' => $link)
+        );
 
         if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
             $template = $this->fetchTemplate('/views/templates/hook/payment.tpl');
@@ -530,35 +549,6 @@ class PayU extends PaymentModule
     /**
      * @return array
      */
-    private function getValidityTimeList()
-    {
-        return array(
-            array(
-                'id' => '1440',
-                'name' => '1440 min (24h)'
-            ),
-            array(
-                'id' => '720',
-                'name' => '720 min (12h)'
-            ),
-            array(
-                'id' => '360',
-                'name' => '360 min (6h)'
-            ),
-            array(
-                'id' => '60',
-                'name' => '60 min (1h)'
-            ),
-            array(
-                'id' => '30',
-                'name' => '30 min'
-            )
-        );
-    }
-
-    /**
-     * @return array
-     */
     private function getPaymentAcceptanceStatusesList()
     {
         return array(
@@ -619,7 +609,7 @@ class PayU extends PaymentModule
     /**
      * @return array
      */
-    public function orderCreateRequest()
+    public function orderCreateRequest($payMethod = null)
     {
 
         SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
@@ -655,7 +645,7 @@ class PayU extends PaymentModule
             }
         }
         //prepare data for OrderCreateRequest
-        $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier);
+        $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier, $payMethod);
         try {
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
             $result = OpenPayU_Order::create($ocreq);
@@ -669,11 +659,17 @@ class PayU extends PaymentModule
                     'orderId' => $result->getResponse()->orderId
                 );
             } else {
+                $return_array = array(
+                    'error' => $result->getError() . ' ' . $result->getMessage()
+                );
                 SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
                 Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
             }
 
         } catch (Exception $e) {
+            $return_array = array(
+                'error' => $e->getCode() . ' ' . $e->getMessage()
+            );
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
             Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
         }
@@ -734,7 +730,7 @@ class PayU extends PaymentModule
                 if ((int)$selected_carrier->active == 1) {
 
                     $carrier_list = array(
-                        'name' => $selected_carrier->name . ' (' . $selected_carrier->id . ')',
+                        'name' => $selected_carrier->name,
                         'quantity' => 1,
                         'unitPrice' => $this->toAmount($price)
                     );
@@ -968,6 +964,23 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @return string
+     */
+    public function getPayConditionUrl()
+    {
+        switch (Language::getIsoById($this->context->language->id)) {
+            case 'pl':
+                return self::CONDITION_PL;
+                break;
+            case 'cs':
+                return self::CONDITION_CS;
+                break;
+            default:
+                return self::CONDITION_EN;
+        }
+    }
+    
+    /**
      * @param $wrapping_fees_tax_inc
      * @param $total
      * @return int
@@ -1054,9 +1067,10 @@ class PayU extends PaymentModule
      * @param $currency
      * @param $grand_total
      * @param $carrier
+     * @param $payMethod
      * @return array
      */
-    private function prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier)
+    private function prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier, $payMethod)
     {
         $ocreq = array();
 
@@ -1068,6 +1082,14 @@ class PayU extends PaymentModule
         }
         $ocreq['buyer'] = $customer_sheet;
         $ocreq['customerIp'] = $this->getIP();
+        if ($payMethod !== null) {
+            $ocreq['payMethods'] = array(
+                'payMethod' => array(
+                    'type' => 'PBL',
+                    'value' => $payMethod
+                )
+            );
+        }
         $ocreq['notifyUrl'] = $order_notify_link;
         $ocreq['cancelUrl'] = $order_cancel_link;
         $ocreq['continueUrl'] = $order_complete_link . '?id_cart=' . $this->cart->id;
@@ -1149,15 +1171,6 @@ class PayU extends PaymentModule
         return ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
             !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
                 $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
-    }
-
-    /**
-     * @return string
-     */
-    private function getPayButtonUrl()
-    {
-        $lang = Language::getIsoById($this->context->language->id) == 'pl' ? 'pl' : 'en';
-        return str_replace('{lang}', $lang, self::PAY_BUTTON);
     }
 
     /**
