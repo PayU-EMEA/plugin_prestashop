@@ -102,7 +102,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             if ($retreive->getStatus() == 'SUCCESS') {
                 $response = $retreive->getResponse();
                 return array(
-                    'payByLinks' => $response->payByLinks
+                    'payByLinks' => $this->moveCardToFirstPosition($response->payByLinks)
                 );
             } else {
                 return array(
@@ -115,6 +115,19 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 'error' => $e->getMessage()
             );
         }
+    }
+
+    private function moveCardToFirstPosition($payMethods)
+    {
+        foreach ($payMethods as $id => $payMethod) {
+            if ($payMethod->value == 'c') {
+                $cart = $payMethod;
+                unset($payMethods[$id]);
+                array_unshift($payMethods, $cart);
+                return $payMethods;
+            }
+        }
+        return $payMethods;
     }
 
     private function pay($cart, $payMethod = null)
