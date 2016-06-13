@@ -139,7 +139,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         $result = $this->payu->orderCreateRequest($payMethod);
 
-        if ($result) {
+        if (!$result['error']) {
             $this->payu->id_cart = $cart->id;
             $this->payu->payu_order_id = $result['orderId'];
             $this->payu->validateOrder(
