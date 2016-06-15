@@ -9,8 +9,28 @@
 *}
 <div id="payu-wrapper">
     <form id="_form" class="defaultForm payu form-horizontal" action="{$smarty.server.REQUEST_URI|escape:'htmlall':'UTF-8'}" method="post" enctype="multipart/form-data">
+        <fieldset id="fieldset_1">
+            <legend>{l s='Integration method' mod='payu'}</legend>
+            <label>{l s='Payment methods displayed on Presta checkout summary page' mod='payu'}</label>
+            <div class="margin-form">
+                <select name="PAYU_RETRIEVE" id="PAYU_RETRIEVE">
+                    {foreach from=$PAYU_RETRIEVE_OPTIONS item=option}
+                        <option value="{$option.id|escape:'htmlall':'UTF-8'}" {if $option.id == $PAYU_RETRIEVE}selected="selected"{/if}>{$option.name|escape:'htmlall':'UTF-8'}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div class="clear"></div>
+            <label></label>
+            <div class="margin-form">
+                <input type="hidden" name="submitpayu" value="1" />
+                <input type="submit" class="button" name="submitButton" value="{l s='Save' mod='payu'}" />
+            </div>
+            <div class="clear"></div>
+        </fieldset>
+
+
         {foreach from=$currencies item=currency}
-            <fieldset id="fieldset_3">
+            <fieldset id="fieldset_{$currency.iso_code}">
                 <legend>{l s='POS settings - currency:' mod='payu'} {$currency.name} ({$currency.iso_code})</legend>
                 <label>{l s='POS ID' mod='payu'}:</label>
                 <div class="margin-form">
