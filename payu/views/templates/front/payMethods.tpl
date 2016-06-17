@@ -31,7 +31,7 @@
     <input type="hidden" name="payuPay" value="1" />
 
     {if isset($payMethods.error)}
-        <h4 class="error">{l s='Error has occurred' mod='payu'}: {$paymethods.error}</h4>
+        <h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>
     {else}
         <div id="payMethods">
         {foreach $payMethods.payByLinks as $payByLink}
@@ -65,7 +65,7 @@
         <a class="button-exclusive btn btn-default" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
             <i class="icon-chevron-left"></i>{l s='Other payment methods' mod='payu'}
         </a>
-        {if !isset($paymethods.error)}
+        {if !isset($payMethods.error)}
             <button class="button btn btn-default button-medium" type="submit">
                 <span>{l s='I confirm my order' mod='payu'}<i class="icon-chevron-right right"></i></span>
             </button>
