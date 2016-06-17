@@ -1,3 +1,7 @@
+##2.4.1
+ * Fix show error on pay methods page
+ * Cleanup code
+
 ##2.4.0
  * New integration method - payment methods displayed on Prestashop checkout summary page
  * Cleanup code
