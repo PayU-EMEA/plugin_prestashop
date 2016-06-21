@@ -140,7 +140,7 @@ class OpenPayU_Configuration
      */
     public static function setMerchantPosId($value)
     {
-        self::$merchantPosId = trim($value);
+        self::$merchantPosId = $value;
     }
 
     /**
@@ -156,7 +156,7 @@ class OpenPayU_Configuration
      */
     public static function setSignatureKey($value)
     {
-        self::$signatureKey = trim($value);
+        self::$signatureKey = $value;
     }
 
     /**

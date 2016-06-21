@@ -195,12 +195,18 @@ class PayU extends PaymentModule
     {
         $output = null;
         $errors = array();
+        function trimupdate($array)
+        {
+            return serialize(array_map('trim',$array));
+
+        }
+
 
         if (Tools::isSubmit('submit' . $this->name)) {
-            if (!Configuration::updateValue('PAYU_MC_POS_ID', serialize(Tools::getValue('PAYU_MC_POS_ID'))) ||
-                !Configuration::updateValue('PAYU_MC_SIGNATURE_KEY', serialize(Tools::getValue('PAYU_MC_SIGNATURE_KEY'))) ||
-                !Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_ID', serialize(Tools::getValue('PAYU_MC_OAUTH_CLIENT_ID'))) ||
-                !Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_SECRET', serialize(Tools::getValue('PAYU_MC_OAUTH_CLIENT_SECRET'))) ||
+            if (!Configuration::updateValue('PAYU_MC_POS_ID', trimupdate(Tools::getValue('PAYU_MC_POS_ID'))) ||
+                !Configuration::updateValue('PAYU_MC_SIGNATURE_KEY', trimupdate(Tools::getValue('PAYU_MC_SIGNATURE_KEY'))) ||
+                !Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_ID', trimupdate(Tools::getValue('PAYU_MC_OAUTH_CLIENT_ID'))) ||
+                !Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_SECRET', trimupdate(Tools::getValue('PAYU_MC_OAUTH_CLIENT_SECRET'))) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', (int)Tools::getValue('PAYU_PAYMENT_STATUS_PENDING')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', (int)Tools::getValue('PAYU_PAYMENT_STATUS_SENT')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
