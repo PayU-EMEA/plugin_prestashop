@@ -35,7 +35,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.4.1';
+        $this->version = '2.4.2';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -552,8 +552,8 @@ class PayU extends PaymentModule
     private function getPaymentAcceptanceStatusesList()
     {
         return array(
-            array('id' => OpenPayuOrderStatus::STATUS_COMPLETED, 'name' => $this->l('Payment accepted')),
-            array('id' => OpenPayuOrderStatus::STATUS_CANCELED, 'name' => $this->l('Payment rejected'))
+            array('id' => OpenPayuOrderStatus::STATUS_COMPLETED, 'name' => $this->l('Accept the payment')),
+            array('id' => OpenPayuOrderStatus::STATUS_CANCELED, 'name' => $this->l('Reject the payment'))
         );
     }
 
@@ -646,6 +646,7 @@ class PayU extends PaymentModule
         }
         //prepare data for OrderCreateRequest
         $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier, $payMethod);
+
         try {
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
             $result = OpenPayU_Order::create($ocreq);
