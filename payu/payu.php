@@ -31,17 +31,20 @@ class PayU extends PaymentModule
     public $id_order = null;
     public $payu_payment_id = null;
 
+    /** @var string  */
+    private $extOrderId = '';
+
     public function __construct()
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.4.2';
+        $this->version = '2.5.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
 
         $this->currencies = true;
-        $this->currencies_mode = 'radio';
+        $this->currencies_mode = 'checkbox';
         $this->is_eu_compatible = 1;
 
         parent::__construct();
@@ -67,22 +70,18 @@ class PayU extends PaymentModule
             parent::install() &&
             in_array('curl', get_loaded_extensions()) &&
             $this->createInitialDbTable() &&
-            $this->registerHook('header') &&
-            $this->registerHook('payment') &&
-            $this->registerHook('displayPaymentEU') &&
-            $this->registerHook('paymentReturn') &&
-            $this->registerHook('backOfficeHeader') &&
-            $this->registerHook('adminOrder') &&
+            $this->createHooks() &&
             Configuration::updateValue('PAYU_MC_POS_ID', '') &&
             Configuration::updateValue('PAYU_MC_SIGNATURE_KEY', '') &&
             Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_ID', '') &&
             Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_SECRET', '') &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', $this->addNewOrderState('PAYU_PAYMENT_STATUS_PENDING',
-                array('en' => 'PayU payment started', 'pl' => 'Płatność PayU rozpoczęta'))) &&
+                array('en' => 'PayU payment pending', 'pl' => 'Płatność PayU rozpoczęta'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', $this->addNewOrderState('PAYU_PAYMENT_STATUS_SENT',
-                array('en' => 'PayU payment awaits for reception', 'pl' => 'Płatność PayU oczekuje na odbiór'))) &&
+                array('en' => 'PayU payment waiting for confirmation', 'pl' => 'Płatność PayU oczekuje na odbiór'))) &&
+            Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
+                array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
-            Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', 6) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', 7) &&
             Configuration::updateValue('PAYU_RETRIEVE', false)
         );
@@ -103,21 +102,21 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_ID') ||
             !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_RETRIEVE')
-        )
+        ) {
             return false;
-
+        }
         return true;
     }
 
     /**
-     * @param $state
-     * @param $names
-     *
+     * @param string $state
+     * @param array $names
+     * @param bool $force
      * @return bool
      */
-    private function addNewOrderState($state, $names)
+    public function addNewOrderState($state, $names, $force = false)
     {
-        if (!(Validate::isInt(Configuration::get($state)) AND Validate::isLoadedObject($order_state = new OrderState(Configuration::get($state))))) {
+        if ($force === true || !(Validate::isInt(Configuration::get($state)) AND Validate::isLoadedObject($order_state = new OrderState(Configuration::get($state))))) {
             $order_state = new OrderState();
 
             if (!empty($names)) {
@@ -145,11 +144,10 @@ class PayU extends PaymentModule
 
     public function initializeOpenPayU($currencyIsoCode)
     {
-
-        $payuPosId = Tools::unSerialize(Configuration::get('PAYU_MC_POS_ID'));
-        $payuSignatureKey = Tools::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY'));
-        $payuOauthClientId = Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID'));
-        $payuOauthClientSecret = Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET'));
+        $payuPosId = self::unSerialize(Configuration::get('PAYU_MC_POS_ID'));
+        $payuSignatureKey = self::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY'));
+        $payuOauthClientId = self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID'));
+        $payuOauthClientSecret = self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET'));
 
         if (!is_array($payuPosId) ||
             !is_array($payuSignatureKey) ||
@@ -177,16 +175,49 @@ class PayU extends PaymentModule
      */
     private function createInitialDbTable()
     {
-        return Db::getInstance()->Execute('CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'order_payu_payments` (
+
+        if (Db::getInstance()->ExecuteS('SHOW TABLES LIKE ' . _DB_PREFIX_ . 'order_payu_payments')) {
+            if (Db::getInstance()->ExecuteS('SHOW COLUMNS FROM ' . _DB_PREFIX_ . 'order_payu_payments LIKE "ext_order_id"') == false) {
+                return Db::getInstance()->Execute('ALTER TABLE ' . _DB_PREFIX_ . 'order_payu_payments ADD ext_order_id VARCHAR(64) NOT NULL AFTER id_session');
+            }
+            return true;
+        } else {
+            return Db::getInstance()->Execute('CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'order_payu_payments` (
 					`id_payu_payment` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 					`id_order` INT(10) UNSIGNED NOT NULL,
 					`id_cart` INT(10) UNSIGNED NOT NULL,
 					`id_session` varchar(64) NOT NULL,
+					`ext_order_id` VARCHAR(64) NOT NULL,
 					`status` varchar(64) NOT NULL,
 					`create_at` datetime,
 					`update_at` datetime
 				)');
+        }
     }
+
+    /**
+     * @return bool
+     */
+    private function createHooks()
+    {
+        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
+            return ($this->registerHook('header') &&
+                $this->registerHook('payment') &&
+                $this->registerHook('paymentReturn') &&
+                $this->registerHook('backOfficeHeader') &&
+                $this->registerHook('adminOrder'));
+
+        } else {
+            return ($this->registerHook('header') &&
+                $this->registerHook('payment') &&
+                $this->registerHook('displayPaymentEU') &&
+                $this->registerHook('paymentReturn') &&
+                $this->registerHook('backOfficeHeader') &&
+                $this->registerHook('adminOrder') &&
+                $this->registerHook('displayOrderDetail'));
+        }
+    }
+
 
     /**
      * @return string
@@ -205,7 +236,6 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', (int)Tools::getValue('PAYU_PAYMENT_STATUS_SENT')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
-                !Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_REJECTED')) ||
                 !Configuration::updateValue('PAYU_RETRIEVE', (bool)Tools::getValue('PAYU_RETRIEVE'))
             ) {
                 $errors[] = $this->l('Can not save configuration');
@@ -232,16 +262,15 @@ class PayU extends PaymentModule
     {
 
         $this->context->smarty->assign(array(
-            'PAYU_MC_POS_ID' => Tools::unSerialize(Configuration::get('PAYU_MC_POS_ID')),
-            'PAYU_MC_SIGNATURE_KEY' => Tools::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY')),
-            'PAYU_MC_OAUTH_CLIENT_ID' => Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID')),
-            'PAYU_MC_OAUTH_CLIENT_SECRET' => Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET')),
+            'PAYU_MC_POS_ID' => self::unSerialize(Configuration::get('PAYU_MC_POS_ID')),
+            'PAYU_MC_SIGNATURE_KEY' => self::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY')),
+            'PAYU_MC_OAUTH_CLIENT_ID' => self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID')),
+            'PAYU_MC_OAUTH_CLIENT_SECRET' => self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET')),
             'PAYU_PAYMENT_STATES_OPTIONS' => $this->getStatesList(),
             'PAYU_PAYMENT_STATUS_PENDING' => Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
             'PAYU_PAYMENT_STATUS_SENT' => Configuration::get('PAYU_PAYMENT_STATUS_SENT'),
             'PAYU_PAYMENT_STATUS_COMPLETED' => Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'),
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
-            'PAYU_PAYMENT_STATUS_REJECTED' => Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'),
             'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE'),
             'PAYU_RETRIEVE_OPTIONS' => array(
                 array(
@@ -266,9 +295,7 @@ class PayU extends PaymentModule
      */
     public function fetchTemplate($name)
     {
-        if (version_compare(_PS_VERSION_, '1.4', 'lt')) {
-            $this->context->smarty->currentTemplate = $name;
-        } elseif (version_compare(_PS_VERSION_, '1.5', 'lt')) {
+        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
             $views = 'views/templates/';
             if (file_exists(dirname(__FILE__) . '/' . $name))
                 return $this->display(__FILE__, $name);
@@ -297,7 +324,7 @@ class PayU extends PaymentModule
 
         if ($vieworder !== false && $id_order !== false) {
             $order = new Order($id_order);
-            $order_payment = $this->getOrderPaymentByOrderId($id_order);
+            $order_payment = $this->getLastOrderPaymentByOrderId($id_order);
 
             if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
                 $order_state = OrderHistory::getLastOrderState($id_order);
@@ -416,6 +443,40 @@ class PayU extends PaymentModule
 
     }
 
+    public function hookDisplayOrderDetail($params)
+    {
+
+        if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
+            $this->context->smarty->assign(
+                array(
+                    'payuImage' => $this->getPayuLogo(),
+                    'payuActionUrl' => $this->context->link->getModuleLink(
+                        'payu', 'payment', array('id_order' => $params['order']->id)
+                    )
+                )
+            );
+
+            return $this->fetchTemplate('/views/templates/hook/retryPayment.tpl');
+        }
+    }
+
+    /**
+     * @param int $order_id
+     * @param int $order_state
+     * @return bool
+     */
+    public function hasRetryPayment($order_id, $order_state)
+    {
+        $payuOrder = $this->getLastOrderPaymentByOrderId($order_id);
+
+        if ($payuOrder['status'] != OpenPayuOrderStatus::STATUS_CANCELED
+            || $order_state != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * @return mixed
      */
@@ -428,7 +489,7 @@ class PayU extends PaymentModule
         }
 
         $this->context->smarty->assign(array(
-            'image' => Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/payu_logo.png'),
+            'image' => $this->getPayuLogo(),
             'actionUrl' => $link)
         );
 
@@ -455,36 +516,40 @@ class PayU extends PaymentModule
     /**
      * @return null|string
      */
-    public function hookAdminOrder()
+    public function hookAdminOrder($params)
     {
+
+        $this->id_order = $params['id_order'];
         $output = '';
-        $this->id_order = Tools::getValue('id_order');
 
-        $order_payment = $this->getOrderPaymentByOrderId($this->id_order);
-
-        if ($order_payment['status'] != OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION) {
-            return null;
-        }
-
-        $this->payu_order_id = $order_payment['id_session'];
-
-        if (Tools::isSubmit('submitpayustatus') && $this->payu_order_id) {
-            if (trim(Tools::getValue('PAYU_PAYMENT_STATUS')) &&
-                $this->sendPaymentUpdate(trim(Tools::getValue('PAYU_PAYMENT_STATUS')))
-            ) {
-                $output .= $this->displayConfirmation($this->l('Update status request has been sent'));
-            } else {
-                $output .= $this->displayError($this->l('Update status request has not been completed correctly.'));
-            }
-        }
+        $order_payment = $this->getLastOrderPaymentByOrderId($params['id_order']);
 
         $this->context->smarty->assign(array(
-            'PAYU_PAYMENT_STATUS_OPTIONS' => $this->getPaymentAcceptanceStatusesList(),
-            'PAYU_PAYMENT_STATUS' => $order_payment['status'],
-            'PAYU_PAYMENT_ACCEPT' => $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
+            'PAYU_ORDERS' => $this->getOrdersByOrderId($params['id_order'])
         ));
 
-        return $output . $this->fetchTemplate('/views/templates/admin/status.tpl');
+        if ($order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION ) {
+
+            $this->payu_order_id = $order_payment['id_session'];
+
+            if (Tools::isSubmit('submitpayustatus') && $this->payu_order_id) {
+                if (trim(Tools::getValue('PAYU_PAYMENT_STATUS')) &&
+                    $this->sendPaymentUpdate(trim(Tools::getValue('PAYU_PAYMENT_STATUS')))
+                ) {
+                    $output .= $this->displayConfirmation($this->l('Update status request has been sent'));
+                } else {
+                    $output .= $this->displayError($this->l('Update status request has not been completed correctly.'));
+                }
+            }
+
+            $this->context->smarty->assign(array(
+                'PAYU_PAYMENT_STATUS_OPTIONS' => $this->getPaymentAcceptanceStatusesList(),
+                'PAYU_PAYMENT_STATUS' => $order_payment['status'],
+                'PAYU_PAYMENT_ACCEPT' => $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
+            ));
+        }
+
+        return $output . $this->fetchTemplate('/views/templates/admin/status.tpl') ;
     }
 
     /**
@@ -497,8 +562,12 @@ class PayU extends PaymentModule
 
         if (!empty($status) && !empty($this->payu_order_id)) {
             if ($status == OpenPayuOrderStatus::STATUS_CANCELED) {
-                $result = OpenPayU_Order::cancel($this->payu_order_id);
-
+                try {
+                    $result = OpenPayU_Order::cancel($this->payu_order_id);
+                } catch (OpenPayU_Exception $e) {
+                    echo $e->getMessage();
+                    return false;
+                }
             } elseif ($status == OpenPayuOrderStatus::STATUS_COMPLETED) {
                 $status_update = array(
                     "orderId" => $this->payu_order_id,
@@ -607,7 +676,7 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @return array
+     * @return array | bool
      */
     public function orderCreateRequest($payMethod = null)
     {
@@ -635,7 +704,7 @@ class PayU extends PaymentModule
 
         $carrier = $this->getCarrier($this->cart);
         $grand_total = $this->getGrandTotal($wrapping_fees_tax_inc, $total);
-        list($order_complete_link, $order_notify_link, $order_cancel_link) = $this->getLinks();
+
         if (!empty($this->cart->id_customer)) {
             $customer = new Customer((int)$this->cart->id_customer);
 
@@ -645,7 +714,7 @@ class PayU extends PaymentModule
             }
         }
         //prepare data for OrderCreateRequest
-        $ocreq = $this->prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier, $payMethod);
+        $ocreq = $this->prepareOrder($items, $customer_sheet, $currency, $grand_total, $carrier, $payMethod, $this->cart->id);
 
         try {
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
@@ -744,6 +813,81 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @return array
+     */
+    public function orderCreateRequestByOrder($payMethod = null)
+    {
+
+        SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
+        $currency = Currency::getCurrency($this->order->id_currency);
+
+        if (!$this->initializeOpenPayU($currency['iso_code'])) {
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'OPU not properly configured for currency: '.$currency['iso_code']);
+            Logger::addLog($this->displayName . ' ' . 'OPU not properly configured for currency: '.$currency['iso_code'], 1);
+
+            return false;
+        }
+
+        $return_array = array();
+
+        $grand_total = $this->toAmount($this->order->total_paid);
+
+        $carrier = null;
+
+        $items = array(
+            'products' => array(
+                array(
+                    'quantity' => 1,
+                    'name' => 'Order reference: ' . $this->order->reference,
+                    'unitPrice' => $grand_total
+                )
+            )
+        );
+
+        if (!empty($this->order->id_customer)) {
+            $customer = new Customer($this->order->id_customer);
+            $customer_sheet = array(
+                'email' => $customer->email,
+                'firstName' => $customer->firstname,
+                'lastName' => $customer->lastname
+            );
+        }
+
+        //prepare data for OrderCreateRequest
+        $ocreq = $this->prepareOrder($items, $customer_sheet, $currency, $grand_total, $carrier, $payMethod, $this->order->id, $this->order->id_cart);
+
+        try {
+            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
+            $result = OpenPayU_Order::create($ocreq);
+            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
+            if ($result->getStatus() == 'SUCCESS') {
+                $context = Context::getContext();
+                $context->cookie->__set('payu_order_id', $result->getResponse()->orderId);
+
+                $return_array = array(
+                    'redirectUri' => urldecode($result->getResponse()->redirectUri.'&lang='.Language::getIsoById($this->context->language->id)),
+                    'orderId' => $result->getResponse()->orderId
+                );
+            } else {
+                $return_array = array(
+                    'error' => $result->getError() . ' ' . $result->getMessage()
+                );
+                SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
+                Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
+            }
+
+        } catch (Exception $e) {
+            $return_array = array(
+                'error' => $e->getCode() . ' ' . $e->getMessage()
+            );
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
+            Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
+        }
+        return $return_array;
+    }
+
+
+    /**
      * @param $id_session
      * @return bool|int
      */
@@ -754,26 +898,40 @@ class PayU extends PaymentModule
 			SELECT `id_order` FROM `' . _DB_PREFIX_ . 'order_payu_payments`
 			WHERE `id_session`="' . addslashes($id_session) . '"');
         SimplePayuLogger::addLog('notification', __FUNCTION__,  print_r($result, true), $this->payu_order_id, 'DB query result ');
-        if ($result)
-            return (int)$result['id_order'];
-        else
-            return false;
+
+        return $result ? (int)$result['id_order'] : false;
     }
 
     /**
      * @param $id_order
-     * @return bool
+     * @return bool | array
      */
-    public function getOrderPaymentByOrderId($id_order)
+    public function getLastOrderPaymentByOrderId($id_order)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'DB query: SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments` WHERE `id_order`="' . addslashes($id_order) . '"', $this->payu_order_id);
-        $result = Db::getInstance()->getRow('
-			SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments`
-			WHERE `id_order`="' . addslashes($id_order) . '"');
-        if ($result)
-            return $result;
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments
+			WHERE id_order="' . addslashes($id_order) . '"
+			ORDER BY create_at DESC';
 
-        return false;
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $sql, $this->payu_order_id);
+        $result = Db::getInstance()->getRow($sql, false);
+
+        return $result ? $result : false;
+    }
+
+    /**
+     * @param $id_order
+     * @return bool | array
+     */
+    public function getOrdersByOrderId($id_order)
+    {
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments
+			WHERE id_order="' . addslashes($id_order) . '"
+			ORDER BY create_at DESC';
+
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $sql, $this->payu_order_id);
+        $result = Db::getInstance()->executeS($sql, true, false);
+
+        return $result ? $result : false;
     }
 
     /**
@@ -795,6 +953,20 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @param $extOrderId
+     * @return array | bool
+     */
+    public function getOrderPaymentByExtOrderId($extOrderId)
+    {
+        $result = Db::getInstance()->getRow('
+			SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments
+			WHERE ext_order_id = "' . pSQL($extOrderId) . '"
+		');
+
+        return $result ? $result : false;
+    }
+
+    /**
      * @param $id_session
      * @return bool
      */
@@ -808,44 +980,52 @@ class PayU extends PaymentModule
 
     /**
      * @param $status
+     * @param null $previousStatus
      * @return bool
      */
-    public function updateOrderPaymentStatusBySessionId($status)
+    public function updateOrderPaymentStatusBySessionId($status, $previousStatus = null)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, '
-			UPDATE `' . _DB_PREFIX_ . 'order_payu_payments` SET id_order = "' . (int)$this->id_order . '", status = "' . addslashes($status) . '", update_at = NOW()
-			WHERE `id_session`="' . addslashes($this->payu_order_id) . '"', $this->payu_order_id);
-        return Db::getInstance()->execute('
-			UPDATE `' . _DB_PREFIX_ . 'order_payu_payments`
-			SET id_order = "' . (int)$this->id_order . '", status = "' . addslashes($status) . '", update_at = NOW()
-			WHERE `id_session`="' . addslashes($this->payu_order_id) . '"');
+        $sql = 'UPDATE ' . _DB_PREFIX_ . 'order_payu_payments
+			SET id_order = "' . (int)$this->id_order . '", status = "' . pSQL($status) . '", update_at = NOW()
+			WHERE id_session="' . pSQL($this->payu_order_id) . '" AND status != "'.OpenPayuOrderStatus::STATUS_COMPLETED.'" AND status != "'.pSQL($status).'"';
+
+        if ($previousStatus) {
+            $sql .= ' AND status = "'.$previousStatus.'"';
+        }
+
+        SimplePayuLogger::addLog('notification', __FUNCTION__, $sql, $this->payu_order_id);
+
+        return Db::getInstance()->execute($sql);
     }
 
     public function checkIfStatusCompleted($id_session)
     {
         $result = Db::getInstance()->getRow('
-			SELECT status FROM `' . _DB_PREFIX_ . 'order_payu_payments`
-			WHERE `id_session`="' . addslashes($id_session) . '"');
-        if ($result['status'] == OpenPayuOrderStatus::STATUS_COMPLETED)
-            return true;
-        return false;
+			SELECT status FROM ' . _DB_PREFIX_ . 'order_payu_payments
+			WHERE id_session = "' . addslashes($id_session) . '"');
+
+         return $result['status'] == OpenPayuOrderStatus::STATUS_COMPLETED;
     }
 
     /**
      * @param string $status
+     * @param int $idOrder
+     * @param int $idCart
+     * @param string $payuIdOrder
+     * @param string $extOrderId
      * @return mixed
      */
-    public function addOrderSessionId($status = '')
+    public function addOrderSessionId($status, $idOrder, $idCart, $payuIdOrder, $extOrderId)
     {
-        SimplePayuLogger::addLog('order', __FUNCTION__, 'DB Insert
-			INSERT INTO `' . _DB_PREFIX_ . 'order_payu_payments` (`id_order`, `id_cart`, `id_session`,  `status`,  `create_at`)
-				VALUES ("' . (int)$this->currentOrder . '", "' . (int)$this->id_cart . '",  "' . $this->payu_order_id . '",   "' . addslashes($status) . '", NOW())', $this->payu_order_id);
-        if (Db::getInstance()->execute('
-			INSERT INTO `' . _DB_PREFIX_ . 'order_payu_payments` (`id_order`, `id_cart`, `id_session`,  `status`,  `create_at`)
-				VALUES ("' . (int)$this->currentOrder . '", "' . (int)$this->id_cart . '",  "' . $this->payu_order_id . '",   "' . addslashes($status) . '", NOW())')
-        )
-            return (int)Db::getInstance()->Insert_ID();
+        $sql = 'INSERT INTO ' . _DB_PREFIX_ . 'order_payu_payments (id_order, id_cart, id_session, ext_order_id, status, create_at)
+				VALUES (' . (int)$idOrder . ', ' . (int)$idCart . ', "' . pSQL($payuIdOrder) . '", "' . pSQL($extOrderId) . '", "' . pSQL($status) . '", NOW())';
 
+        SimplePayuLogger::addLog('order', __FUNCTION__, 'DB Insert '.$sql, $payuIdOrder);
+
+        if (Db::getInstance()->execute($sql)) {
+            return (int)Db::getInstance()->Insert_ID();
+        }
+        
         return false;
     }
 
@@ -855,7 +1035,6 @@ class PayU extends PaymentModule
      */
     private function updateOrderState($status)
     {
-
         SimplePayuLogger::addLog('notification', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
 
         if (!empty($this->order->id) && !empty($status)) {
@@ -867,48 +1046,33 @@ class PayU extends PaymentModule
 
             $history = new OrderHistory();
             $history->id_order = $this->order->id;
-            $history->date_add = date('Y-m-d H:i:s');
 
             switch ($status) {
                 case OpenPayuOrderStatus::STATUS_COMPLETED:
                     if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Addition to Prestashop order status history: ' . Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->payu_order_id);
                         $history->addWithemail(true);
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Email sent', $this->payu_order_id);
                     }
+                    $this->updateOrderPaymentStatusBySessionId($status);
                     break;
                 case OpenPayuOrderStatus::STATUS_CANCELED:
                     if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'), $this->order->id);
                         $history->addWithemail(true);
                     }
+                    $this->updateOrderPaymentStatusBySessionId($status);
                     break;
                 case OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION:
+                case OpenPayuOrderStatus::STATUS_REJECTED:
                     if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
                         $history->addWithemail(true);
                     }
-                    break;
-                case OpenPayuOrderStatus::STATUS_REJECTED:
-                    if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_REJECTED')) {
-                        $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'), $this->order->id);
-                        $history->addWithemail(true);
-                    }
+                    $this->updateOrderPaymentStatusBySessionId($status);
                     break;
                 case OpenPayuOrderStatus::STATUS_PENDING:
-                    if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING')) {
-                        $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_PENDING'), $this->order->id);
-                        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Addition to Prestashop order status history: ' . Configuration::get('PAYU_PAYMENT_STATUS_PENDING'), $this->payu_order_id);
-                        $history->addWithemail(false);
-                    }
+                    $this->updateOrderPaymentStatusBySessionId($status, OpenPayuOrderStatus::STATUS_NEW);
                     break;
-            }
-
-            SimplePayuLogger::addLog('notification', __FUNCTION__, 'Check if status is completed in DB: ', $this->payu_order_id);
-            if (!$this->checkIfStatusCompleted($this->payu_order_id)) {
-                SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status in DB is not COMPLETED, going to change status id DB ', $this->payu_order_id);
-                return $this->updateOrderPaymentStatusBySessionId($status);
             }
         }
 
@@ -917,7 +1081,6 @@ class PayU extends PaymentModule
 
     public function updateOrderData($responseNotification = null)
     {
-
         SimplePayuLogger::addLog('notification', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
 
         if (empty($this->payu_order_id)) {
@@ -925,7 +1088,6 @@ class PayU extends PaymentModule
         }
 
         $result = null;
-
         $this->configureOpuByIdOrder($this->id_order);
 
         if ($responseNotification) {
@@ -933,8 +1095,8 @@ class PayU extends PaymentModule
         } else {
             $raw = OpenPayU_Order::retrieve($this->payu_order_id);
             $response = $raw->getResponse();
-
         }
+
         SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderRetrieve response object: ');
 
         $payu_order = $responseNotification ? $response->order : $response->orders[0];
@@ -1002,20 +1164,19 @@ class PayU extends PaymentModule
      */
     private function getLinks()
     {
-        $opc = (bool)Configuration::get('PS_ORDER_PROCESS_TYPE');
-
         if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
             $order_complete_link = $this->context->link->getModuleLink('payu', 'success');
             $order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
-            $order_cancel_link = $this->context->link->getPageLink('order'.($opc ? '-opc' : '').'.php', true);
-            return array($order_complete_link, $order_notify_link, $order_cancel_link);
         } else {
             $link = new Link();
             $order_complete_link = $this->getModuleAddress() . 'backward_compatibility/success.php';
             $order_notify_link = $this->getModuleAddress() . 'backward_compatibility/notification.php';
-            $order_cancel_link = $link->getPageLink(__PS_BASE_URI__ . 'order'.($opc ? '-opc' : '').'.php');
-            return array($order_complete_link, $order_notify_link, $order_cancel_link);
         }
+
+        return array(
+          'notify' => $order_notify_link,
+          'continue' => $order_complete_link
+        );
     }
 
     /**
@@ -1062,27 +1223,35 @@ class PayU extends PaymentModule
     /**
      * @param $items
      * @param $customer_sheet
-     * @param $order_notify_link
-     * @param $order_cancel_link
-     * @param $order_complete_link
      * @param $currency
      * @param $grand_total
      * @param $carrier
      * @param $payMethod
+     * @param $idOrder
+     * @param $idCart
      * @return array
      */
-    private function prepareOrder($items, $customer_sheet, $order_notify_link, $order_cancel_link, $order_complete_link, $currency, $grand_total, $carrier, $payMethod)
+    private function prepareOrder($items, $customer_sheet, $currency, $grand_total, $carrier, $payMethod, $idCart, $idOrder = null )
     {
         $ocreq = array();
 
         $ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
-        $ocreq['description'] = $this->l('Order for cart: ') . ' ' . $this->cart->id . ' ' . $this->l(' from the store: ') . ' ' . Configuration::get('PS_SHOP_NAME');
+        $ocreq['description'] = $this->l('Order for cart: ') . $idCart . $this->l(' from the store: ') . Configuration::get('PS_SHOP_NAME');
         $ocreq['products'] = $items['products'];
         if ($carrier && is_array($carrier)) {
             array_push($ocreq['products'], $carrier);
         }
         $ocreq['buyer'] = $customer_sheet;
         $ocreq['customerIp'] = $this->getIP();
+
+        $links = $this->getLinks();
+        $ocreq['notifyUrl'] = $links['notify'];
+        $ocreq['continueUrl'] = $links['continue'] . '?id=' . $this->extOrderId;
+        $ocreq['currencyCode'] = $currency['iso_code'];
+        $ocreq['totalAmount'] = $grand_total;
+        $ocreq['extOrderId'] = $this->extOrderId;
+        $ocreq['settings']['invoiceDisabled'] = true;
+
         if ($payMethod !== null) {
             $ocreq['payMethods'] = array(
                 'payMethod' => array(
@@ -1091,13 +1260,6 @@ class PayU extends PaymentModule
                 )
             );
         }
-        $ocreq['notifyUrl'] = $order_notify_link;
-        $ocreq['cancelUrl'] = $order_cancel_link;
-        $ocreq['continueUrl'] = $order_complete_link . '?id_cart=' . $this->cart->id;
-        $ocreq['currencyCode'] = $currency['iso_code'];
-        $ocreq['totalAmount'] = $grand_total;
-        $ocreq['extOrderId'] = $this->cart->id . '-' . uniqid(true);
-        $ocreq['settings']['invoiceDisabled'] = true;
 
         return $ocreq;
     }
@@ -1165,6 +1327,51 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @param array $currency
+     * @return array
+     */
+    public function getPaymethods($currency)
+    {
+        try {
+            $this->initializeOpenPayU($currency['iso_code']);
+
+            $retreive = OpenPayU_Retrieve::payMethods(Language::getIsoById($this->context->language->id));
+            if ($retreive->getStatus() == 'SUCCESS') {
+                $response = $retreive->getResponse();
+
+                return array(
+                    'payByLinks' => $this->moveCardToFirstPosition($response->payByLinks)
+                );
+            } else {
+                return array(
+                    'error' => $retreive->getStatus() . ': ' . OpenPayU_Util::statusDesc($retreive->getStatus())
+                );
+            }
+
+        } catch (OpenPayU_Exception $e) {
+            return array(
+                'error' => $e->getMessage()
+            );
+        }
+    }
+
+    private function moveCardToFirstPosition($payMethods)
+    {
+        foreach ($payMethods as $id => $payMethod) {
+            if ($payMethod->value == 'c') {
+                $cart = $payMethod;
+                unset($payMethods[$id]);
+                array_unshift($payMethods, $cart);
+
+                return $payMethods;
+            }
+        }
+
+        return $payMethods;
+    }
+
+
+    /**
      * @return string
      */
     private function getIP()
@@ -1215,4 +1422,44 @@ class PayU extends PaymentModule
         $this->initializeOpenPayU($currency['iso_code']);
 
     }
+
+    public function getPayuLogo()
+    {
+        if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
+            return _PS_BASE_URL_.__PS_BASE_URI__.'modules/'.$this->name.'/img/payu_logo.png';
+        } else {
+            return Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/payu_logo.png');
+        }
+    }
+
+    /**
+     * @param string $id
+     */
+    public function generateExtOrderId($id)
+    {
+        $this->extOrderId = uniqid($id . '-', true);
+    }
+
+    /**
+     * @return string
+     */
+    public function getExtOrderId()
+    {
+        return $this->extOrderId;
+    }
+
+    /**
+     * Define our own Tools::unSerialize() (since 1.5), to be available in PrestaShop 1.4
+     */
+    protected static function unSerialize($serialized)
+    {
+        if (method_exists('Tools', 'unserialize'))
+            return Tools::unSerialize($serialized);
+
+        if (is_string($serialized) && (strpos($serialized, 'O:') === false || !preg_match('/(^|;|{|})O:[0-9]+:"/', $serialized)))
+            return @unserialize($serialized);
+
+        return false;
+    }
+
 }

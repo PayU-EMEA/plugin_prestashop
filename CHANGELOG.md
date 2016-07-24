@@ -1,3 +1,7 @@
+##2.5.0
+ * Add retry payment support
+ * Fix for Prestashop 1.4 and 1.5
+
 ##2.4.2
  * Add czech language support
 

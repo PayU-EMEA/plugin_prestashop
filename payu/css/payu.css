@@ -8,11 +8,14 @@
 
 p.payment_module a.payu {
     background: #fbfbfb none;
-    padding: 33px 40px 34px 20px
+    padding: 15px 40px 15px 20px;
+    font-weight: bold;
 }
 
 p.payment_module a.payu img {
     margin-right: 10px;
+    height: 80px;
+    vertical-align: middle;
 }
 
 p.payment_module a.payu:after {
@@ -89,6 +92,7 @@ p.payment_module a.payu:hover {
     line-height: 120%;
     padding: 0;
     margin: 0 5px;
+    display: inline-block;
 }
 
 .payMethodEnable label {
