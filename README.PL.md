@@ -5,15 +5,15 @@
 
 ## Spis treści
 
-* [Cechy i kompatybilność](#cechy-i-kompatybilno)
+* [Cechy i kompatybilność](#cechy-i-kompatybilność)
 * [Wymagania](#wymagania) 
 * [Instalacja](#instalacja)
 * [Aktualizacja](#aktualizacja)
 * [Konfiguracja](#konfiguracja)
-* [Więcej o cechach](#wicej-o-cechah)
-    * [Wielowalutowość](#wielowalutowo)
-    * [Wyświetlenie metod płatności](#wywietlanie-metod-patnoci)
-    * [Ponowienie płatności](#ponowienie-platnoci)
+* [Więcej o cechach](#więcej-o-cechah)
+    * [Wielowalutowość](#wielowalutowość)
+    * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
+    * [Ponowienie płatności](#ponowienie-płatności)
 
 ## Cechy i kompatybilność
 Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala na następujące operacje:
@@ -27,7 +27,7 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 | Ponowienie płatności przez klienta w przypadku anluowania | :x: | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#wicej-o-cechah) 
+Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechah) 
 
 **Wszyskie opisy w tej instrukcji odnoszą się do PrestaShop 1.6, w wersji 1.5 i 1.4 należy używać opcji analogicznych**.
 
@@ -68,16 +68,14 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 1. Przejdź do `Moduły` » `Moduły i usługi`
 1. Wyszukaj `PayU` i naciśnij `Konfiguruj`
 
-### Parametry konfiguracyjne
-
-#### Sposób integracji
+### Sposób integracji
 
 | Parameter | Opis | 
 |---------|-----------|
 | Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - motedy płatności zostaną wyświetlone na stronie podsumowania zamównia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
 
 
-#### Parametry POS-ów
+### Parametry POS-ów
 
 Dla każdej waluty w dodanej w PrestaShop należy dodać parametry:
 
@@ -88,7 +86,7 @@ Dla każdej waluty w dodanej w PrestaShop należy dodać parametry:
 | OAuth - client_id | client_id dla protokołu OAuth z systemu PayU |
 | OAuth - client_secret | client_secret for OAuth z systemu PayU |
 
-##### Przykład konfiguracji POS-a
+#### Przykład konfiguracji POS-a
 
 PrestaShop:
 
@@ -98,7 +96,7 @@ Konfiguracja POS-a w panelu administracyjnym PayU:
 
 ![pos_configuration_keys][img2]
 
-#### Statusy płatności
+### Statusy płatności
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
 | Parameter | Opis | Domyślna wartość | 
@@ -108,12 +106,12 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 | Zakończona | Płatność w statusie `COMPLETED` | Płatność zaakceptowana |
 | Anulowana | Płatność w statusie `CANCELED` | Płatność PayU anulowana |
 
-### Więcej o cechach
+## Więcej o cechach
 
-#### Wielowalutowość
+### Wielowalutowość
 W systemach PayU w ramach POS-a można posługiwać się tylko jedną walutą. Jeżeli chcemy procesować transakcje w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji dla każdej waluty z osobna.   
 
-#### Wyświetlenie metod płatności 
+### Wyświetlenie metod płatności 
 Przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak` po wybraniu metody płatności PayU wyświetli się strona z ikonami banków bezpośrednio w sklepie PrestaShop.
 Ikony banków, które są wyświetlane pobierane są z konfiguracji POS-a w PayU w zależności od wybranej waluty.  
 
@@ -121,7 +119,7 @@ Ikony banków, które są wyświetlane pobierane są z konfiguracji POS-a w PayU
 
 Po wybraniu banku lub płatności kartą i naciśnięciu przycisku `Potwierdzam zamówienie i płacę` nastąpi bezpośrednie przekierowanie na stronę banku lub w przypadku płatności kartą na stronę formatki kartowej.  
 
-#### Ponowienie płatności
+### Ponowienie płatności
 W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
 
 Żeby kupujący mógł ponowić płatność muszą być spełnione następujace warunki: 
