@@ -28,9 +28,8 @@
                     </div>
                 </div>
                 <p class="preference_description">
-                    {l s='Works only when the order status is PayU payment awaits for reception.' mod='payu'}
+                    {l s='Works only when the PayU order status is WAITING_FOR_CONFIRMATION or REJECTED' mod='payu'}
                 </p>
-
             </fieldset>
         </form>
     </div>

@@ -82,7 +82,6 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
                 array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
-            Configuration::updateValue('PAYU_PAYMENT_STATUS_REJECTED', 7) &&
             Configuration::updateValue('PAYU_RETRIEVE', false)
         );
     }
@@ -335,7 +334,6 @@ class PayU extends PaymentModule
 
             if ($order->module = 'payu') {
                 switch ($order_state_id) {
-                    case Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'):
                     case Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'):
                         $refundable = true;
                         break;
@@ -377,11 +375,6 @@ class PayU extends PaymentModule
                     $history->id_order = (int)$id_order;
                     $history->id_employee = (int)$this->context->employee->id;
 
-                    $history->changeIdOrderState(
-                        Configuration::get('PAYU_PAYMENT_STATUS_REJECTED'),
-                        $id_order,
-                        false
-                    );
                     $history->addWithemail(true, array());
 
                     if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
@@ -528,7 +521,9 @@ class PayU extends PaymentModule
             'PAYU_ORDERS' => $this->getOrdersByOrderId($params['id_order'])
         ));
 
-        if ($order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION ) {
+        $isConfirmable = $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
+            || $order_payment['status'] == OpenPayuOrderStatus::STATUS_REJECTED;
+        if ($isConfirmable) {
 
             $this->payu_order_id = $order_payment['id_session'];
 
@@ -545,7 +540,7 @@ class PayU extends PaymentModule
             $this->context->smarty->assign(array(
                 'PAYU_PAYMENT_STATUS_OPTIONS' => $this->getPaymentAcceptanceStatusesList(),
                 'PAYU_PAYMENT_STATUS' => $order_payment['status'],
-                'PAYU_PAYMENT_ACCEPT' => $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
+                'PAYU_PAYMENT_ACCEPT' => $isConfirmable
             ));
         }
 
@@ -561,19 +556,20 @@ class PayU extends PaymentModule
         $this->configureOpuByIdOrder($this->id_order);
 
         if (!empty($status) && !empty($this->payu_order_id)) {
-            if ($status == OpenPayuOrderStatus::STATUS_CANCELED) {
-                try {
+
+            try {
+                if ($status == OpenPayuOrderStatus::STATUS_CANCELED) {
                     $result = OpenPayU_Order::cancel($this->payu_order_id);
-                } catch (OpenPayU_Exception $e) {
-                    echo $e->getMessage();
-                    return false;
+                } elseif ($status == OpenPayuOrderStatus::STATUS_COMPLETED) {
+                    $status_update = array(
+                        "orderId" => $this->payu_order_id,
+                        "orderStatus" => OpenPayuOrderStatus::STATUS_COMPLETED
+                    );
+                    $result = OpenPayU_Order::statusUpdate($status_update);
                 }
-            } elseif ($status == OpenPayuOrderStatus::STATUS_COMPLETED) {
-                $status_update = array(
-                    "orderId" => $this->payu_order_id,
-                    "orderStatus" => OpenPayuOrderStatus::STATUS_COMPLETED
-                );
-                $result = OpenPayU_Order::statusUpdate($status_update);
+            } catch (OpenPayU_Exception $e) {
+                echo $e->getMessage();
+                return false;
             }
 
             if ($result->getStatus() == 'SUCCESS') {
