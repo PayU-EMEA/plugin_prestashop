@@ -1340,7 +1340,7 @@ class PayU extends PaymentModule
                 $response = $retreive->getResponse();
 
                 return array(
-                    'payByLinks' => $this->moveCardToFirstPosition($response->payByLinks)
+                    'payByLinks' => $this->moveCardToFirstPositionAndRemoveDisabledTest($response->payByLinks)
                 );
             } else {
                 return array(
@@ -1355,18 +1355,19 @@ class PayU extends PaymentModule
         }
     }
 
-    private function moveCardToFirstPosition($payMethods)
+    private function moveCardToFirstPositionAndRemoveDisabledTest($payMethods)
     {
         foreach ($payMethods as $id => $payMethod) {
             if ($payMethod->value == 'c') {
                 $cart = $payMethod;
                 unset($payMethods[$id]);
                 array_unshift($payMethods, $cart);
-
-                return $payMethods;
+            }
+            if ($payMethod->value == 't' && $payMethod->status != 'ENABLED') {
+                $cart = $payMethod;
+                unset($payMethods[$id]);
             }
         }
-
         return $payMethods;
     }
 
