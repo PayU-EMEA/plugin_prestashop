@@ -412,9 +412,10 @@ class PayU extends PaymentModule
         if ($isConfirmable) {
 
             $this->payu_order_id = $order_payment['id_session'];
-
             if (Tools::isSubmit('submitpayustatus') && $this->payu_order_id && trim(Tools::getValue('PAYU_PAYMENT_STATUS'))) {
-                $updateOrderStatus = $this->sendPaymentUpdate(OpenPayuOrderStatus::STATUS_CANCELED);
+
+                $updateOrderStatus = $this->sendPaymentUpdate(Tools::getValue('PAYU_PAYMENT_STATUS'));
+
                 if ($updateOrderStatus === true) {
                     $output .= $this->displayConfirmation($this->l('Update status request has been sent'));
                 } else {
