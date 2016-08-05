@@ -515,10 +515,23 @@ class PayU extends PaymentModule
         $this->id_order = $params['id_order'];
         $output = '';
 
+
+        if (Tools::getValue('cancelPayuOrder')) {
+            $this->payu_order_id = Tools::getValue('cancelPayuOrder');
+
+            $updateOrderStatus = $this->sendPaymentUpdate(OpenPayuOrderStatus::STATUS_CANCELED);
+
+            $this->context->smarty->assign(array(
+                'PAYU_CANCEL_ORDER_MESSAGE' => $updateOrderStatus !== true ? $this->displayError($updateOrderStatus['message']) : $this->displayConfirmation($this->l('Update status request has been sent'))
+            ));
+
+        }
+
         $order_payment = $this->getLastOrderPaymentByOrderId($params['id_order']);
 
         $this->context->smarty->assign(array(
-            'PAYU_ORDERS' => $this->getOrdersByOrderId($params['id_order'])
+            'PAYU_ORDERS' => $this->getOrdersByOrderId($params['id_order']),
+            'PAYU_ORDER_ID' => $this->id_order
         ));
 
         $isConfirmable = $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
@@ -527,13 +540,12 @@ class PayU extends PaymentModule
 
             $this->payu_order_id = $order_payment['id_session'];
 
-            if (Tools::isSubmit('submitpayustatus') && $this->payu_order_id) {
-                if (trim(Tools::getValue('PAYU_PAYMENT_STATUS')) &&
-                    $this->sendPaymentUpdate(trim(Tools::getValue('PAYU_PAYMENT_STATUS')))
-                ) {
+            if (Tools::isSubmit('submitpayustatus') && $this->payu_order_id && trim(Tools::getValue('PAYU_PAYMENT_STATUS'))) {
+                $updateOrderStatus = $this->sendPaymentUpdate(OpenPayuOrderStatus::STATUS_CANCELED);
+                if ($updateOrderStatus === true) {
                     $output .= $this->displayConfirmation($this->l('Update status request has been sent'));
                 } else {
-                    $output .= $this->displayError($this->l('Update status request has not been completed correctly.'));
+                    $output .= $this->displayError($this->l('Update status request has not been completed correctly.'.' '.$updateOrderStatus['message']));
                 }
             }
 
@@ -549,9 +561,9 @@ class PayU extends PaymentModule
 
     /**
      * @param $status
-     * @return bool
+     * @return array | bool
      */
-    private function sendPaymentUpdate($status)
+    private function sendPaymentUpdate($status = null)
     {
         $this->configureOpuByIdOrder($this->id_order);
 
@@ -560,7 +572,8 @@ class PayU extends PaymentModule
             try {
                 if ($status == OpenPayuOrderStatus::STATUS_CANCELED) {
                     $result = OpenPayU_Order::cancel($this->payu_order_id);
-                } elseif ($status == OpenPayuOrderStatus::STATUS_COMPLETED) {
+                }
+                elseif ($status == OpenPayuOrderStatus::STATUS_COMPLETED) {
                     $status_update = array(
                         "orderId" => $this->payu_order_id,
                         "orderStatus" => OpenPayuOrderStatus::STATUS_COMPLETED
@@ -568,19 +581,22 @@ class PayU extends PaymentModule
                     $result = OpenPayU_Order::statusUpdate($status_update);
                 }
             } catch (OpenPayU_Exception $e) {
-                echo $e->getMessage();
-                return false;
+                return array(
+                    'message' => $e->getMessage()
+                );
             }
 
             if ($result->getStatus() == 'SUCCESS') {
-                $this->updateOrderData();
                 return true;
             } else {
-                Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage() . ' ' . $this->payu_order_id), 1);
-                return false;
+                return array(
+                    'message' => $result->getError() . ' ' . $result->getMessage()
+                );
             }
         }
-        return false;
+        return array (
+            'message' => $this->l('Order status update hasn\'t been sent')
+        );
     }
 
     /**

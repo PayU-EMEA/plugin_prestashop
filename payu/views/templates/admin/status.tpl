@@ -41,6 +41,8 @@
         PayU Orders
     </div>
 
+    {$PAYU_CANCEL_ORDER_MESSAGE}
+
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -50,6 +52,7 @@
                 <th><span class="title_box ">PayU - OrderId</span></th>
                 <th><span class="title_box ">PayU - ExtOrderId</span></th>
                 <th><span class="title_box ">Payu - {l s='Status' mod='payu'}</span></th>
+                <th><span class="title_box ">{l s='Action' mod='payu'}</span></th>
             </tr>
             </thead>
             {if $PAYU_ORDERS}
@@ -61,6 +64,7 @@
                 <td>{$payuOrder.id_session}</td>
                 <td>{$payuOrder.ext_order_id}</td>
                 <td>{$payuOrder.status}</td>
+                <td>{if $payuOrder.status == 'NEW' || $payuOrder.status == 'PENDING'}<a class="btn btn-primary" href="{$link->getAdminLink('AdminOrders')|escape:'html':'UTF-8'}&amp;vieworder&amp;id_order={$PAYU_ORDER_ID|intval}&amp;cancelPayuOrder={$payuOrder.id_session}">{l s='Cancel' mod='payu'}</a>{/if}</td>
             </tr>
             {/foreach}
             </tbody>
