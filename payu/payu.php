@@ -932,6 +932,21 @@ class PayU extends PaymentModule
 
     /**
      * @param $id_order
+     * @return bool
+     */
+    public function hasLastPayuOrderIsCompleted($id_order)
+    {
+        $sql = 'SELECT status FROM ' . _DB_PREFIX_ . 'order_payu_payments
+			WHERE id_order="' . addslashes($id_order) . '"
+			ORDER BY create_at DESC';
+
+        $result = Db::getInstance()->getRow($sql, false);
+
+        return $result['status'] == OpenPayuOrderStatus::STATUS_COMPLETED;
+    }
+
+    /**
+     * @param $id_order
      * @return bool | array
      */
     public function getOrdersByOrderId($id_order)
@@ -1059,16 +1074,18 @@ class PayU extends PaymentModule
             $history = new OrderHistory();
             $history->id_order = $this->order->id;
 
+            $withoutUpdateOrderState = $this->hasLastPayuOrderIsCompleted($this->order->id);
+
             switch ($status) {
                 case OpenPayuOrderStatus::STATUS_COMPLETED:
-                    if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
+                    if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
                         $history->addWithemail(true);
                     }
                     $this->updateOrderPaymentStatusBySessionId($status);
                     break;
                 case OpenPayuOrderStatus::STATUS_CANCELED:
-                    if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')) {
+                    if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'), $this->order->id);
                         $history->addWithemail(true);
                     }
@@ -1076,7 +1093,7 @@ class PayU extends PaymentModule
                     break;
                 case OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION:
                 case OpenPayuOrderStatus::STATUS_REJECTED:
-                    if ($order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT')) {
+                    if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
                         $history->addWithemail(true);
                     }
@@ -1117,11 +1134,7 @@ class PayU extends PaymentModule
 
             $this->order = new Order($this->id_order);
             SimplePayuLogger::addLog('notification', __FUNCTION__, 'Order exists in PayU system ', $this->payu_order_id);
-
-            if ($this->getCurrentPrestaOrderState() != (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) {
-                SimplePayuLogger::addLog('notification', __FUNCTION__, 'Prestashop order status IS NOT COMPLETED, go to status actualization', $this->payu_order_id);
-                $this->updateOrderState(isset($payu_order->status) ? $payu_order->status : null);
-            }
+            $this->updateOrderState(isset($payu_order->status) ? $payu_order->status : null);
         }
     }
 
