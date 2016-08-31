@@ -5,7 +5,7 @@
 ##2.4.2
  * Add czech language support
 
- ##2.4.1
+##2.4.1
  * Fix show error on pay methods page
  * Cleanup code
 

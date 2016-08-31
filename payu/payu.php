@@ -82,7 +82,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
                 array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
-            Configuration::updateValue('PAYU_RETRIEVE', false)
+            Configuration::updateValue('PAYU_RETRIEVE', 1)
         );
     }
 
@@ -153,7 +153,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', (int)Tools::getValue('PAYU_PAYMENT_STATUS_SENT')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
-                !Configuration::updateValue('PAYU_RETRIEVE', (bool)Tools::getValue('PAYU_RETRIEVE'))
+                !Configuration::updateValue('PAYU_RETRIEVE', (Tools::getValue('PAYU_RETRIEVE') ? 1 : 0))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -177,7 +177,6 @@ class PayU extends PaymentModule
      */
     public function displayForm()
     {
-
         $this->context->smarty->assign(array(
             'PAYU_MC_POS_ID' => self::unSerialize(Configuration::get('PAYU_MC_POS_ID')),
             'PAYU_MC_SIGNATURE_KEY' => self::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY')),
@@ -1384,7 +1383,7 @@ class PayU extends PaymentModule
      * @param array $names
      * @return bool
      */
-    private function addNewOrderState($state, $names)
+    public function addNewOrderState($state, $names)
     {
         if (!(Validate::isInt(Configuration::get($state)) AND Validate::isLoadedObject($order_state = new OrderState(Configuration::get($state))))) {
             $order_state = new OrderState();
