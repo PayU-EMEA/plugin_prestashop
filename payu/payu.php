@@ -76,11 +76,11 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_ID', '') &&
             Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_SECRET', '') &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', $this->addNewOrderState('PAYU_PAYMENT_STATUS_PENDING',
-                array('en' => 'PayU payment pending', 'pl' => 'Płatność PayU rozpoczęta'))) &&
+                array('en' => 'PayU payment pending', 'pl' => 'Płatność PayU rozpoczęta', 'cs' => 'Transakce PayU je zahájena'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', $this->addNewOrderState('PAYU_PAYMENT_STATUS_SENT',
-                array('en' => 'PayU payment waiting for confirmation', 'pl' => 'Płatność PayU oczekuje na odbiór'))) &&
+                array('en' => 'PayU payment waiting for confirmation', 'pl' => 'Płatność PayU oczekuje na odbiór', 'cs' => 'Transakce  čeká na přijetí'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
-                array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana'))) &&
+                array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana', 'cs' => 'Transakce PayU zrušena'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
             Configuration::updateValue('PAYU_RETRIEVE', 1)
         );
