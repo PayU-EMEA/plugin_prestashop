@@ -12,7 +12,7 @@
 * [Instalacja](#instalacja)
 * [Aktualizacja](#aktualizacja)
 * [Konfiguracja](#konfiguracja)
-* [Więcej o cechach](#więcej-o-cechah)
+* [Więcej o cechach](#więcej-o-cechach)
     * [Wielowalutowość](#wielowalutowość)
     * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
     * [Ponowienie płatności](#ponowienie-płatności)
@@ -26,16 +26,16 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 | Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Utworzenie zwrotu (pełnego lub częściowego) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :x: | :white_check_mark: | :white_check_mark: |
-| Ponowienie płatności przez klienta w przypadku anluowania | :x: | :white_check_mark: | :white_check_mark: |
+| Ponowienie płatności przez klienta w przypadku anulowania | :x: | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
-Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechah) 
+Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
 
 **Wszyskie opisy w tej instrukcji odnoszą się do PrestaShop 1.6, w wersji 1.5 i 1.4 należy używać opcji analogicznych**.
 
 ## Wymagania
 
-**Ważne:** Moduł ta działa tylko z punktem płatności typu `Checkout`.
+**Ważne:** Moduł ta działa tylko z punktem płatności typu `REST API` (Checkout).
 
 Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia PHP: [cURL][ext1] i [hash][ext2].
 
@@ -75,7 +75,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 | Parameter | Opis | 
 |---------|-----------|
-| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - motedy płatności zostaną wyświetlone na stronie podsumowania zamównia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
+| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
 
 
 ### Parametry POS-ów
@@ -95,27 +95,27 @@ PrestaShop:
 
 ![presta_pos_config][img1]
 
-Konfiguracja POS-a w panelu administracyjnym PayU:
+Konfiguracja POS-a w panelu PayU:
 
 ![pos_configuration_keys][img2]
 
 ### Statusy płatności
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
-| Parameter | Opis | Domyślna wartość | 
+| Nazwa | Status w PayU | Domyślny status w Presta | 
 |---------|-----------|-----------|
-| Rozpoczęta | Płatność w statusie `NEW` i `PENDING` | Płatność PayU rozpoczęta |
-| Oczekuje na odbiór | Płatność w statusie `WAITING_FOR_CONFIRMATION` i `REJECTED` | Płatność PayU oczekuje na odbiór |
-| Zakończona | Płatność w statusie `COMPLETED` | Płatność zaakceptowana |
-| Anulowana | Płatność w statusie `CANCELED` | Płatność PayU anulowana |
+| Rozpoczęta | `NEW` i `PENDING` | Płatność PayU rozpoczęta |
+| Oczekuje na odbiór | `WAITING_FOR_CONFIRMATION` i `REJECTED` | Płatność PayU oczekuje na odbiór |
+| Zakończona | `COMPLETED` | Płatność zaakceptowana |
+| Anulowana | `CANCELED` | Płatność PayU anulowana |
 
 ## Więcej o cechach
 
 ### Wielowalutowość
-W systemach PayU w ramach POS-a można posługiwać się tylko jedną walutą. Jeżeli chcemy procesować transakcje w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji dla każdej waluty z osobna.   
+POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatność w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji POSa dla każdej waluty z osobna.   
 
 ### Wyświetlenie metod płatności 
-Przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak` po wybraniu metody płatności PayU wyświetli się strona z ikonami banków bezpośrednio w sklepie PrestaShop.
+Przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak` po wybraniu płatności przez PayU wyświetli się strona z ikonami banków bezpośrednio w sklepie PrestaShop.
 Ikony banków, które są wyświetlane pobierane są z konfiguracji POS-a w PayU w zależności od wybranej waluty.  
 
 ![payment_methods][img3]
@@ -129,7 +129,7 @@ W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatno
 * status ostatniej płatności z PayU musi mieć status CANCELED
 * status zamówienia w PrestaShop musi być zgodny ze statusem wybranym w konfiguracji wtyczki `Statusy płatności` » `Anulowana`    
 
-Kupującemu w `Szczegółach zamówinia` wyświetlany jest przycisk `Ponów płatność z PayU` 
+Kupującemu w `Szczegółach zamówinia` wyświetlany jest przycisk `Ponów płatność z PayU`.
 
 ![retry_payment][img4]
 

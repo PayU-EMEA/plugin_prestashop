@@ -13,19 +13,31 @@
 * [Installing](#installation)
 * [Upgrading](#upgrade)
 * [Configuration](#configuration)
+* [More on features](#more-on-features)
+    * [Multi-currency](#multi-currency)
+    * [Payment method display](#payment-method-display)
+    * [Payment retry](#payment-retry)
 
 ## Features
 The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
 
-* Creating a payment order (with discounts included)
-* Cancelling a payment order
-* Receive a payment order (when auto-receive is disable)
-* Conducting a refund operation (for a whole or partial order)
-* Display payment methods on Presta checkout summary page (only for Prestashop 1.5 and 1.6)
+| Cecha | Presta 1.4 | Presta 1.5 | Presta 1.6 |
+|---------|:-----------:|:-----------:|:-----------:|
+| Creating a payment order (with discounts included) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Capturing a payment order (when auto-capture is disabled) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Conducting a refund operation (whole or partial) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Displaying payment methods on Presta checkout summary page | :x: | :white_check_mark: | :white_check_mark: |
+| Payment retry for cancelled payments | :x: | :white_check_mark: | :white_check_mark: |
+| Multi-currency support | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+More information on the features can be found in the [More on features](#more-on-features) section
+
+**All instructions regard PrestaShop 1.6, for versions 1.5 and 1.4 corresponding options should be used **.
+
 
 ## Prerequisites
 
-**Important:** This plugin works only with checkout points of sales (POS).
+**Important:** This plugin works only with 'REST API' (Checkout) points of sales (POS).
 
 The following PHP extensions are required:
 
@@ -34,45 +46,44 @@ The following PHP extensions are required:
 
 ## Installation
 
-### Option 1 - recommended for users without FTP access to their PrestShop installation
+### Option 1 
+**recommended for users without FTP access to their PrestShop installation**
 
 1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-2. Unzip locally downloaded file
-3. **Create zip archive of payu directory**
-4. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-5. Go to **Modules** > **Modules**.
-6. **Add new module** and point archive contained plugin (created at point 3)
-7. Load the plugin
+1. Unzip locally downloaded file
+1. **Create zip archive of payu directory**
+1. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
+1. Go to 'Modules and Services' > 'Modules and Services'.
+1. Use 'Add a new module' option and point the archive containing the plugin (created in step 3)
+1. Load the plugin
 
-### Option 2 - recommended for users with FTP access to their PrestaShop installation
+### Option 2
+**recommended for users with FTP access to their PrestaShop installation**
+
 1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-2. Unzip locally downloaded file
-3. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
+1. Unzip locally downloaded file
+1. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
 
 ## Upgrade
 
 1. Update plugin files according to [Installing](#installation)
-2. Go to **Advanced Parameters** > **Performance** adn click **Clear cache** 
+1. Go to do 'Modules and Services' > 'Modules and Services' - automated upgrade will be performed if required  
+1. Go to **Advanced Parameters** > 'Performance' and click 'Clear cache' 
 
 ## Configuration
 
 To configure the PrestaShop plugin:
 
-1. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-2. Go to **Modules** > **Payments & Gateways**.
-3. Select **PayU** and click **Configure**.
+1. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
+1. Go to 'Modules and Services' > 'Modules and Services'.
+1. Search and select 'PayU' and click 'Configure'.
 
-
-### Configuration Parameters
-
-The tables below present the descriptions of the configuration form parameters.
-
-#### Integration method
-Works only Prestashop 1.5 and 1.6
+### Integration method
+(works only Prestashop 1.5 and 1.6)
 
 | Parameter | Description | 
 |:---------:|:-----------:|
-|Payment methods displayed on Presta checkout summary page|If "No" then Prestashop will redirect to PayU payment page|
+|Payment methods displayed on PrestaShop checkout summary page | **Yes** - payment methods displayed on PrestaShop checkout page <br>**No** - redirection to PayU after order is placed |
 
 
 #### POS Parameters
@@ -95,6 +106,41 @@ Presta:
 POS configuration in PayU merchant panel:
 
 ![pos_configuration_keys][img2]
+
+### Payment status mapping
+Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
+
+| Name | PayU payment status | Default value in Presta | 
+|---------|-----------|-----------|
+| Pending status | `NEW` and `PENDING` | PayU payment started |
+| Waiting for confirmation | `WAITING_FOR_CONFIRMATION` and `REJECTED` | PayU payment awaits for reception |
+| Complete status | `COMPLETED` | Payment accepted |
+| Canceled status | `CANCELED` | Canceled |
+
+## More on features
+
+### Multi-currency
+POS in PayU system has only one currency defined. Therefore to accept payments in more currencies, POS for each currency has to be separately configured.
+
+### Payment method display
+When **Payment methods displayed on Presta checkout summary page** parameter is set to `Yes` payment method icons will be displayed directly within PrestaShop page when 'PayU with PayU' button is clicked.
+The icons are displayed basing on POS configuration.  
+
+![payment_methods][img3]
+
+After payment method icon is selected and 'I confirm my order' button clicked, the buyer is redirected to bank or PayU card form.  
+
+### Payment retry
+When payment fails (i.e. is canceled), the buyer can pay again.
+Following criteria should be met to enable payment retry:
+* payment has to have CANCELED status in PayU
+* order status in PrestaShop has to be in line with status configured for 'Canceled status'
+
+If the criteria are met, the buyer will see a retry option on Order details screen.  
+
+![retry_payment][img4]
+
+All PayU payments created for a PrestaShop order are displayed on Order screen in PrestaShop admin panel. 
 
 <!--LINKS-->
 
