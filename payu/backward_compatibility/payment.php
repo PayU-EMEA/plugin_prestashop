@@ -20,7 +20,7 @@ $link = new Link();
 $products = $cart->getProducts();
 
 if (empty($products)) {
-	Tools::redirect('index.php?controller=order');
+    Tools::redirect('index.php?controller=order');
 }
 
 $payu = new PayU();
@@ -28,27 +28,27 @@ $payu->cart = $cart;
 
 require(_PS_MODULE_DIR_.$payu->name.'/backward_compatibility/backward.php');
 
-$_SESSION['sessionId'] = md5($payu->cart->id.rand().rand().rand().rand());
+$payu->generateExtOrderId($payu->cart->id);
 
 $result = $payu->orderCreateRequest();
 
 if ($result) {
-	$payu->id_cart = $cart->id;
-	$payu->payu_order_id = $result['orderId'];
-	$payu->validateOrder(
-		$cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-		$cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
-		'PayU cart ID: ' . $cart->id . ', orderId: ' . $payu->payu_order_id,
-		null, (int)$cart->id_currency, false, $cart->secure_key,
-		Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
-	);
-	$payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW);
-	Tools::redirect($result['redirectUri'], '');
+    $payu->id_cart = $cart->id;
+    $payu->payu_order_id = $result['orderId'];
+    $payu->validateOrder(
+        $cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+        $cart->getOrderTotal(true, Cart::BOTH), $payu->displayName,
+        null, array(), (int)$cart->id_currency, false, $cart->secure_key,
+        Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
+    );
+
+    $payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW, $payu->currentOrder, $cart->id, $payu->payu_order_id);
+    Tools::redirect($result['redirectUri'], '');
 } else {
-	$this->context->smarty->assign(
-		array(
-			'message' => $this->payu->l('An error occurred while processing your order.')
-		)
-	);
-	$this->setTemplate('error.tpl');
+    $smarty->assign(
+        array(
+            'message' => $payu->l('An error occurred while processing your order.')
+        )
+    );
+    echo $payu->fetchTemplate('error.tpl');
 }

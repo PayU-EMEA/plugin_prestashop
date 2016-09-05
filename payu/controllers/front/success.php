@@ -15,30 +15,26 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
+
         $payu = new PayU();
+        $order_payment = $payu->getOrderPaymentByExtOrderId(Tools::getValue('id'));
 
-        $payu->id_cart = Tools::getValue('id_cart');
-        $payu->payu_order_id = $this->context->cookie->__get('payu_order_id');
-        $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
-
-        if (Tools::getValue('error')) {
-            Tools::redirect(
-                $this->getRedirectLink($payu->id_cart, $order_payment['id_order'], 'error=' . Tools::getValue('error')),
-                __PS_BASE_URI__,
-                null,
-                'HTTP/1.1 301 Moved Permanently'
-            );
+        if (!$order_payment) {
+            Tools::redirect('index.php?controller=history', __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
         }
 
-        if ($order_payment) {
-            $payu->id_order = (int)$order_payment['id_order'];
-            $payu->id_cart = (int)$order_payment['id_cart'];
+        $payu->id_order = $order_payment['id_order'];
+        $payu->id_cart = $order_payment['id_cart'];
+        $payu->payu_order_id = $order_payment['id_session'];
 
-            $payu->updateOrderData();
-            Tools::redirect($this->getRedirectLink($payu->id_cart, $order_payment['id_order']), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
-        }
+        $payu->updateOrderData();
 
-        Tools::redirect('index.php?controller=history', __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
+        Tools::redirect(
+            $this->getRedirectLink($payu->id_cart, $payu->id_order, (Tools::getValue('error') ? 'error=' . Tools::getValue('error') : null)),
+            __PS_BASE_URI__,
+            null,
+            'HTTP/1.1 301 Moved Permanently'
+        );
 
     }
 

@@ -21,7 +21,14 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         $payu = new PayU();
         $payu->initializeOpenPayU($this->extractCurrencyCode($data));
 
-        $result = OpenPayU_Order::consumeNotification($data);
+        try {
+            $result = OpenPayU_Order::consumeNotification($data);
+
+        } catch (OpenPayU_Exception $e) {
+            header('HTTP/1.1 400 Bad Request', true, 400);
+            die($e->getMessage());
+        }
+
         $response = $result->getResponse();
         SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $response->order->orderId, 'Incoming notification: ');
 
