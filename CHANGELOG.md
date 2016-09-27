@@ -1,3 +1,6 @@
+##2.5.1
+ * Fix disable payment methods by currency for Prestashop 1.4
+
 ##2.5.0
  * Add retry payment support
  * Fix for Prestashop 1.4 and 1.5

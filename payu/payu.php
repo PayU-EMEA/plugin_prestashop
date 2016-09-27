@@ -38,7 +38,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.5.0';
+        $this->version = '2.5.1';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
@@ -343,11 +343,15 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @param $params
      * @return mixed
      */
-    public function hookPayment()
+    public function hookPayment($params)
     {
         if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
+            if (!$this->active || !$this->checkCurrency($params['cart'])) {
+                return '';
+            }
             $link = $this->getModuleAddress() . 'backward_compatibility/payment.php';
         } else {
             $link = $this->context->link->getModuleLink('payu', 'payment');
@@ -896,13 +900,12 @@ class PayU extends PaymentModule
      */
     private function getLinks()
     {
-        if (version_compare(_PS_VERSION_, '1.5', 'gt')) {
-            $order_complete_link = $this->context->link->getModuleLink('payu', 'success');
-            $order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
-        } else {
-            $link = new Link();
+        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
             $order_complete_link = $this->getModuleAddress() . 'backward_compatibility/success.php';
             $order_notify_link = $this->getModuleAddress() . 'backward_compatibility/notification.php';
+        } else {
+            $order_complete_link = $this->context->link->getModuleLink('payu', 'success');
+            $order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
         }
 
         return array(
@@ -1246,29 +1249,11 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @param bool $http
-     * @param bool $entities
      * @return string
      */
-    private function getModuleAddress($http = true, $entities = true)
+    private function getModuleAddress()
     {
-        return $this->getShopDomainAddress($http, $entities) . (__PS_BASE_URI__ . 'modules/' . $this->name . '/');
-    }
-
-    /**
-     * @return string
-     */
-    private function getShopDomainAddress()
-    {
-        if (method_exists('Tools', 'getShopDomainSsl')) {
-            return Tools::getShopDomainSsl(false, false);
-        }
-
-        if (!($domain = Configuration::get('PS_SHOP_DOMAIN_SSL'))) {
-            $domain = Tools::getHttpHost();
-        }
-
-        return $domain;
+        return Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.((int)Configuration::get('PS_REWRITING_SETTINGS') && count(Language::getLanguages()) > 1 && isset($smarty->ps_language) && !empty($smarty->ps_language) ? $smarty->ps_language->iso_code.'/' : '').'modules/'.$this->name.'/';
     }
 
     /**
@@ -1439,5 +1424,19 @@ class PayU extends PaymentModule
         return false;
 
     }
+
+    private function checkCurrency($cart)
+    {
+        $currency_order = new Currency((int)($cart->id_currency));
+        $currencies_module = $this->getCurrency((int)$cart->id_currency);
+        $currency_default = Configuration::get('PS_CURRENCY_DEFAULT');
+
+        if (is_array($currencies_module))
+            foreach ($currencies_module AS $currency_module)
+                if ($currency_order->id == $currency_module['id_currency'])
+                    return true;
+        return false;
+    }
+
 
 }
