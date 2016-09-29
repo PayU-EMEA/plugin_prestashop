@@ -10,10 +10,10 @@
 {capture name=path}{l s='Pay with PayU' mod='payu'}{/capture}
 
 <div class="clearfix">
-    <h2 id="payuAmountInfo">{l s='The total amount of your order is' mod='payu'}: <strong>{convertPrice price=$total}</strong>
-        {if $use_taxes == 1}
-            {l s='(tax incl.)' mod='payu'}
-        {/if}
+    <h2 id="payuAmountInfo">{$payuOrderInfo}: <strong>
+            {if $currency}{convertPriceWithCurrency price=$total currency=$orderCurrency}{else}{convertPrice price=$total}{/if}
+        </strong>
+        {l s='(tax incl.)' mod='payu'}
     </h2>
     <img src="{$image}" id="payuLogo">
 </div>
@@ -27,7 +27,7 @@
 {/if}
 
 
-<form action="{$link->getModuleLink('payu', 'payment', [], true)|escape:'html'}" method="post" id="payuForm">
+<form action="{$payuPayAction|escape:'html'}" method="post" id="payuForm">
     <input type="hidden" name="payuPay" value="1" />
 
     {if isset($payMethods.error)}
@@ -62,7 +62,7 @@
 
     {/if}
     <p class="cart_navigation clearfix" id="cart_navigation">
-        <a class="button-exclusive btn btn-default" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
+        <a class="button-exclusive btn btn-default button_large" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
             <i class="icon-chevron-left"></i>{l s='Other payment methods' mod='payu'}
         </a>
         {if !isset($payMethods.error)}
@@ -71,5 +71,6 @@
             </button>
         {/if}
     </p>
+
 </form>
 

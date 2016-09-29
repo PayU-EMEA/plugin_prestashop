@@ -104,15 +104,6 @@
                 </select>
             </div>
             <div class="clear"></div>
-            <label>{l s='Rejected status' mod='payu'}</label>
-            <div class="margin-form">
-                <select name="PAYU_PAYMENT_STATUS_REJECTED" id="PAYU_PAYMENT_STATUS_REJECTED">
-                    {foreach from=$PAYU_PAYMENT_STATES_OPTIONS item=option}
-                        <option value="{$option.id|escape:'htmlall':'UTF-8'}" {if $option.id == $PAYU_PAYMENT_STATUS_REJECTED}selected="selected"{/if}>{$option.name|escape:'htmlall':'UTF-8'}</option>
-                    {/foreach}
-                </select>
-            </div>
-            <div class="clear"></div>
             <div class="small"><sup>*</sup> {l s='Required field' mod='payu'}</div>
             <label></label>
             <div class="margin-form">

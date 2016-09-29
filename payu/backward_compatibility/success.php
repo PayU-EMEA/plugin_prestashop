@@ -17,21 +17,14 @@ include(dirname(__FILE__) . '/../../../header.php');
 
 $payu = new PayU();
 
-$id_cart = Tools::getValue('id_cart');
+$order_payment = $payu->getOrderPaymentByExtOrderId(Tools::getValue('id'));
 
-global $cookie;
-$id_payu_session = $cookie->__get('payu_order_id');
-
-
-if (Tools::getValue('error')) {
-    $opc = (bool)Configuration::get('PS_ORDER_PROCESS_TYPE');
-    Tools::redirect('order' . ($opc ? '-opc' : '') . '.php?error=' . Tools::getValue('error'), __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
-}
-
-$order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
 if ($order_payment) {
-    $payu->id_order = (int)$order_payment['id_order'];
-    $payu->id_cart = (int)$order_payment['id_cart'];
+    $payu->id_order = $order_payment['id_order'];
+    $payu->id_cart = $order_payment['id_cart'];
+    $payu->payu_order_id = $order_payment['id_session'];
+
+    $payu->updateOrderData();
 
     if (Cart::isGuestCartByCartId($payu->id_cart)) {
         $order = new Order($payu->id_order);
@@ -41,7 +34,6 @@ if ($order_payment) {
         $redirectLink = 'order-detail.php?id_order=' . $payu->id_order;
     }
 
-    $payu->updateOrderData();
     Tools::redirect($redirectLink, __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
 }
 
