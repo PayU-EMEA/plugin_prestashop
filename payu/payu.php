@@ -320,6 +320,8 @@ class PayU extends PaymentModule
             Tools::addJS(($this->_path) . 'js/payu.js', 'all');
             if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
                 Tools::addCSS(($this->_path) . 'css/payu14.css', 'all');
+            } else {
+                Tools::addCSS(($this->_path) . 'css/payu15.css', 'all');
             }
         } else {
             $this->context->controller->addCSS(($this->_path) . 'css/payu.css', 'all');
