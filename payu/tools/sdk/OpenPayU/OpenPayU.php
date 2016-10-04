@@ -18,6 +18,7 @@ class OpenPayU
             $data['status'] = 'SUCCESS';
             $data['response']['status']['statusCode'] = 'SUCCESS';
         }
+
         $instance->init($data);
 
         return $instance;
