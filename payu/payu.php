@@ -789,7 +789,7 @@ class PayU extends PaymentModule
      */
     private function createInitialDbTable()
     {
-        if (Db::getInstance()->ExecuteS('SHOW TABLES LIKE ' . _DB_PREFIX_ . 'order_payu_payments')) {
+        if (Db::getInstance()->ExecuteS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'order_payu_payments"')) {
             if (Db::getInstance()->ExecuteS('SHOW COLUMNS FROM ' . _DB_PREFIX_ . 'order_payu_payments LIKE "ext_order_id"') == false) {
                 return Db::getInstance()->Execute('ALTER TABLE ' . _DB_PREFIX_ . 'order_payu_payments ADD ext_order_id VARCHAR(64) NOT NULL AFTER id_session');
             }
