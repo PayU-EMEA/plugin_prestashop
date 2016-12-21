@@ -20,14 +20,14 @@
 ## Cechy i kompatybilność
 Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala na następujące operacje:
 
-| Cecha | Presta 1.4 | Presta 1.5 | Presta 1.6 |
+| Cecha | Presta 1.4 | Presta 1.5 | Presta 1.6 | Presta 1.7 |
 |---------|:-----------:|:-----------:|:-----------:|
-| Utworzenie płatności (wraz z rabatami) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Utworzenie zwrotu (pełnego lub częściowego) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :x: | :white_check_mark: | :white_check_mark: |
-| Ponowienie płatności przez klienta w przypadku anulowania | :x: | :white_check_mark: | :white_check_mark: |
-| Wielowalutowość | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Utworzenie płatności (wraz z rabatami) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Utworzenie zwrotu (pełnego lub częściowego) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Ponowienie płatności przez klienta w przypadku anulowania | :x: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Wielowalutowość | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
 

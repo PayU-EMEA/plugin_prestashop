@@ -9,8 +9,11 @@
  * http://www.payu.com
  */
 
-if (!defined('_PS_VERSION_'))
+use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+
+if (!defined('_PS_VERSION_')) {
     exit;
+}
 
 include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/openpayu.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
@@ -38,10 +41,10 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.5.1';
+        $this->version = '3.0.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
-        $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
+        $this->ps_versions_compliancy = array('min' => '1.5.0', 'max' => '1.7');
 
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
@@ -54,9 +57,6 @@ class PayU extends PaymentModule
 
         $this->confirm_uninstall = $this->l('Are you sure you want to uninstall? You will lose all your settings!');
 
-        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-            require(_PS_MODULE_DIR_ . $this->name . '/backward_compatibility/backward.php');
-        }
 
     }
 
@@ -110,10 +110,10 @@ class PayU extends PaymentModule
 
     public function initializeOpenPayU($currencyIsoCode)
     {
-        $payuPosId = self::unSerialize(Configuration::get('PAYU_MC_POS_ID'));
-        $payuSignatureKey = self::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY'));
-        $payuOauthClientId = self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID'));
-        $payuOauthClientSecret = self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET'));
+        $payuPosId = Tools::unSerialize(Configuration::get('PAYU_MC_POS_ID'));
+        $payuSignatureKey = Tools::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY'));
+        $payuOauthClientId = Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID'));
+        $payuOauthClientSecret = Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET'));
 
         if (!is_array($payuPosId) ||
             !is_array($payuSignatureKey) ||
@@ -178,10 +178,10 @@ class PayU extends PaymentModule
     public function displayForm()
     {
         $this->context->smarty->assign(array(
-            'PAYU_MC_POS_ID' => self::unSerialize(Configuration::get('PAYU_MC_POS_ID')),
-            'PAYU_MC_SIGNATURE_KEY' => self::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY')),
-            'PAYU_MC_OAUTH_CLIENT_ID' => self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID')),
-            'PAYU_MC_OAUTH_CLIENT_SECRET' => self::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET')),
+            'PAYU_MC_POS_ID' => Tools::unSerialize(Configuration::get('PAYU_MC_POS_ID')),
+            'PAYU_MC_SIGNATURE_KEY' => Tools::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY')),
+            'PAYU_MC_OAUTH_CLIENT_ID' => Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID')),
+            'PAYU_MC_OAUTH_CLIENT_SECRET' => Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET')),
             'PAYU_PAYMENT_STATES_OPTIONS' => $this->getStatesList(),
             'PAYU_PAYMENT_STATUS_PENDING' => Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
             'PAYU_PAYMENT_STATUS_SENT' => Configuration::get('PAYU_PAYMENT_STATUS_SENT'),
@@ -211,18 +211,6 @@ class PayU extends PaymentModule
      */
     public function fetchTemplate($name)
     {
-        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-            $views = 'views/templates/';
-            if (file_exists(dirname(__FILE__) . '/' . $name))
-                return $this->display(__FILE__, $name);
-            elseif (file_exists(dirname(__FILE__) . '/' . $views . 'hook/' . $name))
-                return $this->display(__FILE__, $views . 'hook/' . $name);
-            elseif (file_exists(dirname(__FILE__) . '/' . $views . 'front/' . $name))
-                return $this->display(__FILE__, $views . 'front/' . $name);
-            elseif (file_exists(dirname(__FILE__) . '/' . $views . 'admin/' . $name))
-                return $this->display(__FILE__, $views . 'admin/' . $name);
-        }
-
         return $this->display(__FILE__, $name);
     }
 
@@ -242,12 +230,7 @@ class PayU extends PaymentModule
             $order = new Order($id_order);
             $order_payment = $this->getLastOrderPaymentByOrderId($id_order);
 
-            if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-                $order_state = OrderHistory::getLastOrderState($id_order);
-                $order_state_id = $order_state->id;
-            } else {
-                $order_state_id = $order->current_state;
-            }
+            $order_state_id = $order->current_state;
 
             if ($order->module = 'payu') {
                 switch ($order_state_id) {
@@ -294,11 +277,7 @@ class PayU extends PaymentModule
 
                     $history->addWithemail(true, array());
 
-                    if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-                        Tools::redirectAdmin('index.php?tab=AdminOrders&vieworder&id_order=' . $id_order . '&token=' . Tools::getValue('token'));
-                    } else {
-                        Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order=' . $id_order . '&token=' . Tools::getValue('token'));
-                    }
+                    Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order=' . $id_order . '&token=' . Tools::getValue('token'));
                 }
             }
         }
@@ -318,11 +297,7 @@ class PayU extends PaymentModule
         if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
             Tools::addCSS(($this->_path) . 'css/payu.css', 'all');
             Tools::addJS(($this->_path) . 'js/payu.js', 'all');
-            if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-                Tools::addCSS(($this->_path) . 'css/payu14.css', 'all');
-            } else {
-                Tools::addCSS(($this->_path) . 'css/payu15.css', 'all');
-            }
+            Tools::addCSS(($this->_path) . 'css/payu15.css', 'all');
         } else {
             $this->context->controller->addCSS(($this->_path) . 'css/payu.css', 'all');
             $this->context->controller->addJS(($this->_path) . 'js/payu.js', 'all');
@@ -332,7 +307,6 @@ class PayU extends PaymentModule
 
     public function hookDisplayOrderDetail($params)
     {
-
         if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
             $this->context->smarty->assign(
                 array(
@@ -343,8 +317,37 @@ class PayU extends PaymentModule
                 )
             );
 
-            return $this->fetchTemplate('/views/templates/hook/retryPayment.tpl');
+            if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
+                $template = 'retryPayment.tpl';
+            } else {
+                $template = 'retryPayment17.tpl';
+            }
+
+            return $this->fetchTemplate($template);
         }
+    }
+
+    /**
+     * Only for >=1.7
+     * @param $params
+     * @return array|void
+     */
+    public function hookPaymentOptions($params)
+    {
+        if (!$this->active) {
+            return;
+        }
+        if (!$this->checkCurrency($params['cart'])) {
+            return;
+        }
+
+        $paymentOption = new PaymentOption();
+        $paymentOption->setCallToActionText($this->l('Pay with PayU'))
+            ->setLogo($this->getPayuLogo('payu_u_icon.png'))
+            ->setModuleName($this->name)
+            ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
+
+        return array($paymentOption);
     }
 
     /**
@@ -353,14 +356,7 @@ class PayU extends PaymentModule
      */
     public function hookPayment($params)
     {
-        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-            if (!$this->active || !$this->checkCurrency($params['cart'])) {
-                return '';
-            }
-            $link = $this->getModuleAddress() . 'backward_compatibility/payment.php';
-        } else {
-            $link = $this->context->link->getModuleLink('payu', 'payment');
-        }
+        $link = $this->context->link->getModuleLink('payu', 'payment');
 
         $this->context->smarty->assign(array(
             'image' => $this->getPayuLogo(),
@@ -693,12 +689,12 @@ class PayU extends PaymentModule
         }
     }
 
-    public function getPayuLogo()
+    public function getPayuLogo($file = 'payu_logo.png')
     {
         if (version_compare(_PS_VERSION_, '1.6', 'lt')) {
-            return _PS_BASE_URL_.__PS_BASE_URI__.'modules/'.$this->name.'/img/payu_logo.png';
+            return _PS_BASE_URL_ . __PS_BASE_URI__ . 'modules/' . $this->name . '/img/' . $file;
         } else {
-            return Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/payu_logo.png');
+            return Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/' . $file);
         }
     }
 
@@ -718,19 +714,6 @@ class PayU extends PaymentModule
         return $this->extOrderId;
     }
 
-    /**
-     * Define our own Tools::unSerialize() (since 1.5), to be available in PrestaShop 1.4
-     */
-    protected static function unSerialize($serialized)
-    {
-        if (method_exists('Tools', 'unserialize'))
-            return Tools::unSerialize($serialized);
-
-        if (is_string($serialized) && (strpos($serialized, 'O:') === false || !preg_match('/(^|;|{|})O:[0-9]+:"/', $serialized)))
-            return @unserialize($serialized);
-
-        return false;
-    }
 
     /**
      * @param string $status
@@ -905,17 +888,9 @@ class PayU extends PaymentModule
      */
     private function getLinks()
     {
-        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-            $order_complete_link = $this->getModuleAddress() . 'backward_compatibility/success.php';
-            $order_notify_link = $this->getModuleAddress() . 'backward_compatibility/notification.php';
-        } else {
-            $order_complete_link = $this->context->link->getModuleLink('payu', 'success');
-            $order_notify_link = $this->context->link->getModuleLink('payu', 'notification');
-        }
-
         return array(
-          'notify' => $order_notify_link,
-          'continue' => $order_complete_link
+          'notify' => $this->context->link->getModuleLink('payu', 'notification'),
+          'continue' => $this->context->link->getModuleLink('payu', 'success')
         );
     }
 
@@ -1093,21 +1068,6 @@ class PayU extends PaymentModule
                 $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
     }
 
-    /**
-     * @return mixed
-     */
-    private function getCurrentPrestaOrderState()
-    {
-        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-            $order_state = OrderHistory::getLastOrderState($this->order->id);
-            $order_state_id = $order_state->id;
-            return $order_state_id;
-        } else
-            $order_state_id = $this->order->current_state;
-        return $order_state_id;
-    }
-
-
     private function migrateToMulticurrency()
     {
         $this->migrateParameter('PAYU_POS_ID', 'PAYU_MC_POS_ID');
@@ -1148,7 +1108,7 @@ class PayU extends PaymentModule
             if ($this->checkIfStatusCompleted($this->payu_order_id)) {
                 return true;
             }
-            $order_state_id = $this->getCurrentPrestaOrderState();
+            $order_state_id = $this->order->current_state;
 
             $history = new OrderHistory();
             $history->id_order = $this->order->id;
@@ -1230,13 +1190,8 @@ class PayU extends PaymentModule
             $shipping_method = $selected_carrier->getShippingMethod();
 
             if ($free_shipping == false) {
-                if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-                    $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                        ? 0 : $this->cart->getOrderShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-                } else {
-                    $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                        ? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-                }
+                $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
+                    ? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
 
                 if ((int)$selected_carrier->active == 1) {
 
@@ -1251,14 +1206,6 @@ class PayU extends PaymentModule
         }
 
         return $carrier_list;
-    }
-
-    /**
-     * @return string
-     */
-    private function getModuleAddress()
-    {
-        return Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.((int)Configuration::get('PS_REWRITING_SETTINGS') && count(Language::getLanguages()) > 1 && isset($smarty->ps_language) && !empty($smarty->ps_language) ? $smarty->ps_language->iso_code.'/' : '').'modules/'.$this->name.'/';
     }
 
     /**
@@ -1310,22 +1257,19 @@ class PayU extends PaymentModule
      */
     private function createHooks()
     {
-        if (version_compare(_PS_VERSION_, '1.5', 'lt')) {
-            return ($this->registerHook('header') &&
-                $this->registerHook('payment') &&
-                $this->registerHook('paymentReturn') &&
-                $this->registerHook('backOfficeHeader') &&
-                $this->registerHook('adminOrder'));
+        $registerStatus = $this->registerHook('header') &&
+            $this->registerHook('paymentReturn') &&
+            $this->registerHook('backOfficeHeader') &&
+            $this->registerHook('adminOrder') &&
+            $this->registerHook('displayOrderDetail');
 
+        if (version_compare(_PS_VERSION_, '1.6', 'gt')) {
+            $registerStatus &= $this->registerHook('paymentOptions');
         } else {
-            return ($this->registerHook('header') &&
-                $this->registerHook('payment') &&
-                $this->registerHook('displayPaymentEU') &&
-                $this->registerHook('paymentReturn') &&
-                $this->registerHook('backOfficeHeader') &&
-                $this->registerHook('adminOrder') &&
-                $this->registerHook('displayOrderDetail'));
+            $registerStatus &= $this->registerHook('displayPaymentEU') && $this->registerHook('payment');
         }
+
+        return $registerStatus;
     }
 
     /**
@@ -1434,14 +1378,27 @@ class PayU extends PaymentModule
     {
         $currency_order = new Currency((int)($cart->id_currency));
         $currencies_module = $this->getCurrency((int)$cart->id_currency);
-        $currency_default = Configuration::get('PS_CURRENCY_DEFAULT');
 
-        if (is_array($currencies_module))
-            foreach ($currencies_module AS $currency_module)
-                if ($currency_order->id == $currency_module['id_currency'])
+        if (is_array($currencies_module)) {
+            foreach ($currencies_module as $currency_module) {
+                if ($currency_order->id == $currency_module['id_currency']) {
                     return true;
+                }
+            }
+        }
         return false;
     }
 
-
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function buildTemplatePath($name, $type)
+    {
+        if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
+            return $name . '.tpl';
+        }
+        return 'module:payu/views/templates/'.$type.'/' . $name . '17.tpl';
+    }
 }

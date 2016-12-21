@@ -51,6 +51,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         if (Configuration::get('PAYU_RETRIEVE')) {
             if (Tools::getValue('payuPay')) {
                 $payMethod = Tools::getValue('payMethod');
+
                 $payuConditions = Tools::getValue('payuConditions');
                 $errors = array();
                 if (!$payMethod) {
@@ -84,7 +85,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         $this->context->smarty->assign($this->getShowPayMethodsParameters());
 
-        $this->setTemplate('payMethods.tpl');
+        $this->setTemplate($this->payu->buildTemplatePath('payMethods', 'front'));
     }
 
 
@@ -100,8 +101,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $result = $this->payu->orderCreateRequest($payMethod);
         }
 
-
-        if (!$result['error']) {
+        if (!array_key_exists('error', $result)) {
             $this->payu->payu_order_id = $result['orderId'];
             $this->postOCR();
 
@@ -115,10 +115,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
             $this->context->smarty->assign(
                 array(
+                    'image' => $this->payu->getPayuLogo(),
+                    'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
+                    'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment'),
                     'message' => $this->module->l('An error occurred while processing your order.', 'payment') . ' ' . $result['error']
                 )
             );
-            $this->setTemplate('error.tpl');
+
+            $this->setTemplate($this->payu->buildTemplatePath('error', 'front'));
         }
 
     }
@@ -194,7 +198,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     {
         if ($this->hasRetryPayment) {
             return array(
-                'total' => $this->order->total_paid,
+                'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
                 'orderCurrency' => (int)$this->order->id_currency,
                 'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->order->id_currency)),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id)),
@@ -202,7 +206,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             );
         } else {
             return array(
-                'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH),
+                'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
                 'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->payuOrderCart->id_currency)),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
                 'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
