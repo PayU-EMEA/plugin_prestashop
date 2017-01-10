@@ -1,6 +1,6 @@
 [**Wersja polska**][ext0]
 
-# PayU plugin for Prestashop since 1.4.4
+# PayU plugin for Prestashop >=1.4.4, 1.5 and 1.6
 ``This plugin is released under the GPL license.``
 
 **If you have any questions or issues, feel free to contact our technical support: tech@payu.pl.**
@@ -21,7 +21,9 @@
 ## Features
 The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
 
-| Cecha | Presta 1.4 | Presta 1.5 | Presta 1.6 |
+Plugin version 2.x supports PrestaShop versions 1.4, 1.5 and 1.6 but is not develop.
+
+| Features | Presta 1.4 | Presta 1.5 | Presta 1.6 - use plugin version 3.x|
 |---------|:-----------:|:-----------:|:-----------:|
 | Creating a payment order (with discounts included) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Capturing a payment order (when auto-capture is disabled) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
@@ -29,6 +31,8 @@ The PayU payments Prestashop plugin adds the PayU payment option and enables you
 | Displaying payment methods on Presta checkout summary page | :x: | :white_check_mark: | :white_check_mark: |
 | Payment retry for cancelled payments | :x: | :white_check_mark: | :white_check_mark: |
 | Multi-currency support | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+Plugin [version 3.x](https://github.com/PayU/plugin_prestashop/tree/master) supports PrestaShop versions 1.6 and 1.7.
 
 More information on the features can be found in the [More on features](#more-on-features) section
 

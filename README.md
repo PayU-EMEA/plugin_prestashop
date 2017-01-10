@@ -1,6 +1,6 @@
 [**English version**][ext0]
 
-# Moduł PayU dla PrestaShop
+# Moduł PayU dla PrestaShop >1.4.4, 1.5 i 1.6
 ``Moduł jest wydawana na licencji GPL.``
 
 **Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym wsparciem pod adresem: tech@payu.pl.**
@@ -20,7 +20,9 @@
 ## Cechy i kompatybilność
 Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala na następujące operacje:
 
-| Cecha | Presta 1.4 | Presta 1.5 | Presta 1.6 |
+Plugin w wersji 2.x wspiera PrestaShop w wersji 1.4, 1.5 i 1.6 ale nie jest już rozwijany.
+
+| Cecha | PrestaShop 1.4 | PrestaShop 1.5 | PrestaShop 1.6 - należy użyć plugin w wersji 3.x|
 |---------|:-----------:|:-----------:|:-----------:|
 | Utworzenie płatności (wraz z rabatami) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
@@ -28,6 +30,8 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 | Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :x: | :white_check_mark: | :white_check_mark: |
 | Ponowienie płatności przez klienta w przypadku anulowania | :x: | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+
+Plugin w [wersji 3.x](https://github.com/PayU/plugin_prestashop/tree/master)  wspiera PrestaShop w wersji 1.6 i 1.7
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
 
