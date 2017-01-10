@@ -21,19 +21,22 @@
 ## Features
 The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
 
-| Cecha | Presta 1.4 | Presta 1.5 | Presta 1.6 |
-|---------|:-----------:|:-----------:|:-----------:|
-| Creating a payment order (with discounts included) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Capturing a payment order (when auto-capture is disabled) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Conducting a refund operation (whole or partial) | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Displaying payment methods on Presta checkout summary page | :x: | :white_check_mark: | :white_check_mark: |
-| Payment retry for cancelled payments | :x: | :white_check_mark: | :white_check_mark: |
-| Multi-currency support | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
+
+| Feature | PrestaShop 1.6 | PrestaShop 1.7 |
+|---------|:-----------:|:-----------:|
+| Creating a payment order (with discounts included) | :white_check_mark: | :white_check_mark: |
+| Capturing a payment order (when auto-capture is disabled) | :white_check_mark: | :white_check_mark: |
+| Conducting a refund operation (whole or partial) | :white_check_mark: | :white_check_mark: |
+| Displaying payment methods on Presta checkout summary page | :white_check_mark: | :white_check_mark: |
+| Payment retry for cancelled payments | :white_check_mark: | :white_check_mark: |
+| Multi-currency support | :white_check_mark: | :white_check_mark: |
+
+Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) supports PrestaShop versions 1.4, 1.5 and 1.6 but is not develop.
 
 More information on the features can be found in the [More on features](#more-on-features) section
 
-**All instructions regard PrestaShop 1.6, for versions 1.5 and 1.4 corresponding options should be used **.
-
+**All instructions regard PrestaShop 1.6, for versions 1.7 corresponding options should be used**.
 
 ## Prerequisites
 

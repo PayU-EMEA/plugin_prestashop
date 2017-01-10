@@ -1,6 +1,0 @@
-p.payment_module a.payu:after {
-    content: '';
-}
-p.payment_module a.payu:hover {
-    background-color: #E8E8E8;
-}

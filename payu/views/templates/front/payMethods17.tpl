@@ -5,14 +5,12 @@
  *
  * http://www.payu.com
 *}
-{capture name=path}{l s='Pay with PayU' mod='payu'}{/capture}
+{extends file=$layout}
+
+{block name='content'}
 
 <div class="clearfix">
-    <h2 id="payuAmountInfo">{$payuOrderInfo}: <strong>
-            {if $currency}{convertPriceWithCurrency price=$total currency=$orderCurrency}{else}{convertPrice price=$total}{/if}
-        </strong>
-        {l s='(tax incl.)' mod='payu'}
-    </h2>
+    <h2 id="payuAmountInfo">{$payuOrderInfo}: <strong>{$total}</strong> {l s='(tax incl.)' mod='payu'}</h2>
     <img src="{$image}" id="payuLogo">
 </div>
 
@@ -45,7 +43,6 @@
         {/foreach}
         </div>
 
-
         <div class="payuConditions checkbox">
             <strong>{l s='Payment order' mod='payu'}</strong>:<br>
             {l s="Payment is processed by PayU SA; The recipient's data, the payment title and the amount are provided to PayU SA by the recipient; The order is sent for processing when PayU SA receives your payment. The payment is transferred to the recipient within 1 hour, not later than until the end of the next business day; PayU SA does not charge any service fees." mod='payu'}
@@ -60,11 +57,11 @@
 
     {/if}
     <p class="cart_navigation clearfix" id="cart_navigation">
-        <a class="button-exclusive btn btn-default button_large" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
-            <i class="icon-chevron-left"></i>{l s='Other payment methods' mod='payu'}
+        <a class="label" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
+            <i class="material-icons">chevron_left</i>{l s='Other payment methods' mod='payu'}
         </a>
         {if !isset($payMethods.error)}
-            <button class="button btn btn-default button-medium" type="submit">
+            <button class="btn btn-primary pull-xs-right continue" type="submit">
                 <span>{l s='I confirm my order' mod='payu'}<i class="icon-chevron-right right"></i></span>
             </button>
         {/if}
@@ -72,3 +69,4 @@
 
 </form>
 
+{/block}

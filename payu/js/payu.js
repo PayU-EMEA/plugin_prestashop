@@ -11,6 +11,8 @@ $(document).ready(function () {
     $('#payuForm').submit(function () {
         return doubleClickPrevent(this);
     })
+
+    $('#payuRetryPayment17').insertBefore($('#order-history'));
 });
 
 function doubleClickPrevent(object) {

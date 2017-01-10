@@ -63,6 +63,7 @@ p.payment_module a.payu:hover {
     width: 140px;
     border: 1px solid #dddddd;
     border-radius: 3px;
+    background-color: #ffffff;
 }
 
 .payMethodEnable:hover {
@@ -93,6 +94,7 @@ p.payment_module a.payu:hover {
     padding: 0;
     margin: 0 5px;
     display: inline-block;
+    text-align: center;
 }
 
 .payMethodEnable label {
@@ -113,4 +115,19 @@ p.payment_module a.payu:hover {
 }
 .payuConditions label a {
     font-weight: bold;
+}
+
+p.payment_module_17 {
+    padding: 0;
+    margin: 0;
+}
+
+p.payment_module_17 a.payu {
+    display: block;
+}
+
+p.payment_module_17 a.payu img {
+    margin-right: 10px;
+    height: 70px;
+    vertical-align: middle;
 }
