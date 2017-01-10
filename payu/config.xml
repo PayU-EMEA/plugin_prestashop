@@ -2,7 +2,7 @@
 <module>
     <name>payu</name>
     <displayName><![CDATA[PayU]]></displayName>
-    <version><![CDATA[3.0.0-DEV-2]]></version>
+    <version><![CDATA[3.0.0]]></version>
     <description><![CDATA[Accepts payments by PayU]]></description>
     <author><![CDATA[PayU]]></author>
     <tab><![CDATA[payments_gateways]]></tab>
