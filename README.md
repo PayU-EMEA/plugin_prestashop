@@ -1,9 +1,10 @@
 [**English version**][ext0]
 
 # Moduł PayU dla PrestaShop 1.6 i 1.7
-``Moduł jest wydawana na licencji GPL.``
+``Moduł jest wydawany na licencji GPL.``
 
 **Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym wsparciem pod adresem: tech@payu.pl.**
+Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) wspiera PrestaShop w wersji 1.4 i 1.5, ale nie jest dalej rozwijany.
 
 ## Spis treści
 
@@ -30,8 +31,6 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
 | Ponowienie płatności przez klienta w przypadku anulowania | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: |
-
-Plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) wspiera PrestaShop w wersji 1.4, 1.5 i 1.6 ale nie jest dalej rozwijany.
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
 
