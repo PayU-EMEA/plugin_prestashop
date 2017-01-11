@@ -4,6 +4,7 @@
 ``This plugin is released under the GPL license.``
 
 **If you have any questions or issues, feel free to contact our technical support: tech@payu.pl.**
+
 Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) supports PrestaShop versions 1.4 and 1.5, but is not developed any more.
 
 ## Table of Contents
