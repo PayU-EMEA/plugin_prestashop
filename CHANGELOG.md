@@ -1,3 +1,12 @@
+##3.0.1
+ * Fix for PrestaShop 1.6
+
+##3.0.0
+ * Add support for PrestaShop 1.7
+ * Remove support for PrestaShop 1.4 and 1.5
+ * Migrate configure page to bootstrap
+ * Cleanup code
+
 ##2.5.1
  * Fix disable payment methods by currency for Prestashop 1.4
 
