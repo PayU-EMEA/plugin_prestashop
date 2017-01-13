@@ -9,7 +9,6 @@
  * http://www.payu.com
  */
 
-use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -356,7 +355,7 @@ class PayU extends PaymentModule
 
     private function ParseConfigByCurrency($key, $currency) {
         $data = Tools::unSerialize(Configuration::get($key));
-        return array_key_exists($currency['iso_code'], $data) ? $data[$currency['iso_code']] : '';
+        return is_array($data) && array_key_exists($currency['iso_code'], $data) ? $data[$currency['iso_code']] : '';
     }
 
     /**
@@ -486,7 +485,7 @@ class PayU extends PaymentModule
             return;
         }
 
-        $paymentOption = new PaymentOption();
+        $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $paymentOption->setCallToActionText($this->l('Pay with PayU'))
             ->setLogo($this->getPayuLogo('payu_u_icon.png'))
             ->setModuleName($this->name)
