@@ -1327,10 +1327,10 @@ class PayU extends PaymentModule
             $this->registerHook('adminOrder') &&
             $this->registerHook('displayOrderDetail');
 
-        if (version_compare(_PS_VERSION_, '1.6', 'gt')) {
-            $registerStatus &= $this->registerHook('paymentOptions');
-        } else {
+        if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             $registerStatus &= $this->registerHook('displayPaymentEU') && $this->registerHook('payment');
+        } else {
+            $registerStatus &= $this->registerHook('paymentOptions');
         }
 
         return $registerStatus;
@@ -1465,4 +1465,3 @@ class PayU extends PaymentModule
         return 'module:payu/views/templates/' . $type . '/' . $name . '17.tpl';
     }
 }
-
