@@ -317,6 +317,8 @@ class PayU extends PaymentModule
         $helper->show_toolbar = false;
         $helper->title = $this->displayName;
         $helper->submit_action = 'submit' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
+            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
 
         $lang = new Language((int)Configuration::get('PS_LANG_DEFAULT'));
         $helper->default_form_language = $lang->id;
