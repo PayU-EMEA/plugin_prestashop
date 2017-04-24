@@ -203,6 +203,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         } else {
             return array(
                 'total' => $this->context->cart->getOrderTotal(true, Cart::BOTH),
+                'orderCurrency' => (int)$this->payuOrderCart->id_currency,
                 'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->payuOrderCart->id_currency)),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
                 'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
