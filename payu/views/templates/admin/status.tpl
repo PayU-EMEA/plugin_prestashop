@@ -38,7 +38,7 @@
 <div id="payuOrders" class="panel">
     <div class="panel-heading">
         <i class="icon-money"></i>
-        PayU Orders
+        {l s='PayU Orders' mod='payu'}
     </div>
 
     {$PAYU_CANCEL_ORDER_MESSAGE}

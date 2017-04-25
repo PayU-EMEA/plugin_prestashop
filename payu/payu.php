@@ -225,7 +225,7 @@ class PayU extends PaymentModule
             $form['pos_' . $currency['iso_code']] = array(
                 'form' => array(
                     'legend' => array(
-                        'title' => $this->l('POS settings - currency: ' . $currency['name'] . ' (' . $currency['iso_code'] . ')'),
+                        'title' => $this->l('POS settings - currency: ') . $currency['name'] . ' (' . $currency['iso_code'] . ')',
                         'icon' => 'icon-cog'
                     ),
                     'input' => array(

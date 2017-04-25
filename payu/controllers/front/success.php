@@ -15,13 +15,16 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
+        parent::initContent();
 
         $payu = new PayU();
+
         $order_payment = $payu->getOrderPaymentByExtOrderId(Tools::getValue('id'));
 
         if (!$order_payment) {
             Tools::redirect('index.php?controller=history', __PS_BASE_URI__, null, 'HTTP/1.1 301 Moved Permanently');
         }
+
 
         $payu->id_order = $order_payment['id_order'];
         $payu->id_cart = $order_payment['id_cart'];
@@ -29,23 +32,27 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 
         $payu->updateOrderData();
 
-        Tools::redirect(
-            $this->getRedirectLink($payu->id_cart, $payu->id_order, (Tools::getValue('error') ? 'error=' . Tools::getValue('error') : null)),
-            __PS_BASE_URI__,
-            null,
-            'HTTP/1.1 301 Moved Permanently'
-        );
+        $order = new Order($payu->id_order);
+
+        $this->context->smarty->assign(array(
+            'payuLogo' => $payu->getPayuLogo(),
+            'orderPublicId' => $order->getUniqReference(),
+            'redirectUrl' => $this->getRedirectLink($payu->id_cart, $payu->id_order),
+            'orderStatus' => $order->getCurrentStateFull($this->context->language->id)['name'],
+        ));
+
+        $this->setTemplate($payu->buildTemplatePath('status', 'front'));
 
     }
 
-    private function getRedirectLink($id_cart, $id_order, $params = null)
+    private function getRedirectLink($id_cart, $id_order)
     {
         if (Cart::isGuestCartByCartId($id_cart)) {
             $order = new Order($id_order);
             $customer = new Customer((int)$order->id_customer);
-            return 'index.php?controller=guest-tracking&id_order=' . $order->reference . '&email=' . urlencode($customer->email) . ($params != null ? '&' . $params : '');;
+            return 'index.php?controller=guest-tracking&id_order=' . $order->reference . '&email=' . urlencode($customer->email);
         } else {
-            return 'index.php?controller=order-detail&id_order=' . $id_order . ($params != null ? '&' . $params : '');
+            return 'index.php?controller=order-detail&id_order=' . $id_order;
         }
 
     }

@@ -47,6 +47,9 @@ p.payment_module a.payu:hover {
     height: 60px;
     float: right;
 }
+#payuStatusLogo {
+    height: 40px;
+}
 
 #payMethods {
     clear: both;
