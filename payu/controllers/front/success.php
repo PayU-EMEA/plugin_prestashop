@@ -33,12 +33,13 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
         $payu->updateOrderData();
 
         $order = new Order($payu->id_order);
+        $currentState = $order->getCurrentStateFull($this->context->language->id);
 
         $this->context->smarty->assign(array(
             'payuLogo' => $payu->getPayuLogo(),
             'orderPublicId' => $order->getUniqReference(),
             'redirectUrl' => $this->getRedirectLink($payu->id_cart, $payu->id_order),
-            'orderStatus' => $order->getCurrentStateFull($this->context->language->id)['name'],
+            'orderStatus' => $currentState['name'],
         ));
 
         $this->setTemplate($payu->buildTemplatePath('status', 'front'));
