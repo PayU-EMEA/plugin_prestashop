@@ -2,6 +2,7 @@ $(document).ready(function () {
     $('.payMethodEnable .payMethodLabel').click(function () {
         $('.payMethod').removeClass('payMethodActive');
         $(this).closest('.payMethod').addClass('payMethodActive');
+        $(this).prev().prop('checked', true);
     });
 
     $('#HOOK_PAYMENT').on('click', 'a.payu', function () {
