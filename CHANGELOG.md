@@ -1,3 +1,10 @@
+##3.0.2
+ * Add thank you page after return from PayU
+ * Fix IE11 issue
+ * Fix for PHP 5.3
+ * Fix notice on payu payment page
+ * Fix save settings
+
 ##3.0.1
  * Fix for PrestaShop 1.6
 
