@@ -153,7 +153,7 @@ All PayU payments created for a PrestaShop order are displayed on Order screen i
 [ext3]: https://github.com/PayU/plugin_prestashop
 
 <!--images:-->
-[img1]: https://raw.github.com/PayU/plugin_prestashop/master/readme_images/presta_pos_config.png
-[img2]: https://raw.github.com/PayU/plugin_prestashop/master/readme_images/pos_configuration_keys.png
-[img3]: https://raw.github.com/PayU/plugin_prestashop/retryPayment/readme_images/bramki_platnosci.png
-[img4]: https://raw.github.com/PayU/plugin_prestashop/retryPayment/readme_images/ponow_platnosc.png
+[img1]: readme_images/presta_pos_config.png
+[img2]: readme_images/pos_configuration_keys.png
+[img3]: readme_images/bramki_platnosci.png
+[img4]: readme_images/ponow_platnosc.png
