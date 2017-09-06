@@ -14,14 +14,3 @@
     </a>
 </p>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('a.payu').click(function () {
-            if ($(this).data('clicked')) {
-                return false;
-            }
-            $(this).data('clicked', true);
-            return true;
-        });
-    });
-</script>

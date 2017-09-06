@@ -2,7 +2,7 @@
 
 class OauthCachePresta implements OauthCacheInterface
 {
-    const PAYU_CACHE_CONFIG_PREFIX = 'PAYU_OAUTH_CACHE_';
+    const PAYU_CACHE_CONFIG_PREFIX = 'PAYU_';
 
     public function get($key)
     {

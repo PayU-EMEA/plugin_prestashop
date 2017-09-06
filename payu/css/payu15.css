@@ -1,0 +1,12 @@
+p.payment_module a.payu:after {
+    content: '';
+}
+
+p.payment_module a.payu {
+    background-color: transparent;
+    padding: 0;
+}
+
+p.payment_module a.payu:hover {
+    background-color: transparent;
+}

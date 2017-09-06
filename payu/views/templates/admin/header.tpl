@@ -7,8 +7,6 @@
  *
  * http://www.payu.com
 *}
-<script type="text/javascript" src="{$module_dir|escape:'htmlall':'UTF-8'}js/back_office.js"></script>
-
 {if $show_refund}
 	{capture assign=refund_fieldset}
 		<fieldset>
@@ -54,29 +52,6 @@
 	<script>
 		$(document).ready(function() {
 			$("{$refund_fieldset|escape:'javascript':'UTF-8'}").insertBefore($('select[name=id_order_state]').parent().parent().find('fieldset').first());
-		});
-	</script>
-{/if}
-
-{if $show_delivery}
-	{capture assign=delivery_fieldset}
-		<fieldset>
-			<legend><img src="{$module_dir|escape:'htmlall':'UTF-8'}/logo.gif" alt="" />{l s='Confirm delivery' mod='payu'}</legend>
-			<form action="" method="post" onsubmit="return confirm('{l s='Do you really want to confirm delivery of this order?' mod='payu'}');">
-				<input type="submit" name="submitPayuDelivery" class="button" value="{l s='Confirm delivery' mod='payu'}"/>
-			</form>
-			{if $payu_delivery_errors|count}
-				<br/>
-				{foreach from = $payu_delivery_errors item = error}
-					<p class="error">{$error|escape:'htmlall':'UTF-8'}</p>
-				{/foreach}
-			{/if}
-		</fieldset>
-		<br/>
-	{/capture}
-	<script>
-		$(document).ready(function() {
-			$("{$delivery_fieldset|escape:'javascript':'UTF-8'}").insertBefore($('select[name=id_order_state]').parent().parent().find('fieldset').first());
 		});
 	</script>
 {/if}

@@ -7,8 +7,6 @@
  *
  * http://www.payu.com
 *}
-<script type="text/javascript" src="{$module_dir|escape:'htmlall':'UTF-8'}js/back_office.js"></script>
-
 {if $show_refund}
 	{capture assign=refund_fieldset}
 		<div class="well">
@@ -61,28 +59,6 @@
 	<script>
 		$(document).ready(function() {
 			$("{$refund_fieldset|escape:'javascript':'UTF-8'}").insertAfter($('.panel-heading').first());
-		});
-	</script>
-{/if}
-
-{if $show_delivery}
-	{capture assign=delivery_fieldset}
-		<div class="well">
-			<h3><img src="{$module_dir|escape:'htmlall':'UTF-8'}/logo.gif" alt="" /> {l s='Confirm delivery' mod='payu'}</h3>
-			<form action="" method="post" onsubmit="return confirm('{l s='Do you really want to confirm delivery of this order?' mod='payu'}');">
-				<input type="submit" name="submitPayuDelivery" class="btn btn-primary" value="{l s='Confirm delivery' mod='payu'}"/>
-			</form>
-			{if $payu_delivery_errors|count}
-				<br/>
-				{foreach from = $payu_delivery_errors item = error}
-					<p class="error">{$error|escape:'htmlall':'UTF-8'}</p>
-				{/foreach}
-			{/if}
-		</div>
-	{/capture}
-	<script>
-		$(document).ready(function() {
-			$("{$delivery_fieldset|escape:'javascript':'UTF-8'}").insertAfter($('.panel-heading').first());
 		});
 	</script>
 {/if}
