@@ -15,6 +15,10 @@
             <h2 style="margin: 30px 0">
                 {l s='Order status' mod='payu'} {$orderPublicId} - {$orderStatus} <br/>
             </h2>
+
+            {$HOOK_ORDER_CONFIRMATION}
+            {$HOOK_PAYMENT_RETURN}
+
             <p class="cart_navigation">
                 <a class="btn btn-primary" href="{$redirectUrl}">
                     {l s='Order details' mod='payu'}
