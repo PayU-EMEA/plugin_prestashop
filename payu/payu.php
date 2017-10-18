@@ -429,7 +429,7 @@ class PayU extends PaymentModule
                     $history = new OrderHistory();
                     $history->id_order = (int)$id_order;
                     $history->id_employee = (int)$this->context->employee->id;
-
+                    $history->changeIdOrderState(Configuration::get('PS_OS_REFUND'), $id_order);
                     $history->addWithemail(true, array());
 
                     Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order=' . $id_order . '&token=' . Tools::getValue('token'));
