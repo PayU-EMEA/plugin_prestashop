@@ -55,12 +55,23 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
     private function getRedirectLink($id_cart, $id_order)
     {
         if (Cart::isGuestCartByCartId($id_cart)) {
+
             $customer = new Customer((int)$this->order->id_customer);
-            return 'index.php?controller=guest-tracking&id_order=' . $this->order->reference . '&email=' . urlencode($customer->email);
-        } else {
-            return 'index.php?controller=order-detail&id_order=' . $id_order;
+
+            return $this->context->link->getPageLink(
+                'guest-tracking',
+                null,
+                $this->context->language->id,
+                ['id_order' => $this->order->reference, 'email' => urlencode($customer->email)]
+            );
         }
 
+        return $this->context->link->getPageLink(
+            'order-detail',
+            null,
+            $this->context->language->id,
+            ['id_order' => $id_order]
+        );
     }
 
     /**
