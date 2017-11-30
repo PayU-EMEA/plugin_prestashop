@@ -1,137 +1,154 @@
-# PayU plugin for Prestashop since 1.4.4
-``This plugin is released under the GPL license.``
+[**English version**][ext0]
 
-**If you have any questions or issues, feel free to contact our technical support: tech@payu.pl.**
+# Moduł PayU dla PrestaShop 1.6 i 1.7
+``Moduł jest wydawany na licencji GPL.``
 
-PayU account is a web application designed as an e-wallet for shoppers willing to open an account, 
-define their payment options, see their purchase history, and manage personal profiles.
+**Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym wsparciem pod adresem: tech@payu.pl.**
 
-## Table of Contents
+Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) wspiera PrestaShop w wersji 1.4 i 1.5, ale nie jest dalej rozwijany.
 
-* [Features](#features)
-* [Prerequisites](#prerequisites) 
-* [Installing](#installation)
-* [Upgrading](#upgrade)
-* [Configuration](#configuration)
-    * [Business area](#business-area)
-    * [Configuration Parameters (Poland)](#configuration-parameters-poland)
-    * [Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)](#configuration-parameters-romania-turkey-russia-ukraine-hungary)
+## Spis treści
 
-## Features
-The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
+* [Cechy i kompatybilność](#cechy-i-kompatybilność)
+* [Wymagania](#wymagania) 
+* [Instalacja](#instalacja)
+* [Aktualizacja](#aktualizacja)
+* [Konfiguracja](#konfiguracja)
+* [Więcej o cechach](#więcej-o-cechach)
+    * [Wielowalutowość](#wielowalutowość)
+    * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
+    * [Ponowienie płatności](#ponowienie-płatności)
 
-* Creating a payment order (with discounts included)
-* Cancelling a payment order
-* Conducting a refund operation (for a whole or partial order)
+## Cechy i kompatybilność
+Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala na następujące operacje:
+
+Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
+
+| Cecha | PrestaShop 1.6 | PrestaShop 1.7 |
+|---------|:-----------:|:-----------:|
+| Utworzenie płatności (wraz z rabatami) | :white_check_mark: | :white_check_mark: |
+| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: |
+| Utworzenie zwrotu (pełnego lub częściowego) | :white_check_mark: | :white_check_mark: |
+| Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
+| Ponowienie płatności przez klienta w przypadku anulowania | :white_check_mark: | :white_check_mark: |
+| Wielowalutowość | :white_check_mark: | :white_check_mark: |
+
+Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
+
+**Wszyskie opisy w tej instrukcji odnoszą się do PrestaShop 1.6, w wersji 1.7 należy używać opcji analogicznych**.
+
+## Wymagania
+
+**Ważne:** Moduł ta działa tylko z punktem płatności typu `REST API` (Checkout).
+
+Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia PHP: [cURL][ext1] i [hash][ext2].
+
+## Instalacja
+
+### Opcja 1 
+**przeznaczona dla użytkowników bez dostępu poprzez FTP do instalacji PrestaShop**
+
+1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
+1. Rozpakuj pobrany plik
+1. **Utwórz archiwum zip z katalogu `payu`**
+1. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
+1. Przejdź do `Moduły` » `Moduły i usługi`
+1. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (utworzonej w punkcie 3)
+1. Naciśnij przycisk `Prześlij moduł`
+
+### Opcja 2 
+**przeznaczona dla użytkowników z dostępem poprzez FTP do instalacji PrestaShop**
+
+1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
+1. Rozpakuj pobrany plik
+1. Połącz się z serwerem ftp i skopiuj katalog `payu` z rozpakowanego pliku do katalogu `modules` swojego sklepu PrestaShop  
+
+## Aktualizacja
+
+1. Zaktualizuj piki moduł zgodnie z punkctem [Instalacja](#instalacja)
+1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżli jest wymagana 
+1. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`  
+
+## Konfiguracja
+
+1. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
+1. Przejdź do `Moduły` » `Moduły i usługi`
+1. Wyszukaj `PayU` i naciśnij `Konfiguruj`
+
+### Sposób integracji
+
+| Parameter | Opis | 
+|---------|-----------|
+| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
 
 
-## Prerequisites
+### Parametry POS-ów
 
-**Important:** This plugin works only with checkout points of sales (POS).
+Dla każdej waluty w dodanej w PrestaShop należy dodać parametry:
 
-The following PHP extensions are required:
+| Parameter | Opis | 
+|---------|-----------|
+| Id punktu płatności| Identyfikator POS-a z systemu PayU |
+| Drugi klucz MD5 | Drugi klucz MD5 z systemu PayU |
+| OAuth - client_id | client_id dla protokołu OAuth z systemu PayU |
+| OAuth - client_secret | client_secret for OAuth z systemu PayU |
 
-* [cURL][ext2] to connect and communicate to many different types of servers with many different types of protocols.
-* [hash][ext3] to process directly or incrementally the arbitrary length messages by using a variety of hashing algorithms.
+#### Przykład konfiguracji POS-a
 
-## Installation
-
-### Option 1 - recommended for users without FTP access to their PrestShop installation
-
-1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-2. Unzip locally downloaded file
-3. **Create zip archive of payu directory**
-4. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-5. Go to **Modules** > **Modules**.
-6. **Add new module** and point archive contained plugin (created at point 3)
-7. Load the plugin
-
-### Option 2 - recommended for users with FTP access to their PrestaShop installation
-1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-2. Unzip locally downloaded file
-3. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
-
-## Upgrade
-
-1. Update plugin files according to [Installing](#installation)
-2. Go to **Advanced Parameters** > **Performance** adn click **Clear cache** 
-
-## Configuration
-
-To configure the PrestaShop plugin:
-
-1. Go to the PrestaShop administration page [http://your-prestashop-url/admin].
-2. Go to **Modules** > **Payments & Gateways**.
-3. Select **PayU** and click **Configure**.
-
-**Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.
-
-### Business area
-
-This section define merchant business area. Other seection depends on this setup. It means that there might be different merchant configuration for Poland and Turkey merchant. 
-Details are described in next sections.
-
-
-### Configuration Parameters (Poland)
-
-The tables below present the descriptions of the configuration form parameters.
-
-#### Main parameters
-
-The main parameters for plugin configuration are as follows:
-
-| Parameter | Values | Description | 
-|:---------:|:------:|:-----------:|
-|Self-Return Enabled|Yes/No|If self-return is disabled, the payment must be confirmed manually.|
-|Order Validity Time|24h/12h/6h/1h/30min|Specifies the time during which the order is valid in the PayU system. When validity time expires, the order is cancelled, and you are notified that the transaction failed.|
-|OneStepCheckout Enabled|Yes/No|Specifies whether buying from cart via Payu is enabled. <br><br> **Important:** In order to enable the customers to make payments with OneStepCheckout, you must go to **Preferences > Orders** and set **Enable guest checkout** to **Yes**.|
-
-#### POS Parameters
-
-For each currency defined in Presta please configure the below parameters.
-
-| Parameter | Description | 
-|:---------:|:-----------:|
-|POS ID|Unique ID of the POS|
-|Second Key|MD5 key for securing communication|
-|OAuth - client_id|client_id for OAuth|
-|OAuth - client_secret|client_secret for OAuth|
-
-##### Exemplary configuration
-
-Presta:
+PrestaShop:
 
 ![presta_pos_config][img1]
 
-POS configuration in PayU merchant panel:
+Konfiguracja POS-a w panelu PayU:
 
 ![pos_configuration_keys][img2]
 
+### Statusy płatności
+Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
-### Configuration Parameters (Romania, Turkey, Russia, Ukraine, Hungary)
+| Nazwa | Status w PayU | Domyślny status w Presta | 
+|---------|-----------|-----------|
+| Rozpoczęta | `NEW` i `PENDING` | Płatność PayU rozpoczęta |
+| Oczekuje na odbiór | `WAITING_FOR_CONFIRMATION` i `REJECTED` | Płatność PayU oczekuje na odbiór |
+| Zakończona | `COMPLETED` | Płatność zaakceptowana |
+| Anulowana | `CANCELED` | Płatność PayU anulowana |
 
-The tables below present the descriptions of the configuration form parameters. The main parameters for plugin configuration are as follows:
+## Więcej o cechach
 
-| Parameter | Values | Description | 
-|:---------:|:------:|:-----------:|
-|Merchant|-|Unique ID of the merchant|
-|Secret Key|-|Key for securing communication|
-|IPN|On/Off|**Instant Payment Notification** makes possible the automated processing of each authorized order in the online payment system, being a link between the PayU servers and your servers. When your shop receives an _IPN_ for an order, if _IPN_ is set to _On_, the status of the order will become _Payment accepted_. If _IPN_ is set to _Off_ and your merchant account settings in PayU are in accordance with this, the status of the order will become _Payment accepted_ when the buyer is redirected from PayU payment page back to your shop.|
-|IPN URL|-|After an order gets authorized and approved, the PayU sends a data structure containing all the order related info to this URL on your system.|
-|IDN|On/Off|**Instant Delivery Notification** -- This request will be sent by your shop to PayU when you click _Confirm delivery_ in the order page. Confirming delivery triggers the capture of the order amount from the credit card. _Confirm delivery_ will be available for an order only if its status is _Payment accepted_ and _IDN_ is _On_. If PayU confirms the success of the _IDN_, the order status in your shop will be _Delivered_. If _IDN_ fails for some reason, the status of the order will remain unchanged.|
-|IRN|On/Off|**Instant Refund/Reverse Notification** makes it possible for you to automate the sending of reverse/refund requests for orders paid through PayU, directly from your shop's order page. You may perform multiple refunds if your merchant account in the PayU platform allows it. If PayU confirms the success of the IRN, the status of the order in your shop will be _Refund_. If IRN fails for some reason, the status of the order will remain unchanged.|
+### Wielowalutowość
+POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatność w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji POSa dla każdej waluty z osobna.   
 
-**Notes:**
+### Wyświetlenie metod płatności 
+Przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak` po wybraniu płatności przez PayU wyświetli się strona z ikonami banków bezpośrednio w sklepie PrestaShop.
+Ikony banków, które są wyświetlane pobierane są z konfiguracji POS-a w PayU w zależności od wybranej waluty.  
 
-- The parameters must be set in accordance with your merchant account's settings in the PayU platform.
-- IPN, IDN and IRN will automatically change the status of the orders. When you manually change the status of the order, your shop will not send any notification to PayU.
+![payment_methods][img3]
+
+Po wybraniu banku lub płatności kartą i naciśnięciu przycisku `Potwierdzam zamówienie i płacę` nastąpi bezpośrednie przekierowanie na stronę banku lub w przypadku płatności kartą na stronę formatki kartowej.  
+
+### Ponowienie płatności
+W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
+
+Żeby kupujący mógł ponowić płatność muszą być spełnione następujace warunki: 
+* status ostatniej płatności z PayU musi mieć status CANCELED
+* status zamówienia w PrestaShop musi być zgodny ze statusem wybranym w konfiguracji wtyczki `Statusy płatności` » `Anulowana`    
+
+Kupującemu w `Szczegółach zamówinia` wyświetlany jest przycisk `Ponów płatność z PayU`.
+
+![retry_payment][img4]
+
+W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie utworzone płatności w PayU wraz ze statusami.
 
 <!--LINKS-->
 
 <!--external links:-->
-[ext2]: http://php.net/manual/en/book.curl.php
-[ext3]: http://php.net/manual/en/book.hash.php
+[ext0]: README.EN.md
+[ext1]: http://php.net/manual/en/book.curl.php
+[ext2]: http://php.net/manual/en/book.hash.php
+[ext3]: https://github.com/PayU/plugin_prestashop
 
 <!--images:-->
-[img1]: https://raw.github.com/PayU/plugin_prestashop/multicurrency/readme_images/presta_pos_config.png
-[img2]: https://raw.github.com/PayU/plugin_prestashop/multicurrency/readme_images/pos_configuration_keys.png
+[img1]: readme_images/presta_pos_config.png
+[img2]: readme_images/pos_configuration_keys.png
+[img3]: readme_images/bramki_platnosci.png
+[img4]: readme_images/ponow_platnosc.png

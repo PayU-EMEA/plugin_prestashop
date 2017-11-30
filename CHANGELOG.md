@@ -1,3 +1,42 @@
+##3.0.2
+ * Add thank you page after return from PayU
+ * Fix IE11 issue
+ * Fix for PHP 5.3
+ * Fix notice on payu payment page
+ * Fix save settings
+
+##3.0.1
+ * Fix for PrestaShop 1.6
+
+##3.0.0
+ * Add support for PrestaShop 1.7
+ * Remove support for PrestaShop 1.4 and 1.5
+ * Migrate configure page to bootstrap
+ * Cleanup code
+
+##2.5.1
+ * Fix disable payment methods by currency for Prestashop 1.4
+
+##2.5.0
+ * Add retry payment support
+ * Fix for Prestashop 1.4 and 1.5
+
+##2.4.2
+ * Add czech language support
+
+##2.4.1
+ * Fix show error on pay methods page
+ * Cleanup code
+
+##2.4.0
+ * New integration method - payment methods displayed on Prestashop checkout summary page
+ * Cleanup code
+
+##2.3.2
+ * Remove ePayment support
+ * Remove unused parameters
+ * Cleanup code
+
 ##2.3.1
  * Add multicurrency support
 
