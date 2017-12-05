@@ -142,7 +142,7 @@ class PayU extends PaymentModule
             OpenPayU_Configuration::setOauthClientSecret($payuOauthClientSecret[$currencyIsoCode]);
             OpenPayU_Configuration::setOauthTokenCache(new OauthCachePresta());
         }
-        OpenPayU_Configuration::setSender('Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version);
+        OpenPayU_Configuration::setSender($this->getVersion());
 
         return true;
     }
@@ -1136,6 +1136,7 @@ class PayU extends PaymentModule
 
         $ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
         $ocreq['description'] = $this->l('Order for cart: ') . $idCart . $this->l(' from the store: ') . Configuration::get('PS_SHOP_NAME');
+        $ocreq['additionalDescription'] = $this->getVersion();
         $ocreq['products'] = $items['products'];
         if ($carrier && is_array($carrier)) {
             array_push($ocreq['products'], $carrier);
@@ -1546,5 +1547,10 @@ class PayU extends PaymentModule
             return $name . '.tpl';
         }
         return 'module:payu/views/templates/front/' . $name . '17.tpl';
+    }
+
+    private function getVersion()
+    {
+        return 'Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version;
     }
 }
