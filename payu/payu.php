@@ -75,6 +75,10 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_MC_SIGNATURE_KEY', '') &&
             Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_ID', '') &&
             Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_SECRET', '') &&
+            Configuration::updateValue('SANDBOX_PAYU_MC_POS_ID', '') &&
+            Configuration::updateValue('SANDBOX_PAYU_MC_SIGNATURE_KEY', '') &&
+            Configuration::updateValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID', '') &&
+            Configuration::updateValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET', '') &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', $this->addNewOrderState('PAYU_PAYMENT_STATUS_PENDING',
                 array('en' => 'PayU payment pending', 'pl' => 'Płatność PayU rozpoczęta', 'cs' => 'Transakce PayU je zahájena'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', $this->addNewOrderState('PAYU_PAYMENT_STATUS_SENT',
@@ -82,7 +86,8 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
                 array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana', 'cs' => 'Transakce PayU zrušena'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
-            Configuration::updateValue('PAYU_RETRIEVE', 1)
+            Configuration::updateValue('PAYU_RETRIEVE', 1) &&
+            Configuration::updateValue('PAYU_SANDBOX', 0)
         );
     }
 
@@ -100,7 +105,12 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_MC_SIGNATURE_KEY') ||
             !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_ID') ||
             !Configuration::deleteByName('PAYU_MC_OAUTH_CLIENT_SECRET') ||
-            !Configuration::deleteByName('PAYU_RETRIEVE')
+            !Configuration::deleteByName('SANDBOX_PAYU_MC_POS_ID') ||
+            !Configuration::deleteByName('SANDBOX_PAYU_MC_SIGNATURE_KEY') ||
+            !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID') ||
+            !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET') ||
+            !Configuration::deleteByName('PAYU_RETRIEVE') ||
+            !Configuration::deleteByName('PAYU_SANDBOX')
         ) {
             return false;
         }
@@ -110,10 +120,11 @@ class PayU extends PaymentModule
 
     public function initializeOpenPayU($currencyIsoCode)
     {
-        $payuPosId = Tools::unSerialize(Configuration::get('PAYU_MC_POS_ID'));
-        $payuSignatureKey = Tools::unSerialize(Configuration::get('PAYU_MC_SIGNATURE_KEY'));
-        $payuOauthClientId = Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_ID'));
-        $payuOauthClientSecret = Tools::unSerialize(Configuration::get('PAYU_MC_OAUTH_CLIENT_SECRET'));
+        $prefix = Configuration::get('PAYU_SANDBOX') ? 'SANDBOX_' : '';
+        $payuPosId = Tools::unSerialize(Configuration::get($prefix . 'PAYU_MC_POS_ID'));
+        $payuSignatureKey = Tools::unSerialize(Configuration::get($prefix . 'PAYU_MC_SIGNATURE_KEY'));
+        $payuOauthClientId = Tools::unSerialize(Configuration::get($prefix . 'PAYU_MC_OAUTH_CLIENT_ID'));
+        $payuOauthClientSecret = Tools::unSerialize(Configuration::get($prefix . 'PAYU_MC_OAUTH_CLIENT_SECRET'));
 
         if (!is_array($payuPosId) ||
             !is_array($payuSignatureKey) ||
@@ -123,7 +134,7 @@ class PayU extends PaymentModule
             return false;
         }
 
-        OpenPayU_Configuration::setEnvironment('secure');
+        OpenPayU_Configuration::setEnvironment( Configuration::get('PAYU_SANDBOX') ? 'sandbox' : 'secure');
         OpenPayU_Configuration::setMerchantPosId($payuPosId[$currencyIsoCode]);
         OpenPayU_Configuration::setSignatureKey($payuSignatureKey[$currencyIsoCode]);
         if ($payuOauthClientId[$currencyIsoCode] && $payuOauthClientSecret[$currencyIsoCode]) {
@@ -151,22 +162,37 @@ class PayU extends PaymentModule
             $PAYU_MC_OAUTH_CLIENT_ID = array();
             $PAYU_MC_OAUTH_CLIENT_SECRET = array();
 
+            $SANDBOX_PAYU_MC_POS_ID = array();
+            $SANDBOX_PAYU_MC_SIGNATURE_KEY = array();
+            $SANDBOX_PAYU_MC_OAUTH_CLIENT_ID = array();
+            $SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET = array();
+
             foreach (Currency::getCurrencies() as $currency) {
                 $PAYU_MC_POS_ID[$currency['iso_code']] = Tools::getValue('PAYU_MC_POS_ID|'.$currency['iso_code']);
                 $PAYU_MC_SIGNATURE_KEY[$currency['iso_code']] = Tools::getValue('PAYU_MC_SIGNATURE_KEY|'.$currency['iso_code']);
                 $PAYU_MC_OAUTH_CLIENT_ID[$currency['iso_code']] = Tools::getValue('PAYU_MC_OAUTH_CLIENT_ID|'.$currency['iso_code']);
                 $PAYU_MC_OAUTH_CLIENT_SECRET[$currency['iso_code']] = Tools::getValue('PAYU_MC_OAUTH_CLIENT_SECRET|'.$currency['iso_code']);
+                $SANDBOX_PAYU_MC_POS_ID[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_POS_ID|'.$currency['iso_code']);
+                $SANDBOX_PAYU_MC_SIGNATURE_KEY[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_SIGNATURE_KEY|'.$currency['iso_code']);
+                $SANDBOX_PAYU_MC_OAUTH_CLIENT_ID[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|'.$currency['iso_code']);
+                $SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|'.$currency['iso_code']);
             }
 
-            if (!Configuration::updateValue('PAYU_MC_POS_ID', serialize($PAYU_MC_POS_ID)) ||
+            if (
+                !Configuration::updateValue('PAYU_MC_POS_ID', serialize($PAYU_MC_POS_ID)) ||
                 !Configuration::updateValue('PAYU_MC_SIGNATURE_KEY', serialize($PAYU_MC_SIGNATURE_KEY)) ||
                 !Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_ID', serialize($PAYU_MC_OAUTH_CLIENT_ID)) ||
                 !Configuration::updateValue('PAYU_MC_OAUTH_CLIENT_SECRET', serialize($PAYU_MC_OAUTH_CLIENT_SECRET)) ||
+                !Configuration::updateValue('SANDBOX_PAYU_MC_POS_ID', serialize($SANDBOX_PAYU_MC_POS_ID)) ||
+                !Configuration::updateValue('SANDBOX_PAYU_MC_SIGNATURE_KEY', serialize($SANDBOX_PAYU_MC_SIGNATURE_KEY)) ||
+                !Configuration::updateValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID', serialize($SANDBOX_PAYU_MC_OAUTH_CLIENT_ID)) ||
+                !Configuration::updateValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET', serialize($SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', (int)Tools::getValue('PAYU_PAYMENT_STATUS_PENDING')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', (int)Tools::getValue('PAYU_PAYMENT_STATUS_SENT')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
-                !Configuration::updateValue('PAYU_RETRIEVE', (Tools::getValue('PAYU_RETRIEVE') ? 1 : 0))
+                !Configuration::updateValue('PAYU_RETRIEVE', (Tools::getValue('PAYU_RETRIEVE') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -180,6 +206,7 @@ class PayU extends PaymentModule
             }
         }
 
+        $output .= $this->fetchTemplate('/views/templates/admin/info.tpl');
         return $output . $this->displayForm();
     }
 
@@ -201,6 +228,23 @@ class PayU extends PaymentModule
                         'label' => $this->l('Display payment methods'),
                         'desc' => $this->l('Payment methods displayed on Prestashop checkout summary page'),
                         'name' => 'PAYU_RETRIEVE',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Środowisko testowe - SANDBOX'),
+                        'name' => 'PAYU_SANDBOX',
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -248,6 +292,39 @@ class PayU extends PaymentModule
                             'type' => 'text',
                             'label' => $this->l('OAuth - client_secret'),
                             'name' => 'PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']
+                        ),
+                    ),
+                    'submit' => array(
+                        'title' => $this->l('Save'),
+                    )
+                )
+            );
+            $form['sandbox_pos_' . $currency['iso_code']] = array(
+                'form' => array(
+                    'legend' => array(
+                        'title' => '<span style="color: red">' . $this->l('SANDBOX - ') . '</span>' . $this->l('POS settings - currency: ') . $currency['name'] . ' (' . $currency['iso_code'] . ')',
+                        'icon' => 'icon-cog'
+                    ),
+                    'input' => array(
+                        array(
+                            'type' => 'text',
+                            'label' => $this->l('POS ID'),
+                            'name' => 'SANDBOX_PAYU_MC_POS_ID|' . $currency['iso_code']
+                        ),
+                        array(
+                            'type' => 'text',
+                            'label' => $this->l('Second key (MD5)'),
+                            'name' => 'SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']
+                        ),
+                        array(
+                            'type' => 'text',
+                            'label' => $this->l('OAuth - client_id'),
+                            'name' => 'SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']
+                        ),
+                        array(
+                            'type' => 'text',
+                            'label' => $this->l('OAuth - client_secret'),
+                            'name' => 'SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']
                         ),
                     ),
                     'submit' => array(
@@ -341,7 +418,8 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_SENT' => Configuration::get('PAYU_PAYMENT_STATUS_SENT'),
             'PAYU_PAYMENT_STATUS_COMPLETED' => Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'),
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
-            'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE')
+            'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE'),
+            'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX')
         );
 
         foreach (Currency::getCurrencies() as $currency) {
@@ -349,6 +427,10 @@ class PayU extends PaymentModule
             $config['PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_SIGNATURE_KEY', $currency);
             $config['PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_OAUTH_CLIENT_ID', $currency);
             $config['PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_OAUTH_CLIENT_SECRET', $currency);
+            $config['SANDBOX_PAYU_MC_POS_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_POS_ID', $currency);
+            $config['SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_SIGNATURE_KEY', $currency);
+            $config['SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID', $currency);
+            $config['SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET', $currency);
         }
 
         return $config;
@@ -1458,11 +1540,11 @@ class PayU extends PaymentModule
      *
      * @return string
      */
-    public function buildTemplatePath($name, $type)
+    public function buildTemplatePath($name)
     {
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             return $name . '.tpl';
         }
-        return 'module:payu/views/templates/' . $type . '/' . $name . '17.tpl';
+        return 'module:payu/views/templates/front/' . $name . '17.tpl';
     }
 }

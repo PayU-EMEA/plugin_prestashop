@@ -40,6 +40,7 @@ Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#w
 ## Wymagania
 
 **Ważne:** Moduł ta działa tylko z punktem płatności typu `REST API` (Checkout).
+Jeżeli nie posiadasz jeszcze konta w systemie PayU [**zarejestruj się w systemie produkcyjnym**][ext4] lub [**zarejestruj się w systemie sandbox**][ext5]
 
 Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia PHP: [cURL][ext1] i [hash][ext2].
 
@@ -80,11 +81,11 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 | Parameter | Opis | 
 |---------|-----------|
 | Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
-
+| Tryb testowy (Sandbox) | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU |
 
 ### Parametry POS-ów
 
-Dla każdej waluty w dodanej w PrestaShop należy dodać parametry:
+Dla każdej waluty dodanej w PrestaShop należy dodać parametry (osobno dla środowiska produkcyjnego i sandbox):
 
 | Parameter | Opis | 
 |---------|-----------|
@@ -92,16 +93,6 @@ Dla każdej waluty w dodanej w PrestaShop należy dodać parametry:
 | Drugi klucz MD5 | Drugi klucz MD5 z systemu PayU |
 | OAuth - client_id | client_id dla protokołu OAuth z systemu PayU |
 | OAuth - client_secret | client_secret for OAuth z systemu PayU |
-
-#### Przykład konfiguracji POS-a
-
-PrestaShop:
-
-![presta_pos_config][img1]
-
-Konfiguracja POS-a w panelu PayU:
-
-![pos_configuration_keys][img2]
 
 ### Statusy płatności
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
@@ -146,9 +137,9 @@ W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
 [ext3]: https://github.com/PayU/plugin_prestashop
+[ext4]: https://secure.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
+[ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 
 <!--images:-->
-[img1]: readme_images/presta_pos_config.png
-[img2]: readme_images/pos_configuration_keys.png
 [img3]: readme_images/bramki_platnosci.png
 [img4]: readme_images/ponow_platnosc.png

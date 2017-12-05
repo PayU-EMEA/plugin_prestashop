@@ -48,7 +48,7 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
 
 
 
-        $this->setTemplate($payu->buildTemplatePath('status', 'front'));
+        $this->setTemplate($payu->buildTemplatePath('status'));
 
     }
 

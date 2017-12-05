@@ -85,7 +85,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         $this->context->smarty->assign($this->getShowPayMethodsParameters());
 
-        $this->setTemplate($this->payu->buildTemplatePath('payMethods', 'front'));
+        $this->setTemplate($this->payu->buildTemplatePath('payMethods'));
     }
 
 
@@ -122,7 +122,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 )
             );
 
-            $this->setTemplate($this->payu->buildTemplatePath('error', 'front'));
+            $this->setTemplate($this->payu->buildTemplatePath('error'));
         }
 
     }
