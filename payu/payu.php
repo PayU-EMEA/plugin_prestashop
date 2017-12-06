@@ -1080,7 +1080,7 @@ class PayU extends PaymentModule
             $grand_total = $total;
             return $grand_total;
         } else {
-            $grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH)) + $wrapping_fees_tax_inc;
+            $grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH));
             return $grand_total;
         }
     }
