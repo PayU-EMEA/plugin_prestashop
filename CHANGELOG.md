@@ -1,3 +1,7 @@
+##3.0.4
+ * Place OCR after Order
+ * Add paymethods order
+
 ##3.0.3
  * Add sandbox
  * Update SDK
