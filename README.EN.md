@@ -32,6 +32,7 @@ Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 | Displaying payment methods on Presta checkout summary page | :white_check_mark: | :white_check_mark: |
 | Payment retry for cancelled payments | :white_check_mark: | :white_check_mark: |
 | Multi-currency support | :white_check_mark: | :white_check_mark: |
+| Payment method order | :white_check_mark: | :white_check_mark: |
 
 More information on the features can be found in the [More on features](#more-on-features) section
 
@@ -112,6 +113,11 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
 ## More on features
 
+### Payment method order
+ Applies only to  **Payment methods displayed on Presta checkout summary page** switched to `Yes`
+ To set the order of the payment method icons enter payment method values separated by comma.
+ [Payment method values][ext6].
+
 ### Multi-currency
 POS in PayU system has only one currency defined. Therefore to accept payments in more currencies, POS for each currency has to be separately configured.
 
@@ -144,6 +150,7 @@ All PayU payments created for a PrestaShop order are displayed on Order screen i
 [ext3]: https://github.com/PayU/plugin_prestashop
 [ext4]: https://secure.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 [ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
+[ext6]: http://developers.payu.com/en/overview.html#paymethods
 
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png
