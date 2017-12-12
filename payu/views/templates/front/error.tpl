@@ -4,16 +4,25 @@
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
- * http://openpayu.com
- * http://twitter.com/openpayu
 *}
-{capture name=path}<a href="order.php">{l s='Your shopping cart' mod='payu'}</a><span class="navigation-pipe">{$navigationPipe|escape:'htmlall':'UTF-8'}</span>{l s='PayU' mod='payu'}{/capture}
-{include file="$tpl_dir./breadcrumb.tpl"}
+{capture name=path}{l s='Pay with PayU' mod='payu'}{/capture}
 
-<h2>{l s='Order summary' mod='payu'}</h2>
-{if isset($message)}
-	<div class="error">
-		<p>{$message|escape:'htmlall':'UTF-8'}</p>
-		<p><a href="{$base_dir|escape:'htmlall':'UTF-8'}" class="button_small" title="{l s='Back' mod='payu'}">&laquo; {l s='Back' mod='payu'}</a></p>
+<div class="clearfix">
+	<h2 id="payuAmountInfo">
+		{$payuOrderInfo}:
+		<strong>{if $currency}{convertPriceWithCurrency price=$total currency=$orderCurrency}{else}{convertPrice price=$total}{/if}</strong> {l s='(tax incl.)' mod='payu'}
+	</h2>
+	<img src="{$image}" id="payuLogo">
+</div>
+
+{if $payuError}
+	<div class="alert alert-warning">
+        {$payuError}
 	</div>
 {/if}
+
+<p class="cart_navigation clearfix" id="cart_navigation">
+	<a class="button btn btn-default button-medium" href="{$buttonAction}">
+		<span>{l s='Retry pay with PayU' mod='payu'}<i class="icon-chevron-right right"></i></span>
+	</a>
+</p>

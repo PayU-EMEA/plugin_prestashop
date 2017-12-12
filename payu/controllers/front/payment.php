@@ -20,7 +20,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private $hasRetryPayment;
 
     private $order = null;
-    private $payuOrderCart = null;
+
 
     public function postProcess()
     {
@@ -37,39 +37,43 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     }
 
-
     public function initContent()
     {
         parent::initContent();
-        SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  '.phpversion(), '');
-
-        $products = $this->getProducts();
-        if (empty($products)) {
-            Tools::redirect('index.php?controller=order');
-        }
+        SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  ' . phpversion(), '');
 
         if (Configuration::get('PAYU_RETRIEVE')) {
             if (Tools::getValue('payuPay')) {
                 $payMethod = Tools::getValue('payMethod');
-
                 $payuConditions = Tools::getValue('payuConditions');
                 $errors = array();
+                $payError = false;
+
                 if (!$payMethod) {
                     $errors[] = $this->module->l('Please select a method of payment', 'payment');
                 }
+
                 if (!$payuConditions) {
                     $errors[] = $this->module->l('Please accept "Terms of single PayU payment transaction"', 'payment');
                 }
+
                 if (count($errors) == 0) {
-                    $errors[] = $this->pay($payMethod);
+                    $payError = $this->pay($payMethod);
+                    if (!array_key_exists('firstPayment', $payError)) {
+                        $errors[] = $payError;
+                    }
                 }
-                
-                $this->showPayMethod($payMethod, $payuConditions, $errors);
+                if (array_key_exists('firstPayment', $payError)) {
+                    $this->showPaymentError();
+                } else {
+                    $this->showPayMethod($payMethod, $payuConditions, $errors);
+                }
             } else {
                 $this->showPayMethod();
             }
         } else {
             $this->pay();
+            $this->showPaymentError();
         }
     }
 
@@ -88,48 +92,65 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->setTemplate($this->payu->buildTemplatePath('payMethods'));
     }
 
+    private function showPaymentError()
+    {
+        $this->context->smarty->assign(
+            array(
+                'image' => $this->payu->getPayuLogo(),
+                'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
+                'orderCurrency' => (int)$this->order->id_currency,
+                'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id)),
+                'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') .  ' ' . $this->order->reference,
+                'payuError' => $this->module->l('An error occurred while processing your payment.', 'payment')
+            )
+        );
+
+        $this->setTemplate($this->payu->buildTemplatePath('error'));
+    }
+
 
     private function pay($payMethod = null)
     {
-        $this->payu->generateExtOrderId($this->getCartId());
 
-        if ($this->hasRetryPayment) {
-            $this->payu->order = $this->order;
-            $result = $this->payu->orderCreateRequestByOrder($payMethod);
-        } else {
-            $this->payu->cart = $this->payuOrderCart;
-            $result = $this->payu->orderCreateRequest($payMethod);
+        if (!$this->hasRetryPayment) {
+            $this->payu->validateOrder(
+                $this->context->cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+                $this->context->cart->getOrderTotal(true, Cart::BOTH), $this->payu->displayName,
+                null, array(), (int)$this->context->cart->id_currency, false, $this->context->cart->secure_key,
+                Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
+            );
+
+            $this->order = new Order($this->payu->currentOrder);
         }
 
-        if (!array_key_exists('error', $result)) {
+        $this->payu->generateExtOrderId($this->order->id);
+        $this->payu->order = $this->order;
+
+        try {
+            $result = $this->payu->orderCreateRequestByOrder($payMethod);
+
             $this->payu->payu_order_id = $result['orderId'];
             $this->postOCR();
 
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to '.($payMethod ? 'bank or card form' : 'summary').'...', $result['orderId']);
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . ($payMethod ? 'bank or card form' : 'summary') . '...', $result['orderId']);
             Tools::redirect($result['redirectUri']);
-        } else {
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'Result is empty: An error occurred while processing your order.', '');
-            if ($payMethod !== null) {
-                return $this->module->l('An error occurred while processing your order.', 'payment') . ' ' .$result['error'];
+
+        } catch (\Exception $e) {
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');
+
+            if ($this->hasRetryPayment) {
+                return $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment') . ' ' .$result['error'];
             }
 
-            $this->context->smarty->assign(
-                array(
-                    'image' => $this->payu->getPayuLogo(),
-                    'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
-                    'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment'),
-                    'message' => $this->module->l('An error occurred while processing your order.', 'payment') . ' ' . $result['error']
-                )
+            return array(
+                'firstPayment' => true
             );
-
-            $this->setTemplate($this->payu->buildTemplatePath('error'));
         }
-
     }
 
     private function postProcessPayment()
     {
-        if ($this->context->cart->id_customer == 0 || $this->context->cart->id_address_delivery == 0 || $this->context->cart->id_address_invoice == 0 || !$this->module->active) {
+        if ($this->context->cart->id_customer == 0 || $this->context->cart->id_address_delivery == 0 || $this->context->cart->id_address_invoice == 0 || empty($this->context->cart->getProducts())) {
             Tools::redirectLink(__PS_BASE_URI__ . 'order.php?step=1');
         }
 
@@ -163,7 +184,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         $authorized = false;
         foreach (Module::getPaymentModules() as $module) {
-            if ($module['name'] == 'payu') {
+            if ($module['name'] === 'payu') {
                 $authorized = true;
                 break;
             }
@@ -184,16 +205,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->hasRetryPayment = Tools::getValue('id_order') !== false ? true : false;
     }
 
-    private function getProducts()
-    {
-        if ($this->hasRetryPayment) {
-            return $this->order->getProducts();
-        } else {
-            $this->payuOrderCart = $this->context->cart;
-            return $this->payuOrderCart->getProducts();
-        }
-    }
-
     private function getShowPayMethodsParameters()
     {
         if ($this->hasRetryPayment) {
@@ -202,45 +213,31 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 'orderCurrency' => (int)$this->order->id_currency,
                 'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->order->id_currency)),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id)),
-                'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment').' '.$this->order->reference
+                'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference,
+                'retryPayment' => $this->hasRetryPayment
             );
         } else {
             return array(
                 'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
-                'orderCurrency' => (int)$this->payuOrderCart->id_currency,
-                'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->payuOrderCart->id_currency)),
+                'orderCurrency' => (int)$this->context->cart->id_currency,
+                'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->context->cart->id_currency)),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
-                'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
-            ) ;
+                'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment'),
+                'retryPayment' => $this->hasRetryPayment
+            );
         }
-    }
-
-    private function getCartId()
-    {
-        return $this->hasRetryPayment ? $this->order->id_cart : $this->payuOrderCart->id;
     }
 
     private function postOCR()
     {
         if ($this->hasRetryPayment) {
-
             $history = new OrderHistory();
             $history->id_order = $this->order->id;
             $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_PENDING'), $this->order->id);
             $history->addWithemail(true);
-
-            $this->payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW, $this->order->id, $this->order->id_cart, $this->payu->payu_order_id, $this->payu->getExtOrderId());
-        } else {
-
-            $this->payu->validateOrder(
-                $this->payuOrderCart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-                $this->payuOrderCart->getOrderTotal(true, Cart::BOTH), $this->payu->displayName,
-                null, array(), (int)$this->payuOrderCart->id_currency, false, $this->payuOrderCart->secure_key,
-                Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
-            );
-
-            $this->payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW, $this->payu->currentOrder, $this->payuOrderCart->id, $this->payu->payu_order_id, $this->payu->getExtOrderId());
         }
+
+        $this->payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW, $this->order->id, 0, $this->payu->payu_order_id, $this->payu->getExtOrderId());
 
     }
 

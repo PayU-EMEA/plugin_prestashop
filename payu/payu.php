@@ -62,6 +62,7 @@ class PayU extends PaymentModule
 
     /**
      * @return bool
+     * @throws PrestaShopDatabaseException
      */
     public function install()
     {
@@ -243,7 +244,7 @@ class PayU extends PaymentModule
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Środowisko testowe - SANDBOX'),
+                        'label' => $this->l('SANDBOX mode'),
                         'name' => 'PAYU_SANDBOX',
                         'values' => array(
                             array(
@@ -608,6 +609,7 @@ class PayU extends PaymentModule
 
     /**
      * @return null|string
+     * @throws PrestaShopDatabaseException
      */
     public function hookAdminOrder($params)
     {
@@ -670,80 +672,18 @@ class PayU extends PaymentModule
     {
         $payuOrder = $this->getLastOrderPaymentByOrderId($order_id);
 
-        if ($payuOrder['status'] != OpenPayuOrderStatus::STATUS_CANCELED
-            || $order_state != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')
-        ) {
-            return false;
+        if ((!$payuOrder && $order_state == (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING') ||
+            ($payuOrder['status'] == OpenPayuOrderStatus::STATUS_CANCELED && $order_state == (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'))))
+        {
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     /**
-     * @param string $payMethod
-     * @return array|bool
-     */
-    public function orderCreateRequest($payMethod = null)
-    {
-
-        SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
-        $currency = Currency::getCurrency($this->cart->id_currency);
-
-        if (!$this->initializeOpenPayU($currency['iso_code'])) {
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'OPU not properly configured for currency: ' . $currency['iso_code']);
-            Logger::addLog($this->displayName . ' ' . 'OPU not properly configured for currency: ' . $currency['iso_code'], 1);
-
-            return false;
-        }
-
-        $return_array = array();
-
-        $items = array();
-
-        $cart_products = $this->cart->getProducts();
-
-        //discounts and cart rules
-        list($items, $total) = $this->getDiscountsAndCartRules($items, $cart_products);
-        // Wrapping fees
-        list($wrapping_fees_tax_inc, $items, $total) = $this->getWrappingFees($items, $total);
-
-        $carrier = $this->getCarrier($this->cart);
-        $grand_total = $this->getGrandTotal($wrapping_fees_tax_inc, $total);
-
-        $ocreq = $this->prepareOrder($items, $this->getCustomer($this->cart->id_customer), $currency, $grand_total, $carrier, $payMethod, $this->cart->id);
-
-        try {
-            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
-            $result = OpenPayU_Order::create($ocreq);
-            SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
-            if ($result->getStatus() == 'SUCCESS') {
-                $context = Context::getContext();
-                $context->cookie->__set('payu_order_id', $result->getResponse()->orderId);
-
-                $return_array = array(
-                    'redirectUri' => urldecode($result->getResponse()->redirectUri . '&lang=' . Language::getIsoById($this->context->language->id)),
-                    'orderId' => $result->getResponse()->orderId
-                );
-            } else {
-                $return_array = array(
-                    'error' => $result->getError() . ' ' . $result->getMessage()
-                );
-                SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
-                Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
-            }
-
-        } catch (Exception $e) {
-            $return_array = array(
-                'error' => $e->getCode() . ' ' . $e->getMessage()
-            );
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
-            Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
-        }
-        return $return_array;
-    }
-
-    /**
+     * @param null|string $payMethod
      * @return array
+     * @throws Exception
      */
     public function orderCreateRequestByOrder($payMethod = null)
     {
@@ -755,55 +695,68 @@ class PayU extends PaymentModule
             SimplePayuLogger::addLog('order', __FUNCTION__, 'OPU not properly configured for currency: ' . $currency['iso_code']);
             Logger::addLog($this->displayName . ' ' . 'OPU not properly configured for currency: ' . $currency['iso_code'], 1);
 
-            return false;
+            throw new \Exception('OPU not properly configured for currency: ' . $currency['iso_code']);
         }
 
-        $return_array = array();
-
-        $grand_total = $this->toAmount($this->order->total_paid);
-
-        $carrier = null;
-
-        $items = array(
+        $ocreq = array(
+            'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
+            'description' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
+            'additionalDescription' => $this->getVersion(),
             'products' => array(
                 array(
                     'quantity' => 1,
-                    'name' => 'Order reference: ' . $this->order->reference,
-                    'unitPrice' => $grand_total
+                    'name' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference,
+                    'unitPrice' => $this->toAmount($this->order->total_paid)
                 )
+            ),
+            'customerIp' => $this->getIP(),
+            'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
+            'continueUrl' => $this->context->link->getModuleLink('payu', 'success') . '?id=' . $this->extOrderId,
+            'currencyCode' => $currency['iso_code'],
+            'totalAmount' => $this->toAmount($this->order->total_paid),
+            'extOrderId' => $this->extOrderId,
+            'settings' => array(
+                'invoiceDisabled' => true
             )
         );
 
-        $ocreq = $this->prepareOrder($items, $this->getCustomer($this->order->id_customer), $currency, $grand_total, $carrier, $payMethod, $this->order->id, $this->order->id_cart);
+
+        if ($this->getCustomer($this->order->id_customer)) {
+            $ocreq['buyer'] = $this->getCustomer($this->order->id_customer);
+        }
+
+        if ($payMethod !== null) {
+            $ocreq['payMethods'] = array(
+                'payMethod' => array(
+                    'type' => 'PBL',
+                    'value' => $payMethod
+                )
+            );
+        }
 
         try {
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
             $result = OpenPayU_Order::create($ocreq);
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
-            if ($result->getStatus() == 'SUCCESS') {
-                $context = Context::getContext();
-                $context->cookie->__set('payu_order_id', $result->getResponse()->orderId);
 
-                $return_array = array(
-                    'redirectUri' => urldecode($result->getResponse()->redirectUri . '&lang=' . Language::getIsoById($this->context->language->id)),
+            if ($result->getStatus() == 'SUCCESS') {
+                return array(
+                    'redirectUri' => urldecode($result->getResponse()->redirectUri),
                     'orderId' => $result->getResponse()->orderId
                 );
             } else {
-                $return_array = array(
-                    'error' => $result->getError() . ' ' . $result->getMessage()
-                );
                 SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
                 Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
-            }
 
-        } catch (Exception $e) {
-            $return_array = array(
-                'error' => $e->getCode() . ' ' . $e->getMessage()
-            );
+                throw new \Exception($result->getError() . ' ' . $result->getMessage());
+            }
+        } catch (\Exception $e) {
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Exception catched! ' . $this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()));
             Logger::addLog($this->displayName . ' ' . trim($e->getCode() . ' ' . $e->getMessage()), 1);
+
+            throw new \Exception($e->getCode() . ' ' . $e->getMessage());
         }
-        return $return_array;
+
     }
 
     public function updateOrderData($responseNotification = null)
@@ -971,6 +924,7 @@ class PayU extends PaymentModule
 
     /**
      * @return bool
+     * @throws PrestaShopDatabaseException
      */
     private function createInitialDbTable()
     {
@@ -1027,6 +981,7 @@ class PayU extends PaymentModule
     /**
      * @param $id_order
      * @return bool | array
+     * @throws PrestaShopDatabaseException
      */
     private function getOrdersByOrderId($id_order)
     {
@@ -1070,33 +1025,6 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @param $wrapping_fees_tax_inc
-     * @param $total
-     * @return int
-     */
-    private function getGrandTotal($wrapping_fees_tax_inc, $total)
-    {
-        if ($this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH)) + $wrapping_fees_tax_inc < $total) {
-            $grand_total = $total;
-            return $grand_total;
-        } else {
-            $grand_total = $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH)) + $wrapping_fees_tax_inc;
-            return $grand_total;
-        }
-    }
-
-    /**
-     * @return array
-     */
-    private function getLinks()
-    {
-        return array(
-            'notify' => $this->context->link->getModuleLink('payu', 'notification'),
-            'continue' => $this->context->link->getModuleLink('payu', 'success')
-        );
-    }
-
-    /**
      * @param int | null $idCustomer
      * @return array | null
      */
@@ -1115,100 +1043,9 @@ class PayU extends PaymentModule
         return array(
             'email' => $customer->email,
             'firstName' => $customer->firstname,
-            'lastName' => $customer->lastname
+            'lastName' => $customer->lastname,
+            'language' => Language::getIsoById($this->context->language->id)
         );
-    }
-
-    /**
-     * @param $items
-     * @param $customer_sheet
-     * @param $currency
-     * @param $grand_total
-     * @param $carrier
-     * @param $payMethod
-     * @param $idOrder
-     * @param $idCart
-     * @return array
-     */
-    private function prepareOrder($items, $customer_sheet, $currency, $grand_total, $carrier, $payMethod, $idCart, $idOrder = null)
-    {
-        $ocreq = array();
-
-        $ocreq['merchantPosId'] = OpenPayU_Configuration::getMerchantPosId();
-        $ocreq['description'] = $this->l('Order for cart: ') . $idCart . $this->l(' from the store: ') . Configuration::get('PS_SHOP_NAME');
-        $ocreq['additionalDescription'] = $this->getVersion();
-        $ocreq['products'] = $items['products'];
-        if ($carrier && is_array($carrier)) {
-            array_push($ocreq['products'], $carrier);
-        }
-        $ocreq['buyer'] = $customer_sheet;
-        $ocreq['customerIp'] = $this->getIP();
-
-        $links = $this->getLinks();
-        $ocreq['notifyUrl'] = $links['notify'];
-        $ocreq['continueUrl'] = $links['continue'] . '?id=' . $this->extOrderId;
-        $ocreq['currencyCode'] = $currency['iso_code'];
-        $ocreq['totalAmount'] = $grand_total;
-        $ocreq['extOrderId'] = $this->extOrderId;
-        $ocreq['settings']['invoiceDisabled'] = true;
-
-        if ($payMethod !== null) {
-            $ocreq['payMethods'] = array(
-                'payMethod' => array(
-                    'type' => 'PBL',
-                    'value' => $payMethod
-                )
-            );
-        }
-
-        return $ocreq;
-    }
-
-    /**
-     * @param $items
-     * @param $total
-     * @return array
-     */
-    private function getWrappingFees($items, $total)
-    {
-
-        $wrapping_fees_tax_inc = $wrapping_fees = 0;
-        if ((int)Configuration::get('PS_GIFT_WRAPPING') && $this->context->cart->gift) {
-            $wrapping_fees = $this->toAmount($this->context->cart->getGiftWrappingPrice(false));
-            $wrapping_fees_tax_inc = $this->toAmount($this->context->cart->getGiftWrappingPrice());
-
-            $items['products'][] = array(
-                'quantity' => 1,
-                'name' => $this->l('Gift wrapping'),
-                'unitPrice' => $wrapping_fees
-            );
-
-            $total += $wrapping_fees_tax_inc;
-            return array($wrapping_fees_tax_inc, $items, $total);
-
-        }
-        return array($wrapping_fees_tax_inc, $items, $total);
-    }
-
-    /**
-     * @param $items
-     * @param $cart_products
-     * @return array
-     */
-    private function getDiscountsAndCartRules($items, $cart_products)
-    {
-        $total = '';
-        if ($this->cart->getCartRules()) {
-            $items['products'][] = array(
-                'quantity' => 1,
-                'name' => 'Order id ' . $this->cart->id,
-                'unitPrice' => $this->toAmount($this->cart->getOrderTotal(true, Cart::BOTH))
-            );
-            return array($items, $total);
-        } else {
-            $items['products'] = $this->addProductsToOrder($cart_products, $total);
-            return array($items, $total);
-        }
     }
 
     private function moveCardToFirstPositionAndRemoveDisabledTest($payMethods)
@@ -1227,7 +1064,6 @@ class PayU extends PaymentModule
         return $payMethods;
     }
 
-
     /**
      * @return string
      */
@@ -1243,7 +1079,6 @@ class PayU extends PaymentModule
         $order = new Order($idOrder);
         $currency = Currency::getCurrency($order->id_currency);
         $this->initializeOpenPayU($currency['iso_code']);
-
     }
 
     /**
@@ -1296,64 +1131,6 @@ class PayU extends PaymentModule
         }
 
         return false;
-    }
-
-    private function addProductsToOrder($cartProducts, &$total)
-    {
-        foreach ($cartProducts as $product) {
-
-            $price_wt = $this->toAmount($product['price_wt']);
-            $total += $this->toAmount($product['total_wt']);
-            $items[] = array(
-                'quantity' => (int)$product['quantity'],
-                'name' => $product['name'],
-                'unitPrice' => $price_wt
-            );
-        }
-        return $items;
-
-    }
-
-    /**
-     * @return array|null
-     */
-    private function getCarrier()
-    {
-        $carrier_list = null;
-
-        $country_code = Tools::strtoupper(Configuration::get('PS_LOCALE_COUNTRY'));
-        $country = new Country(Country::getByIso($country_code));
-        $cart_products = $this->cart->getProducts();
-        $free_shipping = false;
-
-        foreach ($this->cart->getCartRules() as $rule) {
-            if ($rule['free_shipping']) {
-                $free_shipping = true;
-                break;
-            }
-        }
-
-        if ($this->cart->id_carrier > 0) {
-            $selected_carrier = new Carrier($this->cart->id_carrier);
-            $shipping_method = $selected_carrier->getShippingMethod();
-
-            if ($free_shipping == false) {
-                $price = ($shipping_method == Carrier::SHIPPING_METHOD_FREE
-                    ? 0 : $this->cart->getPackageShippingCost((int)$this->cart->id_carrier, true, $country, $cart_products));
-
-                if ((int)$selected_carrier->active == 1) {
-
-                    $carrier_list = array(
-                        'name' => $selected_carrier->name,
-                        'quantity' => 1,
-                        'unitPrice' => $this->toAmount($price)
-                    );
-
-                }
-            }
-        }
-
-        return $carrier_list;
     }
 
     /**
