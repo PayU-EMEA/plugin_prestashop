@@ -88,7 +88,8 @@ class PayU extends PaymentModule
                 array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana', 'cs' => 'Transakce PayU zrušena'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
             Configuration::updateValue('PAYU_RETRIEVE', 1) &&
-            Configuration::updateValue('PAYU_SANDBOX', 0)
+            Configuration::updateValue('PAYU_SANDBOX', 0) &&
+            Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', '')
         );
     }
 
@@ -111,7 +112,8 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID') ||
             !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_RETRIEVE') ||
-            !Configuration::deleteByName('PAYU_SANDBOX')
+            !Configuration::deleteByName('PAYU_SANDBOX') ||
+            !Configuration::deleteByName('PAYU_PAYMENT_METHODS_ORDER')
         ) {
             return false;
         }
@@ -193,7 +195,8 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
                 !Configuration::updateValue('PAYU_RETRIEVE', (Tools::getValue('PAYU_RETRIEVE') ? 1 : 0)) ||
-                !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0))
+                !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', Tools::getValue('PAYU_PAYMENT_METHODS_ORDER'))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -242,6 +245,13 @@ class PayU extends PaymentModule
                             )
                         ),
                     ),
+                    array(
+                        'type' => 'text',
+                        'label' => $this->l('Payment Methods Order'),
+                        'name' => 'PAYU_PAYMENT_METHODS_ORDER',
+                        'desc' => $this->l('Enter payment methods values separated by comma. List of payment methods - http://developers.payu.com/pl/overview.html#paymethods'),
+                    ),
+
                     array(
                         'type' => 'switch',
                         'label' => $this->l('SANDBOX mode'),
@@ -420,7 +430,8 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_COMPLETED' => Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'),
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
             'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE'),
-            'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX')
+            'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX'),
+            'PAYU_PAYMENT_METHODS_ORDER' => Configuration::get('PAYU_PAYMENT_METHODS_ORDER')
         );
 
         foreach (Currency::getCurrencies() as $currency) {
@@ -833,7 +844,7 @@ class PayU extends PaymentModule
                 $response = $retreive->getResponse();
 
                 return array(
-                    'payByLinks' => $this->moveCardToFirstPositionAndRemoveDisabledTest($response->payByLinks)
+                    'payByLinks' => $this->reorderPaymentMethods($response->payByLinks)
                 );
             } else {
                 return array(
@@ -1048,7 +1059,7 @@ class PayU extends PaymentModule
         );
     }
 
-    private function moveCardToFirstPositionAndRemoveDisabledTest($payMethods)
+    private function reorderPaymentMethods($payMethods)
     {
         foreach ($payMethods as $id => $payMethod) {
             if ($payMethod->value == 'c') {
@@ -1057,10 +1068,32 @@ class PayU extends PaymentModule
                 array_unshift($payMethods, $cart);
             }
             if ($payMethod->value == 't' && $payMethod->status != 'ENABLED') {
-                $cart = $payMethod;
                 unset($payMethods[$id]);
             }
         }
+
+        $paymentMethodsOrder = explode(',', str_replace(' ', '', Configuration::get('PAYU_PAYMENT_METHODS_ORDER')));
+
+        if (count($paymentMethodsOrder) > 0) {
+            array_walk(
+                $payMethods,
+                function ($item, $key, $paymentMethodsOrder) {
+                    if (array_key_exists($item->value, $paymentMethodsOrder)) {
+                        $item->sort = $paymentMethodsOrder[$item->value];
+                    } else {
+                        $item->sort = $key + 100;
+                    }
+                },
+                array_flip($paymentMethodsOrder)
+            );
+            usort(
+                $payMethods,
+                function ($a, $b) {
+                    return $a->sort - $b->sort;
+                }
+            );
+        }
+
         return $payMethods;
     }
 
