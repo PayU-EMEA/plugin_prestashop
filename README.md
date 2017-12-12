@@ -32,6 +32,7 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
 | Ponowienie płatności przez klienta w przypadku anulowania | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: |
+| Kolejność metod płatności | :white_check_mark: | :white_check_mark: |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
 
@@ -81,6 +82,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 | Parameter | Opis | 
 |---------|-----------|
 | Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
+| Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności). |
 | Tryb testowy (Sandbox) | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU |
 
 ### Parametry POS-ów
@@ -105,6 +107,11 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 | Anulowana | `CANCELED` | Płatność PayU anulowana |
 
 ## Więcej o cechach
+
+### Kolejność metod płatności
+Ma zastosowanie tylko przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak`
+
+W celu ustalenia kolejności wyświetlanych ikon matod płatności należy podać symbole metod płatności oddzielając je przecinkiem. [Lista metod płatności][ext6].
 
 ### Wielowalutowość
 POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatność w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji POSa dla każdej waluty z osobna.   
@@ -139,6 +146,7 @@ W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie
 [ext3]: https://github.com/PayU/plugin_prestashop
 [ext4]: https://secure.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 [ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
+[ext6]: http://developers.payu.com/pl/overview.html#paymethods
 
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png
