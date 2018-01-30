@@ -144,8 +144,8 @@ W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
 [ext3]: https://github.com/PayU/plugin_prestashop
-[ext4]: https://secure.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
-[ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
+[ext4]: https://secure.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
+[ext5]: https://secure.snd.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
 [ext6]: http://developers.payu.com/pl/overview.html#paymethods
 
 <!--images:-->
