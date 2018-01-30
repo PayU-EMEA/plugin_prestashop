@@ -150,7 +150,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     private function postProcessPayment()
     {
-        if ($this->context->cart->id_customer == 0 || $this->context->cart->id_address_delivery == 0 || $this->context->cart->id_address_invoice == 0 || empty($this->context->cart->getProducts())) {
+        if ($this->context->cart->id_customer == 0 || $this->context->cart->id_address_delivery == 0 || $this->context->cart->id_address_invoice == 0 || !count($this->context->cart->getProducts())) {
             Tools::redirectLink(__PS_BASE_URI__ . 'order.php?step=1');
         }
 
