@@ -581,7 +581,7 @@ class PayU extends PaymentModule
         }
 
         $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $paymentOption->setCallToActionText($this->l('Pay with PayU'))
+        $paymentOption->setCallToActionText($this->l('Payment by card or bank transfer via PayU'))
             ->setLogo($this->getPayuLogo('payu_u_icon.png'))
             ->setModuleName($this->name)
             ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
@@ -610,7 +610,7 @@ class PayU extends PaymentModule
     public function hookDisplayPaymentEU()
     {
         $payment_options = array(
-            'cta_text' => $this->l('Pay with PayU'),
+            'cta_text' => $this->l('Payment by card or bank transfer via PayU'),
             'logo' => $this->getPayuLogo(),
             'action' => $this->context->link->getModuleLink('payu', 'payment')
         );
