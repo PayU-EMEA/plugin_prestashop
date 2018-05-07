@@ -64,7 +64,7 @@
             {/if}
             {if !isset($payMethods.error)}
                 <button class="btn btn-primary float-xs-right continue" type="submit">
-                    <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}<i class="material-icons">&#xE315;</i></span>
+                    <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}<i class="material-icons">chevron_right</i></span>
                 </button>
             {/if}
         </p>
