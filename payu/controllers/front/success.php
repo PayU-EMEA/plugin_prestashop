@@ -107,13 +107,13 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
         if (Validate::isLoadedObject($this->order)) {
             $currency = new Currency((int) $this->order->id_currency);
 
-            $params = array();
-            $params['objOrder'] = $this->order;
-            $params['currencyObj'] = $currency;
-            $params['currency'] = $currency->sign;
-            $params['total_to_pay'] = $this->order->getOrdersTotalPaid();
-
-            return $params;
+            return array(
+                'objOrder' => $this->order,
+                'order' => $this->order,
+                'currencyObj' => $currency,
+                'currency' => $currency->sign,
+                'total_to_pay' => $this->order->getOrdersTotalPaid()
+            );
         }
 
         return false;
