@@ -1,65 +1,72 @@
-##3.0.4
+## 3.0.6
+ * Minor fixes
+
+## 3.0.5
+ * Fix for php 5.4
+ * Update CTA text
+
+## 3.0.4
  * Place OCR after Order
  * Add paymethods order
 
-##3.0.3
+## 3.0.3
  * Add sandbox
  * Update SDK
 
-##3.0.2
+## 3.0.2
  * Add thank you page after return from PayU
  * Fix IE11 issue
  * Fix for PHP 5.3
  * Fix notice on payu payment page
  * Fix save settings
 
-##3.0.1
+## 3.0.1
  * Fix for PrestaShop 1.6
 
-##3.0.0
+## 3.0.0
  * Add support for PrestaShop 1.7
  * Remove support for PrestaShop 1.4 and 1.5
  * Migrate configure page to bootstrap
  * Cleanup code
 
-##2.5.1
+## 2.5.1
  * Fix disable payment methods by currency for Prestashop 1.4
 
-##2.5.0
+## 2.5.0
  * Add retry payment support
  * Fix for Prestashop 1.4 and 1.5
 
-##2.4.2
+## 2.4.2
  * Add czech language support
 
-##2.4.1
+## 2.4.1
  * Fix show error on pay methods page
  * Cleanup code
 
-##2.4.0
+## 2.4.0
  * New integration method - payment methods displayed on Prestashop checkout summary page
  * Cleanup code
 
-##2.3.2
+## 2.3.2
  * Remove ePayment support
  * Remove unused parameters
  * Cleanup code
 
-##2.3.1
+## 2.3.1
  * Add multicurrency support
 
-##2.3.0
+## 2.3.0
  * Update PayU SDK
  * Add support for OAuth
 
-##2.2.3
+## 2.2.3
  * beautiful pay buttons
  * fix return to OPC (one Page Checkout)
 
-##2.2.2
+## 2.2.2
  * Fix for accept/reject waiting_for_confirmation payment 
  
-##2.1.9 / 2.2.0
+## 2.1.9 / 2.2.0
  * Remove invoice and shipping information on summary page
  * Prevent mass click on pay button
  * Compatible with Advanced UE compliance module
@@ -67,30 +74,30 @@
  * Update logotypes
  * Cleanup code
 
-##2.1.6
+## 2.1.6
  * Basic logging feature added for notification path tracking
  * Multiply orders and status changes bug fixed
 
-##2.1.5
+## 2.1.5
  * Fixed return to payment methods button for Prestashop 1.6+
  * Added translations for Prestashop 1.6+
  * Fixed bugs
 
-##2.1.4
+## 2.1.4
  * Fixed return to payment methods button for Prestashop 1.6+
  * Added translations for Prestashop 1.6+
  * Fixed bugs
 
-##2.1.4
+## 2.1.4
 * Fixed validityTime
 
-##2.1.3
+## 2.1.3
 * Payment id visible in admin panel after payment is completed
 
-##2.1.2
+## 2.1.2
 * Notifications in Presta 1.4.4 fixed
 
-##2.1.1
+## 2.1.1
 * Openpayu_php SDK 2.1 compatible
 
 ## 2.0.4
