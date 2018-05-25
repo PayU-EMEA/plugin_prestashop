@@ -18,9 +18,9 @@
 
 {if $payuErrors|@count}
     <div class="alert alert-warning">
-    {foreach $payuErrors as $error}
-        {$error}<br>
-    {/foreach}
+        {foreach $payuErrors as $error}
+            {$error}<br>
+        {/foreach}
     </div>
 {/if}
 
@@ -32,19 +32,18 @@
         <h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>
     {else}
         <div id="payMethods">
-        {foreach $payMethods.payByLinks as $payByLink}
-            <div class="payMethod {if $payByLink->status != 'ENABLED'}payMethodDisable{else}payMethodEnable{/if} {if $payMethod == $payByLink->value}payMethodActive{/if}">
-                {if $payByLink->status == 'ENABLED'}
-                    <input id="payMethod-{$payByLink->value}" type="radio" value="{$payByLink->value}" name="payMethod" {if $payMethod == $payByLink->value}checked="checked"{/if}>
-                {/if}
-                <label for="payMethod-{$payByLink->value}" class="payMethodLabel">
-                    <div class="payMethodImage"><img src="{$payByLink->brandImageUrl}" alt="{$payByLink->name}"></div>
-                    {$payByLink->name}
-                </label>
-            </div>
-        {/foreach}
+            {foreach $payMethods.payByLinks as $payByLink}
+                <div class="payMethod {if $payByLink->status != 'ENABLED'}payMethodDisable{else}payMethodEnable{/if} {if $payMethod == $payByLink->value}payMethodActive{/if}">
+                    {if $payByLink->status == 'ENABLED'}
+                        <input id="payMethod-{$payByLink->value}" type="radio" value="{$payByLink->value}" name="payMethod" {if $payMethod == $payByLink->value}checked="checked"{/if}>
+                    {/if}
+                    <label for="payMethod-{$payByLink->value}" class="payMethodLabel">
+                        <div class="payMethodImage"><img src="{$payByLink->brandImageUrl}" alt="{$payByLink->name}"></div>
+                        {$payByLink->name}
+                    </label>
+                </div>
+            {/foreach}
         </div>
-
 
         <div class="payuConditions checkbox">
             <strong>{l s='Payment order' mod='payu'}</strong>:<br>
@@ -55,7 +54,11 @@
                     {l s='I accept' mod='payu'} <a target="_blank" href="{$conditionUrl}">{l s='Terms of single PayU payment transaction' mod='payu'}</a>
                 </label>
             </div>
-            {l s="The administrator of your personal data within the meaning of the Personal Data Protection Act of 29 August 1997 (Journal of Laws of 2002, No. 101, item 926 as amended) is PayU SA with the registered office in Poznań (60-166) at ul. Grunwaldzka 182. Your personal data will be processed according to the applicable provisions of law for archiving and service provision purposes. Your data will not be made available to other entities, except of entities authorized by law. You are entitled to access and edit your data. Data provision is voluntary but required to achieve the above-mentioned purposes." mod='payu'}
+            {l s='The controller of your personal data is PayU S.A. with its registered office in Poznan (60-166), at Grunwaldzka Street 182 ("PayU"). Your personal data will be processed for purposes of processing  payment transaction, notifying You about the status of this payment, dealing with complaints and also in order to fulfill the legal obligations imposed on PayU.' mod='payu'}
+            <br />
+            {l s='The recipients of your personal data may be entities cooperating with PayU during processing the payment. Depending on the payment method you choose, these may include: banks, payment institutions, loan institutions, payment card organizations, payment schemes), as well as suppliers supporting PayU’s activity providing: IT infrastructure, payment risk analysis tools and also entities that are authorised to receive it under the applicable provisions of law, including relevant judicial authorities. Your personal data may be shared with merchants to inform them about the status of the payment.' mod='payu'}
+            <br />
+            {l s='You have the right to access, rectify, restrict or oppose the processing of data, not to be subject to automated decision making, including profiling, or to transfer and erase Your personal data. Providing personal data is voluntary however necessary for the processing the payment and failure to provide the data may result in the rejection of the payment. For more information on how PayU processes your personal data, please click' mod='payu'} <a href="{l s='https://static.payu.com/sites/terms/files/payu_privacy_policy_en_en.pdf' mod='payu'}" target="_blank">{l s='Payu Privacy Policy' mod='payu'}</a>.
         </div>
 
     {/if}

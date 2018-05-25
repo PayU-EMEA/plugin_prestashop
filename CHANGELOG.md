@@ -1,3 +1,6 @@
+## 3.0.7
+ * Update Private Policy
+
 ## 3.0.6
  * Minor fixes
 
