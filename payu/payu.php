@@ -31,7 +31,6 @@ class PayU extends PaymentModule
     public $order = null;
     public $payu_order_id = '';
     public $id_order = null;
-    public $payu_payment_id = null;
 
     /** @var string */
     private $extOrderId = '';
@@ -41,7 +40,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.0.7';
+        $this->version = '3.0.8';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;

@@ -1,3 +1,6 @@
+## 3.0.8
+ * Fixed http 500 for COMPLETED notification
+
 ## 3.0.7
  * Update Private Policy
 

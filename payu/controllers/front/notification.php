@@ -40,52 +40,12 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
             if ($order_payment) {
                 $payu->id_order = (int)$order_payment['id_order'];
                 $payu->updateOrderData($response);
-
-                $paymentId = $this->getPaymentId($response);
-
-                if ($paymentId !== false && $response->order->status == OpenPayuOrderStatus::STATUS_COMPLETED) {
-                    $this->addPaymentIdToOrder($payu, $paymentId);
-                }
             }
 
             //the response should be status 200
             header("HTTP/1.1 200 OK");
             exit;
         }
-    }
-
-    /**
-     * @param Payu $payu
-     * @param $paymentId
-     */
-    private function addPaymentIdToOrder(Payu $payu, $paymentId)
-    {
-        $payu->payu_payment_id = $paymentId;
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'PAYMENT_ID: ' . $payu->payu_payment_id, $payu->payu_order_id);
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Status zamówienia PayU: ' . OpenPayuOrderStatus::STATUS_COMPLETED, $payu->payu_order_id);
-
-        if (version_compare(_PS_VERSION_, '1.5', 'ge')) {
-            $order = new Order($payu->id_order);
-
-            $payment = $order->getOrderPaymentCollection();
-            $payments = $payment->getAll();
-            $payments[$payment->count() - 1]->transaction_id = $payu->payu_payment_id;
-            $payments[$payment->count() - 1]->update();
-        } else {
-            $payu->addMsgToOrder('payment_id: ' . $payu->payu_payment_id, $payu->id_order);
-        }
-    }
-
-    /**
-     * @param $response
-     * @return bool | string
-     */
-    private function getPaymentId($response)
-    {
-        if (isset($response->properties)) {
-            return $this->extractPaymentIdFromProperties($response->properties);
-        }
-        return false;
     }
 
     /**
@@ -96,22 +56,5 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
     {
         $decodeData = json_decode($data);
         return $decodeData->order->currencyCode;
-    }
-
-    /**
-     * @param array $properties
-     * @return bool | string
-     */
-    private function extractPaymentIdFromProperties($properties)
-    {
-        if (is_array($properties)) {
-            foreach ($properties as $property) {
-                if ($property->name == 'PAYMENT_ID') {
-                    return $property->value;
-                }
-            }
-        }
-
-        return false;
     }
 }
