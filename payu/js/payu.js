@@ -1,4 +1,8 @@
+var openpayu = openpayu || {};
+openpayu.options = openpayu.options || {};
+
 $(document).ready(function () {
+
     $('.payMethodEnable .payMethodLabel').click(function () {
         $('.payMethod').removeClass('payMethodActive');
         $(this).closest('.payMethod').addClass('payMethodActive');
@@ -14,6 +18,22 @@ $(document).ready(function () {
     })
 
     $('#payuRetryPayment17').insertBefore($('#order-history'));
+
+    $("img[src*='raty_small.png']").mouseover(function() {
+        $.get( "https://static.payu.com/res/v2/tunnel.html", function( data ) {
+            alert(data);
+        });
+    });
+
+    $("img[src*='raty_small2.png']").mouseover(function() {
+        $.get( "https://static.payu.com/res/v2/tunnel.html", function( data ) {
+            alert(data);
+        });
+    });
+
+    $("img[src*='raty_small.png']")
+        .parent()
+        .append("<span>Rata już od: <span id='payu-installments-mini-cart'></span></spaan><script type='text/javascript'>openpayu.options.creditAmount=prestashop.cart.totals.total.amount;OpenPayU.Installments.miniInstallment('#payu-installments-mini-cart');</script>");
 });
 
 function doubleClickPrevent(object) {

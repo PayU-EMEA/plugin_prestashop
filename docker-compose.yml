@@ -1,0 +1,25 @@
+version: '3'
+services:
+    presta:
+      image: prestashop/prestashop:1.7.3.3
+      container_name: prestashop
+      environment:
+          - DB_SERVER=mysqldb
+      ports:
+          - "8080:80"
+      links:
+          - mysqldb
+      depends_on:
+          - mysqldb
+    mysqldb:
+        image: mysql:5.7
+        container_name: mysqldb
+        environment:
+            - MYSQL_ROOT_PASSWORD=admin
+            - MYSQL_DATABASE=presta
+            - MYSQL_USER=presta
+            - MYSQL_PASSWORD=presta
+        ports:
+            - "3306:3306"
+        volumes:
+            - "./data/db/mysql:/var/lib/mysql"

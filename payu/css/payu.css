@@ -134,3 +134,12 @@ p.payment_module_17 a.payu img {
     height: 70px;
     vertical-align: middle;
 }
+
+.payu-installment-price-listing {
+    font-size: 12px;
+}
+
+.payu-installment-price-listing > p {
+    font-size: 12px;
+    display: inline-block;
+}
