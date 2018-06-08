@@ -7,7 +7,7 @@
  *
  * http://www.payu.com
 *}
-{if $credit_available == true && cart_total_amount>0}
+{if $credit_available == true && $cart_total_amount>0}
     <span>
         Rata juz od:
         <span id="payu-installment-cart-summary"></span>
