@@ -29,10 +29,14 @@
         <span id="payu-installment-cart-summary"></span>
     		</span>
 				<script type="text/javascript">
-                    document.addEventListener("DOMContentLoaded", function(event) {
-                        openpayu.options.creditAmount={$cart_total_amount|floatval};
-                        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
-                    });
+					document.addEventListener("DOMContentLoaded", function(event) {
+						openpayu.options.creditAmount ={$cart_total_amount|floatval};
+						OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+					});
+					if(openpayu) {
+						openpayu.options.creditAmount ={$cart_total_amount|floatval};
+						OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');  
+					}
 				</script>
 			</a>
 		</p>

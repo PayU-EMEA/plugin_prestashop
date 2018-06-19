@@ -14,8 +14,12 @@
 </span>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-        openpayu.options.creditAmount={$product_price|floatval};
+        openpayu.options.creditAmount ={$product_price|floatval};
         OpenPayU.Installments.miniInstallment('#payu-installment-mini-{$product_id}');
     });
+    if(openpayu) {
+        openpayu.options.creditAmount ={$product_price|floatval};
+        OpenPayU.Installments.miniInstallment('#payu-installment-mini-{$product_id}');
+    }
 </script>
 {/if}
