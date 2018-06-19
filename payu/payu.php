@@ -660,13 +660,17 @@ class PayU extends PaymentModule
             $cart = $params['cart'];
             $totalPrice = $cart->getOrderTotal();
             if($totalPrice > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')){
+
+                $this->context->smarty->assign(array(
+                    'total_price' => $totalPrice
+                ));
+
                 $creditOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $creditOption->setCallToActionText(
-                    $this->l('Credit your order!')
+                    $this->l('Płatność na raty z PayU')
                 )
-                    ->setLogo($this->getPayuLogo('raty_small.png'))
                     ->setModuleName($this->name)
-                    ->setAdditionalInformation('<p>Take a credit!</p><iframe src="https://static.payu.com/sites/terms/files/payu_privacy_policy_pl_pl.pdf" width="400" height="400" ></iframe>')
+                    ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment?payuPay=1&payMethod=ai&payuConditions=true'));
 
                 return array($paymentOption, $creditOption);
