@@ -8,7 +8,7 @@
  * http://www.payu.com
 *}
 {if $credit_available == true && $cart_total_amount>0}
-    <div style="padding-bottom: 1.25em">
+    <div class="payu-installment-panel" >
             <span>
                 Rata już od:
             </span>
@@ -21,6 +21,6 @@
 
             </script>
     </div>
-    <hr class="separator" style="position:absolute;left:0;right:0;">
+    <hr class="separator payu-separator-reset" >
     <p></p>
 {/if}

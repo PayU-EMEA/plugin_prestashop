@@ -143,3 +143,12 @@ p.payment_module_17 a.payu img {
     font-size: 12px;
     display: inline-block;
 }
+
+.payu-separator-reset{
+    position:absolute;
+    left:0;
+    right:0;
+}
+.payu-installment-panel{
+     padding-bottom: 1.25em;
+ }
