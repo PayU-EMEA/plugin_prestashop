@@ -21,10 +21,10 @@
 <div class="row">
 	<div class="col-xs-12">
 		<p class="payment_module">
-			<a class="payu" href="{$creditActionUrl|escape:'htmlall':'UTF-8'}" title="{l s='Credit your order!' mod='payu'}">
-				<img src="{$creditImage|escape:'htmlall':'UTF-8'}" alt="{l s='Credit your order!' mod='payu'}" />
-                {l s='Credit your order!' mod='payu'}
-				<span>
+			<a class="payu" href="{$creditActionUrl|escape:'htmlall':'UTF-8'}" title="{l s='Zapłać na raty z PayU' mod='payu'}">
+				<img src="{$creditImage|escape:'htmlall':'UTF-8'}" alt="{l s='Zapłać na raty z PayU' mod='payu'}" />
+                {l s='Zapłać na raty z PayU' mod='payu'}
+				<span style="margin-left: 15px;">
         Rata juz od:
         <span id="payu-installment-cart-summary"></span>
     		</span>
