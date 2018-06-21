@@ -18,10 +18,6 @@ $(document).ready(function () {
     })
 
     $('#payuRetryPayment17').insertBefore($('#order-history'));
-
-    $("img[src*='raty_small.png']")
-        .parent()
-        .append("<span>Rata już od: <span id='payu-installments-mini-cart'></span></spaan><script type='text/javascript'>openpayu.options.creditAmount=prestashop.cart.totals.total.amount;OpenPayU.Installments.miniInstallment('#payu-installments-mini-cart');</script>");
 });
 
 function doubleClickPrevent(object) {

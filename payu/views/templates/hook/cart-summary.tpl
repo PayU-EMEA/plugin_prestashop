@@ -9,13 +9,12 @@
 *}
 {if $credit_available == true && $cart_total_amount>0}
     <div class="payu-installment-panel" >
-            <span>
-                Rata już od:
-            </span>
             <span id="payu-installment-cart-total"></span>
             <script type="text/javascript">
                 document.addEventListener("DOMContentLoaded", function (event) {
                     openpayu.options.creditAmount ={$cart_total_amount|floatval};
+                    openpayu.options.showLongDescription = true;
+                    openpayu.options.lang = 'pl';
                     OpenPayU.Installments.miniInstallment('#payu-installment-cart-total');
                 });
 

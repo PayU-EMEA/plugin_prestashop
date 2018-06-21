@@ -9,16 +9,19 @@
 *}
 {if $credit_available == true && $cart_total_amount>0}
     <span>
-        Rata juz od:
         <span id="payu-installment-cart-summary"></span>
     </span>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function(event) {
             openpayu.options.creditAmount ={$cart_total_amount|floatval};
+            openpayu.options.showLongDescription = true;
+            openpayu.options.lang = 'pl';
             OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
         });
         if(typeof openpayu !== 'undefined' && openpayu != null) {
 			openpayu.options.creditAmount ={$cart_total_amount|floatval};
+            openpayu.options.showLongDescription = true;
+            openpayu.options.lang = 'pl';
 			OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');  
 		}
     </script>
