@@ -1317,7 +1317,8 @@ class PayU extends PaymentModule
             $this->registerHook('adminOrder') &&
             $this->registerHook('displayOrderDetail') &&
             $this->registerHook('displayProductPriceBlock') &&
-            $this->registerHook('displayCheckoutSubtotalDetails');
+            $this->registerHook('displayCheckoutSubtotalDetails') &&
+            $this->registerHook('displayCheckoutSummaryTop');
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             $registerStatus &= $this->registerHook('displayPaymentEU') && $this->registerHook('payment');
@@ -1342,6 +1343,22 @@ class PayU extends PaymentModule
             'cart_total_amount' => $params['cart']->getOrderTotal()
         ));
         return $this->display(__FILE__, 'cart-detailed-totals.tpl');
+    }
+
+    public function hookDisplayCheckoutSummaryTop($params){
+        if ((Configuration::get('PAYU_PROMOTE_CREDIT') === '0') ||
+            ($params['cart']->getOrderTotal() < Configuration::get('PAYU_MIN_CREDIT_AMOUNT'))) {
+            $this->context->smarty->assign(array(
+                'credit_available' => false
+            ));
+            return $this->display(__FILE__, 'cart-summary.tpl');
+        }
+
+        $this->context->smarty->assign(array(
+            'credit_available' => true,
+            'cart_total_amount' => $params['cart']->getOrderTotal()
+        ));
+        return $this->display(__FILE__, 'cart-summary.tpl');
     }
 
     public function hookDisplayProductPriceBlock($params)
