@@ -651,8 +651,8 @@ class PayU extends PaymentModule
         }
 
         $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $paymentOption->setCallToActionText($this->l('Payment by card or bank transfer via PayU'))
-            ->setLogo($this->getPayuLogo('payu_u_icon.png'))
+        $paymentOption->setCallToActionText($this->l('Pay by online transfer or card'))
+            ->setLogo($this->getPayuLogo('logo-payu.png'))
             ->setModuleName($this->name)
             ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
 
@@ -665,15 +665,24 @@ class PayU extends PaymentModule
                     'total_price' => $totalPrice
                 ));
 
-                $creditOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-                $creditOption->setCallToActionText(
-                    $this->l('Płatność na raty z PayU')
+                $installmentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+                $installmentOption->setCallToActionText(
+                    $this->l('Pay online in installments')
                 )
                     ->setModuleName($this->name)
                     ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment?payuPay=1&payMethod=ai&payuConditions=true'));
 
-                return array($paymentOption, $creditOption);
+                $payULaterOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+                $payULaterOption->setCallToActionText(
+                    $this->l('Pay within 30 days with PayU')
+                )
+                    ->setModuleName($this->name)
+                    ->setAdditionalInformation($this->fetchTemplate('checkout_payu_later.tpl'))
+                    ->setAction($this->context->link->getModuleLink($this->name, 'payment?payuPay=1&payMethod=dp&payuConditions=true'));
+
+
+                return array($paymentOption, $installmentOption, $payULaterOption);
             }
         }
 
@@ -693,6 +702,7 @@ class PayU extends PaymentModule
                 'creditImage' => $this->getPayuLogo('raty_small2.png'),
                 'actionUrl' => $link,
                 'creditActionUrl' => $link."?payuPay=1&payMethod=ai&payuConditions=true",
+                'creditPayULaterActionUrl' => $link."?payuPay=1&payMethod=dp&payuConditions=true",
                 'credit_available' => (Configuration::get('PAYU_PROMOTE_CREDIT') === '1' &&
                     $params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')),
                 'cart_total_amount'=>$params['cart']->getOrderTotal())
