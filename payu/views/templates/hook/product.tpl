@@ -17,7 +17,7 @@
         openpayu.options.creditAmount ={$product_price|floatval};
         OpenPayU.Installments.miniInstallment('#payu-installment-mini-{$product_id}');
     });
-    if(openpayu) {
+    if(typeof openpayu !== 'undefined' && openpayu != null) {
         openpayu.options.creditAmount ={$product_price|floatval};
         OpenPayU.Installments.miniInstallment('#payu-installment-mini-{$product_id}');
     }
