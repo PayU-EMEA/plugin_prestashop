@@ -24,31 +24,27 @@
 {if $credit_available == true}
     <div class="row">
         <div class="col-xs-12">
-            <p class="payment_module">
-                <a class="payu-payment-credit-tile" href="{$creditActionUrl|escape:'htmlall':'UTF-8'}"
-                   title="{l s='Pay online in installments' mod='payu'}">
-                    {l s='Pay online in installments' mod='payu'}
-                    <span style="margin-left: 15px;">
-                        <span id="payu-installment-cart-summary"></span>
-                    </span>
-                    <script type="text/javascript">
-                        document.addEventListener("DOMContentLoaded", function (event) {
-                            openpayu.options.creditAmount ={$cart_total_amount|floatval};
-                            openpayu.options.showLongDescription = true;
-                            openpayu.options.lang = 'pl';
-                            OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
-                        });
-                        if (document.getElementById("payu-installment-cart-summary").childNodes.length != 0 &&
-                            typeof openpayu !== 'undefined' &&
-                            openpayu != null) {
-                            openpayu.options.creditAmount ={$cart_total_amount|floatval};
-                            openpayu.options.showLongDescription = true;
-                            openpayu.options.lang = 'pl';
-                            OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
-                        }
-                    </script>
-                </a>
-            </p>
+            <div class="payu-payment-credit-installment-tile" onclick="location.href='{$creditActionUrl|escape:'htmlall':'UTF-8'}'"
+                 title="{l s='Pay online in installments' mod='payu'}">
+                {l s='Pay online in installments' mod='payu'}
+                <span id="payu-installment-cart-summary" class="payu-installment-cart-summary"></span>
+                <script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function (event) {
+                        openpayu.options.creditAmount ={$cart_total_amount|floatval};
+                        openpayu.options.showLongDescription = true;
+                        openpayu.options.lang = 'pl';
+                        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+                    });
+                    if (document.getElementById("payu-installment-cart-summary").childNodes.length != 0 &&
+                        typeof openpayu !== 'undefined' &&
+                        openpayu != null) {
+                        openpayu.options.creditAmount ={$cart_total_amount|floatval};
+                        openpayu.options.showLongDescription = true;
+                        openpayu.options.lang = 'pl';
+                        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+                    }
+                </script>
+            </div>
         </div>
     </div>
     <div class="row">

@@ -580,7 +580,7 @@ class PayU extends PaymentModule
             $this->context->controller->addJS('https://static.payu.com/res/v2/jquery.i18n.payu.js', 'all');
             $this->context->controller->addJS('https://static.payu.com/res/v2/jsrender.js', 'all');
             $this->context->controller->addJS('https://static.payu.com/res/v2/openpayu-2.0.js', 'all');
-            $this->context->controller->addJS('https://static.payu.com/res/v2/widget-installments-2.0.js', 'all');
+            $this->context->controller->addJS('http://pu-manager1.angrybirds2-dev.pl-kra-02.dc4.local:8090/res/v2/widget-installments-2.1.js', 'all');
         } else {
             $this->context->controller->registerJavascript(
                 'remote-jquery-payu',
@@ -604,7 +604,7 @@ class PayU extends PaymentModule
                 ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
             $this->context->controller->registerJavascript(
                 'remote-installments-payu',
-                'https://static.payu.com/res/v2/widget-installments-2.0.js',
+                'http://pu-manager1.angrybirds2-dev.pl-kra-02.dc4.local:8090/res/v2/widget-installments-2.1.js',
                 ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
             $this->context->controller->registerStylesheet(
                 'remote-installments-css-payu',
