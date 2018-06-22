@@ -18,7 +18,9 @@
         openpayu.options.lang = 'pl';
         OpenPayU.Installments.miniInstallment('#payu-installment-mini-{$product_id}');
     });
-    if(typeof openpayu !== 'undefined' && openpayu != null) {
+    if (document.getElementById("payu-installment-mini-{$product_id}").childNodes.length != 0 &&
+        typeof openpayu !== 'undefined' &&
+        openpayu != null) {
         openpayu.options.creditAmount ={$product_price|floatval};
         openpayu.options.showLongDescription = true;
         openpayu.options.lang = 'pl';

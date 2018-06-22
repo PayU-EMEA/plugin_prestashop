@@ -29,8 +29,8 @@
                    title="{l s='Pay online in installments' mod='payu'}">
                     {l s='Pay online in installments' mod='payu'}
                     <span style="margin-left: 15px;">
-        <span id="payu-installment-cart-summary"></span>
-    		</span>
+                        <span id="payu-installment-cart-summary"></span>
+                    </span>
                     <script type="text/javascript">
                         document.addEventListener("DOMContentLoaded", function (event) {
                             openpayu.options.creditAmount ={$cart_total_amount|floatval};
@@ -38,7 +38,9 @@
                             openpayu.options.lang = 'pl';
                             OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
                         });
-                        if (typeof openpayu !== 'undefined' && openpayu != null) {
+                        if (document.getElementById("payu-installment-cart-summary").childNodes.length != 0 &&
+                            typeof openpayu !== 'undefined' &&
+                            openpayu != null) {
                             openpayu.options.creditAmount ={$cart_total_amount|floatval};
                             openpayu.options.showLongDescription = true;
                             openpayu.options.lang = 'pl';

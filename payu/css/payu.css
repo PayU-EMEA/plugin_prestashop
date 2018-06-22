@@ -159,12 +159,12 @@ img[src*="logo-payu.png"] {
 .payu-pay-image-16 {
     width: 50px;
     height: 25px;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: 24px;
+    margin-bottom: 24px;
 }
 
 p.payment_module a.payu-payment-credit-tile {
-    padding: 28px;
+    padding: 33px;
 }
 
 .payu-separator-reset{
@@ -175,3 +175,10 @@ p.payment_module a.payu-payment-credit-tile {
 .payu-installment-panel{
      padding-bottom: 1.25em;
  }
+
+.payu-installment-cart-summary > span > a {
+    display: inline;
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}
