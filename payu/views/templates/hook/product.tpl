@@ -13,6 +13,9 @@
 </span>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
+        $(".payu-installment-price-listing").parent().css("margin-top","-7px");
+        $(".payu-installment-price-listing").parent().prev().css("margin-top","9px");
+        $(".payu-installment-price-listing > span").css("margin-top","-5px");
         if($('#payu-installment-mini-{$product_id}_installment-mini-details').length == 0) {
             openpayu.options.creditAmount ={$product_price|floatval};
             openpayu.options.showLongDescription = true;
