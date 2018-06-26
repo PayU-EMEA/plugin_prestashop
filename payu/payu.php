@@ -90,7 +90,10 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_SANDBOX', 0) &&
             Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', '') &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT', 1) &&
-            Configuration::updateValue('PAYU_MIN_CREDIT_AMOUNT', 300)
+            Configuration::updateValue('PAYU_MIN_CREDIT_AMOUNT', 300) &&
+            Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', 1) &&
+            Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', 1) &&
+            Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', 1)
         );
     }
 
@@ -116,7 +119,10 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_SANDBOX') ||
             !Configuration::deleteByName('PAYU_PAYMENT_METHODS_ORDER') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT') ||
-            !Configuration::deleteByName('PAYU_MIN_CREDIT_AMOUNT')
+            !Configuration::deleteByName('PAYU_MIN_CREDIT_AMOUNT') ||
+            !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_CART') ||
+            !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_SUMMARY') ||
+            !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_PRODUCT')
         ) {
             return false;
         }
@@ -201,7 +207,10 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', Tools::getValue('PAYU_PAYMENT_METHODS_ORDER')) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT', (Tools::getValue('PAYU_PROMOTE_CREDIT') ? 1 : 0)) ||
-                !Configuration::updateValue('PAYU_MIN_CREDIT_AMOUNT', Tools::getValue('PAYU_MIN_CREDIT_AMOUNT'))
+                !Configuration::updateValue('PAYU_MIN_CREDIT_AMOUNT', Tools::getValue('PAYU_MIN_CREDIT_AMOUNT')) ||
+                !Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', (Tools::getValue('PAYU_PROMOTE_CREDIT_CART') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', (Tools::getValue('PAYU_PROMOTE_CREDIT_SUMMARY') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', (Tools::getValue('PAYU_PROMOTE_CREDIT_PRODUCT') ? 1 : 0))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -234,9 +243,63 @@ class PayU extends PaymentModule
                 'input' => array(
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Promote credit payment method'),
-                        'desc' => $this->l('Promotes credit payment method on checkout and product pages'),
+                        'label' => $this->l('Promote credit payment methods'),
+                        'desc' => $this->l('Enables credit payment methods on summary and enables promoting installments'),
                         'name' => 'PAYU_PROMOTE_CREDIT',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    !version_compare(_PS_VERSION_, '1.7', 'lt')? array(
+                        'type' => 'switch',
+                        'label' => $this->l('Show installment on cart'),
+                        'desc' => $this->l('Promotes credit payment method on cart'),
+                        'name' => 'PAYU_PROMOTE_CREDIT_CART',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ):[],
+                    !version_compare(_PS_VERSION_, '1.7', 'lt')? array(
+                        'type' => 'switch',
+                        'label' => $this->l('Show installment on summary'),
+                        'desc' => $this->l('Promotes credit payment method on summary'),
+                        'name' => 'PAYU_PROMOTE_CREDIT_SUMMARY',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ):[],
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Show installments on product'),
+                        'desc' => $this->l('Promotes credit payment method on product'),
+                        'name' => 'PAYU_PROMOTE_CREDIT_PRODUCT',
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -462,6 +525,9 @@ class PayU extends PaymentModule
             'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX'),
             'PAYU_PAYMENT_METHODS_ORDER' => Configuration::get('PAYU_PAYMENT_METHODS_ORDER'),
             'PAYU_PROMOTE_CREDIT' => Configuration::get('PAYU_PROMOTE_CREDIT'),
+            'PAYU_PROMOTE_CREDIT_CART' => Configuration::get('PAYU_PROMOTE_CREDIT_CART'),
+            'PAYU_PROMOTE_CREDIT_SUMMARY' => Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY'),
+            'PAYU_PROMOTE_CREDIT_PRODUCT' => Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT'),
             'PAYU_MIN_CREDIT_AMOUNT' => Configuration::get('PAYU_MIN_CREDIT_AMOUNT')
         );
 
@@ -1340,40 +1406,40 @@ class PayU extends PaymentModule
     }
 
     public function hookDisplayCheckoutSubtotalDetails($params){
-        if ((Configuration::get('PAYU_PROMOTE_CREDIT') === '0') ||
-            ($params['cart']->getOrderTotal() < Configuration::get('PAYU_MIN_CREDIT_AMOUNT'))) {
+        if ((Configuration::get('PAYU_PROMOTE_CREDIT') === '1') && (Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') &&
+            ($params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_CREDIT_AMOUNT'))) {
             $this->context->smarty->assign(array(
-                'credit_available' => false
+                'credit_available' => true,
+                'cart_total_amount' => $params['cart']->getOrderTotal()
             ));
             return $this->display(__FILE__, 'cart-detailed-totals.tpl');
         }
 
         $this->context->smarty->assign(array(
-            'credit_available' => true,
-            'cart_total_amount' => $params['cart']->getOrderTotal()
+            'credit_available' => false
         ));
         return $this->display(__FILE__, 'cart-detailed-totals.tpl');
     }
 
     public function hookDisplayCheckoutSummaryTop($params){
-        if ((Configuration::get('PAYU_PROMOTE_CREDIT') === '0') ||
-            ($params['cart']->getOrderTotal() < Configuration::get('PAYU_MIN_CREDIT_AMOUNT'))) {
+        if ((Configuration::get('PAYU_PROMOTE_CREDIT') === '1') && (Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1') &&
+            ($params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_CREDIT_AMOUNT'))) {
             $this->context->smarty->assign(array(
-                'credit_available' => false
+                'credit_available' => true,
+                'cart_total_amount' => $params['cart']->getOrderTotal()
             ));
             return $this->display(__FILE__, 'cart-summary.tpl');
         }
 
         $this->context->smarty->assign(array(
-            'credit_available' => true,
-            'cart_total_amount' => $params['cart']->getOrderTotal()
+            'credit_available' => false
         ));
         return $this->display(__FILE__, 'cart-summary.tpl');
     }
 
     public function hookDisplayProductPriceBlock($params)
     {
-        if (Configuration::get('PAYU_PROMOTE_CREDIT') === '0') {
+        if (Configuration::get('PAYU_PROMOTE_CREDIT') === '0' || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
             $this->context->smarty->assign(array(
                 'credit_available' => false
             ));
