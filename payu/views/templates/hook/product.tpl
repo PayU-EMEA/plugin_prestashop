@@ -9,19 +9,27 @@
 *}
 {if $credit_available == true }
 <span class="payu-installment-price-listing">
-        <span id="payu-installment-mini-{$product_id}"></span>
+        <span style="display: block;" class="payu-installment-mini-{$product_id}"></span>
 </span>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-        $(".payu-installment-price-listing").parent().css("margin-top","-7px");
-        $(".payu-installment-price-listing").parent().prev().css("margin-top","9px");
-        $(".payu-installment-price-listing > span").css("margin-top","-5px");
-        if($('#payu-installment-mini-{$product_id}_installment-mini-details').length == 0) {
+        $(".products").find(".payu-installment-price-listing").parent().css("margin-top","-7px");
+        $(".products").find(".payu-installment-price-listing").parent().prev().css("margin-top","9px");
+        $(".products").find(".payu-installment-price-listing > span").css("margin-top","-5px");
+
+        if($('.payu-installment-mini-{$product_id}_installment-mini-details').length == 0) {
             openpayu.options.creditAmount ={$product_price|floatval};
             openpayu.options.showLongDescription = true;
             openpayu.options.lang = 'pl';
-            OpenPayU.Installments.miniInstallment('#payu-installment-mini-{$product_id}');
+            OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id}');
         }
     });
+    if(typeof openpayu !== 'undefined' &&
+        openpayu != null && $('.payu-installment-mini-{$product_id}_installment-mini-details').length == 0) {
+        openpayu.options.creditAmount ={$product_price|floatval};
+        openpayu.options.showLongDescription = true;
+        openpayu.options.lang = 'pl';
+        OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id}');
+    }
 </script>
 {/if}
