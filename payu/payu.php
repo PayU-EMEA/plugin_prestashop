@@ -1441,13 +1441,17 @@ class PayU extends PaymentModule
     {
         if (Configuration::get('PAYU_PROMOTE_CREDIT') === '0' || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
             $this->context->smarty->assign(array(
-                'credit_available' => false
+                'credit_available' => 0
             ));
             return $this->display(__FILE__, 'product.tpl');
         }
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
-            if ($params['type'] === 'weight') {
+            $showInView = 'weight';
+            if($_SERVER['REQUEST_URI'] == "/") {
+                $showInView = "unit_price";
+            }
+            if ($params['type'] === $showInView) {
                 $product = $params['product'];
                 $price = null; $productId = null;
                 if(is_array($product)){
@@ -1458,10 +1462,17 @@ class PayU extends PaymentModule
                     $productId = $product->reference;
                 }
 
+                $creditAvailable = 0;
+                $priceWithDot = str_replace(',', '.', $price);
+                if(is_numeric(Configuration::get('PAYU_MIN_CREDIT_AMOUNT')) &&
+                   $priceWithDot > floatval(Configuration::get('PAYU_MIN_CREDIT_AMOUNT'))) {
+                    $creditAvailable = 1;
+                }
+
                 $this->context->smarty->assign(array(
                     'product_price' => $price,
                     'product_id' => $productId,
-                    'credit_available' => $price > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')
+                    'credit_available' => $creditAvailable
                 ));
                 return $this->display(__FILE__, 'product.tpl');
             }
