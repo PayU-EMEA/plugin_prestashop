@@ -15,8 +15,8 @@
     document.addEventListener("DOMContentLoaded", function(event) {
         var test = "{$credit_available}";
         $(".products").find(".payu-installment-price-listing").parent().css("margin-top","-7px");
-        $(".products").find(".payu-installment-price-listing").parent().prev().css("margin-top","9px");
-        $(".products").find(".payu-installment-price-listing > span").css("margin-top","-5px");
+        $(".products").find(".payu-installment-price-listing").parent().prev().css("margin-top","7px");
+        $(".products").find(".payu-installment-price-listing > span").css("margin-top","-2px");
 
         if($('.payu-installment-mini-{$product_id}_installment-mini-details').length == 0) {
             openpayu.options.creditAmount ={$product_price|floatval};

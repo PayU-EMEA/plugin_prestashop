@@ -8,7 +8,7 @@
  * http://www.payu.com
 *}
 {if $credit_available == true && $cart_total_amount>0}
-    <span>
+    <span style="display: block; margin-top: 10px;">
         <span id="payu-installment-cart-summary"></span>
     </span>
     <script type="text/javascript">
