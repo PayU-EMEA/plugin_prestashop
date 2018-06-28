@@ -7,13 +7,12 @@
  *
  * http://www.payu.com
 *}
-{if $credit_available == 1 }
+{if $credit_available == true }
 <span class="payu-installment-price-listing">
         <span style="display: block;" class="payu-installment-mini-{$product_id}"></span>
 </span>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
-        var test = "{$credit_available}";
         $(".products").find(".payu-installment-price-listing").parent().css("margin-top","-7px");
         $(".products").find(".payu-installment-price-listing").parent().prev().css("margin-top","7px");
         $(".products").find(".payu-installment-price-listing > span").css("margin-top","-2px");

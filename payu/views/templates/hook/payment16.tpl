@@ -47,6 +47,8 @@
             </div>
         </div>
     </div>
+{/if}
+{if $payu_later_available == true}
     <div class="row">
         <div class="col-xs-12">
             <div class="payu-payment-credit-later-tile" onclick="location.href='{$creditPayULaterActionUrl|escape:'htmlall':'UTF-8'}'"
