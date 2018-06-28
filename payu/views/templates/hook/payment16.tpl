@@ -49,15 +49,27 @@
     </div>
     <div class="row">
         <div class="col-xs-12">
-            <p class="payment_module">
-                <a class="payu-payment-credit-tile" href="{$creditPayULaterActionUrl|escape:'htmlall':'UTF-8'}"
-                   title="{l s='Pay within 30 days with PayU' mod='payu'}">
-                    {l s='Pay within 30 days with PayU' mod='payu'}
-                    <span id="payu-later-cart-summary">
-                        {l s='Details' mod='payu'}
-                    </span>
-                </a>
-            </p>
+            <div class="payu-payment-credit-later-tile" onclick="location.href='{$creditPayULaterActionUrl|escape:'htmlall':'UTF-8'}'"
+               title="{l s='Pay within 30 days with PayU' mod='payu'}">
+                {l s='Pay within 30 days with PayU' mod='payu'}
+                <span id="payu-later-cart-summary" class="payu-later-cart-summary"></span>
+                <script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function (event) {
+                        openpayu.options.amount ={$cart_total_amount|floatval};
+                        openpayu.options.customElement = false;
+                        openpayu.options.lang = 'pl';
+                        OpenPayU.DelayedPayment.miniDelayedPayment('#payu-later-cart-summary');
+                    });
+                    if (document.getElementById("payu-later-cart-summary").childNodes.length != 0 &&
+                        typeof openpayu !== 'undefined' &&
+                        openpayu != null) {
+                        openpayu.options.amount ={$cart_total_amount|floatval};
+                        openpayu.options.customElement = false;
+                        openpayu.options.lang = 'pl';
+                        OpenPayU.DelayedPayment.miniDelayedPayment('#payu-later-cart-summary');
+                    }
+                </script>
+            </div>
         </div>
     </div>
 {/if}

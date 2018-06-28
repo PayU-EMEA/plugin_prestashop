@@ -4,4 +4,12 @@
     <span id='payu-later-mini-cart'>
         <img src="modules/payu/img/question_mark.png" />
     </span>
+    <script type='text/javascript'>
+        document.addEventListener("DOMContentLoaded", function(event) {
+            openpayu.options.amount ={$total_price};
+            openpayu.options.customElement = true;
+            openpayu.options.lang = 'pl';
+            OpenPayU.DelayedPayment.miniDelayedPayment('#payu-later-mini-cart');
+        });
+    </script>
 </p>

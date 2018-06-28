@@ -647,6 +647,7 @@ class PayU extends PaymentModule
             $this->context->controller->addJS('https://static.payu.com/res/v2/jsrender.js', 'all');
             $this->context->controller->addJS('https://static.payu.com/res/v2/openpayu-2.0.js', 'all');
             $this->context->controller->addJS('https://static.payu.com/res/v2/widget-installments-2.1.js', 'all');
+            $this->context->controller->addJS('https://static.payu.com/res/v2/widget-dp-2.0.js', 'all');
         } else {
             $this->context->controller->registerJavascript(
                 'remote-jquery-payu',
@@ -671,6 +672,10 @@ class PayU extends PaymentModule
             $this->context->controller->registerJavascript(
                 'remote-installments-payu',
                 'https://static.payu.com/res/v2/widget-installments-2.1.js',
+                ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
+            $this->context->controller->registerJavascript(
+                'remote-dp-payu',
+                'https://static.payu.com/res/v2/widget-dp-2.0.js',
                 ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
             $this->context->controller->registerStylesheet(
                 'remote-installments-css-payu',
