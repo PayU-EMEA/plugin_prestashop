@@ -1527,7 +1527,9 @@ class PayU extends PaymentModule
             }
         } else {
             $product = $params['product'];
-            if ($params['type'] === 'weight') {
+            $current_controller = Tools::getValue('controller');
+            if (($params['type'] === 'weight' && $current_controller === 'index') ||
+                ($params['type'] === 'after_price' && $current_controller === 'product')) {
                 $this->context->smarty->assign(array(
                     'product_price' => $product['price_amount'],
                     'product_id' => $product['id_product'],
