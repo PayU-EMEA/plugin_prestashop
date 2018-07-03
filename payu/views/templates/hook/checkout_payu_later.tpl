@@ -13,3 +13,6 @@
         });
     </script>
 </p>
+<p>
+    {l s='Order will be done after positive decision' mod='payu'}
+</p>
