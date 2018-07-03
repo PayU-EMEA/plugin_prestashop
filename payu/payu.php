@@ -1495,7 +1495,8 @@ class PayU extends PaymentModule
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             $showInView = 'weight';
-            if($_SERVER['REQUEST_URI'] == "/") {
+            $current_controller = Tools::getValue('controller');
+            if ($current_controller === 'index') {
                 $showInView = "unit_price";
             }
             if ($params['type'] === $showInView) {
