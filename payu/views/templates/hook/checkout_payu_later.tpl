@@ -4,7 +4,7 @@
     <span id='payu-later-mini-cart'>
         <img src="modules/payu/img/question_mark.png" />
     </span>
-    <script type='text/javascript'>
+    <script type='text/javascript' class="payu-script-tag" >
         document.addEventListener("DOMContentLoaded", function(event) {
             openpayu.options.amount ={$total_price};
             openpayu.options.customElement = true;

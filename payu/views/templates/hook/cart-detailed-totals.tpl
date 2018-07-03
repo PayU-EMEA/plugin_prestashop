@@ -11,7 +11,7 @@
     <span style="display: block; margin-top: 10px;">
         <span id="payu-installment-cart-summary"></span>
     </span>
-    <script type="text/javascript">
+    <script type="text/javascript" class="payu-script-tag" >
         document.addEventListener("DOMContentLoaded", function(event) {
             openpayu.options.creditAmount ={$cart_total_amount|floatval};
             openpayu.options.showLongDescription = true;

@@ -2,7 +2,7 @@
     <img style="width: 121px; margin-top:-20px;" src="modules/payu/img/payu_installment.png" />
     <p>
         <span id='payu-installments-mini-cart'></span>
-        <script type='text/javascript'>
+        <script type='text/javascript' class="payu-script-tag" >
             document.addEventListener("DOMContentLoaded", function(event) {
                 openpayu.options.creditAmount ={$total_price};
                 openpayu.options.showLongDescription = true;

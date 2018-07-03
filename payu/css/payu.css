@@ -228,6 +228,10 @@ p.payment_module a.payu-payment-credit-tile {
     padding-bottom: 1.25em;
 }
 
+.payu-script-tag {
+    display: none !important;
+}
+
 p.payment_module a.payu-widget-installments-mini {
     display: inline;
     border: 0px;

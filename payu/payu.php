@@ -1486,7 +1486,7 @@ class PayU extends PaymentModule
         if (!$payMethodsCache->isInstallmentsAvailable(
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion()) ||
-            Configuration::get('PAYU_PROMOTE_CREDIT') === '0') {
+            Configuration::get('PAYU_PROMOTE_CREDIT') === '0' || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
             $this->context->smarty->assign(array(
                 'credit_available' => false
             ));

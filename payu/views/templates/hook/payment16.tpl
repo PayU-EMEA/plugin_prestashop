@@ -28,7 +28,7 @@
                  title="{l s='Pay online in installments' mod='payu'}">
                 {l s='Pay online in installments' mod='payu'}
                 <span id="payu-installment-cart-summary" class="payu-installment-cart-summary"></span>
-                <script type="text/javascript">
+                <script type="text/javascript" class="payu-script-tag" >
                     document.addEventListener("DOMContentLoaded", function (event) {
                         openpayu.options.creditAmount ={$cart_total_amount|floatval};
                         openpayu.options.showLongDescription = true;
@@ -55,7 +55,7 @@
                title="{l s='Pay within 30 days with PayU' mod='payu'}">
                 {l s='Pay within 30 days with PayU' mod='payu'}
                 <span id="payu-later-cart-summary" class="payu-later-cart-summary"></span>
-                <script type="text/javascript">
+                <script type="text/javascript" class="payu-script-tag" >
                     document.addEventListener("DOMContentLoaded", function (event) {
                         openpayu.options.amount ={$cart_total_amount|floatval};
                         openpayu.options.customElement = false;

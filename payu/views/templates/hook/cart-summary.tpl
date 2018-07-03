@@ -10,7 +10,7 @@
 {if $credit_available == true && $cart_total_amount>0}
     <div class="payu-installment-panel" >
             <span id="payu-installment-cart-total"></span>
-            <script type="text/javascript">
+            <script type="text/javascript" class="payu-script-tag" >
                 document.addEventListener("DOMContentLoaded", function (event) {
                     openpayu.options.creditAmount ={$cart_total_amount|floatval};
                     openpayu.options.showLongDescription = true;
