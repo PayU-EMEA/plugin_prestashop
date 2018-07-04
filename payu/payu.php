@@ -748,11 +748,7 @@ class PayU extends PaymentModule
                 'total_price' => $totalPrice
             ));
 
-            if ($totalPrice > Configuration::get('PAYU_MIN_CREDIT_AMOUNT') &&
-                $totalPrice < Configuration::get('PAYU_MAX_CREDIT_AMOUNT') &&
-                $payMethodsCache->isInstallmentsAvailable(
-                    Currency::getCurrency($this->context->cart->id_currency),
-                    $this->getVersion())) {
+            if ($this->isCreditAvailable($totalPrice)) {
                 $installmentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $installmentOption
                     ->setCallToActionText($this->l('Pay online in installments'))
@@ -762,11 +758,7 @@ class PayU extends PaymentModule
                 array_push($paymentOptions, $installmentOption);
             }
 
-            if ($totalPrice > Configuration::get('PAYU_MIN_DP_AMOUNT') &&
-                $totalPrice < Configuration::get('PAYU_MAX_DP_AMOUNT') &&
-                $payMethodsCache->isDelayedPaymentAvailable(
-                    Currency::getCurrency($this->context->cart->id_currency),
-                    $this->getVersion())) {
+            if ($this->isPayULaterAvailable($totalPrice)) {
                 $payULaterOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $payULaterOption
                     ->setCallToActionText($this->l('Pay within 30 days with PayU'))
@@ -794,20 +786,8 @@ class PayU extends PaymentModule
                 'actionUrl' => $link,
                 'creditActionUrl' => $link . "?payuPay=1&payMethod=ai&payuConditions=true",
                 'creditPayULaterActionUrl' => $link . "?payuPay=1&payMethod=dp&payuConditions=true",
-                'credit_available' =>
-                    $payMethodsCache->isInstallmentsAvailable(
-                        Currency::getCurrency($this->context->cart->id_currency),
-                        $this->getVersion()) &&
-                    (Configuration::get('PAYU_PROMOTE_CREDIT') === '1' &&
-                        $params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_CREDIT_AMOUNT') &&
-                        $params['cart']->getOrderTotal() < Configuration::get('PAYU_MAX_CREDIT_AMOUNT')),
-                'payu_later_available' =>
-                    $payMethodsCache->isDelayedPaymentAvailable(
-                        Currency::getCurrency($this->context->cart->id_currency),
-                        $this->getVersion()) &&
-                    (Configuration::get('PAYU_PROMOTE_CREDIT') === '1' &&
-                        $params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_DP_AMOUNT') &&
-                        $params['cart']->getOrderTotal() < Configuration::get('PAYU_MAX_DP_AMOUNT')),
+                'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal(), $payMethodsCache),
+                'payu_later_available' => $this->isPayULaterAvailable($params['cart']->getOrderTotal(), $payMethodsCache),
                 'cart_total_amount' => $params['cart']->getOrderTotal())
         );
 
@@ -1443,13 +1423,8 @@ class PayU extends PaymentModule
 
     public function hookDisplayCheckoutSubtotalDetails($params)
     {
-        $payMethodsCache = new PayMethodsCache();
-        if ($payMethodsCache->isInstallmentsAvailable(
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getVersion()) &&
-            (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') && (Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') &&
-            ($params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')) &&
-            ($params['cart']->getOrderTotal() < Configuration::get('PAYU_MAX_CREDIT_AMOUNT'))) {
+        if ($this->isCreditAvailable($params['cart']->getOrderTotal())
+                && Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') {
             $this->context->smarty->assign(array(
                 'credit_available' => true,
                 'cart_total_amount' => $params['cart']->getOrderTotal()
@@ -1460,13 +1435,8 @@ class PayU extends PaymentModule
 
     public function hookDisplayCheckoutSummaryTop($params)
     {
-        $payMethodsCache = new PayMethodsCache();
-        if ($payMethodsCache->isInstallmentsAvailable(
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getVersion()) &&
-            (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') && (Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1') &&
-            ($params['cart']->getOrderTotal() > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')) &&
-            ($params['cart']->getOrderTotal() < Configuration::get('PAYU_MAX_CREDIT_AMOUNT'))) {
+        if ($this->isCreditAvailable($params['cart']->getOrderTotal())
+                && Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1') {
             $this->context->smarty->assign(array(
                 'credit_available' => true,
                 'cart_total_amount' => $params['cart']->getOrderTotal()
@@ -1675,5 +1645,35 @@ class PayU extends PaymentModule
     private function getVersion()
     {
         return 'Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version;
+    }
+
+    /**
+     * @param $amount
+     * @return bool
+     */
+    private function isCreditAvailable($amount)
+    {
+        $payMethodsCache = new PayMethodsCache();
+        return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
+                && $amount > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')
+                && $amount < Configuration::get('PAYU_MAX_CREDIT_AMOUNT')
+                && $payMethodsCache->isInstallmentsAvailable(
+                    Currency::getCurrency($this->context->cart->id_currency),
+                    $this->getVersion());
+    }
+
+    /**
+     * @param $amount
+     * @return bool
+     */
+    private function isPayULaterAvailable($amount)
+    {
+        $payMethodsCache = new PayMethodsCache();
+        return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
+                && $amount > Configuration::get('PAYU_MIN_DP_AMOUNT')
+                && $amount < Configuration::get('PAYU_MAX_DP_AMOUNT')
+                && $payMethodsCache->isDelayedPaymentAvailable(
+                    Currency::getCurrency($this->context->cart->id_currency),
+                    $this->getVersion());
     }
 }
