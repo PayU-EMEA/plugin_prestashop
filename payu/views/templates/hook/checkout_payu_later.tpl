@@ -6,10 +6,12 @@
     </span>
     <script type='text/javascript' class="payu-script-tag" >
         document.addEventListener("DOMContentLoaded", function(event) {
-            openpayu.options.amount ={$total_price};
-            openpayu.options.customElement = true;
-            openpayu.options.lang = 'pl';
-            OpenPayU.DelayedPayment.miniDelayedPayment('#payu-later-mini-cart');
+            var options = {
+                amount: {$total_price},
+                customElement: true,
+                lang: 'pl'
+            }
+            DelayedPayment.miniDelayedPayment('#payu-later-mini-cart', options);
         });
     </script>
 </p>

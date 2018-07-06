@@ -57,18 +57,18 @@
                 <span id="payu-later-cart-summary" class="payu-later-cart-summary"></span>
                 <script type="text/javascript" class="payu-script-tag" >
                     document.addEventListener("DOMContentLoaded", function (event) {
-                        openpayu.options.amount ={$cart_total_amount|floatval};
-                        openpayu.options.customElement = false;
-                        openpayu.options.lang = 'pl';
-                        OpenPayU.DelayedPayment.miniDelayedPayment('#payu-later-cart-summary');
+                        var options = {
+                            amount: {$cart_total_amount|floatval},
+                            lang: 'pl'
+                        };
+                        DelayedPayment.miniDelayedPayment('#payu-later-cart-summary', options);
                     });
-                    if (document.getElementById("payu-later-cart-summary").childNodes.length != 0 &&
-                        typeof openpayu !== 'undefined' &&
-                        openpayu != null) {
-                        openpayu.options.amount ={$cart_total_amount|floatval};
-                        openpayu.options.customElement = false;
-                        openpayu.options.lang = 'pl';
-                        OpenPayU.DelayedPayment.miniDelayedPayment('#payu-later-cart-summary');
+                    if (document.getElementById("payu-later-cart-summary").childNodes.length != 0) {
+                        var options = {
+                            amount: {$cart_total_amount|floatval},
+                            lang: 'pl'
+                         };
+                        DelayedPayment.miniDelayedPayment('#payu-later-cart-summary', options);
                     }
                 </script>
             </div>
