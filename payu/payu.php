@@ -192,11 +192,6 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', Tools::getValue('PAYU_PAYMENT_METHODS_ORDER')) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT', (Tools::getValue('PAYU_PROMOTE_CREDIT') ? 1 : 0)) ||
-                !Configuration::updateValue('PAYU_MIN_CREDIT_AMOUNT', Tools::getValue('PAYU_MIN_CREDIT_AMOUNT')) ||
-                !Configuration::updateValue('PAYU_MAX_CREDIT_AMOUNT', Tools::getValue('PAYU_MAX_CREDIT_AMOUNT')) ||
-                !Configuration::updateValue('PAYU_MAX_DP_AMOUNT', Tools::getValue('PAYU_MAX_DP_AMOUNT')) ||
-                !Configuration::updateValue('PAYU_MIN_DP_AMOUNT', Tools::getValue('PAYU_MIN_DP_AMOUNT')) ||
-                !Configuration::updateValue('PAYU_MIN_CREDIT_AMOUNT', Tools::getValue('PAYU_MIN_CREDIT_AMOUNT')) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', (Tools::getValue('PAYU_PROMOTE_CREDIT_CART') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', (Tools::getValue('PAYU_PROMOTE_CREDIT_SUMMARY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', (Tools::getValue('PAYU_PROMOTE_CREDIT_PRODUCT') ? 1 : 0))
@@ -265,7 +260,7 @@ class PayU extends PaymentModule
                                 'label' => $this->l('Disabled')
                             )
                         ),
-                    ):[],
+                    ):array(),
                     !version_compare(_PS_VERSION_, '1.7', 'lt')? array(
                         'type' => 'switch',
                         'label' => $this->l('Show installment on summary'),
@@ -283,7 +278,7 @@ class PayU extends PaymentModule
                                 'label' => $this->l('Disabled')
                             )
                         ),
-                    ):[],
+                    ):array(),
                     array(
                         'type' => 'switch',
                         'label' => $this->l('Show installments on product'),
@@ -319,30 +314,6 @@ class PayU extends PaymentModule
                                 'label' => $this->l('Disabled')
                             )
                         ),
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->l('Minimal credit amount'),
-                        'name' => 'PAYU_MIN_CREDIT_AMOUNT',
-                        'desc' => $this->l('Minimal amount for credit payment method (default is 300 PLN)'),
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->l('Maximal credit amount'),
-                        'name' => 'PAYU_MAX_CREDIT_AMOUNT',
-                        'desc' => $this->l('Maximal amount for credit payment method (default is 20000 PLN)'),
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->l('Minimal PayU Later amount'),
-                        'name' => 'PAYU_MIN_DP_AMOUNT',
-                        'desc' => $this->l('Minimal amount for PayU Later payment method (default is 100 PLN)'),
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->l('Maximal PayU Later amount'),
-                        'name' => 'PAYU_MAX_DP_AMOUNT',
-                        'desc' => $this->l('Maximal amount for PayU Later payment method (default is 2000 PLN)'),
                     ),
                     array(
                         'type' => 'text',
@@ -577,7 +548,7 @@ class PayU extends PaymentModule
      */
     public function hookBackOfficeHeader()
     {
-        $output = '<link type="text/css" rel="stylesheet" href="' . _MODULE_DIR_ . $this->name . '/css/payu.css" /><script type="text/javascript" src="https://static.payu.com/res/v2/openpayu-2.0.js"></script>';
+        $output = '<link type="text/css" rel="stylesheet" href="' . _MODULE_DIR_ . $this->name . '/css/payu.css" /><script type="text/javascript" src="https://static.payu.com/res/v2/prestashop-plugin.js"></script>';
 
         $vieworder = Tools::getValue('vieworder');
         $id_order = Tools::getValue('id_order');
@@ -743,7 +714,6 @@ class PayU extends PaymentModule
         if (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
             $cart = $params['cart'];
             $totalPrice = $cart->getOrderTotal();
-            $payMethodsCache = new PayMethodsCache();
             $this->context->smarty->assign(array(
                 'total_price' => $totalPrice
             ));
@@ -779,15 +749,15 @@ class PayU extends PaymentModule
     public function hookPayment($params)
     {
         $link = $this->context->link->getModuleLink('payu', 'payment');
-        $payMethodsCache = new PayMethodsCache();
+
         $this->context->smarty->assign(array(
                 'image' => $this->getPayuLogo(),
                 'creditImage' => $this->getPayuLogo('raty_small2.png'),
                 'actionUrl' => $link,
                 'creditActionUrl' => $link . "?payuPay=1&payMethod=ai&payuConditions=true",
                 'creditPayULaterActionUrl' => $link . "?payuPay=1&payMethod=dp&payuConditions=true",
-                'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal(), $payMethodsCache),
-                'payu_later_available' => $this->isPayULaterAvailable($params['cart']->getOrderTotal(), $payMethodsCache),
+                'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
+                'payu_later_available' => $this->isPayULaterAvailable($params['cart']->getOrderTotal()),
                 'cart_total_amount' => $params['cart']->getOrderTotal())
         );
 
@@ -1452,8 +1422,7 @@ class PayU extends PaymentModule
 
     public function hookDisplayProductPriceBlock($params)
     {
-        $payMethodsCache = new PayMethodsCache();
-        if (!$payMethodsCache->isInstallmentsAvailable(
+        if (!PayMethodsCache::isInstallmentsAvailable(
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion()) ||
             Configuration::get('PAYU_PROMOTE_CREDIT') === '0' || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
@@ -1653,11 +1622,10 @@ class PayU extends PaymentModule
      */
     private function isCreditAvailable($amount)
     {
-        $payMethodsCache = new PayMethodsCache();
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
                 && $amount > Configuration::get('PAYU_MIN_CREDIT_AMOUNT')
                 && $amount < Configuration::get('PAYU_MAX_CREDIT_AMOUNT')
-                && $payMethodsCache->isInstallmentsAvailable(
+                && PayMethodsCache::isInstallmentsAvailable(
                     Currency::getCurrency($this->context->cart->id_currency),
                     $this->getVersion());
     }
@@ -1668,11 +1636,10 @@ class PayU extends PaymentModule
      */
     private function isPayULaterAvailable($amount)
     {
-        $payMethodsCache = new PayMethodsCache();
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
                 && $amount > Configuration::get('PAYU_MIN_DP_AMOUNT')
                 && $amount < Configuration::get('PAYU_MAX_DP_AMOUNT')
-                && $payMethodsCache->isDelayedPaymentAvailable(
+                && PayMethodsCache::isDelayedPaymentAvailable(
                     Currency::getCurrency($this->context->cart->id_currency),
                     $this->getVersion());
     }

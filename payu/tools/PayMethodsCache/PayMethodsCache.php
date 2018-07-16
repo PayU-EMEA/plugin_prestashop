@@ -12,29 +12,29 @@ class PayMethodsCache
 {
     const PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX = 'PAYU_PAY_METHODS_';
 
-    public function isDelayedPaymentAvailable($currency, $version)
+    public static function isDelayedPaymentAvailable($currency, $version)
     {
         try {
-            return $this->isPayTypeEnabled("dp", $currency, $version);
+            return self::isPayTypeEnabled("dp", $currency, $version);
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public function isInstallmentsAvailable($currency, $version)
+    public static function isInstallmentsAvailable($currency, $version)
     {
         try {
-            return $this->isPayTypeEnabled("ai", $currency, $version);
+            return self::isPayTypeEnabled("ai", $currency, $version);
         } catch (Exception $e) {
             return false;
         }
     }
 
-    private function isPayTypeEnabled($payTypeStringValue, $currency, $version)
+    public static function isPayTypeEnabled($payTypeStringValue, $currency, $version)
     {
         $payTypeEnabled = false;
         $currentTime = new DateTime();
-        $cachedValue = $this->get($payTypeStringValue);
+        $cachedValue = self::get($payTypeStringValue);
         if ($cachedValue !== null && $cachedValue['valid_to'] > $currentTime) {
             $payTypeEnabled = $cachedValue['enabled'];
         } else {
@@ -51,19 +51,19 @@ class PayMethodsCache
             $validityTime = $currentTime;
             $validityTime->add(new DateInterval('PT1H')); // paymethods are cached for 1h
             $toBeCached = array('enabled' => $payTypeEnabled, 'valid_to' => $validityTime);
-            $this->set($payTypeStringValue, $toBeCached);
+            self::set($payTypeStringValue, $toBeCached);
         }
 
         return $payTypeEnabled;
     }
 
-    private function get($key)
+    public static function get($key)
     {
         $cache = Configuration::get(self::PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX . $key);
         return $cache === false ? null : unserialize($cache);
     }
 
-    private function set($key, $value)
+    public static function set($key, $value)
     {
         return Configuration::updateValue(self::PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX . $key, serialize($value));
     }
