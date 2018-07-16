@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-xs-12">
             <p class="payment_module">
-                <a style="padding: 33px;" class="payu-payment-credit-installment-tile" href="{$actionUrl|escape:'htmlall':'UTF-8'}"
+                <a style="padding: 33px;" class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}"
                    title="{l s='Pay by online transfer or card' mod='payu'}">
                     {l s='Pay by online transfer or card' mod='payu'}
                 </a>
