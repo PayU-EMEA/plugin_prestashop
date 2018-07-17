@@ -706,9 +706,14 @@ class PayU extends PaymentModule
 
         $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $paymentOption->setCallToActionText($this->l('Pay by online transfer or card'))
-            ->setLogo($this->getPayuLogo('logo-payu.png'))
+            ->setAdditionalInformation('<span class="payu-marker-class"></span>')
             ->setModuleName($this->name)
             ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
+
+        if (Configuration::get('PAYU_PROMOTE_CREDIT') !== '1') {
+            $paymentOption->setLogo($this->getPayuLogo('logo-payu.png'));
+        }
+
         $paymentOptions = array($paymentOption);
 
         if (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {

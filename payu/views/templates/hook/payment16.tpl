@@ -7,9 +7,9 @@
  *
  * http://www.payu.com
 *}
-<fieldset style="border: 1px solid #a6c307; margin: 0 2px; padding-left: 8px; padding-right: 8px; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;">
-    <legend style="margin-bottom: 3px; width: 63px; border: 0px;">
-        <span class="">
+<fieldset class="payu-payment-fieldset-1-6">
+    <legend class="payu-payment-legend-1-6">
+        <span>
             <img height="30px" src="modules/payu/img/payu_logo.png" />
         </span>
     </legend>
