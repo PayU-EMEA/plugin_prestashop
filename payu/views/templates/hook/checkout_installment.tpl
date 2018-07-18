@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             payuIndexes.push(i);
         }
     }
-    if(payuIndexes.length > 0) {
+    if (payuIndexes.length > 0) {
         $(".payment-options").append("<fieldset id='payu-methods-grouped' class='payu-payment-fieldset-1-7'>" +
             "   <legend class='payu-payment-legend-1-7'>" +
             "        <span>" +
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             "    </legend>" +
             "</fieldset>");
     }
-    for(var indexOfPayuElement in payuIndexes) {
+    for (var indexOfPayuElement in payuIndexes) {
         var element1 = $("#payment-option-" + payuIndexes[indexOfPayuElement] + "-container").parent();
         var element2 = $("#payment-option-" + payuIndexes[indexOfPayuElement] + "-additional-information");
         var element3 = $("#pay-with-payment-option-" + payuIndexes[indexOfPayuElement] + "-form");
