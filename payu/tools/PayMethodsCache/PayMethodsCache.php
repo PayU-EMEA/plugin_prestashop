@@ -30,7 +30,7 @@ class PayMethodsCache
         }
     }
 
-    public static function isPayTypeEnabled($payTypeStringValue, $currency, $version)
+    private static function isPayTypeEnabled($payTypeStringValue, $currency, $version)
     {
         $payTypeEnabled = false;
         $currentTime = new DateTime();
@@ -57,13 +57,13 @@ class PayMethodsCache
         return $payTypeEnabled;
     }
 
-    public static function get($key)
+    private static function get($key)
     {
         $cache = Configuration::get(self::PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX . $key);
         return $cache === false ? null : unserialize($cache);
     }
 
-    public static function set($key, $value)
+    private static function set($key, $value)
     {
         return Configuration::updateValue(self::PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX . $key, serialize($value));
     }
