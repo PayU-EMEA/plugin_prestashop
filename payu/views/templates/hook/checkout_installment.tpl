@@ -1,4 +1,4 @@
-<div class="payu-marker-class" style="margin-bottom: -10px;">
+<div class="payu-marker-class payu-method-description payu-checkout-installment">
     <img style="width: 121px; margin-top:-20px;" src="modules/payu/img/payu_installment.png" />
     <p>
         <span id='payu-installments-mini-cart'></span>

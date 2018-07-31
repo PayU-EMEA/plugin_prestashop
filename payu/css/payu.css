@@ -267,3 +267,16 @@ p.payment_module a.payu-widget-installments-mini {
     width: 63px;
     border: 0px;
 }
+
+body#checkout #payu-methods-grouped .additional-information {
+    margin:0px;
+}
+
+.payu-method-description {
+    margin-left: 2.875rem;
+    margin-top: 1.25rem;
+}
+
+.payu-checkout-installment {
+    margin-bottom: -10px;
+}
