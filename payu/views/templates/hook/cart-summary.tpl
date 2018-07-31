@@ -2,12 +2,12 @@
  * PayU
  *
  * @author    PayU
- * @copyright Copyright (c) 2016 PayU
+ * @copyright Copyright (c) 2018 PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
 *}
-{if $credit_available == true && $cart_total_amount>0}
+{if $cart_total_amount>0}
     <div class="payu-installment-panel" >
             <span id="payu-installment-cart-total"></span>
             <script type="text/javascript" class="payu-script-tag" >

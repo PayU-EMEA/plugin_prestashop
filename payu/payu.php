@@ -697,21 +697,23 @@ class PayU extends PaymentModule
             return;
         }
 
+        $cart = $params['cart'];
+        $totalPrice = $cart->getOrderTotal();
+
         $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $paymentOption->setCallToActionText($this->l('Pay by online transfer or card'))
             ->setAdditionalInformation('<span class="payu-marker-class"></span>')
             ->setModuleName($this->name)
             ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
 
-        if (Configuration::get('PAYU_PROMOTE_CREDIT') !== '1') {
+        if (Configuration::get('PAYU_PROMOTE_CREDIT') !== '1' ||
+            !($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice))) {
             $paymentOption->setLogo($this->getPayuLogo('logo-payu.png'));
         }
 
         $paymentOptions = array($paymentOption);
 
-        if (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
-            $cart = $params['cart'];
-            $totalPrice = $cart->getOrderTotal();
+        if ($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice)) {
             $this->context->smarty->assign(array(
                 'total_price' => $totalPrice
             ));
@@ -750,7 +752,7 @@ class PayU extends PaymentModule
 
         $this->context->smarty->assign(array(
                 'image' => $this->getPayuLogo(),
-                'creditImage' => $this->getPayuLogo('raty_small2.png'),
+                'creditImage' => $this->getPayuLogo('raty_small.png'),
                 'actionUrl' => $link,
                 'creditActionUrl' => $link . "?payuPay=1&payMethod=ai&payuConditions=true",
                 'creditPayULaterActionUrl' => $link . "?payuPay=1&payMethod=dp&payuConditions=true",
@@ -1394,7 +1396,6 @@ class PayU extends PaymentModule
         if ($this->isCreditAvailable($params['cart']->getOrderTotal())
                 && Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') {
             $this->context->smarty->assign(array(
-                'credit_available' => true,
                 'cart_total_amount' => $params['cart']->getOrderTotal()
             ));
             return $this->display(__FILE__, 'cart-detailed-totals.tpl');
@@ -1403,18 +1404,14 @@ class PayU extends PaymentModule
 
     public function hookDisplayCheckoutSummaryTop($params)
     {
-        if ($this->isCreditAvailable($params['cart']->getOrderTotal())
-                && Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1') {
+        if (Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1' &&
+            $this->isCreditAvailable($params['cart']->getOrderTotal())) {
             $this->context->smarty->assign(array(
-                'credit_available' => true,
                 'cart_total_amount' => $params['cart']->getOrderTotal()
             ));
             return $this->display(__FILE__, 'cart-summary.tpl');
         }
 
-        $this->context->smarty->assign(array(
-            'credit_available' => false
-        ));
         return $this->display(__FILE__, 'cart-summary.tpl');
     }
 
@@ -1424,10 +1421,7 @@ class PayU extends PaymentModule
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion()) ||
             Configuration::get('PAYU_PROMOTE_CREDIT') === '0' || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
-            $this->context->smarty->assign(array(
-                'credit_available' => false
-            ));
-            return $this->display(__FILE__, 'product.tpl');
+            return;
         }
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
@@ -1456,25 +1450,31 @@ class PayU extends PaymentModule
                     $creditAvailable = true;
                 }
 
-                $this->context->smarty->assign(array(
-                    'product_price' => $price,
-                    'product_id' => $productId,
-                    'credit_available' => $creditAvailable
-                ));
-                return $this->display(__FILE__, 'product.tpl');
+                if($creditAvailable){
+                    $this->context->smarty->assign(array(
+                        'product_price' => $price,
+                        'product_id' => $productId
+                    ));
+                    return $this->display(__FILE__, 'product.tpl');
+                } else {
+                    return;
+                }
+
             }
         } else {
             $product = $params['product'];
             $current_controller = Tools::getValue('controller');
-            if (($params['type'] === 'weight' && $current_controller === 'index') ||
-                ($params['type'] === 'after_price' && $current_controller === 'product')) {
+            $creditAvailable = ($product['price_amount'] > self::PAYU_MIN_CREDIT_AMOUNT) &&
+                ($product['price_amount'] < self::PAYU_MAX_CREDIT_AMOUNT);
+            if ($creditAvailable && (($params['type'] === 'weight' && $current_controller === 'index') ||
+                ($params['type'] === 'after_price' && $current_controller === 'product'))) {
                 $this->context->smarty->assign(array(
                     'product_price' => $product['price_amount'],
-                    'product_id' => $product['id_product'],
-                    'credit_available' => ($product['price_amount'] > self::PAYU_MIN_CREDIT_AMOUNT) &&
-                        ($product['price_amount'] < self::PAYU_MAX_CREDIT_AMOUNT)
+                    'product_id' => $product['id_product']
                 ));
                 return $this->display(__FILE__, 'product.tpl');
+            } else {
+                return;
             }
         }
     }
