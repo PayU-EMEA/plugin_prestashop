@@ -18,6 +18,7 @@ Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) s
     * [Multi-currency](#multi-currency)
     * [Payment method display](#payment-method-display)
     * [Payment retry](#payment-retry)
+    * [Promote credit payment methods](#promote-credit-payment-methods)
 
 ## Features
 The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
@@ -33,6 +34,10 @@ Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 | Payment retry for cancelled payments | :white_check_mark: | :white_check_mark: |
 | Multi-currency support | :white_check_mark: | :white_check_mark: |
 | Payment method order | :white_check_mark: | :white_check_mark: |
+| Promoting [PayU Installments][ext10] and [PayU Later][ext9] | :white_check_mark: | :white_check_mark: |
+| Present installment estimated value on product and listing page | :white_check_mark: |:white_check_mark: |
+| Present installment estimated value in checkout view | :white_check_mark: | :white_check_mark: |
+| Present installment estimated value in cart view| :x: | :white_check_mark: |
 
 More information on the features can be found in the [More on features](#more-on-features) section
 
@@ -141,6 +146,38 @@ If the criteria are met, the buyer will see a retry option on Order details scre
 
 All PayU payments created for a PrestaShop order are displayed on Order screen in PrestaShop admin panel. 
 
+### Promote credit payment methods
+Plugin version 3.0.9 introduced functionality of promoting [credit_payment_methods](ext7). 
+Functionality is enabled by default. It can be deactivated using "Promote credit" switch in admin panel.
+Support for given functionalities has been described in [Features](#features) section.
+ > Presenting credit widgets is dependent on gateways availability for given point of sale (POS). 
+ Plugin automatically checks whether "ai" or "dp" gateways are enabled.
+ If used POS doesn't have credit agreement activated functionality will not work, and widget presentation will be 
+ supressed (even if flag in admin panel is enabled).
+ 
+<img src="readme_images/credit-1-7-admin.png" width="400">
+
+#### Presentation of estimated installment amount depending on PrestaShop version
+|PrestaShop Version|Category|How it looks|
+|---------|-----------|-----------|
+|1.7|Products listing| <img src="readme_images/credit-1-7-listing.png" width="100"> |
+|1.7|Product page|<img src="readme_images/credit-1-7-product.png" width="100">|
+|1.7|Cart| <img src="readme_images/credit-1-7-cart.png" width="100">|
+|1.7|PayU Installment payment method during checkout|<img src="readme_images/credit-1-7-checkout-installments.png" width="100">|
+|1.7|PayU Later payment method during checkout| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">| 
+|1.6|Products listing|<img src="readme_images/credit-1-6-listing.png" width="100">|
+|1.6|Product page|<img src="readme_images/credit-1-6-product.png" width="100">|
+|1.6|Checkout page|<img src="readme_images/credit-1-6-checkout.png" width="100">|
+
+
+#### Presentation of estimated installment amount after clicking "Installment from:" 
+Plugin uses newest version of "miniInstallment" component that comes with [PayU Installments - best practices][ext12] package, that can be found in [official documentation][ext8].
+To present [PayU Later][ext9] popup newest version of [Widget PayU Later][ext11] was used.
+
+Popup with estimated installment plan looks as below: 
+ 
+<img src="readme_images/credit-installment-widget.png" width="300">
+
 <!--LINKS-->
 
 <!--external links:-->
@@ -151,6 +188,12 @@ All PayU payments created for a PrestaShop order are displayed on Order screen i
 [ext4]: https://secure.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 [ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 [ext6]: http://developers.payu.com/en/overview.html#paymethods
+[ext7]: https://developers.payu.com/en/installments.html
+[ext8]: https://developers.payu.com/en/installments.html#installments_best_practices_mini
+[ext9]: https://www.payu.pl/en/payment-methods/pay-later
+[ext10]: https://www.payu.pl/en/payment-methods-business/payu-installments
+[ext11]: https://developers.payu.com/en/installments.html#dp_best_practices_mini
+[ext12]: https://developers.payu.com/en/installments.html#best_practices_title
 
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png
