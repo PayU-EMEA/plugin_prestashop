@@ -280,3 +280,11 @@ body#checkout #payu-methods-grouped .additional-information {
 .payu-checkout-installment {
     margin-bottom: -10px;
 }
+
+@media only screen and (max-width: 460px) {
+    .payu-installment-cart-summary, .payu-later-cart-summary {
+        display: block;
+        margin-left: 0px;
+        margin-top: 5px;
+    }
+}
