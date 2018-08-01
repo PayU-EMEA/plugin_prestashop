@@ -143,7 +143,7 @@ Kupującemu w `Szczegółach zamówinia` wyświetlany jest przycisk `Ponów pła
 W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie utworzone płatności w PayU wraz ze statusami.
 
 ### Promowanie płatności ratalnych i odroczonych
-Od wersji 3.0.9 plugin udostępnia opcję promowania [płatności ratalnych i odroczonych](ext7).
+Od wersji 3.0.9 plugin udostępnia opcję promowania [płatności ratalnych i odroczonych][ext7].
 Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez przełącznik "Promuj płatności ratalne" w panelu
  admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i 
  Kompatybilność](#cechy-i-kompatybilność).
