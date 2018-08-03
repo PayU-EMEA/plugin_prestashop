@@ -38,7 +38,7 @@ class PayU extends PaymentModule
     {
         $this->name = 'payu';
         $this->tab = 'payments_gateways';
-        $this->version = '2.5.1';
+        $this->version = '2.5.2';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->ps_versions_compliancy = array('min' => '1.4.4', 'max' => '1.6');
