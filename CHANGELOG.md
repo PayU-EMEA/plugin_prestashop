@@ -1,3 +1,7 @@
+## 3.0.9
+ * Remove expose version
+ * Update SDK
+
 ## 3.0.8
  * Fixed http 500 for COMPLETED notification
 
