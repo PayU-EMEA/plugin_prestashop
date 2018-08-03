@@ -711,7 +711,6 @@ class PayU extends PaymentModule
         $ocreq = array(
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
             'description' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
-            'additionalDescription' => $this->getVersion(),
             'products' => array(
                 array(
                     'quantity' => 1,
@@ -1356,10 +1355,5 @@ class PayU extends PaymentModule
             return $name . '.tpl';
         }
         return 'module:payu/views/templates/front/' . $name . '17.tpl';
-    }
-
-    private function getVersion()
-    {
-        return 'Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version;
     }
 }
