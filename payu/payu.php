@@ -1356,4 +1356,9 @@ class PayU extends PaymentModule
         }
         return 'module:payu/views/templates/front/' . $name . '17.tpl';
     }
+
+    private function getVersion()
+    {
+        return 'Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version;
+    }
 }
