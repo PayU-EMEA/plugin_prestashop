@@ -1,3 +1,6 @@
+## 3.0.10
+ * Promoting credit payment methods feature: https://github.com/PayU/plugin_prestashop/tree/master#promowanie-p%C5%82atno%C5%9Bci-ratalnych-i-odroczonych
+ 
 ## 3.0.9
  * Remove expose version
  * Update SDK

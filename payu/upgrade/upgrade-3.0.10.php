@@ -13,7 +13,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-function upgrade_module_3_0_9($module)
+function upgrade_module_3_0_10($module)
 {
     return Configuration::updateValue('PAYU_PROMOTE_CREDIT', 1) &&
         Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', 1) &&
