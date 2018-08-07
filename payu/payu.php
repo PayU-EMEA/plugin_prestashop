@@ -870,7 +870,6 @@ class PayU extends PaymentModule
         $ocreq = array(
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
             'description' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
-            'additionalDescription' => $this->getVersion(),
             'products' => array(
                 array(
                     'quantity' => 1,
