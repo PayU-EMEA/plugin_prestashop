@@ -72,8 +72,8 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 ## Aktualizacja
 
-1. Zaktualizuj piki moduł zgodnie z punkctem [Instalacja](#instalacja)
-1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżli jest wymagana 
+1. Zaktualizuj plik modułu zgodnie z punktem [Instalacja](#instalacja)
+1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżeli jest wymagana 
 1. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`  
 
 ## Konfiguracja
@@ -86,7 +86,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 | Parameter | Opis | 
 |---------|-----------|
-| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
+| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU |
 | Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności). |
 | Tryb testowy (Sandbox) | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU |
 
@@ -116,7 +116,7 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 ### Kolejność metod płatności
 Ma zastosowanie tylko przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak`
 
-W celu ustalenia kolejności wyświetlanych ikon matod płatności należy podać symbole metod płatności oddzielając je przecinkiem. [Lista metod płatności][ext6].
+W celu ustalenia kolejności wyświetlanych ikon metod płatności należy podać symbole metod płatności oddzielając je przecinkiem. [Lista metod płatności][ext6].
 
 ### Wielowalutowość
 POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatność w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji POSa dla każdej waluty z osobna.   
@@ -132,11 +132,11 @@ Po wybraniu banku lub płatności kartą i naciśnięciu przycisku `Potwierdzam 
 ### Ponowienie płatności
 W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
 
-Żeby kupujący mógł ponowić płatność muszą być spełnione następujace warunki: 
+Żeby kupujący mógł ponowić płatność muszą być spełnione następujące warunki: 
 * status ostatniej płatności z PayU musi mieć status CANCELED
 * status zamówienia w PrestaShop musi być zgodny ze statusem wybranym w konfiguracji wtyczki `Statusy płatności` » `Anulowana`    
 
-Kupującemu w `Szczegółach zamówinia` wyświetlany jest przycisk `Ponów płatność z PayU`.
+Kupującemu w `Szczegółach zamówienia` wyświetlany jest przycisk `Ponów płatność z PayU`.
 
 ![retry_payment][img4]
 
@@ -148,7 +148,7 @@ Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez pr
  admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i 
  Kompatybilność](#cechy-i-kompatybilność).
  > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dp" na danym punkcie płatności i sprawdzana 
- jest automatycznie przez plugin. Jeśli na pukcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie 
+ jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie 
  zaprezentowana pomimo włączonej opcji w pluginie.
  
 <img src="readme_images/credit-1-7-admin.png" width="400">
