@@ -36,7 +36,7 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Kolejność metod płatności | :white_check_mark: | :white_check_mark: |
 | Promowanie [PayU Raty][ext10] i [PayU Płacę Później][ext9] | :white_check_mark: | :white_check_mark: |
 | Prezentacja kalkulacji ratalnej przy produkcie i listingu | :white_check_mark: | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej na podsumowaniu | :x: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej na podsumowaniu | :white_check_mark: | :white_check_mark: |
 | Prezentacja kalkulacji ratalnej w koszyku | :x: | :white_check_mark: |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
