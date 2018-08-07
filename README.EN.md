@@ -181,7 +181,7 @@ Popup with estimated installment plan looks as below:
 <!--LINKS-->
 
 <!--external links:-->
-[ext0]: README.EN.md
+[ext0]: README.md
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
 [ext3]: https://github.com/PayU/plugin_prestashop
