@@ -147,7 +147,7 @@ If the criteria are met, the buyer will see a retry option on Order details scre
 All PayU payments created for a PrestaShop order are displayed on Order screen in PrestaShop admin panel. 
 
 ### Promote credit payment methods
-Plugin version 3.0.9 introduced functionality of promoting [credit payment methods][ext7]. 
+Plugin version 3.0.10 introduced functionality of promoting [credit payment methods][ext7]. 
 Functionality is enabled by default. It can be deactivated using "Promote credit" switch in admin panel.
 Support for given functionalities has been described in [Features](#features) section.
  > Presenting credit widgets is dependent on gateways availability for given point of sale (POS). 
