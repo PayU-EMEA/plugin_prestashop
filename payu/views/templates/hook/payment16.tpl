@@ -37,7 +37,7 @@
                             openpayu.options.lang = 'pl';
                             OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
                         });
-                        if (document.getElementById("payu-installment-cart-summary").childNodes.length != 0 &&
+                        if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
                             typeof openpayu !== 'undefined' &&
                             openpayu != null) {
                             openpayu.options.creditAmount ={$cart_total_amount|floatval};
