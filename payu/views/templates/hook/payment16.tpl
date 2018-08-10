@@ -65,7 +65,7 @@
                             };
                             DelayedPayment.miniDelayedPayment('#payu-later-cart-summary', options);
                         });
-                        if (document.getElementById("payu-later-cart-summary").childNodes.length != 0) {
+                        if (document.getElementById("payu-later-cart-summary").childNodes.length == 0) {
                             var options = {
                                 amount: {$cart_total_amount|floatval},
                                 lang: 'pl'
