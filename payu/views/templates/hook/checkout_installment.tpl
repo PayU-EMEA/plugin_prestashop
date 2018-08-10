@@ -1,5 +1,5 @@
 <div class="payu-marker-class payu-method-description payu-checkout-installment">
-    <img style="width: 121px; margin-top:-20px;" src="modules/payu/img/payu_installment.png" />
+    <img style="width: 121px; margin-top:-20px;" src="{$payu_installment_img}" />
     <p>
         <span id='payu-installments-mini-cart'></span>
         <script type='text/javascript' class="payu-script-tag" >
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         $(".payment-options").append("<fieldset id='payu-methods-grouped' class='payu-payment-fieldset-1-7'>" +
             "   <legend class='payu-payment-legend-1-7'>" +
             "        <span>" +
-            "            <img height='30px' src='modules/payu/img/payu_logo.png' />" +
+            "            <img height='30px' src='{$payu_logo_img}' />" +
             "        </span>" +
             "    </legend>" +
             "</fieldset>");

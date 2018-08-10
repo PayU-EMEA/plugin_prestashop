@@ -715,7 +715,11 @@ class PayU extends PaymentModule
 
         if ($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice)) {
             $this->context->smarty->assign(array(
-                'total_price' => $totalPrice
+                'total_price' => $totalPrice,
+                'payu_installment_img' => $this->getPayuLogo('payu_installment.png'),
+                'payu_logo_img' => $this->getPayuLogo('payu_logo.png'),
+                'payu_later_logo_img' => $this->getPayuLogo('payu_later_logo.png'),
+                'payu_question_mark_img' => $this->getPayuLogo('question_mark.png'),
             ));
 
             if ($this->isCreditAvailable($totalPrice)) {
