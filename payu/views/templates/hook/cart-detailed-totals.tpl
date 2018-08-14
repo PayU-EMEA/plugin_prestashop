@@ -7,24 +7,22 @@
  *
  * http://www.payu.com
 *}
-{if $cart_total_amount>0}
-    <span style="display: block; margin-top: 10px;">
+<span style="display: block; margin-top: 10px;">
         <span id="payu-installment-cart-summary"></span>
     </span>
-    <script type="text/javascript" class="payu-script-tag" >
-        document.addEventListener("DOMContentLoaded", function(event) {
-            openpayu.options.creditAmount ={$cart_total_amount|floatval};
-            openpayu.options.showLongDescription = true;
-            openpayu.options.lang = 'pl';
-            OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
-        });
-        if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
-            typeof openpayu !== 'undefined' &&
-            openpayu != null) {
-			openpayu.options.creditAmount ={$cart_total_amount|floatval};
-            openpayu.options.showLongDescription = true;
-            openpayu.options.lang = 'pl';
-			OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');  
-		}
-    </script>
-{/if}
+<script type="text/javascript" class="payu-script-tag">
+    document.addEventListener("DOMContentLoaded", function (event) {
+        openpayu.options.creditAmount ={$cart_total_amount|floatval};
+        openpayu.options.showLongDescription = true;
+        openpayu.options.lang = 'pl';
+        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+    });
+    if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
+        typeof openpayu !== 'undefined' &&
+        openpayu != null) {
+        openpayu.options.creditAmount ={$cart_total_amount|floatval};
+        openpayu.options.showLongDescription = true;
+        openpayu.options.lang = 'pl';
+        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+    }
+</script>

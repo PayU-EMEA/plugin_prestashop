@@ -1414,8 +1414,6 @@ class PayU extends PaymentModule
             ));
             return $this->display(__FILE__, 'cart-summary.tpl');
         }
-
-        return $this->display(__FILE__, 'cart-summary.tpl');
     }
 
     public function hookDisplayProductPriceBlock($params)
@@ -1447,9 +1445,8 @@ class PayU extends PaymentModule
 
                 $creditAvailable = false;
                 $priceWithDot = str_replace(',', '.', $price);
-                if(is_numeric(self::PAYU_MIN_CREDIT_AMOUNT) &&
-                   $priceWithDot > floatval(self::PAYU_MIN_CREDIT_AMOUNT) &&
-                    $priceWithDot < floatval(self::PAYU_MAX_CREDIT_AMOUNT)) {
+                if($priceWithDot > self::PAYU_MIN_CREDIT_AMOUNT &&
+                    $priceWithDot < self::PAYU_MAX_CREDIT_AMOUNT) {
                     $creditAvailable = true;
                 }
 

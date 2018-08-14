@@ -7,19 +7,17 @@
  *
  * http://www.payu.com
 *}
-{if $cart_total_amount>0}
-    <div class="payu-installment-panel" >
-            <span id="payu-installment-cart-total"></span>
-            <script type="text/javascript" class="payu-script-tag" >
-                document.addEventListener("DOMContentLoaded", function (event) {
-                    openpayu.options.creditAmount ={$cart_total_amount|floatval};
-                    openpayu.options.showLongDescription = true;
-                    openpayu.options.lang = 'pl';
-                    OpenPayU.Installments.miniInstallment('#payu-installment-cart-total');
-                });
+<div class="payu-installment-panel">
+    <span id="payu-installment-cart-total"></span>
+    <script type="text/javascript" class="payu-script-tag">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            openpayu.options.creditAmount ={$cart_total_amount|floatval};
+            openpayu.options.showLongDescription = true;
+            openpayu.options.lang = 'pl';
+            OpenPayU.Installments.miniInstallment('#payu-installment-cart-total');
+        });
 
-            </script>
-    </div>
-    <hr class="separator payu-separator-reset" >
-    <p></p>
-{/if}
+    </script>
+</div>
+<hr class="separator payu-separator-reset">
+<p></p>
