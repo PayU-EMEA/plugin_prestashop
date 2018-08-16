@@ -14,8 +14,8 @@
         {l s='Order status' mod='payu'} {$orderPublicId} - {$orderStatus} <br/>
     </h2>
 
-    {$HOOK_ORDER_CONFIRMATION}
-    {$HOOK_PAYMENT_RETURN}
+    {$HOOK_ORDER_CONFIRMATION nofilter}
+    {$HOOK_PAYMENT_RETURN nofilter}
 
     <a class="button btn btn-default button-medium pull-right" href="{$redirectUrl}">
         <span>
