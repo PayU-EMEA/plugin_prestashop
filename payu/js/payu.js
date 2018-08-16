@@ -1,4 +1,8 @@
+var openpayu = openpayu || {};
+openpayu.options = openpayu.options || {};
+
 $(document).ready(function () {
+
     $('.payMethodEnable .payMethodLabel').click(function () {
         $('.payMethod').removeClass('payMethodActive');
         $(this).closest('.payMethod').addClass('payMethodActive');

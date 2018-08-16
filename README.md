@@ -18,6 +18,7 @@ Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x)
     * [Wielowalutowość](#wielowalutowość)
     * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
     * [Ponowienie płatności](#ponowienie-płatności)
+    * [Promowanie płatności ratalnych i odroczonych](#promowanie-płatności-ratalnych-i-odroczonych)
 
 ## Cechy i kompatybilność
 Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala na następujące operacje:
@@ -33,6 +34,10 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Ponowienie płatności przez klienta w przypadku anulowania | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: |
 | Kolejność metod płatności | :white_check_mark: | :white_check_mark: |
+| Promowanie [PayU Raty][ext10] i [PayU Płacę Później][ext9] | :white_check_mark: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej przy produkcie i listingu | :white_check_mark: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej na podsumowaniu | :white_check_mark: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej w koszyku | :x: | :white_check_mark: |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
 
@@ -67,8 +72,8 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 ## Aktualizacja
 
-1. Zaktualizuj piki moduł zgodnie z punkctem [Instalacja](#instalacja)
-1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżli jest wymagana 
+1. Zaktualizuj plik modułu zgodnie z punktem [Instalacja](#instalacja)
+1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżeli jest wymagana 
 1. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`  
 
 ## Konfiguracja
@@ -81,7 +86,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 | Parameter | Opis | 
 |---------|-----------|
-| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia a PrestaShop nastąpi automatyczne przekierwoanie do PayU |
+| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU |
 | Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności). |
 | Tryb testowy (Sandbox) | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU |
 
@@ -111,7 +116,7 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 ### Kolejność metod płatności
 Ma zastosowanie tylko przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak`
 
-W celu ustalenia kolejności wyświetlanych ikon matod płatności należy podać symbole metod płatności oddzielając je przecinkiem. [Lista metod płatności][ext6].
+W celu ustalenia kolejności wyświetlanych ikon metod płatności należy podać symbole metod płatności oddzielając je przecinkiem. [Lista metod płatności][ext6].
 
 ### Wielowalutowość
 POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatność w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji POSa dla każdej waluty z osobna.   
@@ -127,15 +132,49 @@ Po wybraniu banku lub płatności kartą i naciśnięciu przycisku `Potwierdzam 
 ### Ponowienie płatności
 W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
 
-Żeby kupujący mógł ponowić płatność muszą być spełnione następujace warunki: 
+Żeby kupujący mógł ponowić płatność muszą być spełnione następujące warunki: 
 * status ostatniej płatności z PayU musi mieć status CANCELED
 * status zamówienia w PrestaShop musi być zgodny ze statusem wybranym w konfiguracji wtyczki `Statusy płatności` » `Anulowana`    
 
-Kupującemu w `Szczegółach zamówinia` wyświetlany jest przycisk `Ponów płatność z PayU`.
+Kupującemu w `Szczegółach zamówienia` wyświetlany jest przycisk `Ponów płatność z PayU`.
 
 ![retry_payment][img4]
 
 W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie utworzone płatności w PayU wraz ze statusami.
+
+### Promowanie płatności ratalnych i odroczonych
+Od wersji 3.0.10 plugin udostępnia opcję promowania [płatności ratalnych i odroczonych][ext7].
+Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez przełącznik "Promuj płatności ratalne" w panelu
+ admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i 
+ Kompatybilność](#cechy-i-kompatybilność).
+ > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dp" na danym punkcie płatności i sprawdzana 
+ jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie 
+ zaprezentowana pomimo włączonej opcji w pluginie.
+ 
+<img src="readme_images/credit-1-7-admin.png" width="400">
+
+#### Prezentacja kalkulacji w zależności od wersji PrestaShop
+|Wersja PrestaShop|Kategoria|Prezentacja|
+|---------|-----------|-----------|
+|1.7|Listing produktów| <img src="readme_images/credit-1-7-listing.png" width="100"> |
+|1.7|Karta produktu|<img src="readme_images/credit-1-7-product.png" width="100">|
+|1.7|Koszyk| <img src="readme_images/credit-1-7-cart.png" width="100">|
+|1.7|Wybór metody płatności PayU Raty|<img src="readme_images/credit-1-7-checkout-installments.png" width="100">|
+|1.7|Wybór metody płatności PayU Płacę później| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">| 
+|1.6|Listing produktów|<img src="readme_images/credit-1-6-listing.png" width="100">|
+|1.6|Karta produktu|<img src="readme_images/credit-1-6-product.png" width="100">|
+|1.6|Wybór metody płatności|<img src="readme_images/credit-1-6-checkout.png" width="100">|
+
+
+#### Prezentacja kalkulacji po kliknięciu w link "Rata już od:"
+Plugin do kalkulacji kredytu używa najnowszej wersji elementu "miniratka" wchodzącego w skład pakietu [PayU Raty - 
+dobre praktyki][ext12], który znajduje się w [oficjalnej dokumentacji technicznej][ext8].
+
+Do prezentacji okna informacyjnego o [PayU Płacę Później][ext9] wykorzystywany jest [Widget Płacę Później][ext11].
+
+Widget z kalkulacją ratalną wygląda następująco:
+ 
+<img src="readme_images/credit-installment-widget.png" width="300">
 
 <!--LINKS-->
 
@@ -147,6 +186,12 @@ W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie
 [ext4]: https://secure.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
 [ext5]: https://secure.snd.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
 [ext6]: http://developers.payu.com/pl/overview.html#paymethods
+[ext7]: https://developers.payu.com/pl/installments.html
+[ext8]: https://developers.payu.com/pl/installments.html#installments_best_practices_mini
+[ext9]: https://place-pozniej.payu.pl/
+[ext10]: https://www.payu.pl/metody-platnosci-dla-biznesu/payu-raty
+[ext11]: https://developers.payu.com/pl/installments.html#dp_best_practices_mini
+[ext12]: https://developers.payu.com/pl/installments.html#best_practices_title
 
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png

@@ -1,4 +1,11 @@
 #################
+## docker-compose resources 
+#################
+data/
+data16/
+payu.zip
+
+#################
 ## Eclipse
 #################
 
