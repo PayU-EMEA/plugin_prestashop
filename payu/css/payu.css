@@ -172,9 +172,13 @@ p.payment_module_17 a.payu img {
 
 img[src*="logo-payu.png"] {
     width: 50px;
-    position: absolute;
-    margin-top: -25px;
+    margin-top: -5px;
     margin-left: 5px;
+}
+@media only screen and (max-width: 390px) {
+    img[src*="logo-payu.png"] {
+        display: none;
+    }
 }
 
 .payu-pay-image-16 {
