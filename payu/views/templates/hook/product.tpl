@@ -8,7 +8,7 @@
  * http://www.payu.com
 *}
 <span class="payu-installment-price-listing">
-        <span style="display: block;" class="payu-installment-mini-{$product_id}"></span>
+        <span style="display: block;" class="payu-installment-mini-{$product_id|md5}"></span>
 </span>
 <script type="text/javascript" class="payu-script-tag">
     document.addEventListener("DOMContentLoaded", function (event) {
@@ -19,12 +19,12 @@
         openpayu.options.creditAmount ={$product_price|floatval};
         openpayu.options.showLongDescription = true;
         openpayu.options.lang = 'pl';
-        OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id}');
+        OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id|md5}');
     });
     if (typeof openpayu !== 'undefined') {
         openpayu.options.creditAmount ={$product_price|floatval};
         openpayu.options.showLongDescription = true;
         openpayu.options.lang = 'pl';
-        OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id}');
+        OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id|md5}');
     }
 </script>
