@@ -1,3 +1,7 @@
+## 3.0.11
+ * Fixed payment methods icon alignment
+ * Fixed css class naming for mini installment widget displaying
+
 ## 3.0.10
  * Promoting credit payment methods feature: https://github.com/PayU/plugin_prestashop/tree/master#promowanie-p%C5%82atno%C5%9Bci-ratalnych-i-odroczonych
  * Add missing nofilter after display hook
