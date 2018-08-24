@@ -757,6 +757,7 @@ class PayU extends PaymentModule
         $this->context->smarty->assign(array(
                 'image' => $this->getPayuLogo(),
                 'creditImage' => $this->getPayuLogo('raty_small.png'),
+                'payu_logo_img' => $this->getPayuLogo('payu_logo.png'),
                 'actionUrl' => $link,
                 'creditActionUrl' => $link . "?payuPay=1&payMethod=ai&payuConditions=true",
                 'creditPayULaterActionUrl' => $link . "?payuPay=1&payMethod=dp&payuConditions=true",
@@ -1445,8 +1446,8 @@ class PayU extends PaymentModule
 
                 $creditAvailable = false;
                 $priceWithDot = str_replace(',', '.', $price);
-                if($priceWithDot > self::PAYU_MIN_CREDIT_AMOUNT &&
-                    $priceWithDot < self::PAYU_MAX_CREDIT_AMOUNT) {
+                if($priceWithDot >= self::PAYU_MIN_CREDIT_AMOUNT &&
+                    $priceWithDot <= self::PAYU_MAX_CREDIT_AMOUNT) {
                     $creditAvailable = true;
                 }
 
@@ -1464,8 +1465,8 @@ class PayU extends PaymentModule
         } else {
             $product = $params['product'];
             $current_controller = Tools::getValue('controller');
-            $creditAvailable = ($product['price_amount'] > self::PAYU_MIN_CREDIT_AMOUNT) &&
-                ($product['price_amount'] < self::PAYU_MAX_CREDIT_AMOUNT);
+            $creditAvailable = ($product['price_amount'] >= self::PAYU_MIN_CREDIT_AMOUNT) &&
+                ($product['price_amount'] <= self::PAYU_MAX_CREDIT_AMOUNT);
             if ($creditAvailable && (($params['type'] === 'weight' && $current_controller === 'index') ||
                 ($params['type'] === 'after_price' && $current_controller === 'product'))) {
                 $this->context->smarty->assign(array(
@@ -1621,8 +1622,8 @@ class PayU extends PaymentModule
     private function isCreditAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-                && $amount > self::PAYU_MIN_CREDIT_AMOUNT
-                && $amount < self::PAYU_MAX_CREDIT_AMOUNT
+                && $amount >= self::PAYU_MIN_CREDIT_AMOUNT
+                && $amount <= self::PAYU_MAX_CREDIT_AMOUNT
                 && PayMethodsCache::isInstallmentsAvailable(
                     Currency::getCurrency($this->context->cart->id_currency),
                     $this->getVersion());
@@ -1635,8 +1636,8 @@ class PayU extends PaymentModule
     private function isPayULaterAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-                && $amount > self::PAYU_MIN_DP_AMOUNT
-                && $amount < self::PAYU_MAX_DP_AMOUNT
+                && $amount >= self::PAYU_MIN_DP_AMOUNT
+                && $amount <= self::PAYU_MAX_DP_AMOUNT
                 && PayMethodsCache::isDelayedPaymentAvailable(
                     Currency::getCurrency($this->context->cart->id_currency),
                     $this->getVersion());

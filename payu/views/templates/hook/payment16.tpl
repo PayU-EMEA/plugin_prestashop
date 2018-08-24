@@ -10,7 +10,7 @@
 <fieldset class="payu-payment-fieldset-1-6">
     <legend class="payu-payment-legend-1-6">
         <span>
-            <img height="30px" src="modules/payu/img/payu_logo.png" />
+            <img height="30px" src="{$payu_logo_img}" />
         </span>
     </legend>
     <div class="row">
