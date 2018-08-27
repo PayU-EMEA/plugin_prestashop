@@ -1,3 +1,7 @@
+## 3.0.12
+ * Fix image path for logo
+ * Fixed min & max credit edge cases
+
 ## 3.0.11
  * Fixed payment methods icon alignment
  * Fixed css class naming for mini installment widget displaying
