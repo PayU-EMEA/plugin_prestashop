@@ -30,6 +30,10 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         }
 
         $response = $result->getResponse();
+        if ($response->refund) {
+            die('Refund notification - ignore');
+        }
+
         SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $response->order->orderId, 'Incoming notification: ');
 
         if (isset($response->order->orderId)) {

@@ -887,10 +887,7 @@ class PayU extends PaymentModule
             'continueUrl' => $this->context->link->getModuleLink('payu', 'success') . '?id=' . $this->extOrderId,
             'currencyCode' => $currency['iso_code'],
             'totalAmount' => $this->toAmount($this->order->total_paid),
-            'extOrderId' => $this->extOrderId,
-            'settings' => array(
-                'invoiceDisabled' => true
-            )
+            'extOrderId' => $this->extOrderId
         );
 
 
@@ -951,14 +948,14 @@ class PayU extends PaymentModule
         }
 
         SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderRetrieve response object: ');
-
         $payu_order = $responseNotification ? $response->order : $response->orders[0];
+        $payu_properties = isset($response->properties) ? $response->properties : null;
 
         if ($payu_order) {
 
             $this->order = new Order($this->id_order);
             SimplePayuLogger::addLog('notification', __FUNCTION__, 'Order exists in PayU system ', $this->payu_order_id);
-            $this->updateOrderState(isset($payu_order->status) ? $payu_order->status : null);
+            $this->updateOrderState($payu_order, $payu_properties);
         }
     }
 
@@ -1277,11 +1274,13 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @param $status
+     * @param object $payu_order
      * @return bool
      */
-    private function updateOrderState($status)
+    private function updateOrderState($payu_order, $payu_properties)
     {
+        $status = isset($payu_order->status) ? $payu_order->status : null;
+
         SimplePayuLogger::addLog('notification', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
 
         if (!empty($this->order->id) && !empty($status)) {
@@ -1301,6 +1300,7 @@ class PayU extends PaymentModule
                     if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
                         $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
                         $history->addWithemail(true);
+                        $this->addTransactionIdToPayment($this->order, $this->getTransactionId($payu_properties));
                     }
                     $this->updateOrderPaymentStatusBySessionId($status);
                     break;
@@ -1326,6 +1326,47 @@ class PayU extends PaymentModule
         }
 
         return false;
+    }
+
+    /**
+     * @param Order $order
+     * @param $transactionId
+     */
+    private function addTransactionIdToPayment($order, $transactionId)
+    {
+        if ($transactionId === null) {
+            return;
+        }
+        $payments = $order->getOrderPaymentCollection()->getResults();
+        if (count($payments) > 0) {
+            $payments[0]->transaction_id = $transactionId;
+            $payments[0]->update();
+        }
+    }
+
+    /**
+     * @param $payu_properties
+     * @return string
+     */
+    private function getTransactionId($payu_properties)
+    {
+        return $payu_properties !== null ? $this->extractPaymentIdFromProperties($payu_properties) : null;
+    }
+
+    /**
+     * @param array $properties
+     * @return string
+     */
+    private function extractPaymentIdFromProperties($properties)
+    {
+        if (is_array($properties)) {
+            foreach ($properties as $property) {
+                if ($property->name === 'PAYMENT_ID') {
+                    return $property->value;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -1398,7 +1439,7 @@ class PayU extends PaymentModule
     public function hookDisplayCheckoutSubtotalDetails($params)
     {
         if ($this->isCreditAvailable($params['cart']->getOrderTotal())
-                && Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') {
+            && Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') {
             $this->context->smarty->assign(array(
                 'cart_total_amount' => $params['cart']->getOrderTotal()
             ));
@@ -1468,7 +1509,7 @@ class PayU extends PaymentModule
             $creditAvailable = ($product['price_amount'] >= self::PAYU_MIN_CREDIT_AMOUNT) &&
                 ($product['price_amount'] <= self::PAYU_MAX_CREDIT_AMOUNT);
             if ($creditAvailable && (($params['type'] === 'weight' && $current_controller === 'index') ||
-                ($params['type'] === 'after_price' && $current_controller === 'product'))) {
+                    ($params['type'] === 'after_price' && $current_controller === 'product'))) {
                 $this->context->smarty->assign(array(
                     'product_price' => $product['price_amount'],
                     'product_id' => $product['id_product']
@@ -1622,11 +1663,11 @@ class PayU extends PaymentModule
     private function isCreditAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-                && $amount >= self::PAYU_MIN_CREDIT_AMOUNT
-                && $amount <= self::PAYU_MAX_CREDIT_AMOUNT
-                && PayMethodsCache::isInstallmentsAvailable(
-                    Currency::getCurrency($this->context->cart->id_currency),
-                    $this->getVersion());
+            && $amount >= self::PAYU_MIN_CREDIT_AMOUNT
+            && $amount <= self::PAYU_MAX_CREDIT_AMOUNT
+            && PayMethodsCache::isInstallmentsAvailable(
+                Currency::getCurrency($this->context->cart->id_currency),
+                $this->getVersion());
     }
 
     /**
@@ -1636,10 +1677,10 @@ class PayU extends PaymentModule
     private function isPayULaterAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-                && $amount >= self::PAYU_MIN_DP_AMOUNT
-                && $amount <= self::PAYU_MAX_DP_AMOUNT
-                && PayMethodsCache::isDelayedPaymentAvailable(
-                    Currency::getCurrency($this->context->cart->id_currency),
-                    $this->getVersion());
+            && $amount >= self::PAYU_MIN_DP_AMOUNT
+            && $amount <= self::PAYU_MAX_DP_AMOUNT
+            && PayMethodsCache::isDelayedPaymentAvailable(
+                Currency::getCurrency($this->context->cart->id_currency),
+                $this->getVersion());
     }
 }
