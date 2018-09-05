@@ -884,7 +884,7 @@ class PayU extends PaymentModule
             ),
             'customerIp' => $this->getIP(),
             'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
-            'continueUrl' => $this->context->link->getModuleLink('payu', 'success') . '?id=' . $this->extOrderId,
+            'continueUrl' => $this->context->link->getModuleLink('payu', 'success', array('id' => $this->extOrderId)),
             'currencyCode' => $currency['iso_code'],
             'totalAmount' => $this->toAmount($this->order->total_paid),
             'extOrderId' => $this->extOrderId
