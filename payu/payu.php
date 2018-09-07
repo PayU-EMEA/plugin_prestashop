@@ -728,7 +728,8 @@ class PayU extends PaymentModule
                     ->setCallToActionText($this->l('Pay online in installments'))
                     ->setModuleName($this->name)
                     ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
-                    ->setAction($this->context->link->getModuleLink($this->name, 'payment?payuPay=1&payMethod=ai&payuConditions=true'));
+                    ->setAction($this->context->link->getModuleLink($this->name, 'payment',
+                        array('payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true)));
                 array_push($paymentOptions, $installmentOption);
             }
 
@@ -738,7 +739,8 @@ class PayU extends PaymentModule
                     ->setCallToActionText($this->l('Pay within 30 days with PayU'))
                     ->setModuleName($this->name)
                     ->setAdditionalInformation($this->fetchTemplate('checkout_payu_later.tpl'))
-                    ->setAction($this->context->link->getModuleLink($this->name, 'payment?payuPay=1&payMethod=dp&payuConditions=true'));
+                    ->setAction($this->context->link->getModuleLink($this->name, 'payment',
+                        array('payuPay' => 1, 'payMethod' => 'dp', 'payuConditions' => true)));
                 array_push($paymentOptions, $payULaterOption);
             }
         }
@@ -759,8 +761,12 @@ class PayU extends PaymentModule
                 'creditImage' => $this->getPayuLogo('raty_small.png'),
                 'payu_logo_img' => $this->getPayuLogo('payu_logo.png'),
                 'actionUrl' => $link,
-                'creditActionUrl' => $link . "?payuPay=1&payMethod=ai&payuConditions=true",
-                'creditPayULaterActionUrl' => $link . "?payuPay=1&payMethod=dp&payuConditions=true",
+                'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
+                    'payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true
+                )),
+                'creditPayULaterActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
+                    'payuPay' => 1, 'payMethod' => 'dp', 'payuConditions' => true
+                )),
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
                 'payu_later_available' => $this->isPayULaterAvailable($params['cart']->getOrderTotal()),
                 'cart_total_amount' => $params['cart']->getOrderTotal())
