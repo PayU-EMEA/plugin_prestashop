@@ -213,14 +213,13 @@ class PayU extends PaymentModule
      */
     public function displayForm()
     {
-
         $form['method'] = array(
             'form' => array(
                 'legend' => array(
                     'title' => $this->l('Integration method'),
                     'icon' => 'icon-th'
                 ),
-                'input' => array(
+                'input' => array_merge(array(
                     array(
                         'type' => 'switch',
                         'label' => $this->l('Promote credit payment methods'),
@@ -238,44 +237,46 @@ class PayU extends PaymentModule
                                 'label' => $this->l('Disabled')
                             )
                         ),
-                    ),
+                    )),
                     !version_compare(_PS_VERSION_, '1.7', 'lt')? array(
-                        'type' => 'switch',
-                        'label' => $this->l('Show installment on cart'),
-                        'desc' => $this->l('Promotes credit payment method on cart'),
-                        'name' => 'PAYU_PROMOTE_CREDIT_CART',
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => 1,
-                                'label' => $this->l('Enabled')
+                        array(
+                            'type' => 'switch',
+                            'label' => $this->l('Show installment on cart'),
+                            'desc' => $this->l('Promotes credit payment method on cart'),
+                            'name' => 'PAYU_PROMOTE_CREDIT_CART',
+                            'values' => array(
+                                array(
+                                    'id' => 'active_on',
+                                    'value' => 1,
+                                    'label' => $this->l('Enabled')
+                                ),
+                                array(
+                                    'id' => 'active_off',
+                                    'value' => 0,
+                                    'label' => $this->l('Disabled')
+                                )
                             ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => 0,
-                                'label' => $this->l('Disabled')
-                            )
                         ),
-                    ):array(),
-                    !version_compare(_PS_VERSION_, '1.7', 'lt')? array(
-                        'type' => 'switch',
-                        'label' => $this->l('Show installment on summary'),
-                        'desc' => $this->l('Promotes credit payment method on summary'),
-                        'name' => 'PAYU_PROMOTE_CREDIT_SUMMARY',
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => 1,
-                                'label' => $this->l('Enabled')
+                        array(
+                            'type' => 'switch',
+                            'label' => $this->l('Show installment on summary'),
+                            'desc' => $this->l('Promotes credit payment method on summary'),
+                            'name' => 'PAYU_PROMOTE_CREDIT_SUMMARY',
+                            'values' => array(
+                                array(
+                                    'id' => 'active_on',
+                                    'value' => 1,
+                                    'label' => $this->l('Enabled')
+                                ),
+                                array(
+                                    'id' => 'active_off',
+                                    'value' => 0,
+                                    'label' => $this->l('Disabled')
+                                )
                             ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => 0,
-                                'label' => $this->l('Disabled')
-                            )
-                        ),
+                        )
                     ):array(),
-                    array(
+                    array(array(
                         'type' => 'switch',
                         'label' => $this->l('Show installments on product'),
                         'desc' => $this->l('Promotes credit payment method on product'),
@@ -335,7 +336,7 @@ class PayU extends PaymentModule
                             )
                         ),
                     ),
-                ),
+                )),
                 'submit' => array(
                     'title' => $this->l('Save'),
                 )
