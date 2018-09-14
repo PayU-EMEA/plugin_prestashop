@@ -1,3 +1,7 @@
+## 3.0.13
+ * Fixed configuration form generates notices (lukasz-zaroda)
+ * Fixed generate urls
+
 ## 3.0.12
  * Fix image path for logo
  * Fixed min & max credit edge cases
