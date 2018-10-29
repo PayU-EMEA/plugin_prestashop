@@ -111,6 +111,8 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 | Zakończona | `COMPLETED` | Płatność zaakceptowana |
 | Anulowana | `CANCELED` | Płatność PayU anulowana |
 
+W przypadku włączenia opcji `Kontrola zmiany statusów` dla statusów "Zakończona" i "Anulowana" możliwe jest przejście tylko ze statusów "Rozpoczęta" i "Oczekuje na odbiór"
+
 ## Więcej o cechach
 
 ### Kolejność metod płatności

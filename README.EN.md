@@ -116,6 +116,7 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 | Complete status | `COMPLETED` | Payment accepted |
 | Canceled status | `CANCELED` | Canceled |
 
+If the option `Control of status changes` is enabled for status "Complete" and "Canceled" it is possible to switch only from the status "Pending" and "Waiting For Confirmation"
 ## More on features
 
 ### Payment method order

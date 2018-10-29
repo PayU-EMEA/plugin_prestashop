@@ -1,3 +1,7 @@
+## 3.0.14
+ * Added status change control
+ * Separated configuration for installments
+
 ## 3.0.13
  * Fixed configuration form generates notices (lukasz-zaroda)
  * Fixed generate urls
