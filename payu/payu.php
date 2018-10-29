@@ -98,7 +98,8 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PROMOTE_CREDIT', 1) &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', 1) &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', 1) &&
-            Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', 1)
+            Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', 1) &&
+            Configuration::updateValue('PAYU_STATUS_CONTROL', 0)
         );
     }
 
@@ -126,7 +127,8 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_CART') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_SUMMARY') ||
-            !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_PRODUCT')
+            !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_PRODUCT') ||
+            !Configuration::deleteByName('PAYU_STATUS_CONTROL')
         ) {
             return false;
         }
@@ -190,7 +192,8 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT', (Tools::getValue('PAYU_PROMOTE_CREDIT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', (Tools::getValue('PAYU_PROMOTE_CREDIT_CART') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', (Tools::getValue('PAYU_PROMOTE_CREDIT_SUMMARY') ? 1 : 0)) ||
-                !Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', (Tools::getValue('PAYU_PROMOTE_CREDIT_PRODUCT') ? 1 : 0))
+                !Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', (Tools::getValue('PAYU_PROMOTE_CREDIT_PRODUCT') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_STATUS_CONTROL', (Tools::getValue('PAYU_STATUS_CONTROL') ? 1 : 0))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -218,6 +221,61 @@ class PayU extends PaymentModule
                 'legend' => array(
                     'title' => $this->l('Integration method'),
                     'icon' => 'icon-th'
+                ),
+                'input' => array(
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Display payment methods'),
+                        'desc' => $this->l('Payment methods displayed on Prestashop checkout summary page'),
+                        'name' => 'PAYU_RETRIEVE',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'text',
+                        'label' => $this->l('Payment Methods Order'),
+                        'name' => 'PAYU_PAYMENT_METHODS_ORDER',
+                        'desc' => $this->l('Enter payment methods values separated by comma. List of payment methods - http://developers.payu.com/pl/overview.html#paymethods'),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('SANDBOX mode'),
+                        'name' => 'PAYU_SANDBOX',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                ),
+                'submit' => array(
+                    'title' => $this->l('Save'),
+                )
+            )
+        );
+
+        $form['installments'] = array(
+            'form' => array(
+                'legend' => array(
+                    'title' => $this->l('Installments'),
+                    'icon' => 'icon-tag'
                 ),
                 'input' => array_merge(array(
                     array(
@@ -294,48 +352,7 @@ class PayU extends PaymentModule
                             )
                         ),
                     ),
-                    array(
-                        'type' => 'switch',
-                        'label' => $this->l('Display payment methods'),
-                        'desc' => $this->l('Payment methods displayed on Prestashop checkout summary page'),
-                        'name' => 'PAYU_RETRIEVE',
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => 1,
-                                'label' => $this->l('Enabled')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => 0,
-                                'label' => $this->l('Disabled')
-                            )
-                        ),
-                    ),
-                    array(
-                        'type' => 'text',
-                        'label' => $this->l('Payment Methods Order'),
-                        'name' => 'PAYU_PAYMENT_METHODS_ORDER',
-                        'desc' => $this->l('Enter payment methods values separated by comma. List of payment methods - http://developers.payu.com/pl/overview.html#paymethods'),
-                    ),
 
-                    array(
-                        'type' => 'switch',
-                        'label' => $this->l('SANDBOX mode'),
-                        'name' => 'PAYU_SANDBOX',
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => 1,
-                                'label' => $this->l('Enabled')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => 0,
-                                'label' => $this->l('Disabled')
-                            )
-                        ),
-                    ),
                 )),
                 'submit' => array(
                     'title' => $this->l('Save'),
@@ -458,7 +475,25 @@ class PayU extends PaymentModule
                             'id' => 'id',
                             'name' => 'name'
                         )
-                    )
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Control of status changes'),
+                        'desc' => $this->l('For status "Complete" and "Canceled" it is possible to switch only from the status "Pending" and "Waiting For Confirmation"'),
+                        'name' => 'PAYU_STATUS_CONTROL',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
@@ -502,7 +537,8 @@ class PayU extends PaymentModule
             'PAYU_PROMOTE_CREDIT' => Configuration::get('PAYU_PROMOTE_CREDIT'),
             'PAYU_PROMOTE_CREDIT_CART' => Configuration::get('PAYU_PROMOTE_CREDIT_CART'),
             'PAYU_PROMOTE_CREDIT_SUMMARY' => Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY'),
-            'PAYU_PROMOTE_CREDIT_PRODUCT' => Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT')
+            'PAYU_PROMOTE_CREDIT_PRODUCT' => Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT'),
+            'PAYU_STATUS_CONTROL' => Configuration::get('PAYU_STATUS_CONTROL')
         );
 
         foreach (Currency::getCurrencies() as $currency) {
@@ -1300,7 +1336,8 @@ class PayU extends PaymentModule
             $history = new OrderHistory();
             $history->id_order = $this->order->id;
 
-            $withoutUpdateOrderState = $this->hasLastPayuOrderIsCompleted($this->order->id);
+            $withoutUpdateOrderState = !$this->isCorrectPreviousStatus($order_state_id)
+                || $this->hasLastPayuOrderIsCompleted($this->order->id);
 
             switch ($status) {
                 case OpenPayuOrderStatus::STATUS_COMPLETED:
@@ -1333,6 +1370,20 @@ class PayU extends PaymentModule
         }
 
         return false;
+    }
+
+    /**
+     * @param $status
+     * @return bool
+     */
+    private function isCorrectPreviousStatus($status)
+    {
+        if (Configuration::get('PAYU_STATUS_CONTROL') !== '1') {
+            return true;
+        }
+
+        return $status == Configuration::get('PAYU_PAYMENT_STATUS_PENDING') || $status == Configuration::get('PAYU_PAYMENT_STATUS_SENT');
+
     }
 
     /**
