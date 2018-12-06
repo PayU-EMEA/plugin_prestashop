@@ -1,3 +1,6 @@
+## 3.0.15
+ * Fixed retry payment for guests
+
 ## 3.0.14
  * Added status change control
  * Separated configuration for installments
