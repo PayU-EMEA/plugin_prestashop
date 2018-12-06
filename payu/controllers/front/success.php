@@ -40,21 +40,18 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
         $this->context->smarty->assign(array(
             'payuLogo' => $payu->getPayuLogo(),
             'orderPublicId' => $this->order->getUniqReference(),
-            'redirectUrl' => $this->getRedirectLink($payu->id_cart, $payu->id_order),
+            'redirectUrl' => $this->getRedirectLink(),
             'orderStatus' => $currentState['name'],
             'HOOK_ORDER_CONFIRMATION' => $this->displayOrderConfirmation(),
             'HOOK_PAYMENT_RETURN' => $this->displayPaymentReturn()
         ));
 
-
-
         $this->setTemplate($payu->buildTemplatePath('status'));
-
     }
 
-    private function getRedirectLink($id_cart, $id_order)
+    private function getRedirectLink()
     {
-        if (Cart::isGuestCartByCartId($id_cart)) {
+        if (Cart::isGuestCartByCartId($this->order->id_cart)) {
 
             $customer = new Customer((int)$this->order->id_customer);
 
@@ -62,7 +59,7 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
                 'guest-tracking',
                 null,
                 $this->context->language->id,
-                ['id_order' => $this->order->reference, 'email' => urlencode($customer->email)]
+                ['order_reference' => $this->order->reference, 'email' => $customer->email]
             );
         }
 
@@ -70,7 +67,7 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
             'order-detail',
             null,
             $this->context->language->id,
-            ['id_order' => $id_order]
+            ['id_order' => $this->order->id]
         );
     }
 

@@ -21,7 +21,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     private $order = null;
 
-
     public function postProcess()
     {
         $this->checkHasModuleActive();
@@ -34,7 +33,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         } else {
             $this->postProcessPayment();
         }
-
     }
 
     public function initContent()
@@ -108,10 +106,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->setTemplate($this->payu->buildTemplatePath('error'));
     }
 
-
     private function pay($payMethod = null)
     {
-
         if (!$this->hasRetryPayment) {
             $this->payu->validateOrder(
                 $this->context->cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
@@ -158,51 +154,42 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         if (!Validate::isLoadedObject($customer)) {
             Tools::redirectLink(__PS_BASE_URI__ . 'order.php?step=1');
         }
-
     }
 
     private function postProcessRetryPayment()
     {
-        if (!($id_order = (int)Tools::getValue('id_order')) || !Validate::isUnsignedId($id_order)) {
+        $id_order = (int)Tools::getValue('id_order');
+        $order_reference = Tools::getValue('order_reference');
+
+        if (!$id_order || !Validate::isUnsignedId($id_order)) {
             Tools::redirect('index.php?controller=history');
         }
 
         $this->order = new Order($id_order);
 
-        if (!Validate::isLoadedObject($this->order) || $this->order->id_customer != $this->context->customer->id) {
+        if (!Validate::isLoadedObject($this->order) || $this->order->reference !== $order_reference) {
             Tools::redirect('index.php?controller=history');
         }
 
         if (!$this->payu->hasRetryPayment($this->order->id, $this->order->current_state)) {
             Tools::redirect('index.php?controller=history');
         }
-
     }
 
     private function checkHasModuleActive()
     {
-
-        $authorized = false;
-        foreach (Module::getPaymentModules() as $module) {
-            if ($module['name'] === 'payu') {
-                $authorized = true;
-                break;
-            }
-        }
-
-        if (!$authorized) {
+        if (!Module::isEnabled($this->module->name)) {
             die($this->module->l('This payment method is not available.', 'payment'));
         }
 
         if (!$this->module->active) {
             die($this->module->l('PayU module isn\'t active.', 'payment'));
         }
-
     }
 
     private function checkHasRetryPayment()
     {
-        $this->hasRetryPayment = Tools::getValue('id_order') !== false ? true : false;
+        $this->hasRetryPayment = Tools::getValue('id_order') !== false && Tools::getValue('order_reference') !== false;
     }
 
     private function getShowPayMethodsParameters()
@@ -240,5 +227,4 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW, $this->order->id, 0, $this->payu->payu_order_id, $this->payu->getExtOrderId());
 
     }
-
 }
