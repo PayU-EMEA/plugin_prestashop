@@ -1,3 +1,6 @@
+## 3.0.16
+ * Fixed submitting payment for Prestashop v1.7.5.0
+
 ## 3.0.15
  * Fixed retry payment for guests
 
