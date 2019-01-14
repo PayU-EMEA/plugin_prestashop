@@ -1564,8 +1564,9 @@ class PayU extends PaymentModule
         } else {
             $product = $params['product'];
             $current_controller = Tools::getValue('controller');
-            $creditAvailable = ($product['price_amount'] >= self::PAYU_MIN_CREDIT_AMOUNT) &&
-                ($product['price_amount'] <= self::PAYU_MAX_CREDIT_AMOUNT);
+            $creditAvailable = isset($product['price_amount'])
+                && ($product['price_amount'] >= self::PAYU_MIN_CREDIT_AMOUNT)
+                && ($product['price_amount'] <= self::PAYU_MAX_CREDIT_AMOUNT);
             if ($creditAvailable && (($params['type'] === 'weight' && $current_controller === 'index') ||
                     ($params['type'] === 'after_price' && $current_controller === 'product'))) {
                 $this->context->smarty->assign(array(
