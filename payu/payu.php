@@ -705,7 +705,7 @@ class PayU extends PaymentModule
                 array(
                     'payuImage' => $this->getPayuLogo(),
                     'payuActionUrl' => $this->context->link->getModuleLink(
-                        'payu', 'payment', array('id_order' => $params['order']->id)
+                        'payu', 'payment', array('id_order' => $params['order']->id, 'order_reference' => $params['order']->reference)
                     )
                 )
             );

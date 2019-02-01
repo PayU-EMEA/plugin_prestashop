@@ -97,7 +97,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 'image' => $this->payu->getPayuLogo(),
                 'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
                 'orderCurrency' => (int)$this->order->id_currency,
-                'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id)),
+                'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
                 'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') .  ' ' . $this->order->reference,
                 'payuError' => $this->module->l('An error occurred while processing your payment.', 'payment')
             )
@@ -199,7 +199,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
                 'orderCurrency' => (int)$this->order->id_currency,
                 'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->order->id_currency)),
-                'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id)),
+                'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
                 'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference,
                 'retryPayment' => $this->hasRetryPayment
             );
