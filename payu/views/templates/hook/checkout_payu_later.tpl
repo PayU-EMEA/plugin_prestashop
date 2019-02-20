@@ -1,7 +1,7 @@
 <div class="payu-method-description">
     <img class="payu-marker-class payu-later-logo" src="{$payu_later_logo_img}"/>
     <p>
-        {l s='Pay by card or online transfer within 30 days with no additional fees' mod='payu'}
+        {l s='Pay by card or online transfer up to 30 days after purchase, no additional fees' mod='payu'}
         <span id='payu-later-mini-cart'>
         <img src="{$payu_question_mark_img}"/>
     </span>

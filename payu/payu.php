@@ -773,7 +773,7 @@ class PayU extends PaymentModule
             if ($this->isPayULaterAvailable($totalPrice)) {
                 $payULaterOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $payULaterOption
-                    ->setCallToActionText($this->l('Pay within 30 days with PayU'))
+                    ->setCallToActionText($this->l('Pay later with PayU'))
                     ->setModuleName($this->name)
                     ->setAdditionalInformation($this->fetchTemplate('checkout_payu_later.tpl'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
