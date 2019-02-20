@@ -1,3 +1,6 @@
+## 3.0.18
+ * New copy for DP english version
+
 ## 3.0.17
  * New copy for DP
 
