@@ -1,3 +1,6 @@
+## 3.0.19
+ * Fix #256
+
 ## 3.0.18
  * New copy for DP english version
 
