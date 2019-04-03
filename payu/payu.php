@@ -587,14 +587,8 @@ class PayU extends PaymentModule
             $order = new Order($id_order);
             $order_payment = $this->getLastOrderPaymentByOrderId($id_order);
 
-            $order_state_id = $order->current_state;
-
-            if ($order->module = 'payu') {
-                switch ($order_state_id) {
-                    case Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'):
-                        $refundable = true;
-                        break;
-                }
+            if ($order->module === 'payu' && $order_payment['status'] === OpenPayuOrderStatus::STATUS_COMPLETED) {
+                $refundable = true;
             }
         }
 
