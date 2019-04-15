@@ -10,7 +10,7 @@ Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x)
 ## Spis treści
 
 * [Cechy i kompatybilność](#cechy-i-kompatybilność)
-* [Wymagania](#wymagania) 
+* [Wymagania](#wymagania)
 * [Instalacja](#instalacja)
 * [Aktualizacja](#aktualizacja)
 * [Konfiguracja](#konfiguracja)
@@ -39,7 +39,7 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Prezentacja kalkulacji ratalnej na podsumowaniu | :white_check_mark: | :white_check_mark: |
 | Prezentacja kalkulacji ratalnej w koszyku | :x: | :white_check_mark: |
 
-Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach) 
+Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach)
 
 **Wszyskie opisy w tej instrukcji odnoszą się do PrestaShop 1.6, w wersji 1.7 należy używać opcji analogicznych**.
 
@@ -52,7 +52,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 ## Instalacja
 
-### Opcja 1 
+### Opcja 1
 **przeznaczona dla użytkowników bez dostępu poprzez FTP do instalacji PrestaShop**
 
 1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
@@ -63,7 +63,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 1. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (utworzonej w punkcie 3)
 1. Naciśnij przycisk `Prześlij moduł`
 
-### Opcja 2 
+### Opcja 2
 **przeznaczona dla użytkowników z dostępem poprzez FTP do instalacji PrestaShop**
 
 1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
@@ -73,7 +73,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 ## Aktualizacja
 
 1. Zaktualizuj plik modułu zgodnie z punktem [Instalacja](#instalacja)
-1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżeli jest wymagana 
+1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżeli jest wymagana
 1. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`  
 
 ## Konfiguracja
@@ -84,7 +84,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 ### Sposób integracji
 
-| Parameter | Opis | 
+| Parameter | Opis |
 |---------|-----------|
 | Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU |
 | Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności). |
@@ -94,7 +94,7 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 Dla każdej waluty dodanej w PrestaShop należy dodać parametry (osobno dla środowiska produkcyjnego i sandbox):
 
-| Parameter | Opis | 
+| Parameter | Opis |
 |---------|-----------|
 | Id punktu płatności| Identyfikator POS-a z systemu PayU |
 | Drugi klucz MD5 | Drugi klucz MD5 z systemu PayU |
@@ -104,7 +104,7 @@ Dla każdej waluty dodanej w PrestaShop należy dodać parametry (osobno dla śr
 ### Statusy płatności
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
-| Nazwa | Status w PayU | Domyślny status w Presta | 
+| Nazwa | Status w PayU | Domyślny status w Presta |
 |---------|-----------|-----------|
 | Rozpoczęta | `NEW` i `PENDING` | Płatność PayU rozpoczęta |
 | Oczekuje na odbiór | `WAITING_FOR_CONFIRMATION` i `REJECTED` | Płatność PayU oczekuje na odbiór |
@@ -123,7 +123,7 @@ W celu ustalenia kolejności wyświetlanych ikon metod płatności należy poda�
 ### Wielowalutowość
 POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatność w sklepie PrestaShop w wielu walutach niezbędne jest dodanie konfiguracji POSa dla każdej waluty z osobna.   
 
-### Wyświetlenie metod płatności 
+### Wyświetlenie metod płatności
 Przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak` po wybraniu płatności przez PayU wyświetli się strona z ikonami banków bezpośrednio w sklepie PrestaShop.
 Ikony banków, które są wyświetlane pobierane są z konfiguracji POS-a w PayU w zależności od wybranej waluty.  
 
@@ -134,7 +134,7 @@ Po wybraniu banku lub płatności kartą i naciśnięciu przycisku `Potwierdzam 
 ### Ponowienie płatności
 W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
 
-Żeby kupujący mógł ponowić płatność muszą być spełnione następujące warunki: 
+Żeby kupujący mógł ponowić płatność muszą być spełnione następujące warunki:
 * status ostatniej płatności z PayU musi mieć status CANCELED
 * status zamówienia w PrestaShop musi być zgodny ze statusem wybranym w konfiguracji wtyczki `Statusy płatności` » `Anulowana`    
 
@@ -147,12 +147,12 @@ W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie
 ### Promowanie płatności ratalnych i odroczonych
 Od wersji 3.0.10 plugin udostępnia opcję promowania [płatności ratalnych i odroczonych][ext7].
 Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez przełącznik "Promuj płatności ratalne" w panelu
- admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i 
+ admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i
  Kompatybilność](#cechy-i-kompatybilność).
- > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dp" na danym punkcie płatności i sprawdzana 
- jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie 
+ > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dp" na danym punkcie płatności i sprawdzana
+ jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie
  zaprezentowana pomimo włączonej opcji w pluginie.
- 
+
 <img src="readme_images/credit-1-7-admin.png" width="400">
 
 #### Prezentacja kalkulacji w zależności od wersji PrestaShop
@@ -162,20 +162,20 @@ Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez pr
 |1.7|Karta produktu|<img src="readme_images/credit-1-7-product.png" width="100">|
 |1.7|Koszyk| <img src="readme_images/credit-1-7-cart.png" width="100">|
 |1.7|Wybór metody płatności PayU Raty|<img src="readme_images/credit-1-7-checkout-installments.png" width="100">|
-|1.7|Wybór metody płatności PayU Płacę później| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">| 
+|1.7|Wybór metody płatności PayU Płacę później| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">|
 |1.6|Listing produktów|<img src="readme_images/credit-1-6-listing.png" width="100">|
 |1.6|Karta produktu|<img src="readme_images/credit-1-6-product.png" width="100">|
 |1.6|Wybór metody płatności|<img src="readme_images/credit-1-6-checkout.png" width="100">|
 
 
 #### Prezentacja kalkulacji po kliknięciu w link "Rata już od:"
-Plugin do kalkulacji kredytu używa najnowszej wersji elementu "miniratka" wchodzącego w skład pakietu [PayU Raty - 
+Plugin do kalkulacji kredytu używa najnowszej wersji elementu "miniratka" wchodzącego w skład pakietu [PayU Raty -
 dobre praktyki][ext12], który znajduje się w [oficjalnej dokumentacji technicznej][ext8].
 
 Do prezentacji okna informacyjnego o [PayU Płacę Później][ext9] wykorzystywany jest [Widget Płacę Później][ext11].
 
 Widget z kalkulacją ratalną wygląda następująco:
- 
+
 <img src="readme_images/credit-installment-widget.png" width="300">
 
 <!--LINKS-->
@@ -185,7 +185,7 @@ Widget z kalkulacją ratalną wygląda następująco:
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
 [ext3]: https://github.com/PayU/plugin_prestashop
-[ext4]: https://secure.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
+[ext4]: https://www.payu.pl/oferta-handlowa
 [ext5]: https://secure.snd.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
 [ext6]: http://developers.payu.com/pl/overview.html#paymethods
 [ext7]: https://developers.payu.com/pl/installments.html
