@@ -10,7 +10,7 @@ Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) s
 ## Table of Contents
 
 * [Features](#features)
-* [Prerequisites](#prerequisites) 
+* [Prerequisites](#prerequisites)
 * [Installing](#installation)
 * [Upgrading](#upgrade)
 * [Configuration](#configuration)
@@ -55,7 +55,7 @@ The following PHP extensions are required:
 
 ## Installation
 
-### Option 1 
+### Option 1
 **recommended for users without FTP access to their PrestShop installation**
 
 1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
@@ -77,7 +77,7 @@ The following PHP extensions are required:
 
 1. Update plugin files according to [Installing](#installation)
 1. Go to do 'Modules and Services' > 'Modules and Services' - automated upgrade will be performed if required  
-1. Go to **Advanced Parameters** > 'Performance' and click 'Clear cache' 
+1. Go to **Advanced Parameters** > 'Performance' and click 'Clear cache'
 
 ## Configuration
 
@@ -90,7 +90,7 @@ To configure the PrestaShop plugin:
 ### Integration method
 (works only Prestashop 1.5 and 1.6)
 
-| Parameter | Description | 
+| Parameter | Description |
 |:---------:|:-----------:|
 |Payment methods displayed on PrestaShop checkout summary page | **Yes** - payment methods displayed on PrestaShop checkout page <br>**No** - redirection to PayU after order is placed|
 | Sandbox mode | **Yes** - transactions will be processed on PayU Sandbox environment<br>**No** - transactions will be processed on PayU production environment|
@@ -99,7 +99,7 @@ To configure the PrestaShop plugin:
 
 For each currency defined in Presta please configure the below parameters (separately for sandbox and production environment).
 
-| Parameter | Description | 
+| Parameter | Description |
 |:---------:|:-----------:|
 |POS ID|Unique ID of the POS|
 |Second Key|MD5 key for securing communication|
@@ -109,7 +109,7 @@ For each currency defined in Presta please configure the below parameters (separ
 ### Payment status mapping
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
-| Name | PayU payment status | Default value in Presta | 
+| Name | PayU payment status | Default value in Presta |
 |---------|-----------|-----------|
 | Pending status | `NEW` and `PENDING` | PayU payment started |
 | Waiting for confirmation | `WAITING_FOR_CONFIRMATION` and `REJECTED` | PayU payment awaits for reception |
@@ -145,17 +145,17 @@ If the criteria are met, the buyer will see a retry option on Order details scre
 
 ![retry_payment][img4]
 
-All PayU payments created for a PrestaShop order are displayed on Order screen in PrestaShop admin panel. 
+All PayU payments created for a PrestaShop order are displayed on Order screen in PrestaShop admin panel.
 
 ### Promote credit payment methods
-Plugin version 3.0.10 introduced functionality of promoting [credit payment methods][ext7]. 
+Plugin version 3.0.10 introduced functionality of promoting [credit payment methods][ext7].
 Functionality is enabled by default. It can be deactivated using "Promote credit" switch in admin panel.
 Support for given functionalities has been described in [Features](#features) section.
- > Presenting credit widgets is dependent on gateways availability for given point of sale (POS). 
+ > Presenting credit widgets is dependent on gateways availability for given point of sale (POS).
  Plugin automatically checks whether "ai" or "dp" gateways are enabled.
- If used POS doesn't have credit agreement activated functionality will not work, and widget presentation will be 
+ If used POS doesn't have credit agreement activated functionality will not work, and widget presentation will be
  supressed (even if flag in admin panel is enabled).
- 
+
 <img src="readme_images/credit-1-7-admin.png" width="400">
 
 #### Presentation of estimated installment amount depending on PrestaShop version
@@ -165,18 +165,18 @@ Support for given functionalities has been described in [Features](#features) se
 |1.7|Product page|<img src="readme_images/credit-1-7-product.png" width="100">|
 |1.7|Cart| <img src="readme_images/credit-1-7-cart.png" width="100">|
 |1.7|PayU Installment payment method during checkout|<img src="readme_images/credit-1-7-checkout-installments.png" width="100">|
-|1.7|PayU Later payment method during checkout| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">| 
+|1.7|PayU Later payment method during checkout| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">|
 |1.6|Products listing|<img src="readme_images/credit-1-6-listing.png" width="100">|
 |1.6|Product page|<img src="readme_images/credit-1-6-product.png" width="100">|
 |1.6|Checkout page|<img src="readme_images/credit-1-6-checkout.png" width="100">|
 
 
-#### Presentation of estimated installment amount after clicking "Installment from:" 
+#### Presentation of estimated installment amount after clicking "Installment from:"
 Plugin uses newest version of "miniInstallment" component that comes with [PayU Installments - best practices][ext12] package, that can be found in [official documentation][ext8].
 To present [PayU Later][ext9] popup newest version of [Widget PayU Later][ext11] was used.
 
-Popup with estimated installment plan looks as below: 
- 
+Popup with estimated installment plan looks as below:
+
 <img src="readme_images/credit-installment-widget.png" width="300">
 
 <!--LINKS-->
@@ -186,7 +186,7 @@ Popup with estimated installment plan looks as below:
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
 [ext3]: https://github.com/PayU/plugin_prestashop
-[ext4]: https://secure.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
+[ext4]: https://www.payu.pl/en/commercial-offer
 [ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 [ext6]: http://developers.payu.com/en/overview.html#paymethods
 [ext7]: https://developers.payu.com/en/installments.html
