@@ -647,41 +647,11 @@ class PayU extends PaymentModule
         if(Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
             if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
                 $this->context->controller->addCSS('https://static.payu.com/res/v2/layout/style.css', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/jquery.payu.min.js', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/jquery-ui.payu.min.js', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/jquery.i18n.payu.js', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/jsrender.js', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/openpayu-2.0.js', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/widget-installments-2.1.js', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/widget-dp-2.0.js', 'all');
+                $this->context->controller->addJS('https://static.payu.com/res/v2/widget-products-installments.js', 'all');
             } else {
                 $this->context->controller->registerJavascript(
-                    'remote-jquery-payu',
-                    'https://static.payu.com/res/v2/jquery.payu.min.js',
-                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                $this->context->controller->registerJavascript(
-                    'remote-jquery-ui-payu',
-                    'https://static.payu.com/res/v2/jquery-ui.payu.min.js',
-                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                $this->context->controller->registerJavascript(
-                    'remote-jquery-i18n-payu',
-                    'https://static.payu.com/res/v2/jquery.i18n.payu.js',
-                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                $this->context->controller->registerJavascript(
-                    'remote-jsrender-payu',
-                    'https://static.payu.com/res/v2/jsrender.js',
-                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                $this->context->controller->registerJavascript(
-                    'remote-openpayu-payu',
-                    'https://static.payu.com/res/v2/openpayu-2.0.js',
-                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                $this->context->controller->registerJavascript(
-                    'remote-installments-payu',
-                    'https://static.payu.com/res/v2/widget-installments-2.1.js',
-                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                $this->context->controller->registerJavascript(
-                    'remote-dp-payu',
-                    'https://static.payu.com/res/v2/widget-dp-2.0.js',
+                    'remote-widget-products-installments',
+                    'https://static.payu.com/res/v2/widget-products-installments.js',
                     ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
                 $this->context->controller->registerStylesheet(
                     'remote-installments-css-payu',
