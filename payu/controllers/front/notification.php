@@ -30,7 +30,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         }
 
         $response = $result->getResponse();
-        if ($response->refund) {
+        if (property_exists($response, 'refund')) {
             die('Refund notification - ignore');
         }
 
