@@ -1,3 +1,9 @@
+## 3.0.21
+ * Fix PHP: Notice
+
+## 3.0.20
+ * Fix #259 (minification widget-installments)
+
 ## 3.0.19
  * Fix #256
 
