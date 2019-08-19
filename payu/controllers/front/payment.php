@@ -45,7 +45,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 $payMethod = Tools::getValue('payMethod');
                 $payuConditions = Tools::getValue('payuConditions');
                 $errors = array();
-                $payError = false;
+                $payError = array();
 
                 if (!$payMethod) {
                     $errors[] = $this->module->l('Please select a method of payment', 'payment');
@@ -58,7 +58,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 if (count($errors) == 0) {
                     $payError = $this->pay($payMethod);
                     if (!array_key_exists('firstPayment', $payError)) {
-                        $errors[] = $payError;
+                        $errors[] = $payError['message'];
                     }
                 }
                 if (array_key_exists('firstPayment', $payError)) {
@@ -135,7 +135,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');
 
             if ($this->hasRetryPayment) {
-                return $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment') . ' ' .$result['error'];
+                return array('message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment') . ' ' .$result['error']);
             }
 
             return array(
