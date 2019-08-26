@@ -1,3 +1,7 @@
+## 3.0.22
+ * Fix Cache'ing Mini installment widget 
+ * Fix #260
+
 ## 3.0.21
  * Fix PHP: Notice
 
