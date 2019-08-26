@@ -1537,7 +1537,7 @@ class PayU extends PaymentModule
                     'product_price' => $product['price_amount'],
                     'product_id' => $product['id_product']
                 ));
-                return $this->display(__FILE__, 'product.tpl');
+                return $this->display(__FILE__, 'product.tpl', $this->getCacheId($product['price_amount'].$product['id_product']));
             } else {
                 return;
             }
