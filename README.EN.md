@@ -3,7 +3,7 @@
 # PayU plugin for Prestashop 1.6 and 1.7
 ``This plugin is released under the GPL license.``
 
-**If you have any questions or issues, feel free to contact our technical support: tech@payu.pl.**
+**If you have any questions or issues, feel free to contact our [technical support][ext13].**
 
 Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) supports PrestaShop versions 1.4 and 1.5, but is not developed any more.
 
@@ -195,6 +195,7 @@ Popup with estimated installment plan looks as below:
 [ext10]: https://www.payu.pl/en/payment-methods-business/payu-installments
 [ext11]: https://developers.payu.com/en/installments.html#dp_best_practices_mini
 [ext12]: https://developers.payu.com/en/installments.html#best_practices_title
+[ext13]: https://www.payu.pl/en/help
 
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png
