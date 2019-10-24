@@ -3,7 +3,7 @@
 # Moduł PayU dla PrestaShop 1.6 i 1.7
 ``Moduł jest wydawany na licencji GPL.``
 
-**Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym wsparciem pod adresem: tech@payu.pl.**
+**Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym [wsparciem technicznym][ext13].**
 
 Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) wspiera PrestaShop w wersji 1.4 i 1.5, ale nie jest dalej rozwijany.
 
@@ -194,6 +194,7 @@ Widget z kalkulacją ratalną wygląda następująco:
 [ext10]: https://www.payu.pl/metody-platnosci-dla-biznesu/payu-raty
 [ext11]: https://developers.payu.com/pl/installments.html#dp_best_practices_mini
 [ext12]: https://developers.payu.com/pl/installments.html#best_practices_title
+[ext13]: https://www.payu.pl/pomoc
 
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png
