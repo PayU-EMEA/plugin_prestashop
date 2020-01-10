@@ -20,3 +20,8 @@
         {l s='Order will be done after positive decision' mod='payu'}
     </p>
 </div>
+<script type="text/javascript">
+    (function () {
+        window.payuPaymentLoaded = true;
+    })();
+</script>
