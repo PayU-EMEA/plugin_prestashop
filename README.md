@@ -17,6 +17,8 @@ Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x)
 * [Więcej o cechach](#więcej-o-cechach)
     * [Wielowalutowość](#wielowalutowość)
     * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
+    * [Płatność kartą](#płatność-kartą)
+    * [Płatność kartą - widżet](#widżet-do-płatności-kartą)
     * [Ponowienie płatności](#ponowienie-płatności)
     * [Promowanie płatności ratalnych i odroczonych](#promowanie-płatności-ratalnych-i-odroczonych)
 
@@ -31,6 +33,8 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: |
 | Utworzenie zwrotu (pełnego lub częściowego) | :white_check_mark: | :white_check_mark: |
 | Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
+| Płatność kartą jako osobna metoda płatności | :white_check_mark: | :white_check_mark: |
+| Płatność kartą jako widżet na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
 | Ponowienie płatności przez klienta w przypadku anulowania | :white_check_mark: | :white_check_mark: |
 | Wielowalutowość | :white_check_mark: | :white_check_mark: |
 | Kolejność metod płatności | :white_check_mark: | :white_check_mark: |
@@ -87,7 +91,9 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 | Parameter | Opis |
 |---------|-----------|
 | Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU |
-| Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności). |
+| Płatność kartą jako osobna metoda płatności | Określa czy płatność kartą będzie dostępna jako osobna metoda [więcej informacji](#płatność-kartą) |
+| Płatność kartą w widżecie | Określa czy płatność kartą będzie dostępna jako widżet [więcej informacji](#widżet-do-płatności-kartą) |
+| Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności) |
 | Tryb testowy (Sandbox) | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU |
 
 ### Parametry POS-ów
@@ -129,7 +135,19 @@ Ikony banków, które są wyświetlane pobierane są z konfiguracji POS-a w PayU
 
 ![payment_methods][img3]
 
-Po wybraniu banku lub płatności kartą i naciśnięciu przycisku `Potwierdzam zamówienie i płacę` nastąpi bezpośrednie przekierowanie na stronę banku lub w przypadku płatności kartą na stronę formatki kartowej.  
+### Płatność kartą
+Przy ustawionej opcji **Płatność kartą jako osobna metoda płatności** na liście metod płatności w procesie zakupowym Prestashop wyświetli się jako osobna metoda o nazwie `Zapłać kartą`.
+
+Jeżeli **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** jest ustawione na `Tak` to metoda `Zapłać kartą` będzie wyświetlana jeżeli na POS-ie jest dostępna płatnośc kartą. W przeciwnym wypadku metoda `Zapłać kartą` kartą będzie wyświetlana zawsze ale jeżeli na POS-ie brak jest metody płatnoś kartą to wtedy płatność się nie powiedzie. 
+
+![payment_methods][img6]
+
+### Widżet do płatności kartą
+**WAŻNE** - do prawidłowego działania niezbędne jest włączenie tokenizacji w konfiguracji POS-a. W tym celu należy się skontaktować z naszym [wsparciem technicznym][ext13].
+
+Przy ustawionej opcji **Płatność kartą jako osobna metoda płatności** oraz **Płatność kartą jako widżet na stronie podsumowania zamówienia** na `Tak` po wybraniu płatności `Zapłać kartą` zamiast przekierowania do PayU pojawi się widżet do wprowadzenia danych karty. 
+
+![widget][img5]
 
 ### Ponowienie płatności
 W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
@@ -199,3 +217,5 @@ Widget z kalkulacją ratalną wygląda następująco:
 <!--images:-->
 [img3]: readme_images/bramki_platnosci.png
 [img4]: readme_images/ponow_platnosc.png
+[img5]: readme_images/widget.png
+[img6]: readme_images/separate_card.png
