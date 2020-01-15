@@ -49,7 +49,7 @@ Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#w
 
 ## Wymagania
 
-**Ważne:** Moduł ta działa tylko z punktem płatności typu `REST API` (Checkout).
+**Ważne:** Moduł działa tylko z punktem płatności typu `REST API` (Checkout).
 Jeżeli nie posiadasz jeszcze konta w systemie PayU [**zarejestruj się w systemie produkcyjnym**][ext4] lub [**zarejestruj się w systemie sandbox**][ext5]
 
 Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia PHP: [cURL][ext1] i [hash][ext2].
