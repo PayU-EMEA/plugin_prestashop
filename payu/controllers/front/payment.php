@@ -91,6 +91,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function showPayMethod($payMethod = '', $payuConditions = 1, $errors = array())
     {
         $this->context->smarty->assign(array(
+            'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'payMethod' => $payMethod,
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
@@ -106,6 +107,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function showSecureForm($payuConditions = 1, $errors = array())
     {
         $this->context->smarty->assign(array(
+            'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
             'payuConditions' => $payuConditions,

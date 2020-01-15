@@ -9,17 +9,34 @@
 *}
 <fieldset class="payu-payment-fieldset-1-6">
     <legend class="payu-payment-legend-1-6">
-        <span>
-            <img height="30px" src="{$payu_logo_img}" />
-        </span>
+        <span class='logo' />
     </legend>
+    {if $showCardPayment == true}
     <div class="row">
         <div class="col-xs-12">
             <p class="payment_module">
-                <a style="padding: 33px;" class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}"
-                   title="{l s='Pay by online transfer or card' mod='payu'}">
-                    {l s='Pay by online transfer or card' mod='payu'}
+                <a class="payu payu_card" href="{$cardActionUrl|escape:'htmlall':'UTF-8'}"
+                   title="{l s='Pay by card' mod='payu'}">
+                    {l s='Pay by card' mod='payu'}
                 </a>
+            </p>
+        </div>
+    </div>
+    {/if}
+    <div class="row">
+        <div class="col-xs-12">
+            <p class="payment_module payment_payu">
+                {if $showCardPayment == true}
+                <a class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}"
+                   title="{l s='Pay by online transfer' mod='payu'}">
+                    {l s='Pay by online transfer' mod='payu'}
+                </a>
+                {else}
+                    <a class="payu" href="{$actionUrl|escape:'htmlall':'UTF-8'}"
+                       title="{l s='Pay by online transfer or card' mod='payu'}">
+                        {l s='Pay by online transfer or card' mod='payu'}
+                    </a>
+                {/if}
             </p>
         </div>
     </div>

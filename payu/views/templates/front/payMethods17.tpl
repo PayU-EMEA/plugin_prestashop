@@ -21,7 +21,6 @@
         </div>
     {/if}
 
-
     <form action="{$payuPayAction|escape:'html'}" method="post" id="payuForm">
         <input type="hidden" name="payuPay" value="1" />
 

@@ -9,8 +9,8 @@
 
 {block name='content'}
     <section id="main">
-        <script type="text/javascript" src="{$jsSdk}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+        <script type="text/javascript" src="{$jsSdk}"></script>
 
         <div class="clearfix">
             <h2 id="payuAmountInfo">{$payuOrderInfo}: <strong>{$total}</strong> {l s='(tax incl.)' mod='payu'}</h2>
@@ -117,7 +117,7 @@
                             }
                         });
                     } catch(e) {
-                        console.log(e);
+                        showMessageBox(e.message);
                     }
                 });
 

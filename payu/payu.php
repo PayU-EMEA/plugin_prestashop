@@ -46,7 +46,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.0.23';
+        $this->version = '3.1.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -269,6 +269,7 @@ class PayU extends PaymentModule
                         'label' => $this->l('Card payment on widget'),
                         'desc' => $this->l('Card tokenization must be enabled - https://github.com/PayU-EMEA/plugin_prestashop/blob/master/README.EN.md#card-widget'),
                         'name' => 'PAYU_CARD_PAYMENT_WIDGET',
+                        'disabled' => (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT', Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'))) ? false : true,
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -710,7 +711,7 @@ class PayU extends PaymentModule
         if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
             $this->context->smarty->assign(
                 array(
-                    'payuImage' => $this->getPayuLogo(),
+                    'payuImage' => $this->getPayuLogo('payu_logo_small.png'),
                     'payuActionUrl' => $this->context->link->getModuleLink(
                         'payu', 'payment', array('id_order' => $params['order']->id, 'order_reference' => $params['order']->reference)
                     )
@@ -743,6 +744,7 @@ class PayU extends PaymentModule
 
         $cart = $params['cart'];
         $totalPrice = $cart->getOrderTotal();
+
 
         $paymentOptions = [];
 
@@ -815,13 +817,16 @@ class PayU extends PaymentModule
      */
     public function hookPayment($params)
     {
-        $link = $this->context->link->getModuleLink('payu', 'payment');
-
         $this->context->smarty->assign(array(
                 'image' => $this->getPayuLogo(),
                 'creditImage' => $this->getPayuLogo('raty_small.png'),
-                'payu_logo_img' => $this->getPayuLogo('payu_logo.png'),
-                'actionUrl' => $link,
+                'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
+                'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable(),
+                'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1',
+                'actionUrl' => $this->context->link->getModuleLink('payu', 'payment'),
+                'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
+                    ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
+                    : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])),
                 'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
                     'payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true
                 )),
