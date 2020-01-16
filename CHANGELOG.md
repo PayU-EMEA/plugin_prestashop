@@ -1,3 +1,7 @@
+## 3.1.0
+ * Separate card payment
+ * Card payment by widget
+
 ## 3.0.22
  * Fix Cache'ing Mini installment widget 
  * Fix #260

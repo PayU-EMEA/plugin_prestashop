@@ -9,7 +9,7 @@
 
 
 <div class="box clearfix">
-    <img src="{$payuLogo}" id="payuStatusLogo"> {l s='Thanks for choosing PayU payment' mod='payu'}
+    <img src="{$payuLogo}"> {l s='Thanks for choosing PayU payment' mod='payu'}
     <h2 style="margin: 30px 0">
         {l s='Order status' mod='payu'} {$orderPublicId} - {$orderStatus} <br/>
     </h2>

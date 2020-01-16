@@ -8,13 +8,16 @@
 
 p.payment_module a.payu {
     background: #fbfbfb none;
-    padding: 8px 40px 8px 20px;
+    padding: 33px 40px 34px 20px;
     font-weight: bold;
 }
 
-p.payment_module a.payu img {
-    margin-right: 10px;
-    vertical-align: middle;
+p.payment_module a.payu_card {
+    background: url('../img/payu_cards.png') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_card {
+    padding: 33px 40px 34px 170px;
 }
 
 p.payment_module a.payu:after, .payu-payment-credit-tile:after {
@@ -64,10 +67,6 @@ p.payment_module a.payu:hover {
 #payuLogo {
     height: 60px;
     float: right;
-}
-
-#payuStatusLogo {
-    height: 40px;
 }
 
 #payMethods {
@@ -170,13 +169,16 @@ p.payment_module_17 a.payu img {
     margin-top: -20px;
 }
 
-img[src*="logo-payu.png"] {
-    width: 50px;
-    margin-top: -5px;
-    margin-left: 5px;
+.payment-option img[src*="payu_logo_small.png"],
+.payment-option img[src*="payu_cards.png"]
+{
+    margin-top: -3px;
+    margin-left: 3px;
 }
 @media only screen and (max-width: 390px) {
-    img[src*="logo-payu.png"] {
+    .payment-option img[src*="payu_logo_small.png"],
+    .payment-option img[src*="payu_cards.png"]
+    {
         display: none;
     }
 }
@@ -252,9 +254,14 @@ p.payment_module a.payu-widget-installments-mini {
     border-radius: 4px;
 }
 .payu-payment-legend-1-6 {
-    margin-bottom: 3px;
-    width: 63px;
-    border: 0px;
+    width: 0;
+}
+
+.payu-payment-legend-1-6 .logo {
+    display: inline-block;
+    height: 30px;
+    width: 70px;
+    background: #ffffff url('../img/payu_logo_small.png') no-repeat center;
 }
 
 .payu-payment-fieldset-1-7 {
@@ -267,9 +274,18 @@ p.payment_module a.payu-widget-installments-mini {
     border-radius: 4px;
 }
 .payu-payment-legend-1-7 {
-    margin-bottom: 3px;
-    width: 63px;
-    border: 0px;
+    width: 0;
+}
+
+.payu-payment-legend-1-7 .logo {
+    display: inline-block;
+    height: 30px;
+    width: 70px;
+    background: #ffffff url('../img/payu_logo_small.png') no-repeat center;
+}
+
+.payu-marker-class {
+    display: none;
 }
 
 body#checkout #payu-methods-grouped .additional-information {
@@ -283,6 +299,41 @@ body#checkout #payu-methods-grouped .additional-information {
 
 .payu-checkout-installment {
     margin-bottom: -10px;
+}
+.payu-card-form-container {
+    width: 420px;
+    background-color: #666666;
+    padding: 8px;
+    border-radius: 8px;
+}
+.payu-card-legend-container {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: bold;
+    overflow: auto
+}
+.payu-card-legend-container > div {
+    float: left;
+}
+.payu-card-legend-container > .payu-card-legend-number {
+    width: 220px;
+    margin-left: 45px
+}
+.payu-card-legend-container > .payu-card-legend-valid {
+    width: 85px
+}
+
+#card-form {
+    background-color: #ffffff;
+    padding: 8px;
+    border-radius: 8px;
+}
+.payu-read-more {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.payu-more-hidden {
+    display: none;
 }
 
 @media only screen and (max-width: 460px) {

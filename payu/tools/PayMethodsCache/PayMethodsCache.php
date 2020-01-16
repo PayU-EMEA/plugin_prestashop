@@ -14,28 +14,30 @@ class PayMethodsCache
 
     public static function isDelayedPaymentAvailable($currency, $version)
     {
-        try {
-            return self::isPayTypeEnabled("dp", $currency, $version);
-        } catch (Exception $e) {
-            return false;
-        }
+        return self::isPaytypeAvailable('dp', $currency, $version);
+
     }
 
     public static function isInstallmentsAvailable($currency, $version)
     {
+        return self::isPaytypeAvailable('ai', $currency, $version);
+    }
+
+    public static function isPaytypeAvailable($paytype, $currency, $version, $noCache = false)
+    {
         try {
-            return self::isPayTypeEnabled("ai", $currency, $version);
+            return self::isPayTypeEnabled($paytype, $currency, $version, $noCache);
         } catch (Exception $e) {
             return false;
         }
     }
 
-    private static function isPayTypeEnabled($payTypeStringValue, $currency, $version)
+    private static function isPayTypeEnabled($payTypeStringValue, $currency, $version, $noCache)
     {
         $payTypeEnabled = false;
         $currentTime = new DateTime();
         $cachedValue = self::get($payTypeStringValue);
-        if ($cachedValue !== null && $cachedValue['valid_to'] > $currentTime) {
+        if ($noCache !== true && $cachedValue !== null && $cachedValue['valid_to'] > $currentTime) {
             $payTypeEnabled = $cachedValue['enabled'];
         } else {
             $sdkInitializer = new PayUSDKInitializer();

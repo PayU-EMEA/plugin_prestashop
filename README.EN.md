@@ -17,6 +17,8 @@ Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) s
 * [More on features](#more-on-features)
     * [Multi-currency](#multi-currency)
     * [Payment method display](#payment-method-display)
+    * [Card payment](#card-payment)
+    * [Card payment - widget](#card-payment-widget)
     * [Payment retry](#payment-retry)
     * [Promote credit payment methods](#promote-credit-payment-methods)
 
@@ -31,6 +33,8 @@ Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 | Capturing a payment order (when auto-capture is disabled) | :white_check_mark: | :white_check_mark: |
 | Conducting a refund operation (whole or partial) | :white_check_mark: | :white_check_mark: |
 | Displaying payment methods on Presta checkout summary page | :white_check_mark: | :white_check_mark: |
+| Card payment as separate method | :white_check_mark: | :white_check_mark: |
+| Card payment via widget on summary page | :white_check_mark: | :white_check_mark: |
 | Payment retry for cancelled payments | :white_check_mark: | :white_check_mark: |
 | Multi-currency support | :white_check_mark: | :white_check_mark: |
 | Payment method order | :white_check_mark: | :white_check_mark: |
@@ -48,10 +52,7 @@ More information on the features can be found in the [More on features](#more-on
 **Important:** This plugin works only with 'REST API' (Checkout) points of sales (POS).
 If you do not already have PayU merchant account, [**please register in Production**][ext4] or [**please register in Sandbox**][ext5]
 
-The following PHP extensions are required:
-
-* [cURL][ext1] to connect and communicate to many different types of servers with many different types of protocols.
-* [hash][ext2] to process directly or incrementally the arbitrary length messages by using a variety of hashing algorithms.
+The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 
 ## Installation
 
@@ -81,18 +82,18 @@ The following PHP extensions are required:
 
 ## Configuration
 
-To configure the PrestaShop plugin:
-
 1. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
 1. Go to 'Modules and Services' > 'Modules and Services'.
 1. Search and select 'PayU' and click 'Configure'.
 
 ### Integration method
-(works only Prestashop 1.5 and 1.6)
 
 | Parameter | Description |
 |:---------:|:-----------:|
-|Payment methods displayed on PrestaShop checkout summary page | **Yes** - payment methods displayed on PrestaShop checkout page <br>**No** - redirection to PayU after order is placed|
+| Payment methods displayed on PrestaShop checkout summary page | **Yes** - payment methods displayed on PrestaShop checkout page <br>**No** - redirection to PayU after order is placed|
+| Card payment as separate method | sets card payment as separate method [more info](#card-payment) |
+| Card payment widget | renders a widget on Presta summary instead of redirecting to PayU [more info](#card-payment-widget) |
+| Payment method order | enables custom payment method ordering [more info](#payment-method-order) |
 | Sandbox mode | **Yes** - transactions will be processed on PayU Sandbox environment<br>**No** - transactions will be processed on PayU production environment|
 
 #### POS Parameters
@@ -117,6 +118,7 @@ Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 | Canceled status | `CANCELED` | Canceled |
 
 If the option `Control of status changes` is enabled for status "Complete" and "Canceled" it is possible to switch only from the status "Pending" and "Waiting For Confirmation"
+
 ## More on features
 
 ### Payment method order
@@ -134,6 +136,20 @@ The icons are displayed basing on POS configuration.
 ![payment_methods][img3]
 
 After payment method icon is selected and 'I confirm my order' button clicked, the buyer is redirected to bank or PayU card form.  
+
+### Card payment
+If **Card payment as separate method** option is enabled, a method named `Pay by card` will be displayed in PrestaShop checkout process.
+
+If **Payment methods displayed on PrestaShop checkout summary page** option is set to `Yes` then `Pay by card` will be displayed only if card payments are configured on your POS ID. If this option is set to `No` then `Pay by card` will be always visible but may fail if card payments are not configured. 
+
+![payment_methods][img6]
+
+### Card payment widget
+**IMPORTANT** - this feature will work only if "tokenization" is enabled on your POS ID in PayU. To enable it, please contact our [technical support][ext13].
+
+If **Card payment as separate method** and **Payment methods displayed on Presta checkout summary page** are set to `Yes` then the `Pay by card` option will render a widget to collect card data instead of redirection to PayU card form page.
+
+![widget][img5]
 
 ### Payment retry
 When payment fails (i.e. is canceled), the buyer can pay again.

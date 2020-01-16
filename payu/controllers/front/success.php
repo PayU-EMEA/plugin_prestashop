@@ -38,7 +38,7 @@ class PayUSuccessModuleFrontController extends ModuleFrontController
         $currentState = $this->order->getCurrentStateFull($this->context->language->id);
 
         $this->context->smarty->assign(array(
-            'payuLogo' => $payu->getPayuLogo(),
+            'payuLogo' => $payu->getPayuLogo('payu_logo_small.png'),
             'orderPublicId' => $this->order->getUniqReference(),
             'redirectUrl' => $this->getRedirectLink(),
             'orderStatus' => $currentState['name'],

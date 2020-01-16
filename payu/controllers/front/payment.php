@@ -39,13 +39,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
         SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  ' . phpversion(), '');
+        $payMethod = Tools::getValue('payMethod');
 
         if (Configuration::get('PAYU_RETRIEVE')) {
             if (Tools::getValue('payuPay')) {
-                $payMethod = Tools::getValue('payMethod');
                 $payuConditions = Tools::getValue('payuConditions');
-                $errors = array();
-                $payError = array();
+                $cardToken = Tools::getValue('cardToken');
+                $errors = [];
+                $payError = [];
 
                 if (!$payMethod) {
                     $errors[] = $this->module->l('Please select a method of payment', 'payment');
@@ -55,8 +56,12 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     $errors[] = $this->module->l('Please accept "Terms of single PayU payment transaction"', 'payment');
                 }
 
+                if ($payMethod === 'card' && !$cardToken) {
+                    $errors[] = $this->module->l('Card token is empty', 'payment');
+                }
+
                 if (count($errors) == 0) {
-                    $payError = $this->pay($payMethod);
+                    $payError = $this->pay($payMethod, ['cardToken' => $cardToken]);
                     if (!array_key_exists('firstPayment', $payError)) {
                         $errors[] = $payError['message'];
                     }
@@ -64,13 +69,21 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 if (array_key_exists('firstPayment', $payError)) {
                     $this->showPaymentError();
                 } else {
-                    $this->showPayMethod($payMethod, $payuConditions, $errors);
+                    if ($payMethod === 'card') {
+                        $this->showSecureForm($payuConditions, $errors);
+                    } else {
+                        $this->showPayMethod($payMethod, $payuConditions, $errors);
+                    }
                 }
             } else {
-                $this->showPayMethod();
+                if ($payMethod === 'card') {
+                    $this->showSecureForm();
+                } else {
+                    $this->showPayMethod();
+                }
             }
         } else {
-            $this->pay();
+            $this->pay($payMethod === 'card' ? 'c' : null);
             $this->showPaymentError();
         }
     }
@@ -78,6 +91,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function showPayMethod($payMethod = '', $payuConditions = 1, $errors = array())
     {
         $this->context->smarty->assign(array(
+            'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'payMethod' => $payMethod,
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
@@ -88,6 +102,22 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->context->smarty->assign($this->getShowPayMethodsParameters());
 
         $this->setTemplate($this->payu->buildTemplatePath('payMethods'));
+    }
+
+    private function showSecureForm($payuConditions = 1, $errors = array())
+    {
+        $this->context->smarty->assign(array(
+            'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
+            'image' => $this->payu->getPayuLogo(),
+            'conditionUrl' => $this->payu->getPayConditionUrl(),
+            'payuConditions' => $payuConditions,
+            'payuErrors' => $errors,
+            'jsSdk' => $this->payu->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk'
+        ));
+
+        $this->context->smarty->assign($this->getShowPayMethodsParameters());
+
+        $this->setTemplate($this->payu->buildTemplatePath('secureForm'));
     }
 
     private function showPaymentError()
@@ -106,7 +136,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->setTemplate($this->payu->buildTemplatePath('error'));
     }
 
-    private function pay($payMethod = null)
+    private function pay($payMethod = null, $parameters = [])
     {
         if (!$this->hasRetryPayment) {
             $this->payu->validateOrder(
@@ -123,13 +153,16 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->payu->order = $this->order;
 
         try {
-            $result = $this->payu->orderCreateRequestByOrder($payMethod);
+            $result = $this->payu->orderCreateRequestByOrder($payMethod, $parameters);
 
             $this->payu->payu_order_id = $result['orderId'];
             $this->postOCR();
 
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . ($payMethod ? 'bank or card form' : 'summary') . '...', $result['orderId']);
-            Tools::redirect($result['redirectUri']);
+            $redirectUrl = $result['redirectUri'] ? $result['redirectUri'] : $this->context->link->getModuleLink('payu', 'success', array('id' => $this->payu->getExtOrderId()));
+
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . $redirectUrl, $result['orderId']);
+
+            Tools::redirect($redirectUrl);
 
         } catch (\Exception $e) {
             SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');
@@ -194,23 +227,30 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     private function getShowPayMethodsParameters()
     {
+        $currency = $this->hasRetryPayment ? (int)$this->order->id_currency : (int)$this->context->cart->id_currency;
+        $this->payu->initializeOpenPayU(Currency::getCurrency($currency)['iso_code']);
+
+        $parameters = [
+            'posId' => OpenPayU_Configuration::getMerchantPosId(),
+            'orderCurrency' => (int)$this->order->id_currency,
+            'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($currency)),
+            'retryPayment' => $this->hasRetryPayment,
+            'lang' => Language::getIsoById($this->context->language->id)
+        ];
+
         if ($this->hasRetryPayment) {
-            return array(
-                'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
-                'orderCurrency' => (int)$this->order->id_currency,
-                'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->order->id_currency)),
+            return $parameters + array(
+                'total' => Tools::displayPrice($this->order->total_paid, $currency),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
-                'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference,
-                'retryPayment' => $this->hasRetryPayment
+                'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference
             );
         } else {
-            return array(
+            $this->payu->initializeOpenPayU((int)$this->context->cart->id_currency);
+
+            return $parameters + array(
                 'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
-                'orderCurrency' => (int)$this->context->cart->id_currency,
-                'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($this->context->cart->id_currency)),
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
-                'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment'),
-                'retryPayment' => $this->hasRetryPayment
+                'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
             );
         }
     }

@@ -46,7 +46,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.0.22';
+        $this->version = '3.1.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -94,6 +94,8 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
             Configuration::updateValue('PAYU_RETRIEVE', 1) &&
             Configuration::updateValue('PAYU_SANDBOX', 0) &&
+            Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', 0) &&
+            Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', 0) &&
             Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', '') &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT', 1) &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', 1) &&
@@ -123,6 +125,8 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_RETRIEVE') ||
             !Configuration::deleteByName('PAYU_SANDBOX') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_CARD_PAYMENT') ||
+            !Configuration::deleteByName('PAYU_CARD_PAYMENT_WIDGET') ||
             !Configuration::deleteByName('PAYU_PAYMENT_METHODS_ORDER') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_CART') ||
@@ -188,6 +192,8 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
                 !Configuration::updateValue('PAYU_RETRIEVE', (Tools::getValue('PAYU_RETRIEVE') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', (Tools::getValue('PAYU_CARD_PAYMENT_WIDGET') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', Tools::getValue('PAYU_PAYMENT_METHODS_ORDER')) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT', (Tools::getValue('PAYU_PROMOTE_CREDIT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', (Tools::getValue('PAYU_PROMOTE_CREDIT_CART') ? 1 : 0)) ||
@@ -228,6 +234,42 @@ class PayU extends PaymentModule
                         'label' => $this->l('Display payment methods'),
                         'desc' => $this->l('Payment methods displayed on Prestashop checkout summary page'),
                         'name' => 'PAYU_RETRIEVE',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Separate card payment'),
+                        'name' => 'PAYU_SEPARATE_CARD_PAYMENT',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Card payment on widget'),
+                        'desc' => $this->l('Card tokenization must be enabled - https://github.com/PayU-EMEA/plugin_prestashop/blob/master/README.EN.md#card-widget'),
+                        'name' => 'PAYU_CARD_PAYMENT_WIDGET',
+                        'disabled' => (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT', Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'))) ? false : true,
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -533,6 +575,8 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
             'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE'),
             'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX'),
+            'PAYU_SEPARATE_CARD_PAYMENT' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
+            'PAYU_CARD_PAYMENT_WIDGET' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET'),
             'PAYU_PAYMENT_METHODS_ORDER' => Configuration::get('PAYU_PAYMENT_METHODS_ORDER'),
             'PAYU_PROMOTE_CREDIT' => Configuration::get('PAYU_PROMOTE_CREDIT'),
             'PAYU_PROMOTE_CREDIT_CART' => Configuration::get('PAYU_PROMOTE_CREDIT_CART'),
@@ -667,7 +711,7 @@ class PayU extends PaymentModule
         if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
             $this->context->smarty->assign(
                 array(
-                    'payuImage' => $this->getPayuLogo(),
+                    'payuImage' => $this->getPayuLogo('payu_logo_small.png'),
                     'payuActionUrl' => $this->context->link->getModuleLink(
                         'payu', 'payment', array('id_order' => $params['order']->id, 'order_reference' => $params['order']->reference)
                     )
@@ -701,24 +745,42 @@ class PayU extends PaymentModule
         $cart = $params['cart'];
         $totalPrice = $cart->getOrderTotal();
 
+
+        $paymentOptions = [];
+
+        if (Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable()) {
+            $cardPaymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+            $cardPaymentOption->setCallToActionText($this->l('Pay by card'))
+                ->setAdditionalInformation('<span class="payu-marker-class"></span>')
+                ->setModuleName($this->name)
+                ->setLogo($this->getPayuLogo('payu_cards.png'))
+                ->setAction(
+                    Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
+                    ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
+                    : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])
+                );
+
+            array_push($paymentOptions, $cardPaymentOption);
+        }
+
         $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $paymentOption->setCallToActionText($this->l('Pay by online transfer or card'))
+        $paymentOption->setCallToActionText(empty($paymentOptions) ? $this->l('Pay by online transfer or card') :  $this->l('Pay by online transfer'))
             ->setAdditionalInformation('<span class="payu-marker-class"></span>')
             ->setModuleName($this->name)
             ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
 
         if (Configuration::get('PAYU_PROMOTE_CREDIT') !== '1' ||
             !($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice))) {
-            $paymentOption->setLogo($this->getPayuLogo('logo-payu.png'));
+            $paymentOption->setLogo($this->getPayuLogo('payu_logo_small.png'));
         }
 
-        $paymentOptions = array($paymentOption);
+        array_push($paymentOptions, $paymentOption);
 
         if ($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice)) {
             $this->context->smarty->assign(array(
                 'total_price' => $totalPrice,
                 'payu_installment_img' => $this->getPayuLogo('payu_installment.png'),
-                'payu_logo_img' => $this->getPayuLogo('payu_logo.png'),
+                'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
                 'payu_later_logo_img' => $this->getPayuLogo('payu_later_logo.png'),
                 'payu_question_mark_img' => $this->getPayuLogo('question_mark.png'),
             ));
@@ -755,13 +817,16 @@ class PayU extends PaymentModule
      */
     public function hookPayment($params)
     {
-        $link = $this->context->link->getModuleLink('payu', 'payment');
-
         $this->context->smarty->assign(array(
                 'image' => $this->getPayuLogo(),
                 'creditImage' => $this->getPayuLogo('raty_small.png'),
-                'payu_logo_img' => $this->getPayuLogo('payu_logo.png'),
-                'actionUrl' => $link,
+                'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
+                'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable(),
+                'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1',
+                'actionUrl' => $this->context->link->getModuleLink('payu', 'payment'),
+                'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
+                    ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
+                    : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])),
                 'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
                     'payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true
                 )),
@@ -866,7 +931,7 @@ class PayU extends PaymentModule
      * @return array
      * @throws Exception
      */
-    public function orderCreateRequestByOrder($payMethod = null)
+    public function orderCreateRequestByOrder($payMethod = null, $parameters = [])
     {
 
         SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
@@ -903,12 +968,21 @@ class PayU extends PaymentModule
         }
 
         if ($payMethod !== null) {
-            $ocreq['payMethods'] = array(
-                'payMethod' => array(
-                    'type' => 'PBL',
-                    'value' => $payMethod
-                )
-            );
+            if ($payMethod === 'card') {
+                $ocreq['payMethods'] = array(
+                    'payMethod' => array(
+                        'type' => 'CARD_TOKEN',
+                        'value' => $parameters['cardToken']
+                    )
+                );
+            } else {
+                $ocreq['payMethods'] = array(
+                    'payMethod' => array(
+                        'type' => 'PBL',
+                        'value' => $payMethod
+                    )
+                );
+            }
         }
 
         try {
@@ -916,7 +990,7 @@ class PayU extends PaymentModule
             $result = OpenPayU_Order::create($ocreq);
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
 
-            if ($result->getStatus() == 'SUCCESS') {
+            if ($result->getStatus() === 'SUCCESS' || $result->getStatus() === 'WARNING_CONTINUE_3DS') {
                 return array(
                     'redirectUri' => urldecode($result->getResponse()->redirectUri),
                     'orderId' => $result->getResponse()->orderId
@@ -1227,14 +1301,16 @@ class PayU extends PaymentModule
 
     private function reorderPaymentMethods($payMethods)
     {
+        $filteredPaymethods = [];
         foreach ($payMethods as $id => $payMethod) {
             if ($payMethod->value == 'c') {
-                $cart = $payMethod;
-                unset($payMethods[$id]);
-                array_unshift($payMethods, $cart);
-            }
-            if ($payMethod->value == 't' && $payMethod->status != 'ENABLED') {
-                unset($payMethods[$id]);
+                array_unshift($filteredPaymethods, $payMethod);
+            } else {
+                if ($payMethod->value !== 'jp'
+                    && ($payMethod->value !== 't' || ($payMethod->value === 't' && $payMethod->status === 'ENABLED'))
+                    ) {
+                    $filteredPaymethods[] = $payMethod;
+                }
             }
         }
 
@@ -1242,7 +1318,7 @@ class PayU extends PaymentModule
 
         if (count($paymentMethodsOrder) > 0) {
             array_walk(
-                $payMethods,
+                $filteredPaymethods,
                 function ($item, $key, $paymentMethodsOrder) {
                     if (array_key_exists($item->value, $paymentMethodsOrder)) {
                         $item->sort = $paymentMethodsOrder[$item->value];
@@ -1253,14 +1329,14 @@ class PayU extends PaymentModule
                 array_flip($paymentMethodsOrder)
             );
             usort(
-                $payMethods,
+                $filteredPaymethods,
                 function ($a, $b) {
                     return $a->sort - $b->sort;
                 }
             );
         }
 
-        return $payMethods;
+        return $filteredPaymethods;
     }
 
     /**
@@ -1544,6 +1620,10 @@ class PayU extends PaymentModule
         }
     }
 
+    public function getPayuUrl($sandbox = false)
+    {
+        return 'https://secure.' . ($sandbox === true ? 'snd.' : '') . 'payu.com/';
+    }
 
     /**
      * @param $status
@@ -1691,6 +1771,18 @@ class PayU extends PaymentModule
             && PayMethodsCache::isInstallmentsAvailable(
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion());
+    }
+
+    /**
+     * @param $amount
+     * @return bool
+     */
+    private function isCardAvailable()
+    {
+        return Configuration::get('PAYU_RETRIEVE') !== '1'
+            || PayMethodsCache::isPaytypeAvailable('c',
+                Currency::getCurrency($this->context->cart->id_currency),
+                $this->getVersion(), true);
     }
 
     /**
