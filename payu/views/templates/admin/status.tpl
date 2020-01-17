@@ -8,6 +8,9 @@
  * http://www.payu.com
 *}
 {if $PAYU_PAYMENT_ACCEPT}
+    {if $IS_17}
+    <div class="row"><div class="col-lg-12">
+    {/if}
     <br />
     <div id="payu-status-wrapper" class="panel">
 
@@ -33,8 +36,14 @@
             </fieldset>
         </form>
     </div>
+    {if $IS_17}
+    </div></div>
+    {/if}
 {/if}
 
+{if $IS_17}
+<div class="row"><div class="col-lg-12">
+{/if}
 <div id="payuOrders" class="panel">
     <div class="panel-heading">
         <i class="icon-money"></i>
@@ -72,3 +81,6 @@
         </table>
     </div>
 </div>
+{if $IS_17}
+</div></div>
+{/if}

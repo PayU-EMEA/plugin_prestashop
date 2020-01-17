@@ -881,7 +881,8 @@ class PayU extends PaymentModule
             'PAYU_CANCEL_ORDER_MESSAGE' => $updateOrderStatusMessage,
             'PAYU_PAYMENT_STATUS_OPTIONS' => '',
             'PAYU_PAYMENT_STATUS' => '',
-            'PAYU_PAYMENT_ACCEPT' => false
+            'PAYU_PAYMENT_ACCEPT' => false,
+            'IS_17' => $this->is17()
         ));
 
         $isConfirmable = $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
@@ -1757,6 +1758,14 @@ class PayU extends PaymentModule
     private function getVersion()
     {
         return 'Prestashop ver ' . _PS_VERSION_ . '/Plugin ver ' . $this->version;
+    }
+
+    /**
+     * @return bool
+     */
+    private function is17()
+    {
+        return !version_compare(_PS_VERSION_, '1.7', 'lt');
     }
 
     /**
