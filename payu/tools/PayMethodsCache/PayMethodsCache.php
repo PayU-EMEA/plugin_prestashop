@@ -36,12 +36,15 @@ class PayMethodsCache
     {
         $payTypeEnabled = false;
         $currentTime = new DateTime();
-        $cachedValue = self::get($payTypeStringValue);
+
+        $sdkInitializer = new PayUSDKInitializer();
+        $sdkInitializer->initializeOpenPayU($currency['iso_code'], $version);
+        $cacheKey = OpenPayU_Configuration::getMerchantPosId() . '_' . $payTypeStringValue;
+
+        $cachedValue = self::get($cacheKey);
         if ($noCache !== true && $cachedValue !== null && $cachedValue['valid_to'] > $currentTime) {
             $payTypeEnabled = $cachedValue['enabled'];
         } else {
-            $sdkInitializer = new PayUSDKInitializer();
-            $sdkInitializer->initializeOpenPayU($currency['iso_code'], $version);
             $payMethods = OpenPayU_Retrieve::payMethods();
 
             foreach ($payMethods->getResponse()->payByLinks as $payType) {
@@ -51,9 +54,9 @@ class PayMethodsCache
             }
 
             $validityTime = $currentTime;
-            $validityTime->add(new DateInterval('PT1H')); // paymethods are cached for 1h
+            $validityTime->add(new DateInterval('PT15M')); // paymethods are cached for 15m
             $toBeCached = array('enabled' => $payTypeEnabled, 'valid_to' => $validityTime);
-            self::set($payTypeStringValue, $toBeCached);
+            self::set($cacheKey, $toBeCached);
         }
 
         return $payTypeEnabled;
