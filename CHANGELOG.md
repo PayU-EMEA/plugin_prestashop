@@ -1,3 +1,7 @@
+## 3.1.1
+ * Fix covering other modules in admin panel
+ * Fix Cache'ing paymethods
+
 ## 3.1.0
  * Separate card payment
  * Card payment by widget
