@@ -46,7 +46,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.1.1';
+        $this->version = '3.1.2';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;

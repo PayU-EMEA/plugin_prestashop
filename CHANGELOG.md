@@ -1,3 +1,6 @@
+## 3.1.2
+ * Fix translate
+
 ## 3.1.1
  * Fix covering other modules in admin panel
  * Fix Cache'ing paymethods
