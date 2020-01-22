@@ -50,12 +50,12 @@
                     <p class="cart_navigation clearfix" id="cart_navigation">
                         {if !$retryPayment}
                             <a class="label" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
-                                <i class="material-icons">chevron_left</i>{l s='Other payment methods' mod='payu'}
+                               {l s='Other payment methods' mod='payu'}
                             </a>
                         {/if}
                         {if !isset($payMethods.error)}
                             <button class="btn btn-primary float-xs-right continue" type="submit" id="secure-form-pay">
-                                <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}<i class="material-icons">chevron_right</i></span>
+                                <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}</span>
                             </button>
                         {/if}
                     </p>
@@ -89,7 +89,7 @@
                     var isAcceptPayuConditions = document.getElementById('payuCondition').checked;
 
                     if (!isAcceptPayuConditions) {
-                        showMessageBox('<strong>{l s='Please accept "Terms of single PayU payment transaction"' mod="payu"}</strong>');
+                        showMessageBox('<strong>{l s='Please accept "Terms of single PayU payment transaction"' mod='payu'}</strong>');
                         return;
                     }
 
@@ -106,7 +106,7 @@
                                 document.getElementById('card-form-container').style.display = 'none';
                                 document.getElementById('payu-card-form').submit();
                             } else {
-                                var errorMessage = '{l s="There were errors saving the card" mod="payu"}:<br>';
+                                var errorMessage = "{l s='An error occurred while trying to use the card' mod='payu'}:<br>";
                                 result.error.messages.forEach(function(error) {
                                     errorMessage += '<strong>' + error.message + '<strong><br>';
                                 });

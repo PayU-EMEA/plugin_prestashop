@@ -47,12 +47,12 @@
         <p class="cart_navigation clearfix" id="cart_navigation">
             {if !$retryPayment}
                 <a class="label" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
-                    <i class="material-icons">chevron_left</i>{l s='Other payment methods' mod='payu'}
+                    {l s='Other payment methods' mod='payu'}
                 </a>
             {/if}
             {if !isset($payMethods.error)}
                 <button class="btn btn-primary float-xs-right continue" type="submit">
-                    <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}<i class="material-icons">chevron_right</i></span>
+                    <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}</span>
                 </button>
             {/if}
         </p>

@@ -22,7 +22,7 @@
 
 	<p class="cart_navigation clearfix" id="cart_navigation">
 		<a class="btn btn-primary float-xs-right continue" href="{$buttonAction}">
-			<span>{l s='Retry pay with PayU' mod='payu'}<i class="material-icons">chevron_right</i></span>
+			<span>{l s='Retry pay with PayU' mod='payu'}</span>
 		</a>
 	</p>
 

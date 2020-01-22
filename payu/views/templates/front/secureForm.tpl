@@ -90,7 +90,7 @@
             var isAcceptPayuConditions = document.getElementById('payuCondition').checked;
 
             if (!isAcceptPayuConditions) {
-                showMessageBox('<strong>{l s='Please accept "Terms of single PayU payment transaction"' mod="payu"}</strong>');
+                showMessageBox('<strong>{l s='Please accept "Terms of single PayU payment transaction"' mod='payu'}</strong>');
                 return;
             }
 
@@ -107,7 +107,7 @@
                         document.getElementById('card-form-container').style.display = 'none';
                         document.getElementById('payu-card-form').submit();
                     } else {
-                        var errorMessage = '{l s="There were errors saving the card" mod="payu"}:<br>';
+                        var errorMessage = "{l s='An error occurred while trying to use the card' mod='payu'}:<br>";
                         result.error.messages.forEach(function(error) {
                             errorMessage += '<strong>' + error.message + '<strong><br>';
                         });
