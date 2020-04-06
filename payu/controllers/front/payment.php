@@ -128,7 +128,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
                 'orderCurrency' => (int)$this->order->id_currency,
                 'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
-                'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') .  ' ' . $this->order->reference,
+                'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') . ' ' . $this->order->reference,
                 'payuError' => $this->module->l('An error occurred while processing your payment.', 'payment')
             )
         );
@@ -168,7 +168,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');
 
             if ($this->hasRetryPayment) {
-                return array('message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment') . ' ' .$result['error']);
+                return array('message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment') . ' ' . $result['error']);
             }
 
             return array(
@@ -232,7 +232,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         $parameters = [
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
-            'orderCurrency' => (int)$this->order->id_currency,
+            'orderCurrency' => $currency,
             'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($currency)),
             'retryPayment' => $this->hasRetryPayment,
             'lang' => Language::getIsoById($this->context->language->id)
@@ -240,18 +240,16 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         if ($this->hasRetryPayment) {
             return $parameters + array(
-                'total' => Tools::displayPrice($this->order->total_paid, $currency),
-                'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
-                'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference
-            );
+                    'total' => Tools::displayPrice($this->order->total_paid, $currency),
+                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
+                    'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference
+                );
         } else {
-            $this->payu->initializeOpenPayU((int)$this->context->cart->id_currency);
-
             return $parameters + array(
-                'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
-                'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
-                'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
-            );
+                    'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
+                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
+                    'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
+                );
         }
     }
 
