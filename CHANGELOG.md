@@ -1,3 +1,7 @@
+## 3.1.3
+ * Add reason info when refund error
+ * Fix PHP: Notice
+
 ## 3.1.2
  * Fix translate
 
