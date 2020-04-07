@@ -395,7 +395,7 @@ class PayU extends PaymentModule
                         ),
                     ),
 
-                )),
+                    )),
                 'submit' => array(
                     'title' => $this->l('Save'),
                 )
@@ -659,8 +659,8 @@ class PayU extends PaymentModule
                 $refund = $this->payuOrderRefund($refund_amount, $order_payment['id_session'], $id_order);
 
                 if (!empty($refund)) {
-                    if (!($refund[0] === true)) {
-                        $refund_errors[] = $this->l('Refund error: ' . $refund[1]);
+                    if ($refund[0] !== true) {
+                        $refund_errors[] = $this->l('Refund error: ') . $refund[1];
                     }
                 } else {
                     $refund_errors[] = $this->l('Refund error...');
@@ -756,8 +756,8 @@ class PayU extends PaymentModule
                 ->setLogo($this->getPayuLogo('payu_cards.png'))
                 ->setAction(
                     Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
-                    ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
-                    : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])
+                        ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
+                        : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])
                 );
 
             array_push($paymentOptions, $cardPaymentOption);
@@ -1309,7 +1309,7 @@ class PayU extends PaymentModule
             } else {
                 if ($payMethod->value !== 'jp'
                     && ($payMethod->value !== 't' || ($payMethod->value === 't' && $payMethod->status === 'ENABLED'))
-                    ) {
+                ) {
                     $filteredPaymethods[] = $payMethod;
                 }
             }
@@ -1717,8 +1717,11 @@ class PayU extends PaymentModule
                 return array(false, 'Status code: ' . $refund->getStatus());
             }
 
+        } catch (OpenPayU_Exception_Request $e) {
+            $response = $e->getOriginalResponse()->getResponse()->status;
+            Logger::addLog($this->displayName . ' Order Refund error: ' . $response->codeLiteral .' ['.$response->code.']', 1);
+            return array(false, $response->codeLiteral .' ['.$response->code.'] - <a target="_blank" href="http://developers.payu.com/pl/restapi.html#refunds">developers.payu.com</a>');
         } catch (OpenPayU_Exception $e) {
-
             Logger::addLog($this->displayName . ' Order Refund error: ' . $e->getMessage(), 1);
             return array(false, $e->getMessage());
         }
