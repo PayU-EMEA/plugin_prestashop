@@ -1,3 +1,7 @@
+## 3.1.4
+ * Show ApplePay on payment page
+ * Fix #263 map lang gb to en
+
 ## 3.1.3
  * Add reason info when refund error
  * Fix PHP: Notice
