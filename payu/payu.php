@@ -1307,8 +1307,7 @@ class PayU extends PaymentModule
             if ($payMethod->value == 'c') {
                 array_unshift($filteredPaymethods, $payMethod);
             } else {
-                if ($payMethod->value !== 'jp'
-                    && ($payMethod->value !== 't' || ($payMethod->value === 't' && $payMethod->status === 'ENABLED'))
+                if ($payMethod->value !== 't' || ($payMethod->value === 't' && $payMethod->status === 'ENABLED')
                 ) {
                     $filteredPaymethods[] = $payMethod;
                 }

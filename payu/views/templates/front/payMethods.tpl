@@ -32,7 +32,7 @@
     {else}
         <div id="payMethods">
             {foreach $payMethods.payByLinks as $payByLink}
-                <div class="payMethod {if $payByLink->status != 'ENABLED'}payMethodDisable{else}payMethodEnable{/if} {if $payMethod == $payByLink->value}payMethodActive{/if}">
+                <div id="payMethodContainer-{$payByLink->value}" class="payMethod {if $payByLink->status != 'ENABLED'}payMethodDisable{else}payMethodEnable{/if} {if $payMethod == $payByLink->value}payMethodActive{/if}" {if $payByLink->value == 'jp'}style="display: none" {/if}>
                     {if $payByLink->status == 'ENABLED'}
                         <input id="payMethod-{$payByLink->value}" type="radio" value="{$payByLink->value}" name="payMethod" {if $payMethod == $payByLink->value}checked="checked"{/if}>
                     {/if}
@@ -61,3 +61,22 @@
     </p>
 </form>
 
+<script>
+    (function () {
+        var applePayAvailable;
+
+        try {
+            applePayAvailable = window.ApplePaySession && window.ApplePaySession.canMakePayments();
+        } catch (e) {
+            applePayAvailable = false;
+        }
+
+        var applePayContainer = document.getElementById('payMethodContainer-jp');
+
+        if (applePayAvailable) {
+            applePayContainer.style.display = 'block';
+        } else {
+            applePayContainer.parentNode.removeChild(applePayContainer);
+        }
+    })();
+</script>
