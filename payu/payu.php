@@ -1059,7 +1059,7 @@ class PayU extends PaymentModule
      */
     public function getPayConditionUrl()
     {
-        switch (Language::getIsoById($this->context->language->id)) {
+        switch ($this->getLanguage()) {
             case 'pl':
                 return self::CONDITION_PL;
                 break;
@@ -1080,7 +1080,7 @@ class PayU extends PaymentModule
         try {
             $this->initializeOpenPayU($currency['iso_code']);
 
-            $retreive = OpenPayU_Retrieve::payMethods(Language::getIsoById($this->context->language->id));
+            $retreive = OpenPayU_Retrieve::payMethods($this->getLanguage());
             if ($retreive->getStatus() == 'SUCCESS') {
                 $response = $retreive->getResponse();
 
@@ -1296,7 +1296,7 @@ class PayU extends PaymentModule
             'email' => $customer->email,
             'firstName' => $customer->firstname,
             'lastName' => $customer->lastname,
-            'language' => Language::getIsoById($this->context->language->id)
+            'language' => $this->getLanguage()
         );
     }
 
@@ -1347,6 +1347,13 @@ class PayU extends PaymentModule
         return ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
             !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
                 $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
+    }
+
+    private function getLanguage()
+    {
+        $iso = Language::getIsoById($this->context->language->id);
+
+        return $iso === 'gb' ? 'en' : $iso;
     }
 
     private function configureOpuByIdOrder($idOrder)
