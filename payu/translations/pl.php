@@ -12,6 +12,7 @@ $_MODULE['<{payu}prestashop>payu_a5f555f0e168487b5c9a76b0229b7c1c'] = 'Wyświetl
 $_MODULE['<{payu}prestashop>payu_c3895de7f3a59421939d83ba76d2c532'] = 'Wyświetlaj metody płatności na stronie podsumowania zamówienia Prestashop';
 $_MODULE['<{payu}prestashop>payu_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Tak';
 $_MODULE['<{payu}prestashop>payu_b9f5c797ebbf55adccdd8539a65a0241'] = 'Nie';
+$_MODULE['<{payu}prestashop>payu_7fa4ddfc8c9860f996d09cf987e0b00e'] = 'Płatność po kliknięciu w przycisk ikony banku';
 $_MODULE['<{payu}prestashop>payu_cdb0a7e412c5fba0a399104401d0dc79'] = 'Płatność kartą jako osobna metoda płatności';
 $_MODULE['<{payu}prestashop>payu_700d10d23d7d7a558bd7e8b83ee99a9c'] = 'Płatność kartą w widżecie';
 $_MODULE['<{payu}prestashop>payu_c9ef586b30f20b59e688cbdbf960b89b'] = 'Musi być włączona tokenizacja kart - https://github.com/PayU-EMEA/plugin_prestashop#widżet-do-płatności-kartą';

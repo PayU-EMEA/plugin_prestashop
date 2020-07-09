@@ -105,7 +105,7 @@ p.payment_module a.payu:hover {
     height: 45px;
     line-height: 45px;
     text-align: center;
-    margin: 7px 0;
+    margin: 7px auto;
 }
 
 .payMethod label {

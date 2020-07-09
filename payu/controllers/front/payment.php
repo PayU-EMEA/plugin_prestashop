@@ -96,6 +96,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
             'payuConditions' => $payuConditions,
+            'payByClick' => Configuration::get('PAYU_PAY_BY_ICON_CLICK') === '1',
             'payuErrors' => $errors
         ));
 

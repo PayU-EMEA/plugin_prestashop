@@ -93,6 +93,7 @@ class PayU extends PaymentModule
                 array('en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana', 'cs' => 'Transakce PayU zrušena'))) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
             Configuration::updateValue('PAYU_RETRIEVE', 1) &&
+            Configuration::updateValue('PAYU_PAY_BY_ICON_CLICK', 0) &&
             Configuration::updateValue('PAYU_SANDBOX', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', 0) &&
             Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', 0) &&
@@ -124,6 +125,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID') ||
             !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_RETRIEVE') ||
+            !Configuration::deleteByName('PAYU_PAY_BY_ICON_CLICK') ||
             !Configuration::deleteByName('PAYU_SANDBOX') ||
             !Configuration::deleteByName('PAYU_SEPARATE_CARD_PAYMENT') ||
             !Configuration::deleteByName('PAYU_CARD_PAYMENT_WIDGET') ||
@@ -191,6 +193,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
                 !Configuration::updateValue('PAYU_RETRIEVE', (Tools::getValue('PAYU_RETRIEVE') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_PAY_BY_ICON_CLICK', (Tools::getValue('PAYU_PAY_BY_ICON_CLICK') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', (Tools::getValue('PAYU_CARD_PAYMENT_WIDGET') ? 1 : 0)) ||
@@ -234,6 +237,24 @@ class PayU extends PaymentModule
                         'label' => $this->l('Display payment methods'),
                         'desc' => $this->l('Payment methods displayed on Prestashop checkout summary page'),
                         'name' => 'PAYU_RETRIEVE',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Pay by click on bank icon button'),
+                        'name' => 'PAYU_PAY_BY_ICON_CLICK',
+                        'disabled' => (Tools::getValue('PAYU_RETRIEVE', Configuration::get('PAYU_RETRIEVE'))) ? false : true,
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -574,6 +595,7 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_COMPLETED' => Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'),
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
             'PAYU_RETRIEVE' => Configuration::get('PAYU_RETRIEVE'),
+            'PAYU_PAY_BY_ICON_CLICK' => Configuration::get('PAYU_PAY_BY_ICON_CLICK'),
             'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX'),
             'PAYU_SEPARATE_CARD_PAYMENT' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
             'PAYU_CARD_PAYMENT_WIDGET' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET'),

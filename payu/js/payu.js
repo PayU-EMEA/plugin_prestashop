@@ -6,6 +6,9 @@ $(document).ready(function () {
         $('.payMethod').removeClass('payMethodActive');
         $(this).closest('.payMethod').addClass('payMethodActive');
         $(this).prev().prop('checked', true);
+        if ($(this).data('autosubmit')) {
+            $('#payuForm').submit();
+        }
     });
 
     $('#HOOK_PAYMENT').on('click', 'a.payu', function () {
