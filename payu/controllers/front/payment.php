@@ -109,6 +109,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     {
         $this->context->smarty->assign(array(
             'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
+            'secureFormJsTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/secureFormJs.tpl',
+            'payCardTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/payuCardForm.tpl',
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
             'payuConditions' => $payuConditions,

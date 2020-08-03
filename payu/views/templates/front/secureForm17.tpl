@@ -9,7 +9,7 @@
 
 {block name='content'}
     <section id="main">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
         <script type="text/javascript" src="{$jsSdk}"></script>
 
         <div class="clearfix">
@@ -35,14 +35,8 @@
                     {else}
                         <div id="payMethods" style="padding-bottom: 5px">
                             <div id="response-box" class="alert alert-warning" style="display: none; margin-bottom: 10px"></div>
-                            <div class="payu-card-form-container">
-                                <div class="payu-card-legend-container">
-                                    <div class="payu-card-legend-number">{l s='Card number' mod='payu'}:</div>
-                                    <div class="payu-card-legend-valid">{l s='Valid thru' mod='payu'}:</div>
-                                    <div>{l s='CVV' mod='payu'}:</div>
-                                </div>
-                                <div id="card-form"></div>
-                            </div>
+
+                        {include file='module:payu/views/templates/front/payuCardForm.tpl'}
                         </div>
                         {include file='module:payu/views/templates/front/conditions17.tpl'}
                     {/if}
@@ -63,75 +57,6 @@
                 <div id="waiting-box" style="display: none">{l s='Please wait' mod='payu'}...</div>
             </form>
         </section>
-
-        <script>
-            (function () {
-                var secureFormOptions = {
-                    style: {
-                        basic: {
-                            fontSize: '18px',
-                        }
-                    },
-                    lang: '{$lang}'
-                };
-
-                var payu = PayU({$posId});
-                var secureForm = payu.secureForm('card', secureFormOptions);
-                secureForm.render('#card-form');
-
-                var payButton = document.getElementById('secure-form-pay');
-                var responseBox = document.getElementById('response-box');
-                var cardTokenInput = document.getElementById('card-token');
-
-                payButton.addEventListener('click', function(event) {
-                    event.preventDefault();
-
-                    var isAcceptPayuConditions = document.getElementById('payuCondition').checked;
-
-                    if (!isAcceptPayuConditions) {
-                        showMessageBox('<strong>{l s='Please accept "Terms of single PayU payment transaction"' mod='payu'}</strong>');
-                        return;
-                    }
-
-                    hideMessageBox();
-                    cardTokenInput.value = '';
-                    secureForm.update({ disabled: true });
-
-                    try {
-                        payu.tokenize().then(function(result) {
-                            if (result.status === 'SUCCESS') {
-                                secureForm.remove();
-                                cardTokenInput.value = result.body.token;
-                                document.getElementById('waiting-box').style.display = '';
-                                document.getElementById('card-form-container').style.display = 'none';
-                                document.getElementById('payu-card-form').submit();
-                            } else {
-                                var errorMessage = "{l s='An error occurred while trying to use the card' mod='payu'}:<br>";
-                                result.error.messages.forEach(function(error) {
-                                    errorMessage += '<strong>' + error.message + '<strong><br>';
-                                });
-
-                                showMessageBox(errorMessage);
-
-                                secureForm.update({ disabled: false });
-                            }
-                        });
-                    } catch(e) {
-                        showMessageBox(e.message);
-                    }
-                });
-
-                function showMessageBox(message) {
-                    responseBox.innerHTML = message;
-                    responseBox.style.display = '';
-                }
-
-                function hideMessageBox() {
-                    responseBox.innerHTML = '';
-                    responseBox.style.display = 'none';
-                }
-
-            })();
-        </script>
+        {include file='module:payu/views/templates/front/secureFormJs.tpl'}
     </section>
 {/block}

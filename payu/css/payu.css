@@ -289,7 +289,7 @@ p.payment_module a.payu-widget-installments-mini {
 }
 
 body#checkout #payu-methods-grouped .additional-information {
-    margin:0px;
+    margin:0;
 }
 
 .payu-method-description {
@@ -300,12 +300,55 @@ body#checkout #payu-methods-grouped .additional-information {
 .payu-checkout-installment {
     margin-bottom: -10px;
 }
+
 .payu-card-form-container {
-    width: 420px;
-    background-color: #666666;
-    padding: 8px;
-    border-radius: 8px;
+    width: 380px;
+    margin: 5px auto 15px;
 }
+
+.payu-card-container {
+    width: 100%;
+    margin: 0 auto;
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 15px 10px;
+    border: 1px solid #428f29;
+    background: rgba(66, 143, 41, 1);
+    background: linear-gradient(135deg, rgba(53, 112, 33, 1) 0%, rgba(66, 143, 41, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#357021', endColorstr='#428f29', GradientType=1);
+}
+
+.payu-card-container div.aside {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.payu-card-form {
+    margin: 0 auto 0 auto;
+    background-color: #ffffff;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.card-details .expiration {
+    width: 50%;
+    float: left;
+}
+.card-details .cvv {
+    width: 45%;
+    float: right;
+}
+.clearfix:before, .clearfix:after {
+    content: "";
+    display: table;
+}
+
+.clearfix:after { clear: both; }
+
+.clearfix {
+    margin-top: 10px;
+}
+
 .payu-card-legend-container {
     color: #ffffff;
     font-size: 12px;
@@ -322,12 +365,12 @@ body#checkout #payu-methods-grouped .additional-information {
 .payu-card-legend-container > .payu-card-legend-valid {
     width: 85px
 }
-
-#card-form {
-    background-color: #ffffff;
-    padding: 8px;
+#secure-form {
+    background-color: #F4F9F9;
     border-radius: 8px;
+    padding: 10px;
 }
+
 .payu-read-more {
     cursor: pointer;
     text-decoration: underline;
@@ -341,5 +384,10 @@ body#checkout #payu-methods-grouped .additional-information {
         display: block;
         margin-left: 0px;
         margin-top: 5px;
+    }
+
+    .payu-card-form-container {
+        width: 100%;
+        margin: 5px auto 15px;
     }
 }
