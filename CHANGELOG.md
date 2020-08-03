@@ -1,3 +1,7 @@
+## 3.1.5
+ * Add option "Pay by click on bank icon button"
+ * Card widget migrate to new version of SecureForm
+
 ## 3.1.4
  * Show ApplePay on payment page
  * Fix #263 map lang gb to en
