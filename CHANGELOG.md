@@ -1,3 +1,6 @@
+## 3.1.6
+ * Fix classname conflict
+
 ## 3.1.5
  * Add option "Pay by click on bank icon button"
  * Card widget migrate to new version of SecureForm
