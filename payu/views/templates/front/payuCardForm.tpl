@@ -10,7 +10,7 @@
         <div class="aside">{l s='Card number' mod='payu'}</div>
         <div class="payu-card-form" id="payu-card-number"></div>
 
-        <div class="card-details clearfix">
+        <div class="card-details payu-card-clearfix">
             <div class="expiration">
                 <div class="aside">{l s='Valid thru' mod='payu'}</div>
                 <div class="payu-card-form" id="payu-card-date"></div>

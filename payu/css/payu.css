@@ -338,14 +338,14 @@ body#checkout #payu-methods-grouped .additional-information {
     width: 45%;
     float: right;
 }
-.clearfix:before, .clearfix:after {
+.payu-card-clearfix:before, .payu-card-clearfix:after {
     content: "";
     display: table;
 }
 
-.clearfix:after { clear: both; }
+.payu-card-clearfix:after { clear: both; }
 
-.clearfix {
+.payu-card-clearfix {
     margin-top: 10px;
 }
 
