@@ -27,8 +27,8 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="payu-payment-credit-later-twisto-tile" onclick="location.href='{$creditPayLaterTwistoActionUrl|escape:'htmlall':'UTF-8'}'"
-                     title="{l s='Pay later' mod='payu'}">
-                    {l s='Pay later' mod='payu'}
+                     title="{l s='Pay later with Twisto' mod='payu'}">
+                    {l s='Pay later with Twisto' mod='payu'}
                 </div>
             </div>
         </div>
