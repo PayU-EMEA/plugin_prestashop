@@ -48,10 +48,6 @@ p.payment_module a.payu:after, .payu-payment-credit-tile:after {
     color: #777777;
 }
 
-#payu-later-mini-cart {
-    cursor: pointer;
-}
-
 p.payment_module a.payu:hover {
     background-color: #f6f6f6;
 }
@@ -164,11 +160,6 @@ p.payment_module_17 a.payu img {
     display: inline-block;
 }
 
-.payu-later-logo {
-    width: 200px;
-    margin-top: -20px;
-}
-
 .payment-option img[src*="payu_logo_small.png"],
 .payment-option img[src*="payu_cards.png"]
 {
@@ -195,7 +186,7 @@ p.payment_module a.payu-payment-credit-tile {
     background: #fbfbfb none;
 }
 
-.payu-widget-installments-mini, .payu-installment-cart-summary, .payu-later-cart-summary, .payu-widget-installments-mini-amount {
+.payu-widget-installments-mini, .payu-installment-cart-summary, .payu-widget-installments-mini-amount {
     font-size: 14px;
 }
 
@@ -203,7 +194,7 @@ p.payment_module a.payu-payment-credit-tile {
     color: #777777;
 }
 
-.payu-installment-cart-summary, .payu-later-cart-summary {
+.payu-installment-cart-summary {
     margin-left: 20px;
 }
 
@@ -380,7 +371,7 @@ body#checkout #payu-methods-grouped .additional-information {
 }
 
 @media only screen and (max-width: 460px) {
-    .payu-installment-cart-summary, .payu-later-cart-summary {
+    .payu-installment-cart-summary {
         display: block;
         margin-left: 0px;
         margin-top: 5px;

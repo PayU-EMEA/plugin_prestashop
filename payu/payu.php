@@ -29,8 +29,6 @@ class PayU extends PaymentModule
 
     const PAYU_MIN_CREDIT_AMOUNT = 300;
     const PAYU_MAX_CREDIT_AMOUNT = 20000;
-    const PAYU_MIN_DP_AMOUNT = 100;
-    const PAYU_MAX_DP_AMOUNT = 2000;
 
     public $cart = null;
     public $id_cart = null;
@@ -814,7 +812,7 @@ class PayU extends PaymentModule
             ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
 
         if (Configuration::get('PAYU_PROMOTE_CREDIT') !== '1' ||
-            !($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice))) {
+            !($this->isCreditAvailable($totalPrice))) {
             $paymentOption->setLogo($this->getPayuLogo('payu_logo_small.png'));
         }
 
@@ -832,38 +830,23 @@ class PayU extends PaymentModule
             array_push($paymentOptions, $payLaterTwistoOption);
         }
 
-        if ($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice)) {
+        if ($this->isCreditAvailable($totalPrice)) {
             $this->context->smarty->assign(array(
                 'total_price' => $totalPrice,
                 'payu_installment_img' => $this->getPayuLogo('payu_installment.png'),
                 'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
-                'payu_later_logo_img' => $this->getPayuLogo('payu_later_logo.png'),
                 'payu_question_mark_img' => $this->getPayuLogo('question_mark.png'),
             ));
 
-            if ($this->isCreditAvailable($totalPrice)) {
-                $installmentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-                $installmentOption
-                    ->setCallToActionText($this->l('Pay online in installments'))
-                    ->setModuleName($this->name)
-                    ->setLogo($this->getPayuLogo('payu_installment_small.png'))
-                    ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
-                    ->setAction($this->context->link->getModuleLink($this->name, 'payment',
-                        array('payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true)));
-                array_push($paymentOptions, $installmentOption);
-            }
-
-            if ($this->isPayULaterAvailable($totalPrice)) {
-                $payULaterOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-                $payULaterOption
-                    ->setCallToActionText($this->l('Pay later with PayU'))
-                    ->setModuleName($this->name)
-                    ->setLogo($this->getPayuLogo('payu_later_logo_small.png'))
-                    ->setAdditionalInformation($this->fetchTemplate('checkout_payu_later.tpl'))
-                    ->setAction($this->context->link->getModuleLink($this->name, 'payment',
-                        array('payuPay' => 1, 'payMethod' => 'dp', 'payuConditions' => true)));
-                array_push($paymentOptions, $payULaterOption);
-            }
+            $installmentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+            $installmentOption
+                ->setCallToActionText($this->l('Pay online in installments'))
+                ->setModuleName($this->name)
+                ->setLogo($this->getPayuLogo('payu_installment_small.png'))
+                ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
+                ->setAction($this->context->link->getModuleLink($this->name, 'payment',
+                    array('payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true)));
+            array_push($paymentOptions, $installmentOption);
         }
 
         return $paymentOptions;
@@ -888,14 +871,10 @@ class PayU extends PaymentModule
                 'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
                     'payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true
                 )),
-                'creditPayULaterActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
-                    'payuPay' => 1, 'payMethod' => 'dp', 'payuConditions' => true
-                )),
                 'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
                     'payuPay' => 1, 'payMethod' => 'dpt', 'payuConditions' => true
                 )),
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
-                'payu_later_available' => $this->isPayULaterAvailable($params['cart']->getOrderTotal()),
                 'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable(),
                 'cart_total_amount' => $params['cart']->getOrderTotal())
         );
@@ -1863,20 +1842,6 @@ class PayU extends PaymentModule
             || PayMethodsCache::isPaytypeAvailable('c',
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion(), true);
-    }
-
-    /**
-     * @param $amount
-     * @return bool
-     */
-    private function isPayULaterAvailable($amount)
-    {
-        return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-            && $amount >= self::PAYU_MIN_DP_AMOUNT
-            && $amount <= self::PAYU_MAX_DP_AMOUNT
-            && PayMethodsCache::isDelayedPaymentAvailable(
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getVersion());
     }
 
     /**

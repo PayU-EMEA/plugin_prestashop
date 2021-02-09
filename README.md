@@ -168,7 +168,7 @@ Od wersji 3.0.10 plugin udostępnia opcję promowania [płatności ratalnych i o
 Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez przełącznik "Promuj płatności ratalne" w panelu
  admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i
  Kompatybilność](#cechy-i-kompatybilność).
- > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dp" na danym punkcie płatności i sprawdzana
+ > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dpt" na danym punkcie płatności i sprawdzana
  jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie
  zaprezentowana pomimo włączonej opcji w pluginie.
 

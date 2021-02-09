@@ -152,6 +152,4 @@ $_MODULE['<{payu}prestashop>payment16_3a236fb1c82cd58579049b70a46fcdc5'] = 'Zap�
 $_MODULE['<{payu}prestashop>payment16_8b30b72eb751e7549e99b8e2753098df'] = 'Zapłać na raty online z PayU';
 $_MODULE['<{payu}prestashop>payment16_08fbc776aef56517d21f9b4d37e18e6d'] = 'Zapłać później z PayU';
 $_MODULE['<{payu}prestashop>payment16_57244cabdfb29fd0983891b6f0381af1'] = 'Zapłać później';
-$_MODULE['<{payu}prestashop>checkout_payu_later_bd71f315489afbc0b516d4555ab3fa99'] = 'Spłać kartą lub przelewem online nawet 30 dni po zakupie, bez opłat';
-$_MODULE['<{payu}prestashop>checkout_payu_later_49c3ff437ddc797faa0448e26043b2c9'] = 'Zamówienie z obowiązkiem zapłaty dojdzie do skutku po pozytywnej decyzji pożyczkodawcy.';
 $_MODULE['<{payu}prestashop>retrypayment_df3174e578ddd719d3642fece154ee5b'] = 'Zapłać ponownie przez PayU';

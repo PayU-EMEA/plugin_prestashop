@@ -169,7 +169,7 @@ Plugin version 3.0.10 introduced functionality of promoting [credit payment meth
 Functionality is enabled by default. It can be deactivated using "Promote credit" switch in admin panel.
 Support for given functionalities has been described in [Features](#features) section.
  > Presenting credit widgets is dependent on gateways availability for given point of sale (POS).
- Plugin automatically checks whether "ai" or "dp" gateways are enabled.
+ Plugin automatically checks whether "ai" or "dpt" gateways are enabled.
  If used POS doesn't have credit agreement activated functionality will not work, and widget presentation will be
  supressed (even if flag in admin panel is enabled).
 
