@@ -102,6 +102,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', 1) &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', 1) &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', 1) &&
+            Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_TWISTO', 0) &&
             Configuration::updateValue('PAYU_STATUS_CONTROL', 0)
         );
     }
@@ -134,6 +135,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_CART') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_SUMMARY') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_PRODUCT') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_TWISTO') ||
             !Configuration::deleteByName('PAYU_STATUS_CONTROL')
         ) {
             return false;
@@ -202,6 +204,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_CART', (Tools::getValue('PAYU_PROMOTE_CREDIT_CART') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', (Tools::getValue('PAYU_PROMOTE_CREDIT_SUMMARY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', (Tools::getValue('PAYU_PROMOTE_CREDIT_PRODUCT') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_TWISTO', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_TWISTO') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_STATUS_CONTROL', (Tools::getValue('PAYU_STATUS_CONTROL') ? 1 : 0))
             ) {
                 $errors[] = $this->l('Can not save configuration');
@@ -346,6 +349,24 @@ class PayU extends PaymentModule
                         'label' => $this->l('Promote credit payment methods'),
                         'desc' => $this->l('Enables credit payment methods on summary and enables promoting installments'),
                         'name' => 'PAYU_PROMOTE_CREDIT',
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Separate pay later Twisto'),
+                        'desc' => $this->l('Shows separate Twisto payment method'),
+                        'name' => 'PAYU_SEPARATE_PAY_LATER_TWISTO',
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -604,6 +625,7 @@ class PayU extends PaymentModule
             'PAYU_PROMOTE_CREDIT_CART' => Configuration::get('PAYU_PROMOTE_CREDIT_CART'),
             'PAYU_PROMOTE_CREDIT_SUMMARY' => Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY'),
             'PAYU_PROMOTE_CREDIT_PRODUCT' => Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT'),
+            'PAYU_SEPARATE_PAY_LATER_TWISTO' => Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO'),
             'PAYU_STATUS_CONTROL' => Configuration::get('PAYU_STATUS_CONTROL')
         );
 
@@ -798,6 +820,18 @@ class PayU extends PaymentModule
 
         array_push($paymentOptions, $paymentOption);
 
+        if ($this->isPayLaterTwistoAvailable()) {
+            $payLaterTwistoOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+            $payLaterTwistoOption
+                ->setCallToActionText($this->l('Pay later'))
+                ->setModuleName($this->name)
+                ->setLogo($this->getPayuLogo('payu_later_twisto_logo_small.png'))
+                ->setAdditionalInformation('<span class="payu-marker-class"></span>')
+                ->setAction($this->context->link->getModuleLink($this->name, 'payment',
+                    array('payuPay' => 1, 'payMethod' => 'dpt', 'payuConditions' => true)));
+            array_push($paymentOptions, $payLaterTwistoOption);
+        }
+
         if ($this->isCreditAvailable($totalPrice) || $this->isPayULaterAvailable($totalPrice)) {
             $this->context->smarty->assign(array(
                 'total_price' => $totalPrice,
@@ -812,6 +846,7 @@ class PayU extends PaymentModule
                 $installmentOption
                     ->setCallToActionText($this->l('Pay online in installments'))
                     ->setModuleName($this->name)
+                    ->setLogo($this->getPayuLogo('payu_installment_small.png'))
                     ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         array('payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true)));
@@ -823,6 +858,7 @@ class PayU extends PaymentModule
                 $payULaterOption
                     ->setCallToActionText($this->l('Pay later with PayU'))
                     ->setModuleName($this->name)
+                    ->setLogo($this->getPayuLogo('payu_later_logo_small.png'))
                     ->setAdditionalInformation($this->fetchTemplate('checkout_payu_later.tpl'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         array('payuPay' => 1, 'payMethod' => 'dp', 'payuConditions' => true)));
@@ -855,8 +891,12 @@ class PayU extends PaymentModule
                 'creditPayULaterActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
                     'payuPay' => 1, 'payMethod' => 'dp', 'payuConditions' => true
                 )),
+                'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
+                    'payuPay' => 1, 'payMethod' => 'dpt', 'payuConditions' => true
+                )),
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
                 'payu_later_available' => $this->isPayULaterAvailable($params['cart']->getOrderTotal()),
+                'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable(),
                 'cart_total_amount' => $params['cart']->getOrderTotal())
         );
 
@@ -1835,6 +1875,19 @@ class PayU extends PaymentModule
             && $amount >= self::PAYU_MIN_DP_AMOUNT
             && $amount <= self::PAYU_MAX_DP_AMOUNT
             && PayMethodsCache::isDelayedPaymentAvailable(
+                Currency::getCurrency($this->context->cart->id_currency),
+                $this->getVersion());
+    }
+
+    /**
+     * @param $amount
+     * @return bool
+     */
+    private function isPayLaterTwistoAvailable()
+    {
+        return (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1'
+                || Configuration::get('PAYU_PROMOTE_CREDIT') === '1')
+            && PayMethodsCache::isDelayedPaymentTwistoAvailable(
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion());
     }

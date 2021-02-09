@@ -39,6 +39,7 @@ Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 | Multi-currency support | :white_check_mark: | :white_check_mark: |
 | Payment method order | :white_check_mark: | :white_check_mark: |
 | Promoting [PayU Installments][ext10] and [PayU Later][ext9] | :white_check_mark: | :white_check_mark: |
+| Twisto payment as separate method | :white_check_mark: | :white_check_mark: |
 | Present installment estimated value on product and listing page | :white_check_mark: |:white_check_mark: |
 | Present installment estimated value in checkout view | :white_check_mark: | :white_check_mark: |
 | Present installment estimated value in cart view| :x: | :white_check_mark: |
@@ -180,16 +181,14 @@ Support for given functionalities has been described in [Features](#features) se
 |1.7|Products listing| <img src="readme_images/credit-1-7-listing.png" width="100"> |
 |1.7|Product page|<img src="readme_images/credit-1-7-product.png" width="100">|
 |1.7|Cart| <img src="readme_images/credit-1-7-cart.png" width="100">|
-|1.7|PayU Installment payment method during checkout|<img src="readme_images/credit-1-7-checkout-installments.png" width="100">|
-|1.7|PayU Later payment method during checkout| <img src="readme_images/credit-1-7-checkout-payu-later.png" width="100">|
+|1.7|Promote credit payment methods|<img src="readme_images/credit-1-7-checkout-promote-credit.png" width="100">|
+|1.7|Twisto payment as separate method|<img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">|
 |1.6|Products listing|<img src="readme_images/credit-1-6-listing.png" width="100">|
 |1.6|Product page|<img src="readme_images/credit-1-6-product.png" width="100">|
-|1.6|Checkout page|<img src="readme_images/credit-1-6-checkout.png" width="100">|
 
 
 #### Presentation of estimated installment amount after clicking "Installment from:"
 Plugin uses newest version of "miniInstallment" component that comes with [PayU Installments - best practices][ext12] package, that can be found in [official documentation][ext8].
-To present [PayU Later][ext9] popup newest version of [Widget PayU Later][ext11] was used.
 
 Popup with estimated installment plan looks as below:
 

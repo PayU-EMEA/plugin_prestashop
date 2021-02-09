@@ -18,6 +18,12 @@ class PayMethodsCache
 
     }
 
+    public static function isDelayedPaymentTwistoAvailable($currency, $version)
+    {
+        return self::isPaytypeAvailable('dpt', $currency, $version);
+
+    }
+
     public static function isInstallmentsAvailable($currency, $version)
     {
         return self::isPaytypeAvailable('ai', $currency, $version);

@@ -34,7 +34,7 @@ p.payment_module a.payu:after, .payu-payment-credit-tile:after {
     color: #777777;
 }
 
-.payu-payment-credit-installment-tile:after, .payu-payment-credit-later-tile:after {
+.payu-payment-credit-installment-tile:after, .payu-payment-credit-later-tile:after, .payu-payment-credit-later-twisto-tile:after {
     display: block;
     content: "\f054";
     position: absolute;
@@ -207,7 +207,7 @@ p.payment_module a.payu-payment-credit-tile {
     margin-left: 20px;
 }
 
-.payu-payment-credit-installment-tile, .payu-payment-credit-later-tile {
+.payu-payment-credit-installment-tile, .payu-payment-credit-later-tile, .payu-payment-credit-later-twisto-tile {
     border: 1px solid #d6d4d4;
     background: #fbfbfb none;
     padding: 36px 40px 36px 31px;
@@ -220,7 +220,7 @@ p.payment_module a.payu-payment-credit-tile {
     margin-bottom: 10px;
 }
 
-.payu-payment-credit-installment-tile:hover, .payu-payment-credit-later-tile:hover, p.payment_module a.payu-payment-credit-tile:hover {
+.payu-payment-credit-installment-tile:hover, .payu-payment-credit-later-tile:hover, .payu-payment-credit-later-twisto-tile:hover, p.payment_module a.payu-payment-credit-tile:hover {
     background: #f6f6f6 none;
 }
 

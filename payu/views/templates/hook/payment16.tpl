@@ -23,6 +23,16 @@
         </div>
     </div>
     {/if}
+    {if $payu_later_twisto_available == true}
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="payu-payment-credit-later-twisto-tile" onclick="location.href='{$creditPayLaterTwistoActionUrl|escape:'htmlall':'UTF-8'}'"
+                     title="{l s='Pay later' mod='payu'}">
+                    {l s='Pay later' mod='payu'}
+                </div>
+            </div>
+        </div>
+    {/if}
     <div class="row">
         <div class="col-xs-12">
             <p class="payment_module payment_payu">
