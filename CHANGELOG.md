@@ -1,3 +1,7 @@
+## 3.1.7
+ * Add delayed payment with Twisto support
+ * Remove delayed payment with Monedo support
+
 ## 3.1.6
  * Fix classname conflict
 
@@ -19,6 +23,7 @@
 ## 3.1.1
  * Fix covering other modules in admin panel
  * Fix Cache'ing paymethods
+
 
 ## 3.1.0
  * Separate card payment
