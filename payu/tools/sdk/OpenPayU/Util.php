@@ -60,7 +60,7 @@ class OpenPayU_Util
      *
      * @param string $data
      *
-     * @return null|object
+     * @return null|array
      */
     public static function parseSignature($data)
     {
@@ -83,7 +83,7 @@ class OpenPayU_Util
             $signatureData[$explode[0]] = $explode[1];
         }
 
-        return (object)$signatureData;
+        return $signatureData;
     }
 
     /**
@@ -118,7 +118,7 @@ class OpenPayU_Util
     /**
      * Function builds OpenPayU Json Document
      *
-     * @param string $data
+     * @param array $data
      * @param string $rootElement
      *
      * @return null|string
@@ -210,7 +210,7 @@ class OpenPayU_Util
      * @param array $outputFields
      * @return string
      */
-    public static function convertArrayToHtmlForm($array, $namespace = "", &$outputFields)
+    public static function convertArrayToHtmlForm($array, $namespace = '', &$outputFields = [])
     {
         $i = 0;
         $htmlOutput = "";
@@ -227,7 +227,7 @@ class OpenPayU_Util
             if (is_array($value)) {
                 $htmlOutput .= self::convertArrayToHtmlForm($value, $key, $outputFields);
             } else {
-                $htmlOutput .= sprintf("<input type=\"hidden\" name=\"%s\" value=\"%s\" />\n", $key, $value);
+                $htmlOutput .= sprintf("<input type=\"hidden\" name=\"%s\" value=\"%s\" />\n", $key, htmlspecialchars($value));
                 $outputFields[$key] = $value;
             }
         }
@@ -243,20 +243,6 @@ class OpenPayU_Util
         $arrKeys = array_keys($arr);
         sort($arrKeys, SORT_NUMERIC);
         return $arrKeys !== range(0, count($arr) - 1);
-    }
-
-    /**
-     * @param $namespace
-     * @param $key
-     * @return string
-     */
-    public static function changeFormFieldFormat($namespace, $key)
-    {
-
-        if ($key === $namespace && $key[strlen($key) - 1] == 's') {
-            return substr($key, 0, -1);
-        }
-        return $key;
     }
 
     /**
