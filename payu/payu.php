@@ -664,65 +664,7 @@ class PayU extends PaymentModule
     {
         $output = '<link type="text/css" rel="stylesheet" href="' . _MODULE_DIR_ . $this->name . '/css/payu.css" /><script type="text/javascript" src="https://static.payu.com/res/v2/prestashop-plugin.js"></script>';
 
-        $vieworder = Tools::getValue('vieworder');
-        $id_order = Tools::getValue('id_order');
-
-        $refundable = false;
-
-        if ($vieworder !== false && $id_order !== false) {
-            $order = new Order($id_order);
-            $order_payment = $this->getLastOrderPaymentByOrderId($id_order);
-
-            if ($order->module === 'payu' && $order_payment['status'] === OpenPayuOrderStatus::STATUS_COMPLETED) {
-                $refundable = true;
-            }
-        }
-
-        $refund_type = Tools::getValue('payu_refund_type');
-        $refund_amount = $refund_type === 'full' ? $order->total_paid : (float)Tools::getValue('payu_refund_amount');
-
-        $this->context->smarty->assign('payu_refund_amount', $refund_amount);
-        if (isset($order) && is_object($order)) {
-            $this->context->smarty->assign('payu_refund_full_amount', $order->total_paid);
-        }
-        $this->context->smarty->assign('payu_refund_type', $refund_type);
-        $this->context->smarty->assign('show_refund', $refundable);
-
-        $refund_errors = array();
-
-        if ($refundable && empty($refund_errors) && Tools::getValue('submitPayuRefund')) {
-
-            if ($refund_amount > $order->total_paid) {
-                $refund_errors[] = $this->l('The refund amount you entered is greater than paid amount.');
-            }
-
-            if (empty($refund_errors)) {
-
-                $refund = $this->payuOrderRefund($refund_amount, $order_payment['id_session'], $id_order);
-
-                if (!empty($refund)) {
-                    if ($refund[0] !== true) {
-                        $refund_errors[] = $this->l('Refund error: ') . $refund[1];
-                    }
-                } else {
-                    $refund_errors[] = $this->l('Refund error...');
-                }
-                if (empty($refund_errors)) {
-                    $history = new OrderHistory();
-                    $history->id_order = (int)$id_order;
-                    $history->id_employee = (int)$this->context->employee->id;
-                    $history->changeIdOrderState(Configuration::get('PS_OS_REFUND'), $id_order);
-                    $history->addWithemail(true, array());
-
-                    Tools::redirectAdmin('index.php?controller=AdminOrders&vieworder&id_order=' . $id_order . '&token=' . Tools::getValue('token'));
-                }
-            }
-        }
-
-        $this->context->smarty->assign('payu_refund_errors', $refund_errors);
-
-        $template = $output . $this->fetchTemplate('/views/templates/admin/header16.tpl');
-        return $template;
+        return $output;
     }
 
     public function hookHeader()
@@ -901,9 +843,14 @@ class PayU extends PaymentModule
      */
     public function hookAdminOrder($params)
     {
-
         $this->id_order = $params['id_order'];
+        $order = new Order($this->id_order);
+
         $output = '';
+
+        if ($order->module !== 'payu') {
+            return $output;
+        }
 
         $updateOrderStatusMessage = '';
 
@@ -916,6 +863,39 @@ class PayU extends PaymentModule
 
         $order_payment = $this->getLastOrderPaymentByOrderId($params['id_order']);
 
+        $refundable = $order_payment['status'] === OpenPayuOrderStatus::STATUS_COMPLETED;
+
+        $refund_type = Tools::getValue('payu_refund_type', 'full');
+        $refund_amount = $refund_type === 'full' ? $order->total_paid : (float)Tools::getValue('payu_refund_amount');
+        $refund_errors = array();
+
+
+        if ($refundable && Tools::getValue('submitPayuRefund')) {
+
+            if ($refund_amount > $order->total_paid) {
+                $refund_errors[] = $this->l('The refund amount you entered is greater than paid amount.');
+            } else {
+                $refund = $this->payuOrderRefund($refund_amount, $order_payment['id_session'], $order->id);
+
+                if (!empty($refund)) {
+                    if ($refund[0] !== true) {
+                        $refund_errors[] = $this->l('Refund error: ') . $refund[1];
+                    }
+                } else {
+                    $refund_errors[] = $this->l('Refund error...');
+                }
+                if (empty($refund_errors)) {
+                    $history = new OrderHistory();
+                    $history->id_order = $order->id;
+                    $history->id_employee = (int)$this->context->employee->id;
+                    $history->changeIdOrderState(Configuration::get('PS_OS_REFUND'), $order->id);
+                    $history->addWithemail(true, array());
+
+                    Tools::redirectAdmin('index.php?tab=AdminOrders&id_order=' . (int)$order->id . '&vieworder' . '&token=' . Tools::getAdminTokenLite('AdminOrders'));
+                }
+            }
+        }
+
         $this->context->smarty->assign(array(
             'PAYU_ORDERS' => $this->getOrdersByOrderId($params['id_order']),
             'PAYU_ORDER_ID' => $this->id_order,
@@ -923,7 +903,12 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_OPTIONS' => '',
             'PAYU_PAYMENT_STATUS' => '',
             'PAYU_PAYMENT_ACCEPT' => false,
-            'IS_17' => $this->is17()
+            'IS_17' => $this->is17(),
+            'SHOW_REFUND' => $refundable,
+            'REFUND_FULL_AMOUNT' => $order->total_paid,
+            'REFUND_ERRORS' => $refund_errors,
+            'REFUND_TYPE' => $refund_type,
+            'REFUND_AMOUNT' => $refund_amount
         ));
 
         $isConfirmable = $order_payment['status'] == OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION
