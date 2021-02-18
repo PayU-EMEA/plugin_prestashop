@@ -1,3 +1,7 @@
+## 3.1.8
+ * Fix #277
+ * Update SDK (fix PHP 8)
+
 ## 3.1.7
  * Add delayed payment with Twisto support
  * Remove delayed payment with Monedo support
