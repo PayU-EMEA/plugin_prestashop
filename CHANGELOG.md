@@ -1,3 +1,6 @@
+## 3.1.9
+ * Quick fix #279
+
 ## 3.1.8
  * Fix #277
  * Update SDK (fix PHP 8)
