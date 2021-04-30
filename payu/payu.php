@@ -954,6 +954,118 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @return array|null
+     */
+    private function getProductList()
+    {
+        $products = $this->order->getProducts();
+
+        if (!is_array($products) || count($products) == 0) {
+            return null;
+        }
+
+        $list = array();
+        foreach ($products as $product) {
+            $list[] = array(
+                'quantity' => $product['product_quantity'],
+                'name' => $product['product_name'],
+                'unitPrice' => $this->toAmount($product['product_price'])
+            );
+        }
+
+        return $list;
+    }
+
+    /**
+     * @return array|null
+     */
+    private function getDeliveryAddress()
+    {
+        if (!$this->order->id_address_delivery) {
+            return null;
+        }
+        $deliveryAddress = new Address((int) $this->order->id_address_delivery);
+
+        return array(
+            'street' => $deliveryAddress->address1,
+            'postalCode' => $deliveryAddress->postcode,
+            'city' => $deliveryAddress->city,
+        );
+    }
+
+    /**
+     * @return array|null
+     */
+    private function getApplicant($parsedDeliveryAddress)
+    {
+        if (!$this->order->id_customer) {
+            return null;
+        }
+        $customer = new Customer((int) $this->order->id_customer);
+
+        if (!$customer->email) {
+            return null;
+        }
+
+        $phone = null;
+        if ($this->order->id_address_delivery) {
+            $entity = new Address((int) $this->order->id_address_delivery);
+            $phone = $entity->phone;
+        }
+
+        return array(
+            'email' => $customer->email,
+            'firstName' => $customer->firstname,
+            'lastName' => $customer->lastname,
+            'language' => $this->getLanguage(),
+            'phone' => $phone,
+            'address' => $parsedDeliveryAddress
+        );
+    }
+
+    /**
+     * @return array|null
+     */
+    private function getShoppingCarts($parsedDeliveryAddress)
+    {
+        $products = $this->getProductList();
+        $shippingPrice = $this->order->total_shipping === null ? null : $this->toAmount($this->order->total_shipping);
+
+        if (!$products && !$parsedDeliveryAddress && $shippingPrice === null) {
+            return null;
+        }
+
+        return array(
+            array(
+                'shippingMethod' => array(
+                    'price' => $shippingPrice,
+                    'address' => $parsedDeliveryAddress
+                ),
+                'products' => $products
+            )
+        );
+    }
+
+    /**
+     * @return array|null
+     */
+    private function getCreditSection()
+    {
+        $parsedDeliveryAddress = $this->getDeliveryAddress();
+        $shoppingCarts = $this->getShoppingCarts($parsedDeliveryAddress);
+        $applicant = $this->getApplicant($parsedDeliveryAddress);
+
+        if (!$shoppingCarts && !$applicant) {
+            return null;
+        }
+
+        return array(
+            'shoppingCarts' => $shoppingCarts,
+            'applicant' => $applicant
+        );
+    }
+
+    /**
      * @param null|string $payMethod
      * @return array
      * @throws Exception
@@ -992,6 +1104,12 @@ class PayU extends PaymentModule
 
         if ($this->getCustomer($this->order->id_customer)) {
             $ocreq['buyer'] = $this->getCustomer($this->order->id_customer);
+        }
+
+        if ($payMethod !== null) {
+            if ($payMethod === 'ai' || $payMethod === 'dp' || $payMethod === 'dpt' || $payMethod === 'dpp') {
+                $ocreq['credit'] = $this->getCreditSection();
+            }
         }
 
         if ($payMethod !== null) {
