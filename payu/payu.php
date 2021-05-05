@@ -969,7 +969,7 @@ class PayU extends PaymentModule
             $list[] = [
                 'quantity' => $product['product_quantity'],
                 'name' => $product['product_name'],
-                'unitPrice' => $this->toAmount($product['product_price'])
+                'unitPrice' => $this->toAmount($product['product_price_wt'])
             ];
         }
 
@@ -985,8 +985,12 @@ class PayU extends PaymentModule
             return null;
         }
 
+        $street = $deliveryAddress->address1;
+        if (!empty($deliveryAddress->address2)) {
+            $street .= " " . $deliveryAddress->address2;
+        }
         return [
-            'street' => $deliveryAddress->address1." ".$deliveryAddress->address2,
+            'street' => $street,
             'postalCode' => $deliveryAddress->postcode,
             'city' => $deliveryAddress->city,
         ];
@@ -1050,7 +1054,7 @@ class PayU extends PaymentModule
     private function getCreditSection()
     {
         $deliveryAddress = null;
-        if (!$this->order->id_address_delivery) {
+        if ($this->order->id_address_delivery) {
             $deliveryAddress = new Address((int) $this->order->id_address_delivery);
         }
         $parsedDeliveryAddress = $this->getDeliveryAddress($deliveryAddress);
