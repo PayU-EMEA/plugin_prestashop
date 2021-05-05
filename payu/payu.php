@@ -964,13 +964,13 @@ class PayU extends PaymentModule
             return null;
         }
 
-        $list = array();
+        $list = [];
         foreach ($products as $product) {
-            $list[] = array(
+            $list[] = [
                 'quantity' => $product['product_quantity'],
                 'name' => $product['product_name'],
                 'unitPrice' => $this->toAmount($product['product_price'])
-            );
+            ];
         }
 
         return $list;
@@ -979,24 +979,23 @@ class PayU extends PaymentModule
     /**
      * @return array|null
      */
-    private function getDeliveryAddress()
+    private function getDeliveryAddress($deliveryAddress)
     {
-        if (!$this->order->id_address_delivery) {
+        if ($deliveryAddress === null) {
             return null;
         }
-        $deliveryAddress = new Address((int) $this->order->id_address_delivery);
 
-        return array(
-            'street' => $deliveryAddress->address1,
+        return [
+            'street' => $deliveryAddress->address1." ".$deliveryAddress->address2,
             'postalCode' => $deliveryAddress->postcode,
             'city' => $deliveryAddress->city,
-        );
+        ];
     }
 
     /**
      * @return array|null
      */
-    private function getApplicant($parsedDeliveryAddress)
+    private function getApplicant($parsedDeliveryAddress, $deliveryAddress)
     {
         if (!$this->order->id_customer) {
             return null;
@@ -1008,19 +1007,18 @@ class PayU extends PaymentModule
         }
 
         $phone = null;
-        if ($this->order->id_address_delivery) {
-            $entity = new Address((int) $this->order->id_address_delivery);
-            $phone = $entity->phone;
+        if ($deliveryAddress !== null) {
+            $phone = $deliveryAddress->phone;
         }
 
-        return array(
+        return [
             'email' => $customer->email,
             'firstName' => $customer->firstname,
             'lastName' => $customer->lastname,
             'language' => $this->getLanguage(),
             'phone' => $phone,
             'address' => $parsedDeliveryAddress
-        );
+        ];
     }
 
     /**
@@ -1035,15 +1033,15 @@ class PayU extends PaymentModule
             return null;
         }
 
-        return array(
-            array(
-                'shippingMethod' => array(
+        return [
+            [
+                'shippingMethod' => [
                     'price' => $shippingPrice,
                     'address' => $parsedDeliveryAddress
-                ),
+                ],
                 'products' => $products
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -1051,18 +1049,22 @@ class PayU extends PaymentModule
      */
     private function getCreditSection()
     {
-        $parsedDeliveryAddress = $this->getDeliveryAddress();
+        $deliveryAddress = null;
+        if (!$this->order->id_address_delivery) {
+            $deliveryAddress = new Address((int) $this->order->id_address_delivery);
+        }
+        $parsedDeliveryAddress = $this->getDeliveryAddress($deliveryAddress);
         $shoppingCarts = $this->getShoppingCarts($parsedDeliveryAddress);
-        $applicant = $this->getApplicant($parsedDeliveryAddress);
+        $applicant = $this->getApplicant($parsedDeliveryAddress, $deliveryAddress);
 
         if (!$shoppingCarts && !$applicant) {
             return null;
         }
 
-        return array(
+        return [
             'shoppingCarts' => $shoppingCarts,
             'applicant' => $applicant
-        );
+        ];
     }
 
     /**
@@ -1106,10 +1108,8 @@ class PayU extends PaymentModule
             $ocreq['buyer'] = $this->getCustomer($this->order->id_customer);
         }
 
-        if ($payMethod !== null) {
-            if ($payMethod === 'ai' || $payMethod === 'dp' || $payMethod === 'dpt' || $payMethod === 'dpp') {
-                $ocreq['credit'] = $this->getCreditSection();
-            }
+        if ($payMethod === 'ai' || $payMethod === 'dp' || $payMethod === 'dpt' || $payMethod === 'dpp') {
+            $ocreq['credit'] = $this->getCreditSection();
         }
 
         if ($payMethod !== null) {
