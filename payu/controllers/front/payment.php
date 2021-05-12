@@ -83,7 +83,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 }
             }
         } else {
-            $this->pay($payMethod === 'card' ? 'c' : null);
+            $payType = null;
+            if ($payMethod === 'card') {
+                $payType = 'c';
+            } elseif ($payMethod === 'ai' || $payMethod === 'dp' || $payMethod === 'dpt' || $payMethod === 'dpp') {
+                $payType = $payMethod;
+            }
+
+            $this->pay($payType);
             $this->showPaymentError();
         }
     }
