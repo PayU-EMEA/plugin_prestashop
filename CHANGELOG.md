@@ -1,3 +1,6 @@
+## 3.1.11
+ * Fix sending selected credit payment methods in order
+
 ## 3.1.10
  * Added credit section to order for installment and delayed payment methods
 
