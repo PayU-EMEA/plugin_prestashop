@@ -1,3 +1,6 @@
+## 3.1.10
+ * Added credit section to order for installment and delayed payment methods
+
 ## 3.1.9
  * Quick fix #279
 
