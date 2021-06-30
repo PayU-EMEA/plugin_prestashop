@@ -77,4 +77,16 @@
             </div>
         </div>
     {/if}
+    {if $showBlikPayment == true}
+    <div class="row">
+        <div class="col-xs-12">
+            <p class="payment_module">
+                <a class="payu payu_blik" href="{$blikActionUrl|escape:'htmlall':'UTF-8'}"
+                   title="{l s='Pay by BLIK' mod='payu'}">
+                    {l s='Pay by BLIK' mod='payu'}
+                </a>
+            </p>
+        </div>
+    </div>
+    {/if}
 </fieldset>
