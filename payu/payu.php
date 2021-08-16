@@ -101,6 +101,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_SUMMARY', 1) &&
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', 1) &&
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_TWISTO', 0) &&
+            Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', 0) &&
             Configuration::updateValue('PAYU_STATUS_CONTROL', 0)
         );
     }
@@ -134,6 +135,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_SUMMARY') ||
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_PRODUCT') ||
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_TWISTO') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_BLIK_PAYMENT') ||
             !Configuration::deleteByName('PAYU_STATUS_CONTROL')
         ) {
             return false;
@@ -196,6 +198,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAY_BY_ICON_CLICK', (Tools::getValue('PAYU_PAY_BY_ICON_CLICK') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', (Tools::getValue('PAYU_SEPARATE_BLIK_PAYMENT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', (Tools::getValue('PAYU_CARD_PAYMENT_WIDGET') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', Tools::getValue('PAYU_PAYMENT_METHODS_ORDER')) ||
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT', (Tools::getValue('PAYU_PROMOTE_CREDIT') ? 1 : 0)) ||
@@ -292,6 +295,23 @@ class PayU extends PaymentModule
                         'desc' => $this->l('Card tokenization must be enabled - https://github.com/PayU-EMEA/plugin_prestashop/blob/master/README.EN.md#card-widget'),
                         'name' => 'PAYU_CARD_PAYMENT_WIDGET',
                         'disabled' => (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT', Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'))) ? false : true,
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
+                        'label' => $this->l('Separate BLIK payment'),
+                        'name' => 'PAYU_SEPARATE_BLIK_PAYMENT',
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -617,6 +637,7 @@ class PayU extends PaymentModule
             'PAYU_PAY_BY_ICON_CLICK' => Configuration::get('PAYU_PAY_BY_ICON_CLICK'),
             'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX'),
             'PAYU_SEPARATE_CARD_PAYMENT' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
+            'PAYU_SEPARATE_BLIK_PAYMENT' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
             'PAYU_CARD_PAYMENT_WIDGET' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET'),
             'PAYU_PAYMENT_METHODS_ORDER' => Configuration::get('PAYU_PAYMENT_METHODS_ORDER'),
             'PAYU_PROMOTE_CREDIT' => Configuration::get('PAYU_PROMOTE_CREDIT'),
@@ -747,6 +768,18 @@ class PayU extends PaymentModule
             array_push($paymentOptions, $cardPaymentOption);
         }
 
+        if (Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable()) {
+            $cardPaymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+            $cardPaymentOption->setCallToActionText($this->l('Pay by BLIK'))
+                ->setAdditionalInformation('<span class="payu-marker-class"></span>')
+                ->setModuleName($this->name)
+                ->setLogo($this->getPayuLogo('payu_blik.png'))
+                ->setAction($this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'blik', 'payuConditions' => true])
+                );
+
+            array_push($paymentOptions, $cardPaymentOption);
+        }
+
         $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $paymentOption->setCallToActionText(empty($paymentOptions) ? $this->l('Pay by online transfer or card') :  $this->l('Pay by online transfer'))
             ->setAdditionalInformation('<span class="payu-marker-class"></span>')
@@ -806,6 +839,7 @@ class PayU extends PaymentModule
                 'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
                 'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable(),
                 'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1',
+                'showBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable(),
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment'),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
@@ -1950,6 +1984,19 @@ class PayU extends PaymentModule
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion(), true);
     }
+
+     /**
+     * @param $amount
+     * @return bool
+     */
+    private function isBlikAvailable()
+    {
+        return Configuration::get('PAYU_RETRIEVE') !== '1'
+            || PayMethodsCache::isPaytypeAvailable('blik',
+                Currency::getCurrency($this->context->cart->id_currency),
+                $this->getVersion(), true);
+    }
+
 
     /**
      * @param $amount
