@@ -716,7 +716,7 @@ class PayU extends PaymentModule
         if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
             $this->context->smarty->assign(
                 array(
-                    'payuImage' => $this->getPayuLogo('payu_logo_small.png'),
+                    'payuImage' => $this->getPayuLogo(),
                     'payuActionUrl' => $this->context->link->getModuleLink(
                         'payu', 'payment', array('id_order' => $params['order']->id, 'order_reference' => $params['order']->reference)
                     )
@@ -758,7 +758,7 @@ class PayU extends PaymentModule
             $cardPaymentOption->setCallToActionText($this->l('Pay by card'))
                 ->setAdditionalInformation('<span class="payu-marker-class"></span>')
                 ->setModuleName($this->name)
-                ->setLogo($this->getPayuLogo('payu_cards.png'))
+                ->setLogo($this->getPayuLogo('card-visa-mc.svg'))
                 ->setAction(
                     Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                         ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
@@ -773,7 +773,7 @@ class PayU extends PaymentModule
             $cardPaymentOption->setCallToActionText($this->l('Pay by BLIK'))
                 ->setAdditionalInformation('<span class="payu-marker-class"></span>')
                 ->setModuleName($this->name)
-                ->setLogo($this->getPayuLogo('payu_blik.png'))
+                ->setLogo($this->getPayuLogo('blik.svg'))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'blik', 'payuConditions' => true])
                 );
 
@@ -788,7 +788,7 @@ class PayU extends PaymentModule
 
         if (Configuration::get('PAYU_PROMOTE_CREDIT') !== '1' ||
             !($this->isCreditAvailable($totalPrice))) {
-            $paymentOption->setLogo($this->getPayuLogo('payu_logo_small.png'));
+            $paymentOption->setLogo($this->getPayuLogo());
         }
 
         array_push($paymentOptions, $paymentOption);
@@ -808,8 +808,8 @@ class PayU extends PaymentModule
         if ($this->isCreditAvailable($totalPrice)) {
             $this->context->smarty->assign(array(
                 'total_price' => $totalPrice,
-                'payu_installment_img' => $this->getPayuLogo('payu_installment.png'),
-                'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
+                'payu_installment_img' => $this->getPayuLogo('payu_installment.svg'),
+                'payu_logo_img' => $this->getPayuLogo(),
                 'payu_question_mark_img' => $this->getPayuLogo('question_mark.png'),
             ));
 
@@ -817,7 +817,7 @@ class PayU extends PaymentModule
             $installmentOption
                 ->setCallToActionText($this->l('Pay online in installments'))
                 ->setModuleName($this->name)
-                ->setLogo($this->getPayuLogo('payu_installment_small.png'))
+                ->setLogo($this->getPayuLogo('payu_installment.svg'))
                 ->setAdditionalInformation($this->fetchTemplate('checkout_installment.tpl'))
                 ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                     array('payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true)));
@@ -836,20 +836,23 @@ class PayU extends PaymentModule
         $this->context->smarty->assign(array(
                 'image' => $this->getPayuLogo(),
                 'creditImage' => $this->getPayuLogo('raty_small.png'),
-                'payu_logo_img' => $this->getPayuLogo('payu_logo_small.png'),
+                'payu_logo_img' => $this->getPayuLogo(),
                 'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable(),
                 'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1',
-                'showBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable(),
+                'showBlikPayment' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable(),
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment'),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
                     : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])),
-                'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
+                'blikActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
+                    'payuPay' => 1, 'payMethod' => 'blik', 'payuConditions' => true
+                ]),
+                'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true
-                )),
-                'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', array(
+                ]),
+                'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payuPay' => 1, 'payMethod' => 'dpt', 'payuConditions' => true
-                )),
+                ]),
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
                 'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable(),
                 'cart_total_amount' => $params['cart']->getOrderTotal())
@@ -957,7 +960,7 @@ class PayU extends PaymentModule
                 if ($updateOrderStatus === true) {
                     $output .= $this->displayConfirmation($this->l('Update status request has been sent'));
                 } else {
-                    $output .= $this->displayError($this->l('Update status request has not been completed correctly.' . ' ' . $updateOrderStatus['message']));
+                    $output .= $this->displayError($this->l('Update status request has not been completed correctly.') . ' ' . $updateOrderStatus['message']);
                 }
             }
 
@@ -1282,7 +1285,7 @@ class PayU extends PaymentModule
         }
     }
 
-    public function getPayuLogo($file = 'payu_logo.png')
+    public function getPayuLogo($file = 'logo-payu.svg')
     {
         return Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/' . $file);
     }

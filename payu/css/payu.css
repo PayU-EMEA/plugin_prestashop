@@ -8,16 +8,24 @@
 
 p.payment_module a.payu {
     background: #fbfbfb none;
-    padding: 33px 40px 34px 20px;
+    padding: 33px 40px 34px 15px;
     font-weight: bold;
 }
 
 p.payment_module a.payu_card {
-    background: url('../img/payu_cards.png') 15px 33px no-repeat #fbfbfb;
+    background: url('../img/card-visa-mc.svg') 15px 33px no-repeat #fbfbfb;
 }
 
 p.payment_module a.payu_card {
-    padding: 33px 40px 34px 170px;
+    padding: 33px 40px 34px 110px;
+}
+
+p.payment_module a.payu_blik {
+    background: url('../img/blik.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_blik {
+    padding: 33px 40px 34px 80px;
 }
 
 p.payment_module a.payu:after, .payu-payment-credit-tile:after {
@@ -61,7 +69,6 @@ p.payment_module a.payu:hover {
 }
 
 #payuLogo {
-    height: 60px;
     float: right;
 }
 
@@ -160,20 +167,6 @@ p.payment_module_17 a.payu img {
     display: inline-block;
 }
 
-.payment-option img[src*="payu_logo_small.png"],
-.payment-option img[src*="payu_cards.png"]
-{
-    margin-top: -3px;
-    margin-left: 3px;
-}
-@media only screen and (max-width: 390px) {
-    .payment-option img[src*="payu_logo_small.png"],
-    .payment-option img[src*="payu_cards.png"]
-    {
-        display: none;
-    }
-}
-
 .payu-pay-image-16 {
     width: 50px;
     height: 25px;
@@ -201,7 +194,7 @@ p.payment_module a.payu-payment-credit-tile {
 .payu-payment-credit-installment-tile, .payu-payment-credit-later-tile, .payu-payment-credit-later-twisto-tile {
     border: 1px solid #d6d4d4;
     background: #fbfbfb none;
-    padding: 36px 40px 36px 31px;
+    padding: 36px 40px 36px 15px;
     border-radius: 5px;
     font-weight: bold;
     font-size: 17px;
@@ -252,7 +245,7 @@ p.payment_module a.payu-widget-installments-mini {
     display: inline-block;
     height: 30px;
     width: 70px;
-    background: #ffffff url('../img/payu_logo_small.png') no-repeat center;
+    background: #ffffff url('../img/logo-payu.svg') no-repeat center;
 }
 
 .payu-payment-fieldset-1-7 {
@@ -272,7 +265,7 @@ p.payment_module a.payu-widget-installments-mini {
     display: inline-block;
     height: 30px;
     width: 70px;
-    background: #ffffff url('../img/payu_logo_small.png') no-repeat center;
+    background: #ffffff url('../img/logo-payu.svg') no-repeat center;
 }
 
 .payu-marker-class {
