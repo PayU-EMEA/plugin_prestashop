@@ -1198,7 +1198,7 @@ class PayU extends PaymentModule
 
     public function updateOrderData($responseNotification = null)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
+        SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance', $this->payu_order_id);
 
         if (empty($this->payu_order_id)) {
             Logger::addLog($this->displayName . ' ' . 'Can not get order information - id_session is empty', 1);
@@ -1214,12 +1214,11 @@ class PayU extends PaymentModule
             $response = $raw->getResponse();
         }
 
-        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderRetrieve response object: ');
+        SimplePayuLogger::addLog('order', __FUNCTION__, print_r($response, true), $this->payu_order_id, 'OrderRetrieve response object: ');
         $payu_order = $responseNotification ? $response->order : $response->orders[0];
         $payu_properties = isset($response->properties) ? $response->properties : null;
 
         if ($payu_order) {
-
             $this->order = new Order($this->id_order);
             SimplePayuLogger::addLog('notification', __FUNCTION__, 'Order exists in PayU system ', $this->payu_order_id);
             $this->updateOrderState($payu_order, $payu_properties);
