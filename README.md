@@ -14,6 +14,7 @@ Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x)
 * [Instalacja](#instalacja)
 * [Aktualizacja](#aktualizacja)
 * [Konfiguracja](#konfiguracja)
+* [Logowanie](#logowanie)
 * [Więcej o cechach](#więcej-o-cechach)
     * [Wielowalutowość](#wielowalutowość)
     * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
@@ -86,6 +87,10 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 1. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
 1. Przejdź do `Moduły` » `Moduły i usługi`
 1. Wyszukaj `PayU` i naciśnij `Konfiguruj`
+
+## Logowanie
+
+Gdy sklep Prestashop przełączymy w tryb debugowania plugin zapisuje informacje do logów. Pliki logów znajdą się w katalogu `/var/log`.
 
 ### Sposób integracji
 
