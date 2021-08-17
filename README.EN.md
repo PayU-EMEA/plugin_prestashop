@@ -129,6 +129,7 @@ If the option `Control of status changes` is enabled for status "Complete" and "
 
 ### Multi-currency
 POS in PayU system has only one currency defined. Therefore to accept payments in more currencies, POS for each currency has to be separately configured.
+Error ERROR_INCONSISTENT_CURRENCIES means an unsupported currency by POS. Contact with PayU service is required when approving the payment option in a different currency for the sandbox mode and a separate agreement for the production mode.
 
 ### Payment method display
 When **Payment methods displayed on Presta checkout summary page** parameter is set to `Yes` payment method icons will be displayed directly within PrestaShop page when 'PayU with PayU' button is clicked.
