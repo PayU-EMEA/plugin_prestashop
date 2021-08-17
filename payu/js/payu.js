@@ -5,7 +5,7 @@ $(document).ready(function () {
     $('.payMethodEnable .payMethodLabel').click(function () {
         $('.payMethod').removeClass('payMethodActive');
         $(this).closest('.payMethod').addClass('payMethodActive');
-        $(this).prev().prop('checked', true);
+        $(this).closest('.payMethod').find('input:radio').prop('checked', true);
         if ($(this).data('autosubmit')) {
             $('#payuForm').submit();
         }
