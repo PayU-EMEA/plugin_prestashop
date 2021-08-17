@@ -58,7 +58,13 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
      */
     private function extractCurrencyCode($data)
     {
-        $decodeData = json_decode($data);
-        return $decodeData->order->currencyCode;
+        $notification = json_decode($data);
+
+        if (is_object($notification) && property_exists($notification, 'order')) {
+            return $notification->order->currencyCode;
+        } elseif (is_object($notification) && property_exists($notification, 'refund')) {
+            return $notification->refund->currencyCode;
+        }
+        return null;
     }
 }

@@ -1893,31 +1893,27 @@ class PayU extends PaymentModule
         $this->configureOpuByIdOrder($id_order);
 
         try {
-
             $refund = OpenPayU_Refund::create(
                 $ref_no,
                 'PayU Refund',
                 round($value * 100)
             );
 
-            if ($refund->getStatus() == 'SUCCESS')
-                return array(true);
-            else {
+            if ($refund->getStatus() === 'SUCCESS') {
+                return [true];
+            } else {
                 Logger::addLog($this->displayName . ' Order Refund error: ', 1);
-                return array(false, 'Status code: ' . $refund->getStatus());
+                return [false, 'Status code: ' . $refund->getStatus()];
             }
 
         } catch (OpenPayU_Exception_Request $e) {
             $response = $e->getOriginalResponse()->getResponse()->status;
             Logger::addLog($this->displayName . ' Order Refund error: ' . $response->codeLiteral .' ['.$response->code.']', 1);
-            return array(false, $response->codeLiteral .' ['.$response->code.'] - <a target="_blank" href="http://developers.payu.com/pl/restapi.html#refunds">developers.payu.com</a>');
+            return [false, $response->codeLiteral .' ['.$response->code.'] - <a target="_blank" href="http://developers.payu.com/pl/restapi.html#refunds">developers.payu.com</a>'];
         } catch (OpenPayU_Exception $e) {
             Logger::addLog($this->displayName . ' Order Refund error: ' . $e->getMessage(), 1);
-            return array(false, $e->getMessage());
+            return [false, $e->getMessage()];
         }
-
-        return false;
-
     }
 
     private function checkCurrency($cart)
