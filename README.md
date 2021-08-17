@@ -90,7 +90,9 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 ## Logowanie
 
-Gdy sklep Prestashop przełączymy w tryb debugowania plugin zapisuje informacje do logów. Pliki logów znajdą się w katalogu `/var/log`.
+Gdy sklep Prestashop przełączymy w tryb debugowania plugin zapisuje informacje do logów. Pliki logów znajdą się w katalogu:
+* Prestashop 1.7 - `/var/logs`
+* Prestashop 1.6 - `/log`
 
 ### Sposób integracji
 

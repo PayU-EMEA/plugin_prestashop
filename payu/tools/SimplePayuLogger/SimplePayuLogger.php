@@ -3,7 +3,7 @@
 class SimplePayuLogger
 {
     const CUSTOM_DATE_FORMAT = 'Y-m-d G:i:s.u';
-    private static $logFile = _PS_ROOT_DIR_ . '/var/logs/payu_%s.log';
+    private static $logFile = 'payu_%s.log';
     private static $correlationId;
 
     public static function addLog($type, $function, $message, $order_id = '', $comment = '')
@@ -13,13 +13,15 @@ class SimplePayuLogger
                 self::$correlationId = uniqid('', true);
             }
 
-            self::writeToLog($function, $message, $order_id, sprintf(self::$logFile, $type), $comment);
+            $logDir = _PS_ROOT_DIR_ . (version_compare(_PS_VERSION_, '1.7', 'lt') ? '/log/' : '/var/logs/');
+
+            self::writeToLog($function, $message, $order_id, $logDir . sprintf(self::$logFile, $type), $comment);
         }
     }
 
     public static function formatMessage($message, $order_id, $function, $comment)
     {
-        return "[" . self::getTimestamp() . "]"."[" . self::$correlationId . "]".' <' . $order_id . '> ' . ' {' . $function . '} ' . (($comment == '')?'':($comment . PHP_EOL)) . $message . PHP_EOL;
+        return "[" . self::getTimestamp() . "]" . "[" . self::$correlationId . "]" . ' <' . $order_id . '> ' . ' {' . $function . '} ' . (($comment == '') ? '' : ($comment . PHP_EOL)) . $message . PHP_EOL;
     }
 
     public static function getTimestamp()
