@@ -12,17 +12,23 @@
     </span>
 <script type="text/javascript" class="payu-script-tag">
     document.addEventListener("DOMContentLoaded", function (event) {
-        openpayu.options.creditAmount ={$cart_total_amount|floatval};
-        openpayu.options.showLongDescription = true;
-        openpayu.options.lang = 'pl';
-        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+        var options = {
+            creditAmount: {$cart_total_amount|floatval},
+            posId: '{$credit_pos}',
+            key: '{$credit_pos_key}',
+            showLongDescription: true
+        };
+        window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
     });
     if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
         typeof openpayu !== 'undefined' &&
         openpayu != null) {
-        openpayu.options.creditAmount ={$cart_total_amount|floatval};
-        openpayu.options.showLongDescription = true;
-        openpayu.options.lang = 'pl';
-        OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary');
+        var options = {
+            creditAmount: {$cart_total_amount|floatval},
+            posId: '{$credit_pos}',
+            key: '{$credit_pos_key}',
+            showLongDescription: true
+        };
+        window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
     }
 </script>

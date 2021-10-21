@@ -696,11 +696,11 @@ class PayU extends PaymentModule
         if(Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
             if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
                 $this->context->controller->addCSS('https://static.payu.com/res/v2/layout/style.css', 'all');
-                $this->context->controller->addJS('https://static.payu.com/res/v2/widget-products-installments.js', 'all');
+                $this->context->controller->addJS('https://static.payu.com/res/v2/widget-mini-installments.js', 'all');
             } else {
                 $this->context->controller->registerJavascript(
                     'remote-widget-products-installments',
-                    'https://static.payu.com/res/v2/widget-products-installments.js',
+                    'https://static.payu.com/res/v2/widget-mini-installments.js',
                     ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
                 $this->context->controller->registerStylesheet(
                     'remote-installments-css-payu',
@@ -811,6 +811,8 @@ class PayU extends PaymentModule
                 'payu_installment_img' => $this->getPayuLogo('payu_installment.svg'),
                 'payu_logo_img' => $this->getPayuLogo(),
                 'payu_question_mark_img' => $this->getPayuLogo('question_mark.png'),
+                'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
             ));
 
             $installmentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
@@ -1730,7 +1732,9 @@ class PayU extends PaymentModule
         if ($this->isCreditAvailable($params['cart']->getOrderTotal())
             && Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') {
             $this->context->smarty->assign(array(
-                'cart_total_amount' => $params['cart']->getOrderTotal()
+                'cart_total_amount' => $params['cart']->getOrderTotal(),
+                'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
             ));
             return $this->display(__FILE__, 'cart-detailed-totals.tpl');
         }
@@ -1741,7 +1745,9 @@ class PayU extends PaymentModule
         if (Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1' &&
             $this->isCreditAvailable($params['cart']->getOrderTotal())) {
             $this->context->smarty->assign(array(
-                'cart_total_amount' => $params['cart']->getOrderTotal()
+                'cart_total_amount' => $params['cart']->getOrderTotal(),
+                'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
             ));
             return $this->display(__FILE__, 'cart-summary.tpl');
         }
@@ -1784,7 +1790,9 @@ class PayU extends PaymentModule
                 if($creditAvailable){
                     $this->context->smarty->assign(array(
                         'product_price' => $price,
-                        'product_id' => $productId
+                        'product_id' => $productId,
+                        'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                        'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
                     ));
                     return $this->display(__FILE__, 'product.tpl');
                 } else {
@@ -1802,7 +1810,9 @@ class PayU extends PaymentModule
                     ($params['type'] === 'after_price' && $current_controller === 'product'))) {
                 $this->context->smarty->assign(array(
                     'product_price' => $product['price_amount'],
-                    'product_id' => $product['id_product']
+                    'product_id' => $product['id_product'],
+                    'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                    'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
                 ));
                 return $this->display(__FILE__, 'product.tpl', $this->getCacheId($product['price_amount'].$product['id_product']));
             } else {
