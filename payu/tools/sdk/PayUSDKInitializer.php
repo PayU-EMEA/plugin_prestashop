@@ -27,8 +27,8 @@ class PayUSDKInitializer
 
         if (!is_array($payuPosId) ||
             !is_array($payuSignatureKey) ||
-            !$payuPosId[$currencyIsoCode] ||
-            !$payuSignatureKey[$currencyIsoCode]
+            !isset($payuPosId[$currencyIsoCode]) ||
+            !isset($payuSignatureKey[$currencyIsoCode])
         ) {
             return false;
         }

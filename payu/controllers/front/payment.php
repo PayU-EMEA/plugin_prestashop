@@ -168,11 +168,9 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $this->payu->payu_order_id = $result['orderId'];
             $this->postOCR();
 
-            $redirectUrl = $result['redirectUri'] ? $result['redirectUri'] : $this->context->link->getModuleLink('payu', 'success', array('id' => $this->payu->getExtOrderId()));
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . $result['redirectUri'], $result['orderId']);
 
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . $redirectUrl, $result['orderId']);
-
-            Tools::redirect($redirectUrl);
+            Tools::redirect($result['redirectUri']);
 
         } catch (\Exception $e) {
             SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');

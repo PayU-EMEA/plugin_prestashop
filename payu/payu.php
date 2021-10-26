@@ -60,7 +60,6 @@ class PayU extends PaymentModule
         $this->description = $this->l('Accepts payments by PayU');
 
         $this->confirm_uninstall = $this->l('Are you sure you want to uninstall? You will lose all your settings!');
-
     }
 
     /**
@@ -1115,7 +1114,6 @@ class PayU extends PaymentModule
      */
     public function orderCreateRequestByOrder($payMethod = null, $parameters = [])
     {
-
         SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
         $currency = Currency::getCurrency($this->order->id_currency);
 
@@ -1126,23 +1124,27 @@ class PayU extends PaymentModule
             throw new \Exception('OPU not properly configured for currency: ' . $currency['iso_code']);
         }
 
-        $ocreq = array(
+        $cart = new Cart($this->order->id_cart);
+        $customer = new Customer($cart->id_customer);
+        $continueUrl = Context::getContext()->link->getPageLink('order-confirmation&ext_order='.$this->extOrderId.'&id_cart='.$cart->id.'&id_module='.$this->id.'&id_order='.$this->order->id.'&key='.$customer->secure_key);
+
+        $ocreq = [
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
             'description' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
-            'products' => array(
-                array(
+            'products' => [
+                [
                     'quantity' => 1,
                     'name' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference,
                     'unitPrice' => $this->toAmount($this->order->total_paid)
-                )
-            ),
+                ]
+            ],
             'customerIp' => $this->getIP(),
             'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
-            'continueUrl' => $this->context->link->getModuleLink('payu', 'success', array('id' => $this->extOrderId)),
+            'continueUrl' => $continueUrl,
             'currencyCode' => $currency['iso_code'],
             'totalAmount' => $this->toAmount($this->order->total_paid),
             'extOrderId' => $this->extOrderId
-        );
+        ];
 
 
         if ($this->getCustomer($this->order->id_customer)) {
@@ -1177,10 +1179,10 @@ class PayU extends PaymentModule
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
 
             if ($result->getStatus() === 'SUCCESS' || $result->getStatus() === 'WARNING_CONTINUE_3DS') {
-                return array(
-                    'redirectUri' => urldecode($result->getResponse()->redirectUri),
+                return [
+                    'redirectUri' => $result->getResponse()->redirectUri ? urldecode($result->getResponse()->redirectUri) : $continueUrl,
                     'orderId' => $result->getResponse()->orderId
-                );
+                ];
             } else {
                 SimplePayuLogger::addLog('order', __FUNCTION__, 'OpenPayU_Order::create($ocreq) NOT success!! ' . $this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage(), $this->payu_order_id));
                 Logger::addLog($this->displayName . ' ' . trim($result->getError() . ' ' . $result->getMessage()), 1);
@@ -1193,7 +1195,6 @@ class PayU extends PaymentModule
 
             throw new \Exception($e->getCode() . ' ' . $e->getMessage());
         }
-
     }
 
     public function updateOrderData($responseNotification = null)
@@ -1204,7 +1205,6 @@ class PayU extends PaymentModule
             Logger::addLog($this->displayName . ' ' . 'Can not get order information - id_session is empty', 1);
         }
 
-        $result = null;
         $this->configureOpuByIdOrder($this->id_order);
 
         if ($responseNotification) {
@@ -1225,19 +1225,6 @@ class PayU extends PaymentModule
         }
     }
 
-    public function addMsgToOrder($message, $prestaOrderId)
-    {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'Addition of PAYMENT_ID info', $this->payu_order_id);
-
-        $msg = new Message();
-        $message = strip_tags($message, '<br>');
-        $msg->message = $message;
-        $msg->id_order = intval($prestaOrderId);
-        $msg->private = 1;
-        $msg->add();
-
-    }
-
     /**
      * @return string
      */
@@ -1246,10 +1233,8 @@ class PayU extends PaymentModule
         switch ($this->getLanguage()) {
             case 'pl':
                 return self::CONDITION_PL;
-                break;
             case 'cs':
                 return self::CONDITION_CS;
-                break;
             default:
                 return self::CONDITION_EN;
         }
@@ -1723,6 +1708,39 @@ class PayU extends PaymentModule
         }
 
         return $registerStatus;
+    }
+
+    public function hookPaymentReturn($params)
+    {
+        if (!$this->active) {
+            return '';
+        }
+
+        $extOrder = Tools::getValue('ext_order');
+
+        if ($extOrder) {
+            $order_payment = $this->getOrderPaymentByExtOrderId($extOrder);
+
+            if (isset($params['order'])) {
+                $order = $params['order'];
+            } elseif (isset($params['objOrder'])) {
+                $order = $params['objOrder'];
+            } else {
+                return '';
+            }
+
+            if ($order->id === (int)$order_payment['id_order'] && $order_payment['status'] !== OpenPayuOrderStatus::STATUS_COMPLETED) {
+                $this->id_order = $order->id;
+                $this->payu_order_id = $order_payment['id_session'];
+                $this->updateOrderData();
+            }
+        }
+
+        $this->context->smarty->assign(array(
+            'payuLogo' => $this->getPayuLogo()
+        ));
+
+        return $this->fetchTemplate('/views/templates/hook/paymentReturn.tpl');
     }
 
     public function hookDisplayCheckoutSubtotalDetails($params)
