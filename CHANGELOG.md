@@ -1,3 +1,6 @@
+## 3.1.13
+ * Return to Prestashop standard order-confirmation page
+
 ## 3.1.12
  * BLIK as separate payment method
  * Logotypes update
