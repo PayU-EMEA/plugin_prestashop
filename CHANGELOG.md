@@ -1,3 +1,6 @@
+## 3.1.14
+ * Apply new credit mini widget with automatic configuration based on posId
+
 ## 3.1.13
  * Return to Prestashop standard order-confirmation page
 
