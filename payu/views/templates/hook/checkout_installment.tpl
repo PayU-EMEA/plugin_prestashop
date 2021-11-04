@@ -4,10 +4,13 @@
         <span id='payu-installments-mini-cart'></span>
         <script type='text/javascript' class="payu-script-tag" >
             document.addEventListener("DOMContentLoaded", function(event) {
-                openpayu.options.creditAmount ={$total_price};
-                openpayu.options.showLongDescription = true;
-                openpayu.options.lang = 'pl';
-                OpenPayU.Installments.miniInstallment('#payu-installments-mini-cart');
+                var options = {
+                    creditAmount: {$total_price},
+                    posId: '{$credit_pos}',
+                    key: '{$credit_pos_key}',
+                    showLongDescription: true
+                };
+                window.OpenPayU.Installments.miniInstallment('#payu-installments-mini-cart', options);
             });
         </script>
     </p>
