@@ -1114,7 +1114,7 @@ class PayU extends PaymentModule
      * @return array
      * @throws Exception
      */
-    public function orderCreateRequestByOrder($payMethod = null, $parameters = [])
+    public function orderCreateRequestByOrder($orderTotal, $payMethod = null, $parameters = [])
     {
         SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
         $currency = Currency::getCurrency($this->order->id_currency);
@@ -1132,19 +1132,19 @@ class PayU extends PaymentModule
 
         $ocreq = [
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
-            'description' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
+            'description' => $this->l('Order: ') . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
             'products' => [
                 [
                     'quantity' => 1,
-                    'name' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference,
-                    'unitPrice' => $this->toAmount($this->order->total_paid)
+                    'name' => $this->l('Order: ') . $this->order->reference,
+                    'unitPrice' => $this->toAmount($orderTotal)
                 ]
             ],
             'customerIp' => $this->getIP(),
             'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
             'continueUrl' => $continueUrl,
             'currencyCode' => $currency['iso_code'],
-            'totalAmount' => $this->toAmount($this->order->total_paid),
+            'totalAmount' => $this->toAmount($orderTotal),
             'extOrderId' => $this->extOrderId
         ];
 
@@ -1223,7 +1223,13 @@ class PayU extends PaymentModule
         if ($payu_order) {
             $this->order = new Order($this->id_order);
             SimplePayuLogger::addLog('notification', __FUNCTION__, 'Order exists in PayU system ', $this->payu_order_id);
-            $this->updateOrderState($payu_order, $payu_properties);
+
+            $linkedOrders = [];
+            foreach ($this->order->getBrother() as $linkedOrder) {
+                $linkedOrders[] = $linkedOrder->id;
+            }
+
+            $this->updateOrderState($payu_order, $payu_properties, $linkedOrders);
         }
     }
 
@@ -1538,7 +1544,7 @@ class PayU extends PaymentModule
      * @param object $payu_order
      * @return bool
      */
-    private function updateOrderState($payu_order, $payu_properties)
+    private function updateOrderState($payu_order, $payu_properties, $linkedOrders)
     {
         $status = isset($payu_order->status) ? $payu_order->status : null;
 
@@ -1557,27 +1563,26 @@ class PayU extends PaymentModule
             $withoutUpdateOrderState = !$this->isCorrectPreviousStatus($order_state_id)
                 || $this->hasLastPayuOrderIsCompleted($this->order->id);
 
+            $ordersToChange = array_merge($linkedOrders, [$this->order->id]);
+
             switch ($status) {
                 case OpenPayuOrderStatus::STATUS_COMPLETED:
                     if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
-                        $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'), $this->order->id);
-                        $history->addWithemail(true);
+                        $this->setOrdersStatus($ordersToChange, Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'));
                         $this->addTransactionIdToPayment($this->order, $this->getTransactionId($payu_properties));
                     }
                     $this->updateOrderPaymentStatusBySessionId($status);
                     break;
                 case OpenPayuOrderStatus::STATUS_CANCELED:
                     if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_CANCELED')) {
-                        $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'), $this->order->id);
-                        $history->addWithemail(true);
+                        $this->setOrdersStatus($ordersToChange, Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'));
                     }
                     $this->updateOrderPaymentStatusBySessionId($status);
                     break;
                 case OpenPayuOrderStatus::STATUS_WAITING_FOR_CONFIRMATION:
                 case OpenPayuOrderStatus::STATUS_REJECTED:
                     if (!$withoutUpdateOrderState && $order_state_id != (int)Configuration::get('PAYU_PAYMENT_STATUS_SENT')) {
-                        $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_SENT'), $this->order->id);
-                        $history->addWithemail(true);
+                        $this->setOrdersStatus($ordersToChange, Configuration::get('PAYU_PAYMENT_STATUS_SENT'));
                     }
                     $this->updateOrderPaymentStatusBySessionId($status);
                     break;
@@ -1588,6 +1593,16 @@ class PayU extends PaymentModule
         }
 
         return false;
+    }
+
+    private function setOrdersStatus($ordersToChange, $status)
+    {
+        foreach ($ordersToChange as $id) {
+            $history = new OrderHistory();
+            $history->id_order = $id;
+            $history->changeIdOrderState($status, $id);
+            $history->addWithemail(true);
+        }
     }
 
     /**
