@@ -1,3 +1,8 @@
+## 3.2.0
+* New payment retry system
+* Move select bank and card form from separate page to checkout
+* Update Visa logotype
+
 ## 3.1.14
  * Apply new credit mini widget with automatic configuration based on posId
 

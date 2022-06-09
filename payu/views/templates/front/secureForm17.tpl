@@ -8,16 +8,14 @@
 {extends file=$layout}
 
 {block name='content'}
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+    <script type="text/javascript" src="{$jsSdk}"></script>
+
     <section id="main">
-        <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
-        <script type="text/javascript" src="{$jsSdk}"></script>
 
-        <div class="clearfix">
-            <h2 id="payuAmountInfo">{$payuOrderInfo}: <strong>{$total}</strong> {l s='(tax incl.)' mod='payu'}</h2>
-            <img src="{$image}" id="payuLogo">
-        </div>
+        <div class="testt">
 
-        {if $payuErrors|@count}
+        {if isset($payuErrors) && $payuErrors|@count}
             <div class="alert alert-warning">
                 {foreach $payuErrors as $error}
                     {$error}<br>
@@ -41,22 +39,27 @@
                         {include file='module:payu/views/templates/front/conditions17.tpl'}
                     {/if}
 
+
+
                     <p class="cart_navigation clearfix" id="cart_navigation">
-                        {if !$retryPayment}
-                            <a class="label" href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}">
-                               {l s='Other payment methods' mod='payu'}
-                            </a>
-                        {/if}
                         {if !isset($payMethods.error)}
                             <button class="btn btn-primary float-xs-right continue" type="submit" id="secure-form-pay">
-                                <span>{if !$retryPayment}{l s='I confirm my order' mod='payu'}{else}{l s='Pay' mod='payu'}{/if}</span>
+                                <span>{if !$retryPayment}
+                                        {l s='I confirm my order' mod='payu'}
+                                    {else}
+                                        {l s='Pay' mod='payu'}
+                                    {/if}
+                                </span>
                             </button>
                         {/if}
                     </p>
+
                 </div>
                 <div id="waiting-box" style="display: none">{l s='Please wait' mod='payu'}...</div>
             </form>
         </section>
+
         {include file='module:payu/views/templates/front/secureFormJs.tpl'}
+        </div>
     </section>
 {/block}

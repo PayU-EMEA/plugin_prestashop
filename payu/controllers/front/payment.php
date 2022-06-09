@@ -35,17 +35,18 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
     }
 
+
     public function initContent()
     {
         parent::initContent();
         SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  ' . phpversion(), '');
         $payMethod = Tools::getValue('payMethod');
+        if (Configuration::get('PAYU_PAYMENT_METHODS_GRID')) {
+            $errors = [];
 
-        if (Configuration::get('PAYU_RETRIEVE')) {
             if (Tools::getValue('payuPay')) {
                 $payuConditions = Tools::getValue('payuConditions');
                 $cardToken = Tools::getValue('cardToken');
-                $errors = [];
                 $payError = [];
 
                 if (!$payMethod) {
@@ -69,27 +70,74 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 if (array_key_exists('firstPayment', $payError)) {
                     $this->showPaymentError();
                 } else {
-                    if ($payMethod === 'card') {
-                        $this->showSecureForm($payuConditions, $errors);
+                    if ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') == 1) {
+                        $cardToken = Tools::getValue('cardToken');
+                        if ($cardToken) {
+                            $this->showSecureForm($payuConditions, $errors);
+                        } else {
+                            $this->errors[] = $this->module->l('Card token is empty', 'payment');
+
+                            $this->RedirectWithNotifications(
+                                $this->context->link->getPageLink('order',
+                                    null,
+                                    null
+                                )
+                            );
+                        }
+
+                    } elseif ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') !== 1) {
+                        $this->pay('c');
                     } else {
                         $this->showPayMethod($payMethod, $payuConditions, $errors);
                     }
                 }
             } else {
-                if ($payMethod === 'card') {
+                if ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') == 1) {
                     $this->showSecureForm();
-                } else {
-                    $this->showPayMethod();
+
+                } elseif ($payMethod === 'transfer' || $payMethod === 'card') {
+                    if ($payMethod == 'card') {
+                        $paymentGateway = 'c';
+                    } else {
+                        $paymentGateway = Tools::getValue('transfer_gateway1');
+                    }
+
+                    if ($paymentGateway) {
+                        $this->pay($paymentGateway);
+                    } else {
+                        $paymentId = Tools::getValue('payment_id');
+                        $this->errors[] = $this->module->l('Select a payment channel', 'payment');
+
+                        $this->payuRedirectWithNotifications(
+                            $this->context->link->getPageLink('order',
+                                null,
+                                null,
+                                'payment_id=' . $paymentId
+                            )
+                        );
+                    }
                 }
             }
         } else {
             $payType = null;
             if ($payMethod === 'card') {
                 $payType = 'c';
-            } elseif ($payMethod === 'ai' || $payMethod === 'dp' || $payMethod === 'dpt' || $payMethod === 'dpp') {
+                if($cardToken = Tools::getValue('cardToken')){
+                    $payError = $this->pay($payMethod, ['cardToken' => $cardToken]);
+                    if (!array_key_exists('firstPayment', $payError)) {
+                        $errors[] = $payError['message'];
+                    }
+                }
+            } elseif (
+                $payMethod === 'ai' ||
+                $payMethod === 'c' ||
+                $payMethod === 'blik' ||
+                $payMethod === 'dp' ||
+                $payMethod === 'dpt' ||
+                $payMethod === 'dpp'
+            ) {
                 $payType = $payMethod;
             }
-
             $this->pay($payType);
             $this->showPaymentError();
         }
@@ -103,13 +151,23 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
             'payuConditions' => $payuConditions,
-            'payByClick' => Configuration::get('PAYU_PAY_BY_ICON_CLICK') === '1',
             'payuErrors' => $errors
         ));
 
         $this->context->smarty->assign($this->getShowPayMethodsParameters());
-
-        $this->setTemplate($this->payu->buildTemplatePath('payMethods'));
+        if(!$errors) {
+            $this->setTemplate($this->payu->buildTemplatePath('payMethods'));
+        }
+        else{
+            $params = [
+                'id_order' => Tools::getValue('id_order'),
+                'error' => 'select-paymethod'
+            ];
+            $this->errors[] = $this->module->l('Card token is empty', 'payment');
+            $this->payuRedirectWithNotifications(
+                $this->context->link->getPageLink('order-detail', true, NULL, $params)
+            );
+        }
     }
 
     private function showSecureForm($payuConditions = 1, $errors = array())
@@ -148,13 +206,23 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     private function pay($payMethod = null, $parameters = [])
     {
-        $orderTotal = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+        if (Tools::getValue('id_order') !== false && Tools::getValue('order_reference') !== false) {
+            $order = new Order(Tools::getValue('id_order'));
+            $orderTotal = $order->total_paid;
+        } else {
+            $orderTotal = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+        }
+        SimplePayuLogger::addLog('check', __FUNCTION__, $orderTotal, '');
 
         if (!$this->hasRetryPayment) {
             $this->payu->validateOrder(
-                $this->context->cart->id, (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
-                $orderTotal, $this->payu->displayName,
-                null, array(), (int)$this->context->cart->id_currency, false, $this->context->cart->secure_key,
+                $this->context->cart->id,
+                (int)Configuration::get('PAYU_PAYMENT_STATUS_PENDING'),
+                $orderTotal,
+                $this->payu->displayName,
+                null,
+                array(),
+                (int)$this->context->cart->id_currency, false, $this->context->cart->secure_key,
                 Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
             );
 
@@ -166,7 +234,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         try {
             $result = $this->payu->orderCreateRequestByOrder($orderTotal, $payMethod, $parameters);
-
             $this->payu->payu_order_id = $result['orderId'];
             $this->postOCR();
 
@@ -178,7 +245,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');
 
             if ($this->hasRetryPayment) {
-                return array('message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment') . ' ' . $result['error']);
+                return array('message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment'));
             }
 
             return array(
@@ -203,17 +270,10 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     {
         $id_order = (int)Tools::getValue('id_order');
         $order_reference = Tools::getValue('order_reference');
-
-        if (!$id_order || !Validate::isUnsignedId($id_order)) {
-            Tools::redirect('index.php?controller=history');
-        }
-
         $this->order = new Order($id_order);
-
         if (!Validate::isLoadedObject($this->order) || $this->order->reference !== $order_reference) {
             Tools::redirect('index.php?controller=history');
         }
-
         if (!$this->payu->hasRetryPayment($this->order->id, $this->order->current_state)) {
             Tools::redirect('index.php?controller=history');
         }
@@ -251,7 +311,11 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         if ($this->hasRetryPayment) {
             return $parameters + array(
                     'total' => Tools::displayPrice($this->order->total_paid, $currency),
-                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
+                    'payuPayAction' => $this->context->link->getModuleLink(
+                        'payu',
+                        'payment',
+                        array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)
+                    ),
                     'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference
                 );
         } else {
@@ -265,6 +329,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     private function postOCR()
     {
+
         if ($this->hasRetryPayment) {
             $history = new OrderHistory();
             $history->id_order = $this->order->id;
@@ -272,7 +337,52 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $history->addWithemail(true);
         }
 
-        $this->payu->addOrderSessionId(OpenPayuOrderStatus::STATUS_NEW, $this->order->id, 0, $this->payu->payu_order_id, $this->payu->getExtOrderId());
+        $orders = $this->module->getAllOrdersByCartId($this->order->id_cart);
 
+        if ($orders) {
+            $this->payu->addOrdersSessionId(
+                $orders,
+                OpenPayuOrderStatus::STATUS_NEW,
+                $this->payu->payu_order_id,
+                $this->payu->getExtOrderId()
+            );
+        }
+    }
+
+    public function redirectWithNotifications()
+    {
+        $notifications = json_encode([
+            'error' => $this->errors,
+            'warning' => $this->warning,
+            'success' => $this->success,
+            'info' => $this->info,
+        ]);
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            $_SESSION['notifications'] = $notifications;
+        } elseif (session_status() == PHP_SESSION_NONE) {
+            session_start();
+            $_SESSION['notifications'] = $notifications;
+        } else {
+            setcookie('notifications', $notifications);
+        }
+        return call_user_func_array(['Tools', 'redirect'], func_get_args());
+    }
+
+    public function payuRedirectWithNotifications()
+    {
+        $notifications = json_encode([
+            'payu_error' => $this->errors,
+        ]);
+
+        if (session_status() == PHP_SESSION_ACTIVE) {
+            $_SESSION['notifications'] = $notifications;
+        } elseif (session_status() == PHP_SESSION_NONE) {
+            session_start();
+            $_SESSION['notifications'] = $notifications;
+        } else {
+            setcookie('notifications', $notifications);
+        }
+
+        return call_user_func_array(['Tools', 'redirect'], func_get_args());
     }
 }

@@ -36,7 +36,7 @@
                     {if $payByLink->status == 'ENABLED'}
                         <input id="payMethod-{$payByLink->value}" type="radio" value="{$payByLink->value}" name="payMethod" {if $payMethod == $payByLink->value}checked="checked"{/if}>
                     {/if}
-                    <label for="payMethod-{$payByLink->value}" class="payMethodLabel" data-autosubmit="{$payByClick}">
+                    <label for="payMethod-{$payByLink->value}" class="payMethodLabel">
                         <div class="payMethodImage"><img src="{$payByLink->brandImageUrl}" alt="{$payByLink->name}"></div>
                         {$payByLink->name}
                     </label>
