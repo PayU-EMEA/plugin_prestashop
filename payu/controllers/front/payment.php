@@ -15,8 +15,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     /** @var PayU */
     private $payu;
 
-    public $display_column_left = false;
-
     private $hasRetryPayment;
 
     private $order = null;
@@ -298,12 +296,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function getShowPayMethodsParameters()
     {
         $currency = $this->hasRetryPayment ? (int)$this->order->id_currency : (int)$this->context->cart->id_currency;
+        $total = $this->hasRetryPayment ? $this->order->total_paid : $this->context->cart->getOrderTotal();
+
         $this->payu->initializeOpenPayU(Currency::getCurrency($currency)['iso_code']);
 
         $parameters = [
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
             'orderCurrency' => $currency,
-            'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($currency)),
+            'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($currency), $total),
             'retryPayment' => $this->hasRetryPayment,
             'lang' => Language::getIsoById($this->context->language->id)
         ];

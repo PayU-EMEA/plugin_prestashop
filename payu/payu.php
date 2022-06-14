@@ -670,7 +670,6 @@ class PayU extends PaymentModule
 
     public function hookHeader()
     {
-
         $controller = Context::getContext()->controller->php_self;
 
         if($controller === 'order-opc' ||
@@ -714,7 +713,7 @@ class PayU extends PaymentModule
 
     public function hookDisplayOrderDetail($params)
     {
-        $payMethods = $this->getPaymethods(Currency::getCurrency($params['order']->id_currency));
+        $payMethods = $this->getPaymethods(Currency::getCurrency($params['order']->id_currency), $params['order']->total_paid);
         if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
             $retry_params = [
                 'order_total' => $params['order']->total_paid,
@@ -760,7 +759,7 @@ class PayU extends PaymentModule
         if (!$this->active) {
             return;
         }
-        if (@$params['cart']) {
+        if (isset($params['cart'])) {
             if (!$this->checkCurrency($params['cart'])) {
                 return;
             }
@@ -776,7 +775,7 @@ class PayU extends PaymentModule
         if ($retry) {
             $paymentMethods = $params['paymentMethods'];
         } else {
-            $paymentMethods = $this->getPaymethods(Currency::getCurrency($this->context->cart->id_currency));
+            $paymentMethods = $this->getPaymethods(Currency::getCurrency($this->context->cart->id_currency), $totalPrice);
         }
 
         $this->smarty->assign([
@@ -1005,7 +1004,7 @@ class PayU extends PaymentModule
      */
     public function hookPayment($params)
     {
-        $paymentMethods = $this->getPaymethods(Currency::getCurrency($this->context->cart->id_currency));
+        $paymentMethods = $this->getPaymethods(Currency::getCurrency($this->context->cart->id_currency), $params['cart']->getOrderTotal());
 
         $this->context->smarty->assign([
                 'image' => $this->getPayuLogo(),
@@ -1510,10 +1509,11 @@ class PayU extends PaymentModule
 
     /**
      * @param array $currency
+     * @param float $totalPrice
      *
      * @return array
      */
-    public function getPaymethods($currency)
+    public function getPaymethods($currency, $totalPrice)
     {
         try {
             $this->initializeOpenPayU($currency['iso_code']);
@@ -1522,7 +1522,7 @@ class PayU extends PaymentModule
             if ($retreive->getStatus() == 'SUCCESS') {
                 $response = $retreive->getResponse();
                 return [
-                    'payByLinks' => $this->reorderPaymentMethods($response->payByLinks)
+                    'payByLinks' => $this->reorderPaymentMethods($response->payByLinks, $totalPrice)
                 ];
             } else {
                 return [
@@ -1750,10 +1750,14 @@ class PayU extends PaymentModule
         ];
     }
 
-    private function reorderPaymentMethods($payMethods)
+    private function reorderPaymentMethods($payMethods, $totalPrice)
     {
         $filteredPaymethods = [];
-        foreach ($payMethods as $id => $payMethod) {
+        foreach ($payMethods as $payMethod) {
+            if ($payMethod->status === 'ENABLED' && !$this->check_min_max($payMethod, $totalPrice * 100)) {
+                continue;
+            }
+
             if ($payMethod->value == 'c') {
                 array_unshift($filteredPaymethods, $payMethod);
             } else {
@@ -1789,6 +1793,22 @@ class PayU extends PaymentModule
         return $filteredPaymethods;
     }
 
+    /**
+     * @param object $payMethod
+     * @param int $total
+     * @return bool
+     */
+    protected function check_min_max($payMethod, $total)
+    {
+        if (isset($payMethod->minAmount) && $total < $payMethod->minAmount) {
+            return false;
+        }
+        if (isset($payMethod->maxAmount) && $total > $payMethod->maxAmount) {
+            return false;
+        }
+
+        return true;
+    }
     /**
      * @return string
      */
