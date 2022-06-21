@@ -1382,8 +1382,7 @@ class PayU extends PaymentModule
                 ]
             ],
             'customerIp' => $this->getIP(),
-//            'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
-            'notifyUrl' => 'http://presta.loca.lt/presta16/module/payu/notification',
+            'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
             'continueUrl' => $continueUrl,
             'currencyCode' => $currency['iso_code'],
             'totalAmount' => $this->toAmount($orderTotal),
