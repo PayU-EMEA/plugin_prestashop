@@ -1,3 +1,12 @@
+{*
+ * PayU
+ *
+ * @author    PayU
+ * @copyright Copyright (c) 2016 PayU
+ * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ *
+ * http://www.payu.com
+*}
 <div class="payu-marker-class payu-method-description payu-checkout-installment">
     <img style="width: 121px; margin-top:-20px;" src="{$payu_installment_img}" />
     <p>
@@ -17,6 +26,7 @@
     <p>
         {l s='Order will be done after positive decision' mod='payu'}
     </p>
+    <span class="payment-name" data-pm="card"></span>
 </div>
 <script type="text/javascript">
     (function () {

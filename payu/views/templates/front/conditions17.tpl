@@ -1,11 +1,36 @@
+{*
+ * PayU
+ *
+ * @author    PayU
+ * @copyright Copyright (c) 2016 PayU
+ * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ *
+ * http://www.payu.com
+*}
 <div class="payuConditions">
-    <div class="checkbox">
-        <input type="checkbox" value="1" {if $payuConditions}checked="checked"{/if} name="payuConditions" id="payuCondition">
-        <label for="payuCondition">
-            {l s='I accept' mod='payu'} <a target="_blank" href="{$conditionUrl}">{l s='Terms of single PayU payment transaction' mod='payu'}</a>
-        </label>
-    </div>
+    {if isset($conditionSimple) && $conditionSimple}
+        <div class="checkbox">
+            <input type="checkbox" value="1" checked="checked" name="payuConditions" id="payuCondition" style="display: none">
+        </div>
+        {else}
+        <div class="checkbox">
+            <input type="checkbox" value="1" {if $payuConditions}checked="checked"{/if} name="payuConditions" id="payuCondition">
+            <label for="payuCondition">
+                {l s='I accept' mod='payu'} <a target="_blank" href="{$conditionUrl}">{l s='Terms of single PayU payment transaction' mod='payu'}</a>
+            </label>
+        </div>
+    {/if}
+
     {l s="Payment is processed by PayU SA; The recipient's data, the payment title and the amount are provided to PayU SA by the recipient;" mod='payu'} <span class="payu-read-more" data-more="more1">{l s="read more" mod='payu'}</span><span class="payu-more-hidden" id="more1"> {l s="The order is sent for processing when PayU SA receives your payment. The payment is transferred to the recipient within 1 hour, not later than until the end of the next business day; PayU SA does not charge any service fees." mod='payu'}</span><br />
+
+    {if isset($conditionSimple) && $conditionSimple}
+        <span class="payu-terms-of-service">
+            {l s="By paying you accept" mod='payu'}
+            <a href="{l s='http://static.payu.com/sites/terms/files/payu_terms_of_service_single_transaction_pl_en.pdf' mod='payu'}"
+               target="_blank">{l s="PayU payment rules." mod='payu'}</a>
+        </span>
+    {/if}
+
     {l s='The controller of your personal data is PayU S.A. with its registered office in Poznan (60-166), at Grunwaldzka Street 182 ("PayU").' mod='payu'} <span class="payu-read-more" data-more="more2">{l s="read more" mod='payu'}</span>
     <span class="payu-more-hidden" id="more2"> {l s='Your personal data will be processed for purposes of processing  payment transaction, notifying You about the status of this payment, dealing with complaints and also in order to fulfill the legal obligations imposed on PayU.' mod='payu'}
     <br />

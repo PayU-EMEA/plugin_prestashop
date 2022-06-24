@@ -38,12 +38,13 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
 
         if (isset($response->order->orderId)) {
             $payu->payu_order_id = $response->order->orderId;
-
             $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
 
             if ($order_payment) {
-                $payu->id_order = (int)$order_payment['id_order'];
-                $payu->updateOrderData($response);
+                foreach($order_payment as $payment) {
+                    $payu->id_order = (int)$payment['id_order'];
+                    $payu->updateOrderData($response);
+                }
             }
 
             //the response should be status 200

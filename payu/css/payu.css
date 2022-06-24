@@ -28,6 +28,14 @@ p.payment_module a.payu_blik {
     padding: 33px 40px 34px 80px;
 }
 
+p.payment_module a.payu_main {
+    background: url('../img/logo-payu.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_main {
+    padding: 33px 40px 34px 80px;
+}
+
 p.payment_module a.payu:after, .payu-payment-credit-tile:after {
     display: block;
     content: "\f054";
@@ -78,7 +86,74 @@ p.payment_module a.payu:hover {
     margin-top: 20px;
 }
 
-.payMethod {
+
+
+
+.pay-methods {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.pay-methods__item {
+    padding: 6px 6px;
+    width: 112px;
+}
+
+.pay-methods__item-inner {
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    background-color: #ffffff;
+    transition: all 250ms;
+}
+
+.payMethodActive .pay-methods__item-inner {
+    border-color: #438F29;
+    transition: all 250ms;
+}
+
+.pay-methods__item:hover .pay-methods__item-inner {
+    background-color: #f9f9f9;
+    transition: all 250ms;
+}
+
+.pay-methods__img {
+    width: 100%;
+    height: 37px;
+    display: block;
+    object-fit: contain;
+    max-height: 1.618em;
+}
+
+.pay-methods__label {
+    font-size: inherit !important;
+    padding: 14px 5px !important;
+    display: flex !important;
+    justify-content: center  !important;
+    align-items: center !important;
+}
+
+.pay-methods__hide {
+    display: none;
+}
+
+.payuConditions {
+    font-size: 12px;
+    line-height: 120%;
+    margin-bottom: 24px;
+    color: #6d6d6d;
+}
+
+.payu-terms-of-service {
+    margin: 8px 0;
+    display: block;
+}
+
+
+#payMethods .payMethod {
     float: left;
     overflow: hidden;
     text-align: center;
@@ -90,25 +165,17 @@ p.payment_module a.payu:hover {
     background-color: #ffffff;
 }
 
-.payMethodEnable:hover {
+#payMethods .payMethodEnable:hover {
     background-color: #f9f9f9;
 }
 
-.payMethodActive {
+#payMethods .payMethodActive {
     border-color: #438F29;
     background-color: #eeeeee;
 }
 
 .payMethod input[type="radio"] {
     display: none;
-}
-
-.payMethodImage {
-    width: 120px;
-    height: 45px;
-    line-height: 45px;
-    text-align: center;
-    margin: 7px auto;
 }
 
 .payMethod label {
@@ -125,10 +192,21 @@ p.payment_module a.payu:hover {
     cursor: pointer;
 }
 
+.payMethodImage {
+    width: 120px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    margin: 7px auto;
+}
+
 .payMethodImage img {
     max-width: 100%;
     max-height: 100%;
 }
+
+
+
 
 .payuConditions {
     margin: 20px 0;
@@ -228,44 +306,14 @@ p.payment_module a.payu-widget-installments-mini {
     padding: 0px;
 }
 
-.payu-payment-fieldset-1-6 {
-    border: 1px solid #a6c307;
-    margin: 0 2px;
-    padding-left: 8px;
-    padding-right: 8px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-}
-.payu-payment-legend-1-6 {
-    width: 0;
+
+
+.payment_module_content--show {
+    display: block !important;
 }
 
-.payu-payment-legend-1-6 .logo {
-    display: inline-block;
-    height: 30px;
-    width: 70px;
-    background: #ffffff url('../img/logo-payu.svg') no-repeat center;
-}
-
-.payu-payment-fieldset-1-7 {
-    border: 1px solid #a6c307;
-    margin: 0 2px;
-    padding-left: 8px;
-    padding-right: 8px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-}
-.payu-payment-legend-1-7 {
-    width: 0;
-}
-
-.payu-payment-legend-1-7 .logo {
-    display: inline-block;
-    height: 30px;
-    width: 70px;
-    background: #ffffff url('../img/logo-payu.svg') no-repeat center;
+.payment_open {
+    cursor: pointer;
 }
 
 .payu-marker-class {
@@ -307,6 +355,17 @@ body#checkout #payu-methods-grouped .additional-information {
     margin-bottom: 6px;
 }
 
+.wb-16{
+    background-color: #d9edf7;
+    color: #31708f;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0;
+}
+.payuConditions .checkbox{
+    display: none;
+}
 .payu-card-form {
     margin: 0 auto 0 auto;
     background-color: #ffffff;
@@ -374,4 +433,63 @@ body#checkout #payu-methods-grouped .additional-information {
         width: 100%;
         margin: 5px auto 15px;
     }
+}
+
+#_form-payu{
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+#_form-payu legend{
+    margin-bottom: 20px;
+}
+#_form-payu .form-group{
+    display: none;
+}
+.repay-action{
+    border: 0;
+    border-radius: 5px;
+}
+.accept-payment{
+    background: #a6c307;
+    color: #fff;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+.discard-payment{
+    background: red;
+    color: #fff;
+    padding: 8px 15px;
+    cursor: pointer;
+}
+.repayment-options input[type="submit"]{
+    background: #a6c307;
+    color: #fff;
+    padding: 8px 15px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 5px;
+}
+#payuForm #payMethods > div{
+    position: relative;
+    overflow: hidden;
+}
+#payuForm #payMethods > div label{
+    position: relative;
+    z-index: 1;
+}
+
+#payuForm > div input:checked + label::before{
+    content: '';
+    width: 100vw;
+    height: 100vh;
+    background: #ddd;
+    position: absolute;
+    top: 0;
+    left: -10vw;
+    z-index: -1;
+}
+
+.repayment-options .additional-information{
+    display: none;
 }

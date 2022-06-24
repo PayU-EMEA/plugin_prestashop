@@ -20,7 +20,7 @@ Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x)
     * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
     * [Płatność kartą](#płatność-kartą)
     * [Płatność kartą - widżet](#widżet-do-płatności-kartą)
-    * [Ponowienie płatności](#ponowienie-płatności)
+    * [Ponawianie płatności](#ponawianie-płatności)
     * [Promowanie płatności ratalnych i odroczonych](#promowanie-płatności-ratalnych-i-odroczonych)
 
 ## Cechy i kompatybilność
@@ -28,22 +28,23 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 
 Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 
-| Cecha | PrestaShop 1.6 | PrestaShop 1.7 |
-|---------|:-----------:|:-----------:|
-| Utworzenie płatności (wraz z rabatami) | :white_check_mark: | :white_check_mark: |
-| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru) | :white_check_mark: | :white_check_mark: |
-| Utworzenie zwrotu (pełnego lub częściowego) | :white_check_mark: | :white_check_mark: |
-| Wyświetlenie metod płatności i wybranie metody na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
-| Płatność kartą jako osobna metoda płatności | :white_check_mark: | :white_check_mark: |
-| Płatność kartą jako widżet na stronie podsumowania zamówienia | :white_check_mark: | :white_check_mark: |
-| Ponowienie płatności przez klienta w przypadku anulowania | :white_check_mark: | :white_check_mark: |
-| Wielowalutowość | :white_check_mark: | :white_check_mark: |
-| Kolejność metod płatności | :white_check_mark: | :white_check_mark: |
-| Promowanie [PayU Raty][ext10] i [PayU Płacę Później][ext9] | :white_check_mark: | :white_check_mark: |
-| Płatność Twisto jako osobna metoda płatności | :white_check_mark: | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej przy produkcie i listingu | :white_check_mark: | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej na podsumowaniu | :white_check_mark: | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej w koszyku | :x: | :white_check_mark: |
+| Cecha                                                                          | PrestaShop 1.6 | PrestaShop 1.7 |
+|--------------------------------------------------------------------------------|:-----------:|:-----------:|
+| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark: | :white_check_mark: |
+| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark: | :white_check_mark: |
+| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: | :white_check_mark: |
+| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: | :white_check_mark: |
+| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: | :white_check_mark: |
+| Płatność kartą jako widżet                                                     | :white_check_mark: | :white_check_mark: |
+| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: | :white_check_mark: |
+| Ponowienie płatności                                                           | :white_check_mark: | :white_check_mark: |
+| Wielowalutowość                                                                | :white_check_mark: | :white_check_mark: |
+| Kolejność metod płatności                                                      | :white_check_mark: | :white_check_mark: |
+| Promowanie [PayU Raty][ext10] i [PayU Płacę Później][ext9]                     | :white_check_mark: | :white_check_mark: |
+| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej przy produkcie i listingu                      | :white_check_mark: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej na podsumowaniu                                | :white_check_mark: | :white_check_mark: |
+| Prezentacja kalkulacji ratalnej w koszyku                                      | :x: | :white_check_mark: |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach)
 
@@ -62,25 +63,26 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 **przeznaczona dla użytkowników bez dostępu poprzez FTP do instalacji PrestaShop**
 
 1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
-1. Rozpakuj pobrany plik
-1. **Utwórz archiwum zip z katalogu `payu`**
-1. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
-1. Przejdź do `Moduły` » `Moduły i usługi`
-1. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (utworzonej w punkcie 3)
-1. Naciśnij przycisk `Prześlij moduł`
+2. Rozpakuj pobrany plik
+3. **Utwórz archiwum zip z katalogu `payu`**
+4. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
+5. Przejdź do `Moduły` » `Moduły i usługi`
+6. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (utworzonej w punkcie 3)
+7. Naciśnij przycisk `Prześlij moduł`
 
 ### Opcja 2
 **przeznaczona dla użytkowników z dostępem poprzez FTP do instalacji PrestaShop**
 
 1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
-1. Rozpakuj pobrany plik
-1. Połącz się z serwerem ftp i skopiuj katalog `payu` z rozpakowanego pliku do katalogu `modules` swojego sklepu PrestaShop  
+2. Rozpakuj pobrany plik
+3. Połącz się z serwerem ftp i skopiuj katalog `payu` z rozpakowanego pliku do katalogu `modules` swojego sklepu PrestaShop
 
 ## Aktualizacja
 
 1. Zaktualizuj plik modułu zgodnie z punktem [Instalacja](#instalacja)
-1. Przejdź do `Moduły` » `Moduły i usługi` - zostanie przeprowadzona automatyczna aktualizacja modułu jeżeli jest wymagana
-1. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`  
+2. Przejdź do `Moduły` » `Menedżer modułów `
+3. W zakładce `Aktualizacje` wykonaj aktualizację modułu jeżeli będzie dostępna
+4. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`
 
 ## Konfiguracja
 
@@ -96,13 +98,15 @@ Gdy sklep Prestashop przełączymy w tryb debugowania plugin zapisuje informacje
 
 ### Sposób integracji
 
-| Parameter | Opis |
-|---------|-----------|
-| Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop | **Tak** - metody płatności zostaną wyświetlone na stronie podsumowania zamówienia w PrestaShop<br>**Nie** - po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU |
-| Płatność kartą jako osobna metoda płatności | Określa czy płatność kartą będzie dostępna jako osobna metoda [więcej informacji](#płatność-kartą) |
-| Płatność kartą w widżecie | Określa czy płatność kartą będzie dostępna jako widżet [więcej informacji](#widżet-do-płatności-kartą) |
-| Kolejność metod płatności | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności) |
-| Tryb testowy (Sandbox) | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU |
+| Parameter                                              | Opis                                                                                                                                                                                                                              |
+|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lista banków                                           | `Tak` wybór metody płatności PayU będzie możliwy na stronie skłądania zamówienia gdy wybrana zostanie płatność *Zapłać przelewem online*<br>`Nie` po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU |
+| Kolejność metod płatności (dotyczy tylko listy banków) | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności) |                                                                                                             
+| Płatność kartą jako osobna metoda płatności | Określa czy płatność kartą będzie dostępna jako osobna metoda [więcej informacji](#płatność-kartą)                                                                                                                                |
+| Płatność kartą w widżecie                              | Określa czy płatność kartą będzie dostępna jako widżet [więcej informacji](#widżet-do-płatności-kartą)                                                                                                                            |
+| Płatność BLIK jako osobna metoda płatności             | Określa czy BLIK będzie dostępna jako osobna metoda płatności                                                                                                                                                                     |
+         |
+| Tryb testowy (Sandbox)                                 | **Tak** - transakcje będą procesowane przez system Sandbox PayU<br>**Nie** - transakcje będą procesowane przez system produkcyjny PayU                                                                                            |
 
 ### Parametry POS-ów
 
@@ -118,14 +122,11 @@ Dla każdej waluty dodanej w PrestaShop należy dodać parametry (osobno dla śr
 ### Statusy płatności
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
-| Nazwa | Status w PayU | Domyślny status w Presta |
-|---------|-----------|-----------|
-| Rozpoczęta | `NEW` i `PENDING` | Płatność PayU rozpoczęta |
-| Oczekuje na odbiór | `WAITING_FOR_CONFIRMATION` i `REJECTED` | Płatność PayU oczekuje na odbiór |
-| Zakończona | `COMPLETED` | Płatność zaakceptowana |
-| Anulowana | `CANCELED` | Płatność PayU anulowana |
-
-W przypadku włączenia opcji `Kontrola zmiany statusów` dla statusów "Zakończona" i "Anulowana" możliwe jest przejście tylko ze statusów "Rozpoczęta" i "Oczekuje na odbiór"
+| Nazwa                                       | Status w PayU | Domyślny status w Presta |
+|---------------------------------------------|----------|-----------|
+| Rozpoczęta - status po złożeniu zamówienia |  | Płatność PayU rozpoczęta |
+| Zakończona                                  | `COMPLETED` | Płatność zaakceptowana |
+| Anulowana                                   | `CANCELED` | Płatność PayU anulowana |
 
 ## Więcej o cechach
 
@@ -158,18 +159,18 @@ Przy ustawionej opcji **Płatność kartą jako osobna metoda płatności** oraz
 
 ![widget][img5]
 
-### Ponowienie płatności
-W przypadku nieudanej płatności w PayU możliwe jest ponowienie takiej płatności samodzielnie przez kupującego.
+### Ponawianie płatności
+Dzięki tej opcji kupujący otrzymuje możliwość skutecznego opłacenia zamówienia, nawet jeśli pierwsza płatność była nieudana (np. brak środków na karcie, problemy z logowaniem do banku itp.).
 
-Żeby kupujący mógł ponowić płatność muszą być spełnione następujące warunki:
-* status ostatniej płatności z PayU musi mieć status CANCELED
-* status zamówienia w PrestaShop musi być zgodny ze statusem wybranym w konfiguracji wtyczki `Statusy płatności` » `Anulowana`    
+Aby użyć tej opcji, należy również odpowiednio skonfigurować punkt płatności w PayU i wyłączyć automatycznie odbieranie płatności (domyślnie auto-odbiór jest włączony). W tym celu należy zalogować się do panelu PayU, wejść do zakładki "Płatności elektroniczne", następnie wybrać "Moje sklepy" i punkt płatności na danym sklepie. Opcja "Automatyczny odbiór płatności" znajduje się na samym dole, pod listą typów płatności. 
 
-Kupującemu w `Szczegółach zamówienia` wyświetlany jest przycisk `Ponów płatność z PayU`.
+Ponowienie płatności umożliwia zakładanie wielu płatności w PayU do jednego zamówienia w PrestaShop. Wtyczka automatycznie odbierze pierwszą udaną płatność, a pozostałe zostaną anulowane. Ponowienie płatności przez kupującego jest możliwe:
+* poprzez kliknięcie w link znajdujący się w mailu potwierdzającym zamówienie
+* w szczegółach zamówienia
+
 
 ![retry_payment][img4]
 
-W panelu administracyjnym w szczegółach zamówienia wyświetlane są wszystkie utworzone płatności w PayU wraz ze statusami.
 
 ### Promowanie płatności ratalnych i odroczonych
 Od wersji 3.0.10 plugin udostępnia opcję promowania [płatności ratalnych i odroczonych][ext7].
