@@ -681,9 +681,17 @@ class PayU extends PaymentModule
         ) {
 
             if ($this->is17()) {
-                $this->context->controller->addJS(($this->_path) . 'js/payu17.js', 'all');
+                $this->context->controller->registerStylesheet(
+                    'payu-css',
+                    'modules/' . $this->name . '/css/payu.css'
+                );
+                $this->context->controller->registerJavascript(
+                    'payu-js',
+                    'modules/' . $this->name . '/js/payu17.js'
+                );
             } else {
-                $this->context->controller->addJS(($this->_path) . 'js/payu.js', 'all');
+                $this->context->controller->addJS(($this->_path) . 'js/payu.js');
+                $this->context->controller->addCSS(($this->_path) . 'css/payu.css');
             }
 
             Media::addJsDef([
@@ -691,13 +699,8 @@ class PayU extends PaymentModule
                 'payuSFEnabled' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' ? true : false,
             ]);
 
-            $this->context->controller->addCSS(($this->_path) . 'css/payu.css', 'all');
-
             if (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
-                if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
-                    $this->context->controller->addCSS('https://static.payu.com/res/v2/layout/style.css', 'all');
-                    $this->context->controller->addJS('https://static.payu.com/res/v2/widget-mini-installments.js', 'all');
-                } else {
+                if ($this->is17()) {
                     $this->context->controller->registerJavascript(
                         'remote-widget-products-installments',
                         'https://static.payu.com/res/v2/widget-mini-installments.js',
@@ -706,6 +709,9 @@ class PayU extends PaymentModule
                         'remote-installments-css-payu',
                         'https://static.payu.com/res/v2/layout/style.css',
                         ['server' => 'remote', 'media' => 'all', 'priority' => 20]);
+                } else {
+                    $this->context->controller->addCSS('https://static.payu.com/res/v2/layout/style.css');
+                    $this->context->controller->addJS('https://static.payu.com/res/v2/widget-mini-installments.js');
                 }
             }
         }
@@ -1753,17 +1759,14 @@ class PayU extends PaymentModule
     {
         $filteredPaymethods = [];
         foreach ($payMethods as $payMethod) {
-            if ($payMethod->status === 'ENABLED' && !$this->check_min_max($payMethod, $totalPrice * 100)) {
+            if ($payMethod->status !== 'ENABLED' || !$this->check_min_max($payMethod, $totalPrice * 100)) {
                 continue;
             }
 
-            if ($payMethod->value == 'c') {
+            if ($payMethod->value === 'c') {
                 array_unshift($filteredPaymethods, $payMethod);
             } else {
-                if ($payMethod->value !== 't' || ($payMethod->value === 't' && $payMethod->status === 'ENABLED')
-                ) {
-                    $filteredPaymethods[] = $payMethod;
-                }
+                $filteredPaymethods[] = $payMethod;
             }
         }
 
