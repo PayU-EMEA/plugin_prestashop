@@ -1,3 +1,7 @@
+## 3.2.1
+* Better load js/css for PrestaShop 1.7
+* Not show DISABLED paymethods
+
 ## 3.2.0
 * New payment retry system
 * Move select bank and card form from separate page to checkout
