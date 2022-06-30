@@ -21,28 +21,30 @@ Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) s
     * [Card payment - widget](#card-payment-widget)
     * [Payment retry](#payment-retry)
     * [Promote credit payment methods](#promote-credit-payment-methods)
+* [Known issues](#known-issues)
 
 ## Features
 The PayU payments Prestashop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
 
 Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 
-| Feature | PrestaShop 1.6 | PrestaShop 1.7 |
-|---------|:-----------:|:-----------:|
-| Creating a payment order (with discounts included) | :white_check_mark: | :white_check_mark: |
-| Capturing a payment order (when auto-capture is disabled) | :white_check_mark: | :white_check_mark: |
-| Conducting a refund operation (whole or partial) | :white_check_mark: | :white_check_mark: |
-| Displaying payment methods on Presta checkout summary page | :white_check_mark: | :white_check_mark: |
-| Card payment as separate method | :white_check_mark: | :white_check_mark: |
-| Card payment via widget on summary page | :white_check_mark: | :white_check_mark: |
-| Payment retry for cancelled payments | :white_check_mark: | :white_check_mark: |
-| Multi-currency support | :white_check_mark: | :white_check_mark: |
-| Payment method order | :white_check_mark: | :white_check_mark: |
-| Promoting [PayU Installments][ext10] and [PayU Later][ext9] | :white_check_mark: | :white_check_mark: |
-| Twisto payment as separate method | :white_check_mark: | :white_check_mark: |
-| Present installment estimated value on product and listing page | :white_check_mark: |:white_check_mark: |
-| Present installment estimated value in checkout view | :white_check_mark: | :white_check_mark: |
-| Present installment estimated value in cart view| :x: | :white_check_mark: |
+| Feature                                                         |   PrestaShop 1.6    |    PrestaShop 1.7    |
+|-----------------------------------------------------------------|:-------------------:|:--------------------:|
+| Creating a payment order (with discounts included)              | :white_check_mark:  | :white_check_mark:   |
+| Capturing a payment order (when auto-capture is disabled)       | :white_check_mark:  |  :white_check_mark:  |
+| Conducting a refund operation (whole or partial)                | :white_check_mark:  |  :white_check_mark:  |
+| Displaying payment methods on Presta checkout summary page      | :white_check_mark:  |  :white_check_mark:  |
+| Card payment as separate method                                 | :white_check_mark:  |  :white_check_mark:  |
+| Card payment via widget on summary page                         | :white_check_mark:  |  :white_check_mark:  |
+| Payment retry for cancelled payments                            | :white_check_mark:  |  :white_check_mark:  |
+| Repayment                                                       | :white_check_mark:  |  :white_check_mark:  |
+| Multi-currency support                                          | :white_check_mark:  |  :white_check_mark:  |
+| Payment method order                                            | :white_check_mark:  |  :white_check_mark:  |
+| Promoting [PayU Installments][ext10] and [PayU Later][ext9]     | :white_check_mark:  |  :white_check_mark:  |
+| Twisto payment as separate method                               | :white_check_mark:  |  :white_check_mark:  |
+| Present installment estimated value on product and listing page | :white_check_mark:  |  :white_check_mark:  |
+| Present installment estimated value in checkout view            | :white_check_mark:  |  :white_check_mark:  |
+| Present installment estimated value in cart view                |         :x:         |  :white_check_mark:  |
 
 More information on the features can be found in the [More on features](#more-on-features) section
 
@@ -61,62 +63,62 @@ The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 **recommended for users without FTP access to their PrestShop installation**
 
 1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-1. Unzip locally downloaded file
-1. **Create zip archive of payu directory**
-1. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
-1. Go to 'Modules and Services' > 'Modules and Services'.
-1. Use 'Add a new module' option and point the archive containing the plugin (created in step 3)
-1. Load the plugin
+2. Unzip locally downloaded file
+3. **Create zip archive of payu directory**
+4. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
+5. Go to 'Modules and Services' > 'Modules and Services'.
+6. Use 'Add a new module' option and point the archive containing the plugin (created in step 3)
+7. Load the plugin
 
 ### Option 2
 **recommended for users with FTP access to their PrestaShop installation**
 
 1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-1. Unzip locally downloaded file
-1. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
+2. Unzip locally downloaded file
+3. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
 
 ## Upgrade
 
 1. Update plugin files according to [Installing](#installation)
-1. Go to do 'Modules and Services' > 'Modules and Services' - automated upgrade will be performed if required  
-1. Go to **Advanced Parameters** > 'Performance' and click 'Clear cache'
+2. Go to do 'Modules and Services' > 'Modules and Services' - automated upgrade will be performed if required
+3. Go to **Advanced Parameters** > 'Performance' and click 'Clear cache'
 
 ## Configuration
 
 1. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
-1. Go to 'Modules and Services' > 'Modules and Services'.
-1. Search and select 'PayU' and click 'Configure'.
+2. Go to 'Modules and Services' > 'Modules and Services'.
+3. Search and select 'PayU' and click 'Configure'.
 
 ### Integration method
 
-| Parameter | Description |
-|:---------:|:-----------:|
-| Payment methods displayed on PrestaShop checkout summary page | **Yes** - payment methods displayed on PrestaShop checkout page <br>**No** - redirection to PayU after order is placed|
-| Card payment as separate method | sets card payment as separate method [more info](#card-payment) |
-| Card payment widget | renders a widget on Presta summary instead of redirecting to PayU [more info](#card-payment-widget) |
-| Payment method order | enables custom payment method ordering [more info](#payment-method-order) |
-| Sandbox mode | **Yes** - transactions will be processed on PayU Sandbox environment<br>**No** - transactions will be processed on PayU production environment|
+| Parameter                       | Description                                                                                                                                                                                                                                                                                                                       |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Bank List                       | `Yes` choosing the PayU payment method will be possible on checkout page when selected *Pay by online transfer*<br>`No` after placing an order on PrestaShop, you will be automatically redirected to PayU.<br>Do not enable these options if you are using PrestaShop and OPC module [more info](#prestashop-16-and-opc-module). |
+| Payment method order            | enables custom payment method ordering [more info](#payment-method-order)                                                                                                                                                                                                                                                         |
+| Card payment as separate method | sets card payment as separate method [more info](#card-payment)                                                                                                                                                                                                                                                                   |
+| Card payment widget             | renders a widget on Presta summary instead of redirecting to PayU [more info](#card-payment-widget)                                                                                                                                                                                                                               |
+| BLIK payment as separate method | sets BLIK payment as separate method                                                                                                                                                                                                                                                                                              |
+| Sandbox mode                    | **Yes** - transactions will be processed on PayU Sandbox environment<br>**No** - transactions will be processed on PayU production environment                                                                                                                                                                                    |
 
 #### POS Parameters
 
 For each currency defined in Presta please configure the below parameters (separately for sandbox and production environment).
 
-| Parameter | Description |
-|:---------:|:-----------:|
-|POS ID|Unique ID of the POS|
-|Second Key|MD5 key for securing communication|
-|OAuth - client_id|client_id for OAuth|
-|OAuth - client_secret|client_secret for OAuth|
+|       Parameter       |            Description             |
+|:---------------------:|:----------------------------------:|
+|        POS ID         |       Unique ID of the POS         |
+|      Second Key       | MD5 key for securing communication |
+|   OAuth - client_id   |        client_id for OAuth         |
+| OAuth - client_secret |      client_secret for OAuth       |
 
 ### Payment status mapping
 Mapowanie statusów płatności w PayU na statusy w skepie PrestaShop
 
-| Name | PayU payment status | Default value in Presta |
-|---------|-----------|-----------|
-| Pending status | `NEW` and `PENDING` | PayU payment started |
-| Waiting for confirmation | `WAITING_FOR_CONFIRMATION` and `REJECTED` | PayU payment awaits for reception |
-| Complete status | `COMPLETED` | Payment accepted |
-| Canceled status | `CANCELED` | Canceled |
+| Name                                  | PayU payment status | Default value in Presta |
+|---------------------------------------|---------------------|-------------------------|
+| Started - status after placing order  |                     | PayU payment started    |
+| Complete status                       | `COMPLETED`         | Payment accepted        |
+| Canceled status                       | `CANCELED`          | PayU payment canceled   |
 
 If the option `Control of status changes` is enabled for status "Complete" and "Canceled" it is possible to switch only from the status "Pending" and "Waiting For Confirmation"
 
@@ -154,12 +156,14 @@ If **Card payment as separate method** and **Payment methods displayed on Presta
 ![widget][img5]
 
 ### Payment retry
-When payment fails (i.e. is canceled), the buyer can pay again.
-Following criteria should be met to enable payment retry:
-* payment has to have CANCELED status in PayU
-* order status in PrestaShop has to be in line with status configured for 'Canceled status'
 
-If the criteria are met, the buyer will see a retry option on Order details screen.  
+This feature enables the payer to create a new payment for the same order if the previous payment was not successful.
+
+To use the feature it is necessary to properly configure your POS in PayU, by disabling "Automatic collection" (it is enabled by default). This option is available in PayU panel. You need to go to Online payments then My shops and then POS. "Automatic collection is configured for every payment type, but to disable all at once you can use button at the very bottom, under the payment type list.
+
+Repayment allows to create many payments in PayU for a single PestaShop order. The plugin will automatically collect the first successful payment, all other will be canceled. From user point of view, repayment is possible:
+* by clicking a link in the order confirmation email
+* in order details
 
 ![retry_payment][img4]
 
@@ -195,6 +199,10 @@ Popup with estimated installment plan looks as below:
 
 <img src="readme_images/credit-installment-widget.png" width="300">
 
+## Known issues
+### PrestaShop 1.6 and OPC module
+In case of using OPC module (by X13), you have to disable `Bank List` option.
+Due to fact that OPC module builds its own checkout page, options `Card payment as separate method`, `BLIK payment as separate method` do not work and separation of installment methods.
 <!--LINKS-->
 
 <!--external links:-->

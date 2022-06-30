@@ -230,7 +230,7 @@ class PayU extends PaymentModule
                 'input' => [
                     [
                         'type' => 'switch',
-                        'label' => $this->l('Payments Grid'),
+                        'label' => $this->l('Bank list'),
                         'desc' => $this->l('Show payment methods in grid'),
                         'name' => 'PAYU_PAYMENT_METHODS_GRID',
                         'values' => [
