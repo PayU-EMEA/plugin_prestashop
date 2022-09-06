@@ -1770,7 +1770,7 @@ class PayU extends PaymentModule
             }
         }
 
-        $paymentMethodsOrder = explode(',', str_replace(' ', '', Configuration::get('PAYU_PAYMENT_METHODS_ORDER')));
+        $paymentMethodsOrder = explode(',', str_replace(' ', '', Configuration::get('PAYU_PAYMENT_METHODS_ORDER', null, null, null, '')));
 
         if (count($paymentMethodsOrder) > 0) {
             array_walk(

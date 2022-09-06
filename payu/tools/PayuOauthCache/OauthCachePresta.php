@@ -7,7 +7,10 @@ class OauthCachePresta implements OauthCacheInterface
     public function get($key)
     {
         $cache = Configuration::get(self::PAYU_CACHE_CONFIG_PREFIX . $key);
-        return $cache === false ? null : unserialize($cache);
+        if ($cache !== false) {
+            $cache = @unserialize($cache);
+        }
+        return $cache === false ? null : $cache;
     }
 
     public function set($key, $value)
