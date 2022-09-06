@@ -654,8 +654,11 @@ class PayU extends PaymentModule
 
     public function hookActionGetExtraMailTemplateVars(array &$params)
     {
-        if($this->repaymentEnabled() && $params['template'] == 'order_conf') {
-            $id_order = false;
+        if (isset($params['template_vars']['{payment}'])
+            && $this->displayName === substr($params['template_vars']['{payment}'],0, strlen($this->displayName))
+            && $this->repaymentEnabled()
+            && $params['template'] == 'order_conf'
+        ) {
             if($this->is17()){
                 $id_order = $params['template_vars']['{id_order}'];
             }
