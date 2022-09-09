@@ -1,3 +1,7 @@
+## 3.2.2
+* Fix #303 (PHP Deprecated: str_replace())
+* Fixed display PayU as payment method for non PayU orders
+
 ## 3.2.1
 * Better load js/css for PrestaShop 1.7
 * Not show DISABLED paymethods
