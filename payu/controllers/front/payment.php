@@ -43,16 +43,11 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $errors = [];
 
             if (Tools::getValue('payuPay')) {
-                $payuConditions = Tools::getValue('payuConditions');
                 $cardToken = Tools::getValue('cardToken');
                 $payError = [];
 
                 if (!$payMethod) {
                     $errors[] = $this->module->l('Please select a method of payment', 'payment');
-                }
-
-                if (!$payuConditions) {
-                    $errors[] = $this->module->l('Please accept "Terms of single PayU payment transaction"', 'payment');
                 }
 
                 if ($payMethod === 'card' && !$cardToken) {
@@ -71,7 +66,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     if ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') == 1) {
                         $cardToken = Tools::getValue('cardToken');
                         if ($cardToken) {
-                            $this->showSecureForm($payuConditions, $errors);
+                            $this->showSecureForm($errors);
                         } else {
                             $this->errors[] = $this->module->l('Card token is empty', 'payment');
 
@@ -86,7 +81,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     } elseif ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') !== 1) {
                         $this->pay('c');
                     } else {
-                        $this->showPayMethod($payMethod, $payuConditions, $errors);
+                        $this->showPayMethod($payMethod, $errors);
                     }
                 }
             } else {
@@ -141,16 +136,15 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
     }
 
-    private function showPayMethod($payMethod = '', $payuConditions = 1, $errors = array())
+    private function showPayMethod($payMethod = '', $errors = [])
     {
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign([
             'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'payMethod' => $payMethod,
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
-            'payuConditions' => $payuConditions,
             'payuErrors' => $errors
-        ));
+        ]);
 
         $this->context->smarty->assign($this->getShowPayMethodsParameters());
         if(!$errors) {
@@ -168,18 +162,17 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
     }
 
-    private function showSecureForm($payuConditions = 1, $errors = array())
+    private function showSecureForm($errors = [])
     {
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign([
             'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'secureFormJsTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/secureFormJs.tpl',
             'payCardTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/payuCardForm.tpl',
             'image' => $this->payu->getPayuLogo(),
             'conditionUrl' => $this->payu->getPayConditionUrl(),
-            'payuConditions' => $payuConditions,
             'payuErrors' => $errors,
             'jsSdk' => $this->payu->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk'
-        ));
+        ]);
 
         $this->context->smarty->assign($this->getShowPayMethodsParameters());
 
@@ -189,14 +182,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function showPaymentError()
     {
         $this->context->smarty->assign(
-            array(
+            [
                 'image' => $this->payu->getPayuLogo(),
                 'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
                 'orderCurrency' => (int)$this->order->id_currency,
-                'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)),
+                'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', ['id_order' => $this->order->id, 'order_reference' => $this->order->reference]),
                 'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') . ' ' . $this->order->reference,
                 'payuError' => $this->module->l('An error occurred while processing your payment.', 'payment')
-            )
+            ]
         );
 
         $this->setTemplate($this->payu->buildTemplatePath('error'));
@@ -219,7 +212,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 $orderTotal,
                 $this->payu->displayName,
                 null,
-                array(),
+                [],
                 (int)$this->context->cart->id_currency, false, $this->context->cart->secure_key,
                 Context::getContext()->shop->id ? new Shop((int)Context::getContext()->shop->id) : null
             );
@@ -243,12 +236,12 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             SimplePayuLogger::addLog('order', __FUNCTION__, 'An error occurred while processing  OCR - ' . $e->getMessage(), '');
 
             if ($this->hasRetryPayment) {
-                return array('message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment'));
+                return ['message' => $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment')];
             }
 
-            return array(
+            return [
                 'firstPayment' => true
-            );
+            ];
         }
     }
 
@@ -309,21 +302,21 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         ];
 
         if ($this->hasRetryPayment) {
-            return $parameters + array(
+            return $parameters + [
                     'total' => Tools::displayPrice($this->order->total_paid, $currency),
                     'payuPayAction' => $this->context->link->getModuleLink(
                         'payu',
                         'payment',
-                        array('id_order' => $this->order->id, 'order_reference' => $this->order->reference)
+                        ['id_order' => $this->order->id, 'order_reference' => $this->order->reference]
                     ),
                     'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference
-                );
+                ];
         } else {
-            return $parameters + array(
+            return $parameters + [
                     'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
                     'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
                     'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
-                );
+                ];
         }
     }
 

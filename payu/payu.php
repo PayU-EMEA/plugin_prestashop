@@ -82,7 +82,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', $this->addNewOrderState('PAYU_PAYMENT_STATUS_PENDING',
                 ['en' => 'PayU payment pending', 'pl' => 'Płatność PayU rozpoczęta', 'cs' => 'Transakce PayU je zahájena'])) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_SENT', $this->addNewOrderState('PAYU_PAYMENT_STATUS_SENT',
-                array('en' => 'PayU payment waiting for confirmation', 'pl' => 'Płatność PayU oczekuje na odbiór', 'cs' => 'Transakce  čeká na přijetí'))) &&
+                ['en' => 'PayU payment waiting for confirmation', 'pl' => 'Płatność PayU oczekuje na odbiór', 'cs' => 'Transakce  čeká na přijetí'])) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
                 ['en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana', 'cs' => 'Transakce PayU zrušena'])) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
@@ -722,8 +722,8 @@ class PayU extends PaymentModule
 
     public function hookDisplayOrderDetail($params)
     {
-        $payMethods = $this->getPaymethods(Currency::getCurrency($params['order']->id_currency), $params['order']->total_paid);
         if ($this->hasRetryPayment($params['order']->id, $params['order']->current_state)) {
+            $payMethods = $this->getPaymethods(Currency::getCurrency($params['order']->id_currency), $params['order']->total_paid);
             $retry_params = [
                 'order_total' => $params['order']->total_paid,
                 'id_order' => $params['order']->id,
@@ -735,10 +735,8 @@ class PayU extends PaymentModule
                 [
                     'payuImage' => $this->getPayuLogo(),
                     'payMethods' => $payMethods,
-                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', array('id_order' => $params['order']->id, 'order_reference' => $params['order']->reference)),
+                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', ['id_order' => $params['order']->id, 'order_reference' => $params['order']->reference]),
                     'conditionUrl' => $this->getPayConditionUrl(),
-                    'conditionSimple' => true,
-                    'payuConditions' => true,
                     'gateways' => $this->hookPaymentOptions($retry_params, true),
                     'payuActionUrl' => $this->context->link->getModuleLink(
                         'payu', 'payment', ['id_order' => $params['order']->id, 'order_reference' => $params['order']->reference]
@@ -790,7 +788,6 @@ class PayU extends PaymentModule
         $this->smarty->assign([
             'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'conditionUrl' => $this->getPayConditionUrl(),
-            'conditionSimple' => true,
             'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
             'paymentMethods' => $paymentMethods['payByLinks'],
             'separateBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
@@ -871,8 +868,7 @@ class PayU extends PaymentModule
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         [
                             'payuPay' => 1,
-                            'payMethod' => 'blik',
-                            'payuConditions' => true
+                            'payMethod' => 'blik'
                         ]
                     ));
             }
@@ -961,8 +957,7 @@ class PayU extends PaymentModule
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         [
                             'payuPay' => 1,
-                            'payMethod' => 'dpt',
-                            'payuConditions' => true
+                            'payMethod' => 'dpt'
                         ]
                     ));
             }
@@ -995,8 +990,7 @@ class PayU extends PaymentModule
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         [
                             'payuPay' => 1,
-                            'payMethod' => 'ai',
-                            'payuConditions' => true
+                            'payMethod' => 'ai'
                         ]
                     ));
             }
@@ -1025,15 +1019,15 @@ class PayU extends PaymentModule
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment'),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
-                    : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c', 'payuConditions' => true])),
+                    : $this->context->link->getModuleLink($this->name, 'payment', ['payuPay' => 1, 'payMethod' => 'c'])),
                 'blikActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
-                    'payuPay' => 1, 'payMethod' => 'blik', 'payuConditions' => true
+                    'payuPay' => 1, 'payMethod' => 'blik'
                 ]),
                 'creditActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
-                    'payuPay' => 1, 'payMethod' => 'ai', 'payuConditions' => true
+                    'payuPay' => 1, 'payMethod' => 'ai'
                 ]),
                 'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
-                    'payuPay' => 1, 'payMethod' => 'dpt', 'payuConditions' => true
+                    'payuPay' => 1, 'payMethod' => 'dpt'
                 ]),
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
                 'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable(),
@@ -1045,7 +1039,6 @@ class PayU extends PaymentModule
                 'paymentGrid' => Configuration::get('PAYU_PAYMENT_METHODS_GRID'),
                 'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
                 'conditionUrl' => $this->getPayConditionUrl(),
-                'conditionSimple' => true,
                 'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
                 'paymentMethods' => $paymentMethods['payByLinks'],
                 'modulePath' => _PS_MODULE_DIR_ . 'payu',
@@ -1157,11 +1150,11 @@ class PayU extends PaymentModule
                     }
                 }
 
-                $this->context->smarty->assign(array(
+                $this->context->smarty->assign([
                     'PAYU_PAYMENT_STATUS_OPTIONS' => $this->getPaymentAcceptanceStatusesList(),
                     'PAYU_PAYMENT_STATUS' => $order_payment['status'],
                     'PAYU_PAYMENT_ACCEPT' => $show_confirm_payment_form,
-                ));
+                ]);
             }
         }
 
