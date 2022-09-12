@@ -17,7 +17,7 @@ p.payment_module a.payu_card {
 }
 
 p.payment_module a.payu_card {
-    padding: 33px 40px 34px 110px;
+    padding: 33px 40px 34px 120px;
 }
 
 p.payment_module a.payu_blik {
@@ -41,20 +41,6 @@ p.payment_module a.payu:after, .payu-payment-credit-tile:after {
     content: "\f054";
     position: absolute;
     right: 15px;
-    margin-top: -11px;
-    top: 50%;
-    font-family: "FontAwesome";
-    font-size: 25px;
-    height: 22px;
-    width: 14px;
-    color: #777777;
-}
-
-.payu-payment-credit-installment-tile:after, .payu-payment-credit-later-tile:after, .payu-payment-credit-later-twisto-tile:after {
-    display: block;
-    content: "\f054";
-    position: absolute;
-    right: 31px;
     margin-top: -11px;
     top: 50%;
     font-family: "FontAwesome";
@@ -267,23 +253,6 @@ p.payment_module a.payu-payment-credit-tile {
 
 .payu-installment-cart-summary {
     margin-left: 20px;
-}
-
-.payu-payment-credit-installment-tile, .payu-payment-credit-later-tile, .payu-payment-credit-later-twisto-tile {
-    border: 1px solid #d6d4d4;
-    background: #fbfbfb none;
-    padding: 36px 40px 36px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    font-size: 17px;
-    color: #333;
-    cursor: pointer;
-    letter-spacing: -1px;
-    margin-bottom: 10px;
-}
-
-.payu-payment-credit-installment-tile:hover, .payu-payment-credit-later-tile:hover, .payu-payment-credit-later-twisto-tile:hover, p.payment_module a.payu-payment-credit-tile:hover {
-    background: #f6f6f6 none;
 }
 
 .payu-separator-reset {

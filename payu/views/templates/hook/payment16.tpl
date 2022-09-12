@@ -2,7 +2,7 @@
  * PayU
  *
  * @author    PayU
- * @copyright Copyright (c) 2016 PayU
+ * @copyright Copyright (c) PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
@@ -54,7 +54,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module payment_payu">
-					<a class="payu payment_open payu_main" data-payment="transfer"
+					<a class="payu payment_open payu_main" href="" data-payment="transfer"
 					   title="{l s='Pay by online transfer' mod='payu'}">
                         {l s='Pay by online transfer' mod='payu'}
 					</a>
@@ -88,11 +88,12 @@
     {if $payu_later_twisto_available == true}
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="payu-payment-credit-later-twisto-tile"
-				     onclick="location.href='{$creditPayLaterTwistoActionUrl|escape:'htmlall':'UTF-8'}'"
-				     title="{l s='Pay later with Twisto' mod='payu'}">
-                    {l s='Pay later with Twisto' mod='payu'}
-				</div>
+				<p class="payment_module">
+					<a class="payu payu_twisto" href="{$creditPayLaterTwistoActionUrl|escape:'htmlall':'UTF-8'}"
+					   title="{l s='Pay later with Twisto' mod='payu'}">
+						{l s='Pay later with Twisto' mod='payu'}
+					</a>
+				</p>
 			</div>
 		</div>
     {/if}
@@ -100,10 +101,11 @@
     {if $credit_available == true}
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="payu-payment-credit-installment-tile"
-				     onclick="location.href='{$creditActionUrl|escape:'htmlall':'UTF-8'}'"
-				     title="{l s='Pay online in installments' mod='payu'}">
-                    {l s='Pay online in installments' mod='payu'}
+				<p class="payment_module">
+					<a class="payu payu_installment" href="{$creditActionUrl|escape:'htmlall':'UTF-8'}"
+					   title="{l s='Pay online in installments' mod='payu'}">
+						{l s='Pay online in installments' mod='payu'}
+					</a>
 					<span id="payu-installment-cart-summary" class="payu-installment-cart-summary"></span>
 					<script type="text/javascript" class="payu-script-tag">
 						document.addEventListener("DOMContentLoaded", function (event) {
@@ -116,8 +118,8 @@
 							window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
 						});
 						if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
-							typeof openpayu !== 'undefined' &&
-							openpayu != null) {
+								typeof openpayu !== 'undefined' &&
+								openpayu != null) {
 							var options = {
 								creditAmount: {$cart_total_amount|floatval},
 								posId: '{$credit_pos}',
@@ -127,7 +129,7 @@
 							window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
 						}
 					</script>
-				</div>
+				</p>
 			</div>
 		</div>
     {/if}

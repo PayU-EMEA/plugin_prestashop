@@ -14,7 +14,7 @@ $(document).ready(function () {
 			$('[name="payMethod"]').val($(this).find('input').val());
 		});
 	}
-	if(window.location.hash == '#repayment'){
+	if(window.location.hash === '#repayment'){
 		setTimeout(function(){
 			$('html, body').animate({
 				scrollTop: $(".repayment-container").offset().top
@@ -27,16 +27,27 @@ $(document).ready(function () {
 		$('.additional-information').hide();
 		$(this).parent().next('.additional-information').show();
 	});
-	$('body').on('click', '.payment_module .payu', function(e){
-		if($(this).attr('href') == '') {
-			e.preventDefault();
+
+	$('#HOOK_PAYMENT').on('click', '.payment_module a.payu', function(e){
+		if($(this).attr('href') === '') {
 			$(this).parent().next('.payment_module_content').show();
+			return false;
+		} else {
+			return doubleClickPrevent(this);
 		}
 	});
 	$('.repayment-options .payMethod:not(.payMethodDisable)').on('click', function(e){
 		$('[name="transfer_gateway1"]').val($(this).find('input').val());
 	})
 });
+
+function doubleClickPrevent(object) {
+	if ($(object).data('clicked')) {
+		return false;
+	}
+	$(object).data('clicked', true);
+	return true;
+}
 
 (function () {
 	document.addEventListener("DOMContentLoaded", function () {
@@ -282,7 +293,6 @@ $(document).ready(function () {
 			window.secureFormDate.update({disabled: true});
 			window.secureFormCvv.update({disabled: true});
 			$('.payment_module').css('pointer-events', 'none');
-			$('.payu-payment-credit-later-twisto-tile').css('pointer-events', 'none');
 			try {
 				window.payu.tokenize().then(function (result) {
 
@@ -301,7 +311,6 @@ $(document).ready(function () {
 
 					} else {
 						$('.payment_module').css('pointer-events', 'unset');
-						$('.payu-payment-credit-later-twisto-tile').css('pointer-events', 'unset');
 						var errorMessage = errorTitle;
 						result.error.messages.forEach(function (error) {
 							errorMessage += '<strong>' + error.message + '<strong><br>';

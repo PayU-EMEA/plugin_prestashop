@@ -391,7 +391,7 @@ class PayU extends PaymentModule
                         ],
                     ]
                 ],
-                    !version_compare(_PS_VERSION_, '1.7', 'lt') ? [
+                    $this->is17() ? [
                         [
                             'type' => 'switch',
                             'label' => $this->l('Show installment on cart'),
@@ -744,13 +744,7 @@ class PayU extends PaymentModule
                 ]
             );
 
-            if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
-                $template = 'retryPayment.tpl';
-            } else {
-                $template = 'retryPayment17.tpl';
-            }
-
-            return $this->fetchTemplate($template);
+            return $this->fetchTemplate($this->is17() ? 'retryPayment17.tpl' : 'retryPayment.tpl');
         }
     }
 
@@ -1032,6 +1026,8 @@ class PayU extends PaymentModule
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
                 'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable(),
                 'cart_total_amount' => $params['cart']->getOrderTotal(),
+                'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2),
 
                 'separateBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
                 'separateTwisto' => Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO'),
@@ -2320,7 +2316,7 @@ class PayU extends PaymentModule
      */
     public function buildTemplatePath($name)
     {
-        if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
+        if (!$this->is17()) {
             return $name . '.tpl';
         }
         return 'module:payu/views/templates/front/' . $name . '17.tpl';
