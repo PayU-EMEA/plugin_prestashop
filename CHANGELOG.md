@@ -1,3 +1,7 @@
+## 3.2.3
+* Revert prevent double click for Presta 1.6
+* Cleanup payment process
+
 ## 3.2.2
 * Fix #303 (PHP Deprecated: str_replace())
 * Fixed display PayU as payment method for non PayU orders
