@@ -14,7 +14,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 {
     /** @var PayU */
     private $payu;
-
+    private $payuNotification = [];
     private $hasRetryPayment;
 
     private $order = null;
@@ -38,145 +38,94 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
         SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  ' . phpversion(), '');
-        $payMethod = Tools::getValue('payMethod');
-        if (Configuration::get('PAYU_PAYMENT_METHODS_GRID')) {
-            $errors = [];
+        $payMethod = Tools::getValue('payMethod', 'pbl');
 
-            if (Tools::getValue('payuPay')) {
-                $cardToken = Tools::getValue('cardToken');
-                $payError = [];
+        if ($payMethod === 'ai' ||
+            $payMethod === 'c' ||
+            $payMethod === 'blik' ||
+            $payMethod === 'dp' ||
+            $payMethod === 'dpt' ||
+            $payMethod === 'dpp'
+        ) {
+            $this->pay($payMethod);
+        }
+        elseif ($payMethod === 'transfer') {
+            $paymentGateway = Tools::getValue('transferGateway1');
+            $paymentId = Tools::getValue('payment_id');
 
-                if (!$payMethod) {
-                    $errors[] = $this->module->l('Please select a method of payment', 'payment');
-                }
-
-                if ($payMethod === 'card' && !$cardToken) {
-                    $errors[] = $this->module->l('Card token is empty', 'payment');
-                }
-
-                if (count($errors) == 0) {
-                    $payError = $this->pay($payMethod, ['cardToken' => $cardToken]);
-                    if (!array_key_exists('firstPayment', $payError)) {
-                        $errors[] = $payError['message'];
-                    }
-                }
-                if (array_key_exists('firstPayment', $payError)) {
-                    $this->showPaymentError();
-                } else {
-                    if ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') == 1) {
-                        $cardToken = Tools::getValue('cardToken');
-                        if ($cardToken) {
-                            $this->showSecureForm($errors);
-                        } else {
-                            $this->errors[] = $this->module->l('Card token is empty', 'payment');
-
-                            $this->RedirectWithNotifications(
-                                $this->context->link->getPageLink('order',
-                                    null,
-                                    null
-                                )
-                            );
-                        }
-
-                    } elseif ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') !== 1) {
-                        $this->pay('c');
-                    } else {
-                        $this->showPayMethod($payMethod, $errors);
-                    }
-                }
+            if ($paymentGateway) {
+                $this->pay($paymentGateway);
             } else {
-                if ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') == 1) {
-                    $this->showSecureForm();
+                $this->payuNotification[$payMethod] = $this->module->l('Select a payment channel', 'payment');
 
-                } elseif ($payMethod === 'transfer' || $payMethod === 'card') {
-                    if ($payMethod == 'card') {
-                        $paymentGateway = 'c';
-                    } else {
-                        $paymentGateway = Tools::getValue('transfer_gateway1');
-                    }
-
-                    if ($paymentGateway) {
-                        $this->pay($paymentGateway);
-                    } else {
-                        $paymentId = Tools::getValue('payment_id');
-                        $this->errors[] = $this->module->l('Select a payment channel', 'payment');
-
-                        $this->payuRedirectWithNotifications(
-                            $this->context->link->getPageLink('order',
-                                null,
-                                null,
-                                'payment_id=' . $paymentId
-                            )
-                        );
-                    }
+                if ($this->hasRetryPayment) {
+                    $params = [
+                        'id_order' => Tools::getValue('id_order'),
+                        'payment_id' => $paymentId
+                    ];
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order-detail', null, null, $params)
+                    );
+                } else {
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order',
+                            null,
+                            null,
+                            [
+                                'payment_id' => $paymentId
+                            ]
+                        )
+                    );
                 }
             }
+        }
+        elseif ($payMethod === 'card') {
+            $cardToken = Tools::getValue('cardToken1');
+            $paymentId = Tools::getValue('payment_id');
+
+            if ($cardToken) {
+                $this->pay($payMethod, ['cardToken' => $cardToken]);
+            } else {
+                $this->payuNotification[$payMethod] = $this->module->l('Card token is empty', 'payment');
+
+                if ($this->hasRetryPayment) {
+                    $params = [
+                        'id_order' => Tools::getValue('id_order'),
+                        'payment_id' => $paymentId
+                    ];
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order-detail', null, null, $params)
+                    );
+                } else {
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order',
+                            null,
+                            null,
+                            [
+                                'payment_id' => $paymentId
+                            ]
+
+                        )
+                    );
+                }
+            }
+        } else  {
+            $this->pay();
+        }
+
+        if ($this->hasRetryPayment) {
+            $this->payuNotification['error'] = $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment');
+            $params = [
+                'id_order' => Tools::getValue('id_order')
+            ];
+
+            $this->payuRedirectWithNotifications(
+                $this->context->link->getPageLink('order-detail',null,null, $params)
+            );
         } else {
-            $payType = null;
-            if ($payMethod === 'card') {
-                $payType = 'c';
-                if($cardToken = Tools::getValue('cardToken')){
-                    $payError = $this->pay($payMethod, ['cardToken' => $cardToken]);
-                    if (!array_key_exists('firstPayment', $payError)) {
-                        $errors[] = $payError['message'];
-                    }
-                }
-            } elseif (
-                $payMethod === 'ai' ||
-                $payMethod === 'c' ||
-                $payMethod === 'blik' ||
-                $payMethod === 'dp' ||
-                $payMethod === 'dpt' ||
-                $payMethod === 'dpp'
-            ) {
-                $payType = $payMethod;
-            }
-            $this->pay($payType);
             $this->showPaymentError();
         }
-    }
 
-    private function showPayMethod($payMethod = '', $errors = [])
-    {
-        $this->context->smarty->assign([
-            'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
-            'payMethod' => $payMethod,
-            'image' => $this->payu->getPayuLogo(),
-            'conditionUrl' => $this->payu->getPayConditionUrl(),
-            'payuErrors' => $errors
-        ]);
-
-        $this->context->smarty->assign($this->getShowPayMethodsParameters());
-        if(!$errors) {
-            $this->setTemplate($this->payu->buildTemplatePath('payMethods'));
-        }
-        else{
-            $params = [
-                'id_order' => Tools::getValue('id_order'),
-                'error' => 'select-paymethod'
-            ];
-            $this->errors[] = $this->module->l('Card token is empty', 'payment');
-            $this->payuRedirectWithNotifications(
-                $this->context->link->getPageLink('order-detail', true, NULL, $params)
-            );
-        }
-    }
-
-    private function showSecureForm($errors = [])
-    {
-        $this->context->smarty->assign([
-            'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
-            'secureFormJsTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/secureFormJs.tpl',
-            'payCardTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/payuCardForm.tpl',
-            'image' => $this->payu->getPayuLogo(),
-            'conditionUrl' => $this->payu->getPayConditionUrl(),
-            'payuErrors' => $errors,
-            'jsSdk' => $this->payu->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk'
-        ]);
-
-        $this->context->smarty->assign($this->getShowPayMethodsParameters());
-
-        $this->setTemplate($this->payu->buildTemplatePath('secureForm'));
     }
 
     private function showPaymentError()
@@ -187,7 +136,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
                 'orderCurrency' => (int)$this->order->id_currency,
                 'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', ['id_order' => $this->order->id, 'order_reference' => $this->order->reference]),
-                'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') . ' ' . $this->order->reference,
+                'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') . ' [' . $this->order->reference . ']',
                 'payuError' => $this->module->l('An error occurred while processing your payment.', 'payment')
             ]
         );
@@ -204,6 +153,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $orderTotal = $this->context->cart->getOrderTotal(true, Cart::BOTH);
         }
         SimplePayuLogger::addLog('check', __FUNCTION__, $orderTotal, '');
+
 
         if (!$this->hasRetryPayment) {
             $this->payu->validateOrder(
@@ -342,40 +292,20 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
     }
 
-    public function redirectWithNotifications()
+    public function payuRedirectWithNotifications($notifications)
     {
-        $notifications = json_encode([
-            'error' => $this->errors,
-            'warning' => $this->warning,
-            'success' => $this->success,
-            'info' => $this->info,
-        ]);
-        if (session_status() == PHP_SESSION_ACTIVE) {
-            $_SESSION['notifications'] = $notifications;
-        } elseif (session_status() == PHP_SESSION_NONE) {
-            session_start();
-            $_SESSION['notifications'] = $notifications;
-        } else {
-            setcookie('notifications', $notifications);
-        }
-        return call_user_func_array(['Tools', 'redirect'], func_get_args());
-    }
-
-    public function payuRedirectWithNotifications()
-    {
-        $notifications = json_encode([
-            'payu_error' => $this->errors,
-        ]);
+        $payuNotifications = json_encode($this->payuNotification);
 
         if (session_status() == PHP_SESSION_ACTIVE) {
-            $_SESSION['notifications'] = $notifications;
+            $_SESSION['payuNotifications'] = $payuNotifications;
         } elseif (session_status() == PHP_SESSION_NONE) {
             session_start();
-            $_SESSION['notifications'] = $notifications;
+            $_SESSION['payuNotifications'] = $payuNotifications;
         } else {
-            setcookie('notifications', $notifications);
+            setcookie('payuNotifications', $payuNotifications);
         }
 
         return call_user_func_array(['Tools', 'redirect'], func_get_args());
     }
+
 }

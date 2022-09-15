@@ -275,8 +275,6 @@ p.payment_module a.payu-widget-installments-mini {
     padding: 0px;
 }
 
-
-
 .payment_module_content--show {
     display: block !important;
 }
@@ -285,7 +283,7 @@ p.payment_module a.payu-widget-installments-mini {
     cursor: pointer;
 }
 
-.payu-marker-class {
+.payment-name {
     display: none;
 }
 

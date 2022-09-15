@@ -9,11 +9,6 @@ $(document).ready(function () {
         var elementToShow = $(this).data('more');
         $('body #' + elementToShow).show();
     });
-    if ($('.repayment-single').length > 0) {
-        $('.pay-methods__item:not(.payMethodDisable)').on('click', function () {
-            $('[name="payMethod"]').val($(this).find('input').val());
-        });
-    }
     if (window.location.hash == '#repayment') {
         setTimeout(function () {
             $('html, body').animate({
@@ -23,52 +18,50 @@ $(document).ready(function () {
     }
 });
 
+function openPayment(paymentId) {
+    setTimeout(function () {
+        $('body').find('#payment-option-' + paymentId).click();
+    }, 500);
+}
+
 (function () {
     document.addEventListener("DOMContentLoaded", function () {
 
         var transferResponseBox = document.getElementById('transfer-response-box');
         var transferGateways = document.querySelectorAll('input[name=transfer_gateway_id]');
-        var currentGateway = document.querySelector('input[name=transfer_gateway1]');
+        var currentGateway = document.querySelector('input[name=transferGateway]');
 
 
         document.querySelectorAll('div.payment-option, .repayment-single').forEach(function (element) {
+            if ($(element).find('[name=payment-option]').data('moduleName') !== 'payu') {
+                return;
+            }
+
             element.addEventListener('click', function (ev) {
-                    if ($(element).hasClass('repayment-single')) {
-                        $(element).closest('.repayment-options').find('.additional-information').hide();
-                        $(element).parent('div').next('.additional-information').show();
-                        $('[name="payMethod"]').val($(element).parent('div').next('.additional-information').find('.payment-name').attr('data-pm'));
+                ev.stopPropagation();
+                var payment = $(element).parent('div').next('.additional-information').find('.payment-name').data('pm');
+
+                if ($(element).hasClass('repayment-single')) {
+                    $(element).closest('.repayment-options').find('.additional-information').hide();
+                    $(element).parent('div').next('.additional-information').show();
+
+                    $('[name="payMethod"]').val(payment);
+                }
+
+                if (payment === 'transfer') {
+                    if(currentGateway !== null){
+                        currentGateway.value = '';
                     }
-                    ev.stopPropagation();
 
-		            if(currentGateway !== null){
-			            currentGateway.value = '';
-		            }
-
-                    var id = ev.target.id.slice('15');
-                    id = id.replace('-container', '');
-                    $('[name="payment_id"]').val(id);
                     Array.from(document.querySelectorAll('.pay-methods__item')).forEach(function (el) {
                         el.classList.remove('payMethodActive');
                     });
+                } else if (payment === 'card') {
+                    validateBeforeSubmitCardForm();
+                }
 
-                    if (id) {
-                        var paymentContent = document.querySelector('#payment-option-' + id + '-additional-information');
-                        var paymentChildren = null;
-
-						if(paymentContent !== null && paymentContent.children.length > 0) {
-							paymentChildren = paymentContent.children;
-						}
-
-                        if (paymentChildren) {
-                            Array.from(paymentChildren).forEach(function (el) {
-                                if (el.className === 'pay-card-init') {
-                                    validateBeforeSubmitCardForm();
-                                }
-                            });
-                        }
-                    }
-                }, true
-            );
+                $('[name="payment_id"]').val(ev.target.id.slice('15').replace('-container', ''));
+            }, true);
         });
 
         function validateBeforeSubmitCardForm() {
@@ -261,9 +254,9 @@ $(document).ready(function () {
 
             try {
                 payu.tokenize().then(function (result) {
-                $('#payment-confirmation .btn')
-                    .attr('disabled', 'disabled')
-                    .addClass('disabled disabled-by-payu');
+                    $('#payment-confirmation .btn')
+                        .attr('disabled', 'disabled')
+                        .addClass('disabled disabled-by-payu');
                     if (result.status === 'SUCCESS') {
                         secureFormNumber.remove();
                         secureFormDate.remove();
@@ -330,7 +323,6 @@ $(document).ready(function () {
             responseBox.innerHTML = '';
             responseBox.style.display = 'none';
         }
-
     })
 })();
 

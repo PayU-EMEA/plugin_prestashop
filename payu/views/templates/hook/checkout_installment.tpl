@@ -7,8 +7,8 @@
  *
  * http://www.payu.com
 *}
-<div class="payu-marker-class payu-method-description payu-checkout-installment">
-    <img style="width: 121px; margin-top:-20px;" src="{$payu_installment_img}" />
+<span class="payment-name" data-pm="ai"></span>
+<div class="payu-method-description payu-checkout-installment">
     <p>
         <span id='payu-installments-mini-cart'></span>
         <script type='text/javascript' class="payu-script-tag" >
@@ -26,7 +26,6 @@
     <p>
         {l s='Order will be done after positive decision' mod='payu'}
     </p>
-    <span class="payment-name" data-pm="card"></span>
 </div>
 <script type="text/javascript">
     (function () {

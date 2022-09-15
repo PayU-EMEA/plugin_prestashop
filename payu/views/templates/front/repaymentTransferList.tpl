@@ -2,20 +2,24 @@
  * PayU
  *
  * @author    PayU
- * @copyright Copyright (c) 2016 PayU
+ * @copyright Copyright (c) PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
 *}
-<span class="payu-marker-class"></span><span class="payment-name" data-pm="transfer"></span>
-
-<div id="transfer-response-box" class="alert alert-warning" style="display: none">
-    {l s='Select a payment channel' mod='payu'}
-</div>
+<span class="payment-name" data-pm="transfer"></span>
+{if isset($payuNotifications.transfer)}
+    <div id="transfer-response-box" class="alert alert-warning" style="margin-bottom: 10px;">
+        {foreach $payuNotifications.transfer as $error}
+            {$error}
+            <br>
+        {/foreach}
+    </div>
+{/if}
 
 <div id="paymentTransfer" action="{$payuPayAction|escape:'html'}" class="pay-form-grid">
     <input type="hidden" name="payment_id">
-    <input type="hidden" name="transfer_gateway1">
+    <input type="hidden" name="transferGateway">
     <input type="hidden" name="payMethod" value="transfer">
     <div class="pay-methods required">
         {foreach $paymentMethods as $payment}
@@ -51,21 +55,7 @@
 {include file="$conditionTemplate"}
 
 <script>
-    {*    {if $paymentId}*}
-    {*	var paymentId = {$paymentId};*}
-    {*    {else}*}
-    var paymentId = 0;
-    {*    {/if}*}
-
     document.addEventListener("DOMContentLoaded", function () {
-        if (paymentId) {
-            setTimeout(function () {
-                $('body').find('#payment-option-' + paymentId).click();
-            }, 500);
-        }
-    });
-
-    (function () {
         var applePayAvailable;
 
         try {
@@ -81,5 +71,8 @@
         } else {
             applePayContainer.parentNode.removeChild(applePayContainer);
         }
-    })();
+        {if $paymentId}
+            openPayment({$paymentId});
+        {/if}
+    });
 </script>

@@ -1,29 +1,21 @@
 {*
  * @author    PayU
- * @copyright Copyright (c) 2016 PayU
+ * @copyright Copyright (c) PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
 *}
-{extends file=$layout}
+{extends file='page.tpl'}
 
-{block name='content'}
+{block name='page_title'}
+    {$payuOrderInfo}: <strong>{$total}</strong> {l s='(tax incl.)' mod='payu'}
+    <img src="{$image}" id="payuLogo">
+{/block}
 
-	<div class="clearfix">
-		<h2 id="payuAmountInfo">{$payuOrderInfo}: <strong>{$total}</strong> {l s='(tax incl.)' mod='payu'}</h2>
-		<img src="{$image}" id="payuLogo">
-	</div>
-
-    {if $payuError}
-		<div class="alert alert-warning">
+{block name='page_content_container'}
+    <section id="content" class="page-content page-cms">
+        <div class="alert alert-warning">
             {$payuError}
-		</div>
-    {/if}
-
-	<p class="cart_navigation clearfix" id="cart_navigation">
-		<a class="btn btn-primary float-xs-right continue" href="{$buttonAction}">
-			<span>{l s='Retry pay with PayU' mod='payu'}</span>
-		</a>
-	</p>
-
+        </div>
+    </section>
 {/block}

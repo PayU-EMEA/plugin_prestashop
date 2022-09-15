@@ -2,18 +2,14 @@ var openpayu = openpayu || {};
 openpayu.options = openpayu.options || {};
 
 $(document).ready(function () {
-	$('#payuRetryPayment17').insertBefore($('#order-history'));
+	$('#payuRetryPayment').insertAfter($('.info-order').first());
 
 	$('body').on('click', '.payu-read-more', function () {
 		$(this).hide();
 		var elementToShow = $(this).data('more');
 		$('body #' + elementToShow).show();
 	});
-	if($('.repayment-single').length > 0) {
-		$('.pay-methods__item:not(.payMethodDisable)').on('click', function () {
-			$('[name="payMethod"]').val($(this).find('input').val());
-		});
-	}
+
 	if(window.location.hash === '#repayment'){
 		setTimeout(function(){
 			$('html, body').animate({
@@ -21,12 +17,6 @@ $(document).ready(function () {
 			}, 1000);
 		}, 500)
 	}
-	$('body').on('click', '.repayment-single', function(){
-		var paymethod = $(this).parent().next('.additional-information').find('.payment-name').attr('data-pm');
-		$('[name="payMethod"]').val(paymethod);
-		$('.additional-information').hide();
-		$(this).parent().next('.additional-information').show();
-	});
 
 	$('#HOOK_PAYMENT').on('click', '.payment_module a.payu', function(e){
 		if($(this).attr('href') === '') {
@@ -37,10 +27,15 @@ $(document).ready(function () {
 		}
 	});
 	$('.repayment-options .payMethod:not(.payMethodDisable)').on('click', function(e){
-		$('[name="transfer_gateway1"]').val($(this).find('input').val());
+		$('[name="transferGateway"]').val($(this).find('input').val());
 	})
 });
 
+function openPayment(paymentId) {
+	setTimeout(function () {
+		$('body').find('#payment-option-' + paymentId).click();
+	}, 500);
+}
 function doubleClickPrevent(object) {
 	if ($(object).data('clicked')) {
 		return false;
@@ -54,9 +49,8 @@ function doubleClickPrevent(object) {
 
 		let transferResponseBox = document.getElementById('transfer-response-box');
 		let transferGateways = document.querySelectorAll('input[name=transfer_gateway_id]');
-		let currentGateway = document.querySelector('input[name=transfer_gateway1]');
+		let currentGateway = document.querySelector('input[name=transferGateway]');
 
-		run_repayment_listener();
 		$('.history_detail a').on('click', function(){
 			setTimeout(function(){
 				run_repayment_listener();
@@ -85,26 +79,26 @@ function doubleClickPrevent(object) {
 				});
 			});
 
+		document.querySelectorAll('.repayment-single').forEach(function (element) {
+			element.addEventListener('click', function (ev) {
+				ev.stopPropagation();
+
+				var paymethod = $(element).parent().next('.additional-information').find('.payment-name').attr('data-pm');
+				$('[name="payMethod"]').val(paymethod);
+				$('.additional-information').hide();
+				$(element).parent().next('.additional-information').show();
+
+
+				$('[name="payment_id"]').val(ev.target.id.slice('15').replace('-container', ''));
+			}, true);
+		});
 
 		document.querySelectorAll('.payu-payment-fieldset-1-6 .payment_module, .repayment-options').forEach(function (elm) {
-			elm.addEventListener('click', function (ev) {
-				// resetAllGatewaysActive();
-			});
-
 			validateBeforeSubmitCardForm();
 			validateBeforeSubmitGatewaysForm();
 		});
 
-		function run_repayment_listener(){
-			if($('.repayment-single').length > 0) {
-				$('.pay-methods__item:not(.payMethodDisable)').on('click', function () {
-					$('[name="payMethod"]').val($(this).find('input').val());
-					$('.payMethodActive').removeClass('payMethodActive');
-					$(this).addClass('payMethodActive');
-					$('.pay-transfer-accept button').removeAttr('disabled');
-				});
-			}
-		}
+
 		function activatePaymentButton() {
 			var btnSubmit = document.querySelector('.pay-transfer-accept button');
 			if(btnSubmit !== null) {

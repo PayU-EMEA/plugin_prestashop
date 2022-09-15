@@ -1,13 +1,21 @@
 {*
  * @author    PayU
- * @copyright Copyright (c) 2014-2018 PayU
+ * @copyright Copyright (c) PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
 *}
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 <script type="text/javascript" src="{$jsSdk}"></script>
-
+<span class="payment-name" data-pm="card"></span>
+{if	$retryPayment && isset($payuNotifications.card)}
+	<div id="transfer-response-box" class="alert alert-warning" style="margin-bottom: 10px;">
+		{foreach $payuNotifications.card as $error}
+			{$error}
+			<br>
+		{/foreach}
+	</div>
+{/if}
 <section id="main">
     {if isset($payuErrors) && $payuErrors|@count}
 		<div class="alert alert-warning">
@@ -21,7 +29,7 @@
 	<section id="content" class="page-content page-cms">
 		{if !$retryPayment}
 		<form action="{$payuPayAction|escape:'html'}" method="post" id="payu-card-form">
-			<input type="hidden" name="payuPay" value="1"/>
+			<input type="hidden" name="payment_id" value="">
 			<input type="hidden" name="payMethod" value="card"/>
 			<input type="hidden" name="cardToken" value="" id="card-token"/>
 			<div id="card-form-container">
@@ -57,8 +65,9 @@
 		</form>
 		{else}
 			<div id="payu-card-form">
-				<input type="hidden" name="payuPay" value="1"/>
+				<input type="hidden" name="payment_id" value="">
 				<input type="hidden" name="payMethod" value="card"/>
+				<input type="hidden" name="cardToken" value="" id="card-token"/>
 				<div id="card-form-container">
 					{if isset($payMethods.error)}
 						<h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>

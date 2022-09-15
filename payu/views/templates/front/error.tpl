@@ -1,6 +1,6 @@
 {*
  * @author    PayU
- * @copyright Copyright (c) 2016 PayU
+ * @copyright Copyright (c) PayU
  * @license   http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
  *
  * http://www.payu.com
@@ -8,21 +8,12 @@
 {capture name=path}{l s='Pay with PayU' mod='payu'}{/capture}
 
 <div class="clearfix">
-	<h2 id="payuAmountInfo">
-		{$payuOrderInfo}:
-		<strong>{if $currency}{convertPriceWithCurrency price=$total currency=$orderCurrency}{else}{convertPrice price=$total}{/if}</strong> {l s='(tax incl.)' mod='payu'}
+	<h2>
+		{$payuOrderInfo}: <strong>{$total}</strong> {l s='(tax incl.)' mod='payu'}
 	</h2>
-	<img src="{$image}" id="payuLogo">
 </div>
 
-{if $payuError}
-	<div class="alert alert-warning">
-        {$payuError}
-	</div>
-{/if}
 
-<p class="cart_navigation clearfix" id="cart_navigation">
-	<a class="button btn btn-default button-medium" href="{$buttonAction}">
-		<span>{l s='Retry pay with PayU' mod='payu'}<i class="icon-chevron-right right"></i></span>
-	</a>
-</p>
+<div class="alert alert-warning">
+	{$payuError}
+</div>

@@ -10,6 +10,14 @@
 <fieldset class="payu-payment-fieldset-1-6">
     {if $showCardPayment == true}
         {if $showWidget}
+			{if isset($payuNotifications.card)}
+				<div id="transfer-response-box" class="alert alert-warning" style="margin-bottom: 10px;">
+					{foreach $payuNotifications.card as $error}
+						{$error}
+						<br>
+					{/foreach}
+				</div>
+			{/if}
 			<div class="row">
 				<div class="col-xs-12">
 					<p class="payment_module">
@@ -51,6 +59,14 @@
 		</div>
     {/if}
     {if $paymentGrid == true}
+		{if isset($payuNotifications.transfer)}
+			<div id="transfer-response-box" class="alert alert-warning" style="margin-bottom: 10px;">
+				{foreach $payuNotifications.transfer as $error}
+					{$error}
+					<br>
+				{/foreach}
+			</div>
+		{/if}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module payment_payu">
