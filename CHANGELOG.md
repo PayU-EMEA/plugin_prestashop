@@ -1,3 +1,6 @@
+## 3.2.4
+* Fixed transfer payment
+
 ## 3.2.3
 * Revert prevent double click for Presta 1.6
 * Cleanup payment process
