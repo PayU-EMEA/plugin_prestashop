@@ -680,7 +680,10 @@ class PayU extends PaymentModule
            $controller === 'cart' ||
            $controller === 'product' ||
            $controller === 'order-detail' ||
-           $controller === 'history'
+           $controller === 'history' ||
+           $controller === 'index' ||
+           $controller === 'category' ||
+           $controller === 'search'
         ) {
 
             if ($this->is17()) {
@@ -2152,8 +2155,12 @@ class PayU extends PaymentModule
             $creditAvailable = isset($product['price_amount'])
                 && ($product['price_amount'] >= self::PAYU_MIN_CREDIT_AMOUNT)
                 && ($product['price_amount'] <= self::PAYU_MAX_CREDIT_AMOUNT);
-            if ($creditAvailable && (($params['type'] === 'weight' && $current_controller === 'index') ||
-                    ($params['type'] === 'after_price' && $current_controller === 'product'))) {
+            if ($creditAvailable && (
+                    ($params['type'] === 'weight' && $current_controller === 'index') ||
+                    ($params['type'] === 'after_price' && $current_controller === 'product') ||
+                    ($params['type'] === 'weight' && $current_controller === 'category') ||
+                    ($params['type'] === 'weight' && $current_controller === 'search')
+                )) {
                 $this->context->smarty->assign([
                     'product_price' => $product['price_amount'],
                     'product_id' => $product['id_product'],
