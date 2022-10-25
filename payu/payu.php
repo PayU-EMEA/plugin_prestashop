@@ -675,15 +675,28 @@ class PayU extends PaymentModule
     {
         $controller = Context::getContext()->controller->php_self;
 
+        if (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
+            if ($this->is17()) {
+                $this->context->controller->registerJavascript(
+                    'remote-widget-products-installments',
+                    'https://static.payu.com/res/v2/widget-mini-installments.js',
+                    ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
+                $this->context->controller->registerStylesheet(
+                    'remote-installments-css-payu',
+                    'https://static.payu.com/res/v2/layout/style.css',
+                    ['server' => 'remote', 'media' => 'all', 'priority' => 20]);
+            } else {
+                $this->context->controller->addCSS('https://static.payu.com/res/v2/layout/style.css');
+                $this->context->controller->addJS('https://static.payu.com/res/v2/widget-mini-installments.js');
+            }
+        }
+
         if($controller === 'order-opc' ||
            $controller === 'order' ||
            $controller === 'cart' ||
            $controller === 'product' ||
            $controller === 'order-detail' ||
-           $controller === 'history' ||
-           $controller === 'index' ||
-           $controller === 'category' ||
-           $controller === 'search'
+           $controller === 'history'
         ) {
 
             if ($this->is17()) {
@@ -704,22 +717,6 @@ class PayU extends PaymentModule
                 'payuLangId' => $this->context->language->iso_code,
                 'payuSFEnabled' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' ? true : false,
             ]);
-
-            if (Configuration::get('PAYU_PROMOTE_CREDIT') === '1') {
-                if ($this->is17()) {
-                    $this->context->controller->registerJavascript(
-                        'remote-widget-products-installments',
-                        'https://static.payu.com/res/v2/widget-mini-installments.js',
-                        ['server' => 'remote', 'position' => 'bottom', 'priority' => 20]);
-                    $this->context->controller->registerStylesheet(
-                        'remote-installments-css-payu',
-                        'https://static.payu.com/res/v2/layout/style.css',
-                        ['server' => 'remote', 'media' => 'all', 'priority' => 20]);
-                } else {
-                    $this->context->controller->addCSS('https://static.payu.com/res/v2/layout/style.css');
-                    $this->context->controller->addJS('https://static.payu.com/res/v2/widget-mini-installments.js');
-                }
-            }
         }
     }
 
