@@ -1,3 +1,6 @@
+## 3.2.5
+* Fixed missing installment widget presentation
+
 ## 3.2.4
 * Fixed transfer payment
 
