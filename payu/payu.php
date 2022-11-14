@@ -44,7 +44,7 @@ class PayU extends PaymentModule
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
-        $this->ps_versions_compliancy = ['min' => '1.6.0', 'max' => '1.7'];
+        $this->ps_versions_compliancy = ['min' => '1.6.0', 'max' => '8.999'];
 
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
