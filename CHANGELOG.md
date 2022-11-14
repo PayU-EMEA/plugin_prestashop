@@ -1,3 +1,7 @@
+## 3.2.6
+* Compatible with Presta 8
+* Cleanup translate
+
 ## 3.2.5
 * Fixed missing installment widget presentation
 
