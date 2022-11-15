@@ -1,6 +1,6 @@
 [**English version**][ext0]
 
-# Moduł PayU dla PrestaShop 1.6 i 1.7
+# Moduł PayU dla PrestaShop 1.6, 1.7 i 1.8
 ``Moduł jest wydawany na licencji GPL.``
 
 **Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym [wsparciem technicznym][ext13].**
