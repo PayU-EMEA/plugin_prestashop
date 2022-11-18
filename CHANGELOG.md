@@ -1,3 +1,7 @@
+## 3.2.7
+* Fixed repayment for guest (#302)
+* Fixed generate repayment link for PrestaShop 1.7.6.X
+
 ## 3.2.6
 * Compatible with Presta 8
 * Cleanup translate
