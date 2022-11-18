@@ -659,15 +659,33 @@ class PayU extends PaymentModule
             && $this->repaymentEnabled()
             && $params['template'] == 'order_conf'
         ) {
-            if($this->is17()){
+            if ($this->is17() && isset($params['template_vars']['{id_order}'])) {
                 $id_order = $params['template_vars']['{id_order}'];
-            }
-            else{
+            } else {
                 $sql = 'SELECT id_order FROM ' . _DB_PREFIX_ . 'orders WHERE reference="' . $params['template_vars']['{order_name}'] . '" limit 1';
                 $result = Db::getInstance()->ExecuteS($sql);
                 $id_order = $result[0]['id_order'];
             }
-            $params['extra_template_vars']['{payment}'] = 'PayU, <a href="' . $this->context->link->getPageLink('index',true) .'index.php?controller=order-detail&id_order=' . $id_order . '#repayment">' . $this->l('Repay by PayU') . '</a>';
+
+            $order = new Order($id_order);
+            $customer = new Customer($order->id_customer);
+
+            if ($customer->is_guest) {
+                $urlParams = [
+                    'email' => $customer->email,
+                    'order_reference' => $params['template_vars']['{order_name}']
+                ];
+                $url = $this->context->link->getPageLink('guest-tracking', null, null, $urlParams);
+
+            } else {
+                $urlParams = [
+                    'id_order' => $id_order
+                ];
+                $url = $this->context->link->getPageLink('order-detail', null, null, $urlParams);
+            }
+
+            $params['extra_template_vars']['{payment}'] = $params['template_vars']['{payment}'] . ', <a href="' . $url . '#repayment">' . $this->l('Repay by PayU') . '</a>';
+
         }
     }
 
@@ -696,6 +714,7 @@ class PayU extends PaymentModule
            $controller === 'cart' ||
            $controller === 'product' ||
            $controller === 'order-detail' ||
+           $controller === 'guest-tracking' ||
            $controller === 'history'
         ) {
 
@@ -1347,7 +1366,14 @@ class PayU extends PaymentModule
 
         $cart = new Cart($this->order->id_cart);
         $customer = new Customer($cart->id_customer);
-        $continueUrl = Context::getContext()->link->getPageLink('order-confirmation&ext_order=' . $this->extOrderId . '&id_cart=' . $cart->id . '&id_module=' . $this->id . '&id_order=' . $this->order->id . '&key=' . $customer->secure_key);
+        $params = [
+            'ext_order' => $this->extOrderId,
+            'id_cart' => $cart->id,
+            'id_module' => $this->id,
+            'id_order' => $this->order->id,
+            'key' => $customer->secure_key
+        ];
+        $continueUrl = $this->context->link->getPageLink('order-confirmation', null, null, $params);
 
         $ocreq = [
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
