@@ -2,8 +2,7 @@
 /**
  * OpenPayU Standard Library
  *
- * @copyright  Copyright (c) 2011-2016 PayU
- * @license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ * @copyright Copyright (c) PayU
  * http://www.payu.com
  * http://developers.payu.com
  */
@@ -43,6 +42,7 @@ class OpenPayU_HttpCurl
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
 
         if ($proxy = self::getProxy()) {
             curl_setopt($ch, CURLOPT_PROXY, $proxy);

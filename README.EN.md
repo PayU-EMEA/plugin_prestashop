@@ -1,7 +1,6 @@
 [**Wersja polska**][ext0]
 
 # PayU plugin for Prestashop 1.6, 1.7 and 1.8
-``This plugin is released under the GPL license.``
 
 **If you have any questions or issues, feel free to contact our [technical support][ext13].**
 

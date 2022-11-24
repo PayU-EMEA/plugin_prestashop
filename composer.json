@@ -2,7 +2,7 @@
   "name": "payu/plugin_prestashop",
   "description": "Payu Prestashop plugin",
   "minimum-stability": "stable",
-  "license": "LGPL-3.0",
+  "license": "apache-2.0",
   "authors": [
     {
       "name": "PayU",

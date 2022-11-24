@@ -3,8 +3,7 @@
 /**
  * OpenPayU Standard Library
  *
- * @copyright  Copyright (c) 2011-2016 PayU
- * @license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ * @copyright Copyright (c) PayU
  * http://www.payu.com
  * http://developers.payu.com
  */
@@ -135,7 +134,7 @@ class OpenPayU_Util
 
         $data = self::setSenderProperty($data);
 
-        return json_encode($data);
+        return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -227,7 +226,8 @@ class OpenPayU_Util
             if (is_array($value)) {
                 $htmlOutput .= self::convertArrayToHtmlForm($value, $key, $outputFields);
             } else {
-                $htmlOutput .= sprintf("<input type=\"hidden\" name=\"%s\" value=\"%s\" />\n", $key, htmlspecialchars($value));
+                $htmlOutput .= sprintf("<input type=\"hidden\" name=\"%s\" value=\"%s\" />\n", htmlspecialchars($key)
+                , htmlspecialchars($value));
                 $outputFields[$key] = $value;
             }
         }

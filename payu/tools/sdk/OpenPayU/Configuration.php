@@ -3,8 +3,7 @@
 /**
  * OpenPayU Standard Library
  *
- * @copyright  Copyright (c) 2011-2017 PayU
- * @license    http://opensource.org/licenses/LGPL-3.0  Open Software License (LGPL 3.0)
+ * @copyright Copyright (c)
  * http://www.payu.com
  * http://developers.payu.com
  */
@@ -86,7 +85,7 @@ class OpenPayU_Configuration
 
     const API_VERSION = '2.1';
     const COMPOSER_JSON = "/composer.json";
-    const DEFAULT_SDK_VERSION = 'PHP SDK 2.3.1';
+    const DEFAULT_SDK_VERSION = 'PHP SDK 2.3.5';
     const OAUTH_CONTEXT = 'pl/standard/user/oauth/authorize';
 
     /**
