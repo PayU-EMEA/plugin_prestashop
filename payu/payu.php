@@ -22,9 +22,6 @@ class PayU extends PaymentModule
     const CONDITION_EN = 'http://static.payu.com/sites/terms/files/payu_terms_of_service_single_transaction_pl_en.pdf';
     const CONDITION_CS = 'http://static.payu.com/sites/terms/files/Podmínky pro provedení jednorázové platební transakce v PayU.pdf';
 
-    const PAYU_MIN_CREDIT_AMOUNT = 300;
-    const PAYU_MAX_CREDIT_AMOUNT = 20000;
-
     public $cart = null;
     public $id_cart = null;
     public $order = null;
@@ -709,12 +706,12 @@ class PayU extends PaymentModule
         }
 
         if($controller === 'order-opc' ||
-           $controller === 'order' ||
-           $controller === 'cart' ||
-           $controller === 'product' ||
-           $controller === 'order-detail' ||
-           $controller === 'guest-tracking' ||
-           $controller === 'history'
+            $controller === 'order' ||
+            $controller === 'cart' ||
+            $controller === 'product' ||
+            $controller === 'order-detail' ||
+            $controller === 'guest-tracking' ||
+            $controller === 'history'
         ) {
 
             if ($this->is17()) {
@@ -902,8 +899,8 @@ class PayU extends PaymentModule
                 ->setAction($this->context->link->getModuleLink($this->name,'payment', ['payMethod' => Configuration::get('PAYU_PAYMENT_METHODS_GRID') === '1' ? 'transfer' : 'pbl']))
                 ->setLogo($this->getPayuLogo())
                 ->setCallToActionText(empty($paymentOptions)
-                ? $this->l('Pay by online transfer or card')
-                : $this->l('Pay by online transfer'));
+                    ? $this->l('Pay by online transfer or card')
+                    : $this->l('Pay by online transfer'));
 
 
             if (Configuration::get('PAYU_PAYMENT_METHODS_GRID') === '1') {
@@ -2054,7 +2051,7 @@ class PayU extends PaymentModule
             $this->registerHook('displayProductPriceBlock') &&
             $this->registerHook('displayCheckoutSubtotalDetails') &&
             $this->registerHook('displayCheckoutSummaryTop');
-            $this->registerHook('ActionGetExtraMailTemplateVars');
+        $this->registerHook('ActionGetExtraMailTemplateVars');
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             $registerStatus &= $this->registerHook('displayPaymentEU') && $this->registerHook('payment');
@@ -2150,34 +2147,18 @@ class PayU extends PaymentModule
                     $price = $product->getPrice();
                     $productId = $product->reference;
                 }
-
-                $creditAvailable = false;
-                $priceWithDot = str_replace(',', '.', $price);
-                if ($priceWithDot >= self::PAYU_MIN_CREDIT_AMOUNT &&
-                    $priceWithDot <= self::PAYU_MAX_CREDIT_AMOUNT) {
-                    $creditAvailable = true;
-                }
-
-                if ($creditAvailable) {
-                    $this->context->smarty->assign([
-                        'product_price' => $price,
-                        'product_id' => $productId,
-                        'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
-                        'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
-                    ]);
-                    return $this->display(__FILE__, 'product.tpl');
-                } else {
-                    return;
-                }
-
+                $this->context->smarty->assign([
+                    'product_price' => $price,
+                    'product_id' => $productId,
+                    'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                    'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
+                ]);
+                return $this->display(__FILE__, 'product.tpl');
             }
         } else {
             $product = $params['product'];
             $current_controller = Tools::getValue('controller');
-            $creditAvailable = isset($product['price_amount'])
-                && ($product['price_amount'] >= self::PAYU_MIN_CREDIT_AMOUNT)
-                && ($product['price_amount'] <= self::PAYU_MAX_CREDIT_AMOUNT);
-            if ($creditAvailable && (
+            if (isset($product['price_amount']) && (
                     ($params['type'] === 'weight' && $current_controller === 'index') ||
                     ($params['type'] === 'after_price' && $current_controller === 'product') ||
                     ($params['type'] === 'weight' && $current_controller === 'category') ||
@@ -2352,8 +2333,6 @@ class PayU extends PaymentModule
     private function isCreditAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-            && $amount >= self::PAYU_MIN_CREDIT_AMOUNT
-            && $amount <= self::PAYU_MAX_CREDIT_AMOUNT
             && PayMethodsCache::isInstallmentsAvailable(
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion());
