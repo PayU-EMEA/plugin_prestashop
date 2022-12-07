@@ -2050,8 +2050,8 @@ class PayU extends PaymentModule
             $this->registerHook('displayOrderDetail') &&
             $this->registerHook('displayProductPriceBlock') &&
             $this->registerHook('displayCheckoutSubtotalDetails') &&
-            $this->registerHook('displayCheckoutSummaryTop');
-        $this->registerHook('ActionGetExtraMailTemplateVars');
+            $this->registerHook('displayCheckoutSummaryTop') &&
+            $this->registerHook('ActionGetExtraMailTemplateVars');
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             $registerStatus &= $this->registerHook('displayPaymentEU') && $this->registerHook('payment');
@@ -2171,8 +2171,6 @@ class PayU extends PaymentModule
                     'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
                 ]);
                 return $this->display(__FILE__, 'product.tpl', $this->getCacheId($product['price_amount'] . $product['id_product']));
-            } else {
-                return;
             }
         }
     }
