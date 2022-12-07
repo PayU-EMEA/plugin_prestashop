@@ -1,3 +1,6 @@
+## 3.2.8
+* Removed fixed credit amount thresholds
+
 ## 3.2.7
 * Fixed repayment for guest (#302)
 * Fixed generate repayment link for PrestaShop 1.7.6.X
