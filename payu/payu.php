@@ -22,6 +22,9 @@ class PayU extends PaymentModule
     const CONDITION_EN = 'http://static.payu.com/sites/terms/files/payu_terms_of_service_single_transaction_pl_en.pdf';
     const CONDITION_CS = 'http://static.payu.com/sites/terms/files/Podmínky pro provedení jednorázové platební transakce v PayU.pdf';
 
+    const PAYU_MIN_CREDIT_AMOUNT = 300;
+    const PAYU_MAX_CREDIT_AMOUNT = 20000;
+
     public $cart = null;
     public $id_cart = null;
     public $order = null;
@@ -2123,10 +2126,9 @@ class PayU extends PaymentModule
 
     public function hookDisplayProductPriceBlock($params)
     {
-        if (!PayMethodsCache::isInstallmentsAvailable(
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getVersion()) ||
-            Configuration::get('PAYU_PROMOTE_CREDIT') === '0' || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
+
+        if (Configuration::get('PAYU_PROMOTE_CREDIT') === '0'
+            || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
             return;
         }
 
@@ -2147,18 +2149,26 @@ class PayU extends PaymentModule
                     $price = $product->getPrice();
                     $productId = $product->reference;
                 }
-                $this->context->smarty->assign([
-                    'product_price' => $price,
-                    'product_id' => $productId,
-                    'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
-                    'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
-                ]);
-                return $this->display(__FILE__, 'product.tpl');
+
+                $priceWithDot = str_replace(',', '.', $price);
+
+                if ($this->isCreditAvailable($priceWithDot)) {
+                    $this->context->smarty->assign([
+                        'product_price' => $price,
+                        'product_id' => $productId,
+                        'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                        'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2)
+                    ]);
+                    return $this->display(__FILE__, 'product.tpl');
+                }
             }
         } else {
             $product = $params['product'];
             $current_controller = Tools::getValue('controller');
-            if (isset($product['price_amount']) && (
+            $promoteCredit = isset($product['price_amount']) &&
+                $this->isCreditAvailable($product['price_amount']);
+            if ($promoteCredit &&
+                (
                     ($params['type'] === 'weight' && $current_controller === 'index') ||
                     ($params['type'] === 'after_price' && $current_controller === 'product') ||
                     ($params['type'] === 'weight' && $current_controller === 'category') ||
@@ -2331,6 +2341,8 @@ class PayU extends PaymentModule
     private function isCreditAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
+            && $amount >= self::PAYU_MIN_CREDIT_AMOUNT
+            && $amount <= self::PAYU_MAX_CREDIT_AMOUNT
             && PayMethodsCache::isInstallmentsAvailable(
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getVersion());
