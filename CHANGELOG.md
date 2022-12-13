@@ -1,5 +1,7 @@
 ## 3.2.8
-* Removed fixed credit amount thresholds
+* Fixed installment widget display on product and checkout page
+* Changed styling of installment section on checkout page
+* Cleanup of credit amount thresholds
 
 ## 3.2.7
 * Fixed repayment for guest (#302)
