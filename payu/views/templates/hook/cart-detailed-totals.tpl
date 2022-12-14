@@ -20,8 +20,8 @@
         window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
     });
     if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
-        typeof openpayu !== 'undefined' &&
-        openpayu != null) {
+        typeof window.OpenPayU !== 'undefined' &&
+        window.OpenPayU != null) {
         var options = {
             creditAmount: {$cart_total_amount|floatval},
             posId: '{$credit_pos}',

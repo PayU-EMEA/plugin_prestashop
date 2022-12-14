@@ -16,7 +16,7 @@
                 key: '{$credit_pos_key}',
                 showLongDescription: true
             };
-            window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
+            window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-total', options);
         });
 
     </script>

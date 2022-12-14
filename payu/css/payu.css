@@ -292,8 +292,11 @@ body#checkout #payu-methods-grouped .additional-information {
 }
 
 .payu-method-description {
-    margin-left: 2.875rem;
     margin-top: 1.25rem;
+}
+
+.payu-method-description > p:not(:last-child) {
+    margin-bottom: 10px;
 }
 
 .payu-checkout-installment {

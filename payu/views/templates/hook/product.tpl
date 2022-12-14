@@ -22,7 +22,7 @@
         };
         window.OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id|md5}', options);
     });
-    if (typeof openpayu !== 'undefined') {
+    if (typeof window.OpenPayU !== 'undefined') {
         var options = {
             creditAmount:  {$product_price|floatval},
             posId: '{$credit_pos}',
