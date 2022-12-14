@@ -22,9 +22,6 @@ class PayU extends PaymentModule
     const CONDITION_EN = 'http://static.payu.com/sites/terms/files/payu_terms_of_service_single_transaction_pl_en.pdf';
     const CONDITION_CS = 'http://static.payu.com/sites/terms/files/Podmínky pro provedení jednorázové platební transakce v PayU.pdf';
 
-    const PAYU_MIN_CREDIT_AMOUNT = 300;
-    const PAYU_MAX_CREDIT_AMOUNT = 20000;
-
     public $cart = null;
     public $id_cart = null;
     public $order = null;
@@ -816,7 +813,7 @@ class PayU extends PaymentModule
         ]);
 
         $this->setPayuNotification();
-        if (Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable()) {
+        if (Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable($totalPrice)) {
             if (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1') {
                 $this->smarty->assign([
                     'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
@@ -856,7 +853,7 @@ class PayU extends PaymentModule
             $paymentOptions[] = $cardPaymentOption;
         }
 
-        if (Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable()) {
+        if (Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($totalPrice)) {
             if ($retry16) {
                 $blikPaymentOption = [
                     'CallToActionText' => $this->l('Pay by BLIK'),
@@ -930,7 +927,7 @@ class PayU extends PaymentModule
 
         $paymentOptions[] = $paymentOption;
 
-        if (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1' && $this->isPayLaterTwistoAvailable()) {
+        if (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1' && $this->isPayLaterTwistoAvailable($totalPrice)) {
             if ($retry16) {
                 $payLaterTwistoOption = [
                     'CallToActionText' => $this->l('Pay later'),
@@ -1003,9 +1000,9 @@ class PayU extends PaymentModule
                 'image' => $this->getPayuLogo(),
                 'creditImage' => $this->getPayuLogo('raty_small.png'),
                 'payu_logo_img' => $this->getPayuLogo(),
-                'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable(),
-                'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' && $this->isCardAvailable(),
-                'showBlikPayment' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable(),
+                'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
+                'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
+                'showBlikPayment' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($params['cart']->getOrderTotal()),
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment', ['payMethod' => 'pbl']),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
@@ -1020,7 +1017,7 @@ class PayU extends PaymentModule
                     'payMethod' => 'dpt'
                 ]),
                 'credit_available' => $this->isCreditAvailable($params['cart']->getOrderTotal()),
-                'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable(),
+                'payu_later_twisto_available' => $this->isPayLaterTwistoAvailable($params['cart']->getOrderTotal()),
                 'cart_total_amount' => $params['cart']->getOrderTotal(),
                 'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
                 'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2),
@@ -1518,25 +1515,24 @@ class PayU extends PaymentModule
     public function getPaymethods($currency, $totalPrice)
     {
         try {
-            $this->initializeOpenPayU($currency['iso_code']);
+            $retrieve = PayMethodsCache::getPaymethods($currency, $this->getLanguage(), $this->getVersion());
 
-            $retreive = OpenPayU_Retrieve::payMethods($this->getLanguage());
-            if ($retreive->getStatus() == 'SUCCESS') {
-                $response = $retreive->getResponse();
+            if ($retrieve->getStatus() == 'SUCCESS') {
+                $response = $retrieve->getResponse();
                 return [
                     'payByLinks' => $this->reorderPaymentMethods($response->payByLinks, $totalPrice)
                 ];
             } else {
                 return [
-                    'error' => $retreive->getStatus() . ': ' . OpenPayU_Util::statusDesc($retreive->getStatus())
+                    'error' => $retrieve->getStatus() . ': ' . OpenPayU_Util::statusDesc($retrieve->getStatus())
                 ];
             }
 
-        } catch (OpenPayU_Exception $e) {
-            return [
-                'error' => $e->getMessage()
-            ];
-        }
+        } catch (OpenPayU_Exception | OpenPayU_Exception_Configuration $e) {
+                return [
+                    'error' => $e->getMessage()
+                ];
+            }
     }
 
     public function getPayuLogo($file = 'logo-payu.svg')
@@ -1756,7 +1752,7 @@ class PayU extends PaymentModule
     {
         $filteredPaymethods = [];
         foreach ($payMethods as $payMethod) {
-            if ($payMethod->status !== 'ENABLED' || !$this->check_min_max($payMethod, $totalPrice * 100)) {
+            if ($payMethod->status !== 'ENABLED' || !PayMethodsCache::checkMinMax($payMethod, $totalPrice)) {
                 continue;
             }
 
@@ -1792,22 +1788,6 @@ class PayU extends PaymentModule
         return $filteredPaymethods;
     }
 
-    /**
-     * @param object $payMethod
-     * @param int $total
-     * @return bool
-     */
-    protected function check_min_max($payMethod, $total)
-    {
-        if (isset($payMethod->minAmount) && $total < $payMethod->minAmount) {
-            return false;
-        }
-        if (isset($payMethod->maxAmount) && $total > $payMethod->maxAmount) {
-            return false;
-        }
-
-        return true;
-    }
     /**
      * @return string
      */
@@ -2334,51 +2314,63 @@ class PayU extends PaymentModule
     }
 
     /**
-     * @param $amount
+     * @param int $amount
      *
      * @return bool
      */
     private function isCreditAvailable($amount)
     {
         return Configuration::get('PAYU_PROMOTE_CREDIT') === '1'
-            && $amount >= self::PAYU_MIN_CREDIT_AMOUNT
-            && $amount <= self::PAYU_MAX_CREDIT_AMOUNT
-            && PayMethodsCache::isInstallmentsAvailable(
+            && PayMethodsCache::isPaytypeAvailable('ai',
                 Currency::getCurrency($this->context->cart->id_currency),
+                $this->getLanguage(),
+                $amount,
                 $this->getVersion());
     }
 
     /**
+     * @param int $amount
+     *
      * @return bool
      */
-    private function isCardAvailable()
+    private function isCardAvailable($amount)
     {
         return Configuration::get('PAYU_PAYMENT_METHODS_GRID') !== '1'
             || PayMethodsCache::isPaytypeAvailable('c',
                 Currency::getCurrency($this->context->cart->id_currency),
+                $this->getLanguage(),
+                $amount,
                 $this->getVersion(), true);
     }
 
     /**
+     * @param int $amount
+     *
      * @return bool
      */
-    private function isBlikAvailable()
+    private function isBlikAvailable($amount)
     {
         return Configuration::get('PAYU_PAYMENT_METHODS_GRID') !== '1'
             || PayMethodsCache::isPaytypeAvailable('blik',
                 Currency::getCurrency($this->context->cart->id_currency),
+                $this->getLanguage(),
+                $amount,
                 $this->getVersion(), true);
     }
 
     /**
+     * @param int $amount
+     *
      * @return bool
      */
-    private function isPayLaterTwistoAvailable()
+    private function isPayLaterTwistoAvailable(int $amount)
     {
         return (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1'
                 || Configuration::get('PAYU_PROMOTE_CREDIT') === '1')
-            && PayMethodsCache::isDelayedPaymentTwistoAvailable(
+            && PayMethodsCache::isPaytypeAvailable('dpt',
                 Currency::getCurrency($this->context->cart->id_currency),
+                $this->getLanguage(),
+                $amount,
                 $this->getVersion());
     }
 
