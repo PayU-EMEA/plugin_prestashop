@@ -1,3 +1,6 @@
+## 3.2.9
+* Optimized pay methods retrieve
+
 ## 3.2.8
 * Fixed installment widget display on product and checkout page
 * Changed styling of installment section on checkout page
