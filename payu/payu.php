@@ -1528,7 +1528,7 @@ class PayU extends PaymentModule
                 ];
             }
 
-        } catch (OpenPayU_Exception | OpenPayU_Exception_Configuration $e) {
+        } catch (OpenPayU_Exception $e) {
             return [
                 'error' => $e->getMessage()
             ];
