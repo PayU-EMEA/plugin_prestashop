@@ -109,7 +109,7 @@ class PayMethodsCache
                     return false;
                 }
 
-            } catch (OpenPayU_Exception | OpenPayU_Exception_Configuration $e) {
+            } catch (OpenPayU_Exception $e) {
                 return false;
             }
         }
