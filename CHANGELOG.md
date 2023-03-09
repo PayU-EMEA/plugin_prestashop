@@ -1,3 +1,6 @@
+## 3.2.10
+* Fixed incompatible with php <7.1
+
 ## 3.2.9
 * Optimized pay methods retrieve
 
