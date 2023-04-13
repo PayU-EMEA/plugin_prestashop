@@ -2026,15 +2026,15 @@ class PayU extends PaymentModule
      */
     private function createHooks()
     {
-        $registerStatus = $this->registerHook('header') &&
-            $this->registerHook('paymentReturn') &&
-            $this->registerHook('backOfficeHeader') &&
-            $this->registerHook('adminOrder') &&
+        $registerStatus = $this->registerHook('displayHeader') &&
+            $this->registerHook('displayPaymentReturn') &&
+            $this->registerHook('displayBackOfficeHeader') &&
+            $this->registerHook('displayAdminOrder') &&
             $this->registerHook('displayOrderDetail') &&
             $this->registerHook('displayProductPriceBlock') &&
             $this->registerHook('displayCheckoutSubtotalDetails') &&
             $this->registerHook('displayCheckoutSummaryTop') &&
-            $this->registerHook('ActionGetExtraMailTemplateVars');
+            $this->registerHook('actionGetExtraMailTemplateVars');
 
         if (version_compare(_PS_VERSION_, '1.7', 'lt')) {
             $registerStatus &= $this->registerHook('displayPaymentEU') && $this->registerHook('payment');
