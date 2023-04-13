@@ -1,3 +1,7 @@
+## 3.2.11
+* Cleanup hooks names (#312)
+* Add option 'Without changing status' for CANCELED notification
+
 ## 3.2.10
 * Fixed incompatible with php <7.1
 
