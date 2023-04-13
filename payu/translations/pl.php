@@ -58,6 +58,7 @@ $_MODULE['<{payu}prestashop>payu_a3c8cfa81d897fc55a71606e1381f5a4'] = 'Żądanie
 $_MODULE['<{payu}prestashop>payu_cf382d6dd35499d18e02bd92dcbb1d76'] = 'Żądanie aktualizacji statusu nie zostało poprawnie zakończone.';
 $_MODULE['<{payu}prestashop>payu_1852891df77140cc48a3fa6e48b9ac68'] = 'Zamówienie:';
 $_MODULE['<{payu}prestashop>payu_72608e100b98e6041c7f43ab0ead2e37'] = 'Sklep:';
+$_MODULE['<{payu}prestashop>payu_992adc4306d5d17d52b793643e18092b'] = 'Bez zmiany statusu';
 $_MODULE['<{payu}prestashop>payu_db4ee5e4de60968ed345209a0b51a17d'] = 'Zaakceptuj płatność';
 $_MODULE['<{payu}prestashop>payu_1ed3dcc1be1ccdfd6b2daf7b866d3ffd'] = 'Odrzuć płatność';
 $_MODULE['<{payu}prestashop>payu_1a4bf0dd59a290f55a88831c7626c4b1'] = 'Aktualizacja statusu zamówienia nie może być wysłana';

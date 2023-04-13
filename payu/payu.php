@@ -553,7 +553,7 @@ class PayU extends PaymentModule
                         'label' => $this->l('Canceled status'),
                         'name' => 'PAYU_PAYMENT_STATUS_CANCELED',
                         'options' => [
-                            'query' => $this->getStatesList(),
+                            'query' => $this->getStatesList(true),
                             'id' => 'id',
                             'name' => 'name'
                         ]
@@ -1865,7 +1865,7 @@ class PayU extends PaymentModule
             if ($order_state_id != Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED')) {
                 switch ($status) {
                     case OpenPayuOrderStatus::STATUS_CANCELED:
-                        if (!$this->repaymentEnabled()) {
+                        if (!$this->repaymentEnabled() && Configuration::get('PAYU_PAYMENT_STATUS_CANCELED') !== '0') {
                             $this->setOrdersStatus($ordersToChange, Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'));
                             $this->updateOrderPaymentStatusBySessionId($status);
                         }
@@ -1979,7 +1979,7 @@ class PayU extends PaymentModule
     /**
      * @return array|null
      */
-    private function getStatesList()
+    private function getStatesList($withoutChangeStatus = false)
     {
         $states = OrderState::getOrderStates($this->context->language->id);
 
@@ -1988,6 +1988,12 @@ class PayU extends PaymentModule
         }
 
         $list = [];
+        if ($withoutChangeStatus) {
+            $list[] = [
+                'id' => 0,
+                'name' => $this->l('Without changing status'),
+            ];
+        }
         foreach ($states as $state) {
             $list[] = [
                 'id' => $state['id_order_state'],
@@ -2229,7 +2235,7 @@ class PayU extends PaymentModule
             $order_state->send_email = false;
             $order_state->invoice = false;
             $order_state->unremovable = true;
-            $order_state->color = '#00AEEF';
+            $order_state->color = '#002124';
             $order_state->module_name = 'payu';
 
             if (!$order_state->add() || !Configuration::updateValue($state, $order_state->id)) {
