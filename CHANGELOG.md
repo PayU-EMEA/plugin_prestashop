@@ -1,3 +1,6 @@
+## 3.2.12
+* Fixed payment for non classic themes
+
 ## 3.2.11
 * Cleanup hooks names (#312)
 * Add option 'Without changing status' for CANCELED notification
