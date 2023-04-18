@@ -79,7 +79,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             }
         }
         elseif ($payMethod === 'card') {
-            $cardToken = Tools::getValue('cardToken1');
+            $cardToken = Tools::getValue('cardToken');
             $paymentId = Tools::getValue('payment_id');
 
             if ($cardToken) {
