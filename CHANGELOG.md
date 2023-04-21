@@ -1,3 +1,7 @@
+## 3.2.16
+* Fixed show separated Twisto [Prestashop 1.6]
+* Fixed pay with Bank List and Card Widget [Prestashop 1.6]
+
 ## 3.2.12
 * Fixed payment for non classic themes
 
