@@ -927,7 +927,7 @@ class PayU extends PaymentModule
 
         $paymentOptions[] = $paymentOption;
 
-        if (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1' && $this->isPayLaterTwistoAvailable($totalPrice)) {
+        if ($this->isPayLaterTwistoAvailable($totalPrice)) {
             if ($retry16) {
                 $payLaterTwistoOption = [
                     'CallToActionText' => $this->l('Pay later'),
@@ -2371,8 +2371,7 @@ class PayU extends PaymentModule
      */
     private function isPayLaterTwistoAvailable($amount)
     {
-        return (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1'
-                || Configuration::get('PAYU_PROMOTE_CREDIT') === '1')
+        return (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1')
             && PayMethodsCache::isPaytypeAvailable('dpt',
                 Currency::getCurrency($this->context->cart->id_currency),
                 $this->getLanguage(),
