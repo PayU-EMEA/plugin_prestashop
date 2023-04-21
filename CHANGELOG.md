@@ -1,4 +1,4 @@
-## 3.2.16
+## 3.2.13
 * Fixed show separated Twisto [Prestashop 1.6]
 * Fixed pay with Bank List and Card Widget [Prestashop 1.6]
 
