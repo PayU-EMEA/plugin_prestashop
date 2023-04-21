@@ -18,8 +18,9 @@ $(document).ready(function () {
 		}, 500)
 	}
 
-	$('#HOOK_PAYMENT').on('click', '.payment_module a.payu', function(e){
+	$(document).on('click', '#HOOK_PAYMENT .payment_module a.payu', function(e){
 		if($(this).attr('href') === '') {
+			init_sf();
 			$(this).parent().next('.payment_module_content').show();
 			return false;
 		} else {
@@ -46,17 +47,6 @@ function doubleClickPrevent(object) {
 
 (function () {
 	document.addEventListener("DOMContentLoaded", function () {
-
-		let transferResponseBox = document.getElementById('transfer-response-box');
-		let transferGateways = document.querySelectorAll('input[name=transfer_gateway_id]');
-		let currentGateway = document.querySelector('input[name=transferGateway]');
-
-		$('.history_detail a').on('click', function(){
-			setTimeout(function(){
-				run_repayment_listener();
-			}, 3000)
-		});
-
 		function resetPaymentTab() {
 			Array.from(document.querySelectorAll('.payment_module_content')).forEach(function (el) {
 				el.classList.remove('payment_module_content--show');
@@ -110,9 +100,8 @@ function doubleClickPrevent(object) {
 			Array.from(document.querySelectorAll('.pay-methods__item')).forEach(function (el) {
 				el.classList.remove('payMethodActive');
 			});
-			if (currentGateway !== null) {
-				currentGateway.value = '';
-			}
+			var $currentGateway = $('input[name=transferGateway]');
+			$currentGateway && $currentGateway.val('');
 		}
 
 		function validateBeforeSubmitGatewaysForm() {
@@ -153,7 +142,9 @@ function doubleClickPrevent(object) {
 			var btn = document.querySelector('.pay-transfer-accept button');
 			var form = document.querySelector('#paymentTransfer');
 
-			if(currentGateway !== null && currentGateway.value === '') {
+			var $currentGateway = $('input[name=transferGateway]');
+
+			if($currentGateway.val() === '') {
 				validateResponse.style.display = 'block';
 				btn.setAttribute('disabled', '');
 			} else {
@@ -166,33 +157,25 @@ function doubleClickPrevent(object) {
 			}
 		}
 
-		if (transferGateways.length > 0) {
-			transferGateways.forEach(function (gateway) {
-				gateway.addEventListener('click', function (e) {
+		$(document).on('click', 'input[name=transfer_gateway_id]', function () {
+			resetAllGatewaysActive();
 
-						resetAllGatewaysActive();
+			var gatewayValue = this.value;
+			var item = document.querySelector('#payMethodContainer-'+gatewayValue);
+			item.classList.add('payMethodActive');
+			var $currentGateway = $('input[name=transferGateway]');
+			if (gatewayValue !== null && $currentGateway) {
+				$currentGateway.val(gatewayValue);
+			}
 
-						var gatewayValue = this.value;
-						var item = document.querySelector('#payMethodContainer-'+gatewayValue);
-						item.classList.add('payMethodActive');
+			var transferResponseBox = document.getElementById('transfer-response-box')
 
-						if (gatewayValue !== null && currentGateway !== null) {
-							currentGateway.value = gatewayValue;
-						}
+			if (transferResponseBox !== null) {
+				transferResponseBox.style.display = 'none';
+			}
 
-						if (transferResponseBox !== null) {
-							transferResponseBox.style.display = 'none';
-						}
-
-						activatePaymentButton();
-
-					}, true
-				);
-			});
-		}
-
-
-
+			activatePaymentButton();
+		} );
 
 
 		// Polyfill from https://developer.mozilla.org/pl/docs/Web/JavaScript/Referencje/Obiekty/Object/assign
@@ -203,73 +186,7 @@ function doubleClickPrevent(object) {
 
 
 
-		function init_sf(){
-			if(payuSFEnabled === true && typeof PayU !== 'undefined') {
 
-				var secureFormOptions = {
-					elementFormNumber: '#payu-card-number',
-					elementFormDate: '#payu-card-date',
-					elementFormCvv: '#payu-card-cvv',
-					element: '#secure-form',
-					profile: 'widthGt300',
-					profiles: {
-						widthLt290: {
-							cardIcon: false,
-							style: {
-								basic: {
-									fontSize: '14px',
-								}
-							},
-						},
-						widthLt340: {
-							cardIcon: true,
-							style: {
-								basic: {
-									fontSize: '14px',
-								}
-							},
-						},
-						widthGt340: {
-							cardIcon: true,
-							style: {
-								basic: {
-									fontSize: '18px',
-								}
-							},
-						}
-					},
-					config: {
-						cardIcon: true,
-						placeholder: {
-							number: '',
-							cvv: ''
-						},
-						style: {
-							basic: {
-								fontSize: '18px',
-							}
-						},
-						lang: payuLangId
-					}
-				};
-
-				secureFormOptions.profile = calculateProfile();
-				secureFormOptions.config = Object.assign({}, secureFormOptions.config, secureFormOptions.profiles[secureFormOptions.profile]);
-
-				window.payu = PayU(payuPosId);
-
-				var secureForms = payu.secureForms();
-				window.secureFormNumber = secureForms.add('number', secureFormOptions.config);
-				window.secureFormNumber.render(secureFormOptions.elementFormNumber);
-				window.secureFormDate = secureForms.add('date', secureFormOptions.config);
-				window.secureFormDate.render(secureFormOptions.elementFormDate);
-				window.secureFormCvv = secureForms.add('cvv', secureFormOptions.config);
-				window.secureFormCvv.render(secureFormOptions.elementFormCvv);
-				window.addEventListener('resize', secureFormResize);
-				window.cardTokenInput = document.getElementById('card-token');
-
-			}
-		}
 		init_sf();
 		$('body').on('click', '.history_detail a', function(){
 			setTimeout(function(){
@@ -321,38 +238,106 @@ function doubleClickPrevent(object) {
 				showMessageBox(e.message);
 			}
 		}
-
-		function calculateProfile() {
-			if (window.innerWidth <= 290) {
-				return 'widthLt290';
-			} else if (window.innerWidth <= 340) {
-				return 'widthLt340';
-			}
-
-			return 'widthGt340';
-		}
-
-		function secureFormResize() {
-			var newProfile = calculateProfile();
-
-			if (newProfile !== secureFormOptions.profile) {
-				secureFormOptions.profile = newProfile;
-				window.secureFormNumber.update(secureFormOptions.profiles[secureFormOptions.profile]);
-				window.secureFormDate.update(secureFormOptions.profiles[secureFormOptions.profile]);
-				window.secureFormCvv.update(secureFormOptions.profiles[secureFormOptions.profile]);
-			}
-		}
-
-		function showMessageBox(message) {
-			var responseBox = document.getElementById('response-box');
-			responseBox.innerHTML = message;
-			responseBox.style.display = '';
-		}
-
-		function hideMessageBox() {
-			var responseBox = document.getElementById('response-box');
-			responseBox.innerHTML = '';
-			responseBox.style.display = 'none';
-		}
 	});
 })();
+
+function init_sf(){
+	if(payuSFEnabled === true && typeof PayU !== 'undefined') {
+
+		var secureFormOptions = {
+			elementFormNumber: '#payu-card-number',
+			elementFormDate: '#payu-card-date',
+			elementFormCvv: '#payu-card-cvv',
+			element: '#secure-form',
+			profile: 'widthGt300',
+			profiles: {
+				widthLt290: {
+					cardIcon: false,
+					style: {
+						basic: {
+							fontSize: '14px',
+						}
+					},
+				},
+				widthLt340: {
+					cardIcon: true,
+					style: {
+						basic: {
+							fontSize: '14px',
+						}
+					},
+				},
+				widthGt340: {
+					cardIcon: true,
+					style: {
+						basic: {
+							fontSize: '18px',
+						}
+					},
+				}
+			},
+			config: {
+				cardIcon: true,
+				placeholder: {
+					number: '',
+					cvv: ''
+				},
+				style: {
+					basic: {
+						fontSize: '18px',
+					}
+				},
+				lang: payuLangId
+			}
+		};
+
+		secureFormOptions.profile = calculateProfile();
+		secureFormOptions.config = Object.assign({}, secureFormOptions.config, secureFormOptions.profiles[secureFormOptions.profile]);
+
+		window.payu = PayU(payuPosId);
+
+		var secureForms = payu.secureForms();
+		window.secureFormNumber = secureForms.add('number', secureFormOptions.config);
+		window.secureFormNumber.render(secureFormOptions.elementFormNumber);
+		window.secureFormDate = secureForms.add('date', secureFormOptions.config);
+		window.secureFormDate.render(secureFormOptions.elementFormDate);
+		window.secureFormCvv = secureForms.add('cvv', secureFormOptions.config);
+		window.secureFormCvv.render(secureFormOptions.elementFormCvv);
+		window.addEventListener('resize', secureFormResize);
+		window.cardTokenInput = document.getElementById('card-token');
+
+	}
+}
+
+function calculateProfile() {
+	if (window.innerWidth <= 290) {
+		return 'widthLt290';
+	} else if (window.innerWidth <= 340) {
+		return 'widthLt340';
+	}
+
+	return 'widthGt340';
+}
+
+function secureFormResize() {
+	var newProfile = calculateProfile();
+
+	if (newProfile !== secureFormOptions.profile) {
+		secureFormOptions.profile = newProfile;
+		window.secureFormNumber.update(secureFormOptions.profiles[secureFormOptions.profile]);
+		window.secureFormDate.update(secureFormOptions.profiles[secureFormOptions.profile]);
+		window.secureFormCvv.update(secureFormOptions.profiles[secureFormOptions.profile]);
+	}
+}
+
+function showMessageBox(message) {
+	var responseBox = document.getElementById('response-box');
+	responseBox.innerHTML = message;
+	responseBox.style.display = '';
+}
+
+function hideMessageBox() {
+	var responseBox = document.getElementById('response-box');
+	responseBox.innerHTML = '';
+	responseBox.style.display = 'none';
+}
