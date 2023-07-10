@@ -1225,26 +1225,151 @@ class PayU extends PaymentModule
     }
 
     /**
+     * @param bool $withDiscountAndShipment
      * @return array|null
      */
-    private function getProductList()
+    private function getProductList($withDiscountAndShipment = false)
     {
         $products = $this->order->getProducts();
-
         if (!is_array($products) || count($products) == 0) {
             return null;
         }
 
         $list = [];
+        $i = 0;
+
         foreach ($products as $product) {
-            $list[] = [
+            $list[$i] = [
                 'quantity' => $product['product_quantity'],
                 'name' => mb_substr($product['product_name'], 0, 255),
                 'unitPrice' => $this->toAmount($product['product_price_wt'])
             ];
+
+            if ($product['is_virtual']) {
+                $list[$i]['virtual'] = true;
+            }
+
+            $i++;
+        }
+
+        if ($withDiscountAndShipment) {
+            if (!$this->order->isVirtual()) {
+                $shippings = $this->order->getShipping();
+
+                foreach ($shippings as $shipping) {
+                    $list[] = [
+                        'name' => mb_substr('Shipment' . ' [' . $shipping['carrier_name'] . ']', 0, 255),
+                        'unitPrice' => $this->toAmount(Tools::ps_round($shipping['shipping_cost_tax_incl'], 2)),
+                        'quantity' => 1
+                    ];
+                }
+            }
+
+            $rules = $this->order->getCartRules();
+
+            foreach ($rules as $rule) {
+                $list[] = [
+                    'name' => mb_substr('Discount' . ' [' . $rule['name'] . ']', 0, 255),
+                    'unitPrice' => $this->toAmount(Tools::ps_round($rule['value'],2) * -1),
+                    'quantity' => 1
+                ];
+            }
         }
 
         return $list;
+    }
+
+    /**
+     * @param Order $order
+     * @param array $ocrData
+     *
+     * @return array | false
+     */
+    private function getThreeDsAuthentication($order, $ocrData)
+    {
+        if (!isset($ocrData['payMethods'])
+            || $ocrData['payMethods']['payMethod']['type'] === 'CARD_TOKEN'
+            || $ocrData['payMethods']['payMethod']['value'] === 'c'
+            || $ocrData['payMethods']['payMethod']['value'] === 'ap'
+            || $ocrData['payMethods']['payMethod']['value'] === 'jp'
+            || $ocrData['payMethods']['payMethod']['value'] === 'ma'
+            || $ocrData['payMethods']['payMethod']['value'] === 'vc'
+        ) {
+
+            $billingData = new Address($order->id_address_invoice);
+            $threeDsAuthentication = false;
+
+            $name = $billingData->firstname . ' ' . $billingData->lastname;
+            $address = $billingData->address1 . ($billingData->address2 ? ' ' . $billingData->address2 : '');
+            $postalCode = $billingData->postcode;
+            $city = $billingData->city;
+            if ($billingData->id_country) {
+                $country = new Country($billingData->id_country);
+                $countryCode = $country->iso_code;
+            } else {
+                $countryCode = '';
+            }
+
+            $isBillingAddress = !empty($address) || !empty($postalCode) || !empty($city) || (!empty($countryCode) && strlen($countryCode) === 2);
+
+            if (!empty($name) || $isBillingAddress) {
+                $threeDsAuthentication = [
+                    'cardholder' => []
+                ];
+
+                if (!empty($name)) {
+                    $threeDsAuthentication['cardholder']['name'] = mb_substr($name, 0, 50);
+                }
+
+                if ($isBillingAddress) {
+                    $threeDsAuthentication['cardholder']['billingAddress'] = [];
+                }
+
+                if (!empty($countryCode) && strlen($countryCode) === 2) {
+                    $threeDsAuthentication['cardholder']['billingAddress']['countryCode'] = $countryCode;
+                }
+
+                if (!empty($address)) {
+                    $threeDsAuthentication['cardholder']['billingAddress']['street'] = mb_substr($address, 0, 50);
+                }
+
+                if (!empty($city)) {
+                    $threeDsAuthentication['cardholder']['billingAddress']['city'] = mb_substr($city, 0, 50);
+                }
+
+                if (!empty($postalCode)) {
+                    $threeDsAuthentication['cardholder']['billingAddress']['postalCode'] = mb_substr($postalCode, 0, 16);
+                }
+            }
+
+            $payuBrowser = Tools::getValue('payuBrowser');
+
+            if (isset($ocrData['payMethods']['payMethod']['type']) && $ocrData['payMethods']['payMethod']['type'] === 'CARD_TOKEN'
+                && isset($payuBrowser)
+                && is_array($payuBrowser)
+            ) {
+                $possibleBrowserData = ['screenWidth', 'javaEnabled', 'timezoneOffset', 'screenHeight', 'userAgent', 'colorDepth', 'language'];
+                $browserData = [
+                    'requestIP' => $this->getIP()
+                ];
+
+                foreach ($possibleBrowserData as $bd) {
+                    $browserData[$bd] = isset($payuBrowser[$bd]) ? $payuBrowser[$bd] : '';
+                }
+
+                if (empty($browserData['userAgent'])) {
+                    if ($_SERVER['HTTP_USER_AGENT']) {
+                        $browserData['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+                    }
+                }
+
+                $threeDsAuthentication['browser'] = $browserData;
+            }
+
+            return $threeDsAuthentication;
+        }
+
+        return false;
     }
 
     /**
@@ -1361,7 +1486,8 @@ class PayU extends PaymentModule
         }
 
         $cart = new Cart($this->order->id_cart);
-        $customer = new Customer($cart->id_customer);
+        $customer = new Customer($this->order->id_customer);
+
         $params = [
             'ext_order' => $this->extOrderId,
             'id_cart' => $cart->id,
@@ -1373,33 +1499,36 @@ class PayU extends PaymentModule
 
         $ocreq = [
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
-            'description' => $this->l('Order: ') . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store: ') . Configuration::get('PS_SHOP_NAME'),
-            'products' => [
-                [
-                    'quantity' => 1,
-                    'name' => $this->l('Order: ') . $this->order->reference,
-                    'unitPrice' => $this->toAmount($orderTotal)
-                ]
-            ],
+            'description' => $this->l('Order:') . ' ' . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store:') . ' ' . Configuration::get('PS_SHOP_NAME'),
             'customerIp' => $this->getIP(),
             'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
             'continueUrl' => $continueUrl,
             'currencyCode' => $currency['iso_code'],
             'totalAmount' => $this->toAmount($orderTotal),
-            'extOrderId' => $this->extOrderId
+            'extOrderId' => $this->extOrderId,
+            'buyer' => $this->getBuyer($customer, $this->order),
         ];
+        $products = $this->getProductList(true);
 
-        if ($this->getCustomer($this->order->id_customer)) {
-            $ocreq['buyer'] = $this->getCustomer($this->order->id_customer);
+        if ($products) {
+            $ocreq['products'] = $products;
+        } else {
+            $ocreq['products'] = [
+                [
+                    'quantity' => 1,
+                    'name' => $this->l('Order: ') . $this->order->reference,
+                    'unitPrice' => $this->toAmount($orderTotal)
+                ]
+            ];
         }
+
 
         if ($payMethod === 'ai' || $payMethod === 'dp' || $payMethod === 'dpt' || $payMethod === 'dpp') {
             $ocreq['credit'] = $this->getCreditSection();
         }
-        $is_card = false;
+
         if ($payMethod !== null) {
             if ($payMethod === 'card' && Configuration::get('PAYU_CARD_PAYMENT_WIDGET') !== 1) {
-                $is_card = true;
                 $ocreq['payMethods'] = [
                     'payMethod' => [
                         'type' => 'CARD_TOKEN',
@@ -1416,16 +1545,17 @@ class PayU extends PaymentModule
             }
         }
 
+        $threeDsAuthentication = $this->getThreeDsAuthentication($this->order, $ocreq);
+
+        if ($threeDsAuthentication !== false) {
+            $ocreq['threeDsAuthentication'] = $threeDsAuthentication;
+        }
+
         try {
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($ocreq, true), $this->payu_order_id, 'OrderCreateRequest: ');
             $result = OpenPayU_Order::create($ocreq);
             SimplePayuLogger::addLog('order', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'OrderCreateResponse: ');
-            if ($result->getStatus() === 'SUCCESS' && $is_card) {
-                return [
-                    'redirectUri' => $continueUrl,
-                    'orderId' => $result->getResponse()->orderId
-                ];
-            } elseif ($result->getStatus() === 'SUCCESS' && !$is_card || $result->getStatus() === 'WARNING_CONTINUE_3DS') {
+            if ($result->getStatus() === 'SUCCESS' || $result->getStatus() === 'WARNING_CONTINUE_3DS' || $result->getStatus() === 'WARNING_CONTINUE_REDIRECT') {
                 return [
                     'redirectUri' => $result->getResponse()->redirectUri ? urldecode($result->getResponse()->redirectUri) : $continueUrl,
                     'orderId' => $result->getResponse()->orderId
@@ -1723,29 +1853,44 @@ class PayU extends PaymentModule
         return $result['status'] == OpenPayuOrderStatus::STATUS_COMPLETED;
     }
 
+
     /**
-     * @param int | null $idCustomer
+     * @param Customer $customer
+     * @param Order $order
      *
-     * @return array | null
+     * @return array
      */
-    private function getCustomer($idCustomer)
+    private function getBuyer($customer, $order)
     {
-        if (!$idCustomer) {
-            return null;
-        }
+        $billingData = new Address($order->id_address_invoice);
 
-        $customer = new Customer((int)$idCustomer);
-
-        if (!$customer->email) {
-            return null;
-        }
-
-        return [
+        $buyer = [
             'email' => $customer->email,
-            'firstName' => $customer->firstname,
-            'lastName' => $customer->lastname,
-            'language' => $this->getLanguage()
+            'firstName' => $billingData->firstname,
+            'lastName' => $billingData->lastname,
+            'language' => $this->getLanguage(),
         ];
+
+        if (!empty($billingData->phone_mobile)) {
+            $buyer['phone'] = $billingData->phone_mobile;
+        } elseif (!empty($billingData->phone)) {
+            $buyer['phone'] = $billingData->phone;
+        }
+
+        $shippingData = new Address($order->id_address_delivery);
+
+        $buyer['delivery'] = [
+            'street' => $shippingData->address1 . ($shippingData->address2 ? ' ' . $shippingData->address2 : ''),
+            'postalCode' => $shippingData->postcode,
+            'city' => $shippingData->city
+        ];
+
+        if ($shippingData->id_country) {
+            $country = new Country($shippingData->id_country);
+            $buyer['delivery']['countryCode'] = $country->iso_code;
+        }
+
+        return $buyer;
     }
 
     private function reorderPaymentMethods($payMethods, $totalPrice)
@@ -2112,7 +2257,6 @@ class PayU extends PaymentModule
 
     public function hookDisplayProductPriceBlock($params)
     {
-
         if (Configuration::get('PAYU_PROMOTE_CREDIT') === '0'
             || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
             return;
@@ -2151,15 +2295,16 @@ class PayU extends PaymentModule
         } else {
             $product = $params['product'];
             $current_controller = Tools::getValue('controller');
-            $promoteCredit = isset($product['price_amount']) &&
-                $this->isCreditAvailable($product['price_amount']);
-            if ($promoteCredit &&
-                (
+            if ((
                     ($params['type'] === 'weight' && $current_controller === 'index') ||
                     ($params['type'] === 'after_price' && $current_controller === 'product') ||
                     ($params['type'] === 'weight' && $current_controller === 'category') ||
                     ($params['type'] === 'weight' && $current_controller === 'search')
-                )) {
+                ) &&
+                isset($product['price_amount']) &&
+                is_numeric($product['price_amount']) &&
+                $this->isCreditAvailable($product['price_amount'])
+            ) {
                 $this->context->smarty->assign([
                     'product_price' => $product['price_amount'],
                     'product_id' => $product['id_product'],

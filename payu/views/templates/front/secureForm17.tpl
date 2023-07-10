@@ -21,6 +21,13 @@
             <input type="hidden" name="payment_id" value="">
             <input type="hidden" name="payMethod" value="card"/>
             <input type="hidden" name="cardToken" value="" id="card-token"/>
+            <input type="hidden" name="payuBrowser[screenWidth]" value=""/>
+            <input type="hidden" name="payuBrowser[javaEnabled]" value=""/>
+            <input type="hidden" name="payuBrowser[timezoneOffset]" value=""/>
+            <input type="hidden" name="payuBrowser[screenHeight]" value=""/>
+            <input type="hidden" name="payuBrowser[userAgent]" value=""/>
+            <input type="hidden" name="payuBrowser[colorDepth]" value=""/>
+            <input type="hidden" name="payuBrowser[language]" value=""/>
             <div id="card-form-container">
                 {if isset($payMethods.error)}
                     <h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>
@@ -50,6 +57,13 @@
             <input type="hidden" name="payment_id" value="">
             <input type="hidden" name="payMethod" value="card"/>
             <input type="hidden" name="cardToken" value="" id="card-token"/>
+            <input type="hidden" name="payuBrowser[screenWidth]" value=""/>
+            <input type="hidden" name="payuBrowser[javaEnabled]" value=""/>
+            <input type="hidden" name="payuBrowser[timezoneOffset]" value=""/>
+            <input type="hidden" name="payuBrowser[screenHeight]" value=""/>
+            <input type="hidden" name="payuBrowser[userAgent]" value=""/>
+            <input type="hidden" name="payuBrowser[colorDepth]" value=""/>
+            <input type="hidden" name="payuBrowser[language]" value=""/>
             <div id="card-form-container">
                 {if isset($payMethods.error)}
                     <h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>

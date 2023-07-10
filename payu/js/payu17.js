@@ -278,6 +278,13 @@ function openPayment(paymentId) {
                         secureFormDate.remove();
                         secureFormCvv.remove();
                         cardTokenInput.value = result.body.token;
+                        document.getElementsByName('payuBrowser[screenWidth]')[0].value = screen.width;
+                        document.getElementsByName('payuBrowser[javaEnabled]')[0].value = navigator.javaEnabled();
+                        document.getElementsByName('payuBrowser[timezoneOffset]')[0].value = new Date().getTimezoneOffset();
+                        document.getElementsByName('payuBrowser[screenHeight]')[0].value = screen.height;
+                        document.getElementsByName('payuBrowser[userAgent]')[0].value = navigator.userAgent;
+                        document.getElementsByName('payuBrowser[colorDepth]')[0].value = screen.colorDepth;
+                        document.getElementsByName('payuBrowser[language]')[0].value = navigator.language;
                         document.getElementById('waiting-box').style.display = '';
                         document.getElementById('card-form-container').style.display = 'none';
                         if ($('.repayment-options').length > 0) {
