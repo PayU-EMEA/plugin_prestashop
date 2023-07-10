@@ -1,3 +1,9 @@
+## 3.2.14
+* Fixed warnings in cart
+* Fixed warnings in payu logger
+* Fixed open_basedir restriction
+* Sends more data for better detected frauds
+
 ## 3.2.13
 * Fixed show separated Twisto [Prestashop 1.6]
 * Fixed pay with Bank List and Card Widget [Prestashop 1.6]
