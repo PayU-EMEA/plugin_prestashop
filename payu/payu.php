@@ -208,7 +208,7 @@ class PayU extends PaymentModule
             }
         }
 
-        $output .= $this->fetchTemplate('/views/templates/admin/info.tpl');
+        $output .= $this->fetchTemplate('views/templates/admin/info.tpl');
         return $output . $this->displayForm();
     }
 
@@ -1042,7 +1042,7 @@ class PayU extends PaymentModule
 
         $this->setPayuNotification();
 
-        $template = $this->fetchTemplate('/views/templates/hook/payment16.tpl');
+        $template = $this->fetchTemplate('views/templates/hook/payment16.tpl');
 
         return $template;
     }
@@ -1149,7 +1149,7 @@ class PayU extends PaymentModule
             }
         }
 
-        return $output . $this->fetchTemplate('/views/templates/admin/status.tpl');
+        return $output . $this->fetchTemplate('views/templates/admin/status.tpl');
     }
 
     /**
@@ -2226,7 +2226,7 @@ class PayU extends PaymentModule
             'payuLogo' => $this->getPayuLogo()
         ]);
 
-        return $this->fetchTemplate('/views/templates/hook/paymentReturn.tpl');
+        return $this->fetchTemplate('views/templates/hook/paymentReturn.tpl');
     }
 
     public function hookDisplayCheckoutSubtotalDetails($params)
