@@ -1516,7 +1516,7 @@ class PayU extends PaymentModule
             $ocreq['products'] = [
                 [
                     'quantity' => 1,
-                    'name' => $this->l('Order: ') . $this->order->reference,
+                    'name' => mb_substr($this->l('Order:') . ' ' . $this->order->reference, 0, 255),
                     'unitPrice' => $this->toAmount($orderTotal)
                 ]
             ];
