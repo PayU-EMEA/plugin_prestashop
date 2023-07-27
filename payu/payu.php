@@ -1350,7 +1350,7 @@ class PayU extends PaymentModule
             ) {
                 $possibleBrowserData = ['screenWidth', 'javaEnabled', 'timezoneOffset', 'screenHeight', 'userAgent', 'colorDepth', 'language'];
                 $browserData = [
-                    'requestIP' => $this->getIP()
+                    'requestIP' => Tools::getRemoteAddr()
                 ];
 
                 foreach ($possibleBrowserData as $bd) {
@@ -1500,7 +1500,7 @@ class PayU extends PaymentModule
         $ocreq = [
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
             'description' => $this->l('Order:') . ' ' . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store:') . ' ' . Configuration::get('PS_SHOP_NAME'),
-            'customerIp' => $this->getIP(),
+            'customerIp' => Tools::getRemoteAddr(),
             'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
             'continueUrl' => $continueUrl,
             'currencyCode' => $currency['iso_code'],
@@ -1931,16 +1931,6 @@ class PayU extends PaymentModule
         }
 
         return $filteredPaymethods;
-    }
-
-    /**
-     * @return string
-     */
-    private function getIP()
-    {
-        return ($_SERVER['REMOTE_ADDR'] == '::1' || $_SERVER['REMOTE_ADDR'] == '::' ||
-            !preg_match('/^((?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9]).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])$/m',
-                $_SERVER['REMOTE_ADDR'])) ? '127.0.0.1' : $_SERVER['REMOTE_ADDR'];
     }
 
     private function getLanguage()
