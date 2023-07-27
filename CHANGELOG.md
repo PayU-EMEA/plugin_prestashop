@@ -1,3 +1,7 @@
+## 3.2.15
+* IP address from Prestashop Tools
+* SDK update
+
 ## 3.2.14
 * Fixed warnings in cart
 * Fixed warnings in payu logger
