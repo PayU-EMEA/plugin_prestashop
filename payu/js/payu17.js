@@ -38,7 +38,7 @@ function openPayment(paymentId) {
                 var pwpofElement = document.getElementById('pay-with-payment-option-' + paymentId + '-form');
                 var pocElement = document.getElementById('payment-option-' + paymentId + '-container');
 
-                var paymentNameElement = poaiElement.querySelector('.payment-name');
+                var paymentNameElement = poaiElement ? poaiElement.querySelector('.payment-name') : null;
 
                 if (!paymentNameElement) {
                     return;
