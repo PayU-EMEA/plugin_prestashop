@@ -1,0 +1,20 @@
+  on:
+    workflow_dispatch:
+      inputs:
+        pluginVersion:
+          description: 'Plugin Version'
+          type: string
+          required: true
+  jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@master
+        - name: Archive Release
+          env:
+            PLUGIN_VERSION: ${{ inputs.logLevel }}
+          uses: thedoctor0/zip-release@0.7.1
+          with:
+            type: 'zip'
+            directory: 'payu'
+            filename: 'payu_prestashop_plugin_${{ inputs.logLevel }}.zip'
