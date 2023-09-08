@@ -62,20 +62,18 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 ### Opcja 1
 **przeznaczona dla użytkowników bez dostępu poprzez FTP do instalacji PrestaShop**
 
-1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
-2. Rozpakuj pobrany plik
-3. **Utwórz archiwum zip z katalogu `payu`**
-4. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
-5. Przejdź do `Moduły` » `Moduły i usługi`
-6. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (utworzonej w punkcie 3)
-7. Naciśnij przycisk `Prześlij moduł`
+1. Pobierz plik `payu_prestashop_plugin_X.Y.Z.zip` z najnowszej wersji modułu z [wydanych wersji][ext3]
+2. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
+3. Przejdź do `Moduły` » `Moduły i usługi`
+4. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (pobrany w punkcie 3)
+5. Naciśnij przycisk `Prześlij moduł`
 
 ### Opcja 2
 **przeznaczona dla użytkowników z dostępem poprzez FTP do instalacji PrestaShop**
 
-1. Pobierz moduł z [repozytorium GitHub][ext3] jako plik zip
+1. Pobierz plik `payu_prestashop_plugin_X.Y.Z.zip` z najnowszej wersję modułu z [wydanych GitHub][ext3]
 2. Rozpakuj pobrany plik
-3. Połącz się z serwerem ftp i skopiuj katalog `payu` z rozpakowanego pliku do katalogu `modules` swojego sklepu PrestaShop
+3. Połącz się z serwerem ftp i skopiuj zawartość rozpakowanego pliku do katalogu `modules/payu` swojego sklepu PrestaShop
 
 ## Aktualizacja
 
@@ -214,7 +212,7 @@ Z uwagi na to, że moduł OPC buduje własną stronę zamówienia nie działają
 [ext0]: README.EN.md
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
-[ext3]: https://github.com/PayU/plugin_prestashop
+[ext3]: https://github.com/PayU-EMEA/plugin_prestashop/releases
 [ext4]: https://www.payu.pl/oferta-handlowa
 [ext5]: https://secure.snd.payu.com/boarding/?pk_campaign=Plugin-Github&pk_kwd=Prestashop#/form
 [ext6]: http://developers.payu.com/pl/overview.html#paymethods

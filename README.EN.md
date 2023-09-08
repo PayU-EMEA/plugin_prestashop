@@ -61,20 +61,18 @@ The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 ### Option 1
 **recommended for users without FTP access to their PrestShop installation**
 
-1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
-2. Unzip locally downloaded file
-3. **Create zip archive of payu directory**
-4. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
-5. Go to 'Modules and Services' > 'Modules and Services'.
-6. Use 'Add a new module' option and point the archive containing the plugin (created in step 3)
-7. Load the plugin
+1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases](https://github.com/PayU/plugin_prestashop)
+2. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
+3. Go to 'Modules and Services' > 'Modules and Services'.
+4. Use 'Add a new module' option and point the archive containing the plugin (downloaded in step 1)
+5. Load the plugin
 
 ### Option 2
 **recommended for users with FTP access to their PrestaShop installation**
 
-1. Download plugin from [the plugin repository](https://github.com/PayU/plugin_prestashop) to local directory as zip.
+1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases](https://github.com/PayU/plugin_prestashop)
 2. Unzip locally downloaded file
-3. Upload **'payu'** directory from your computer to **'modules'** catalog of your PrestaShop installation.
+3. Upload all unzipped files from your computer to `modules/payu` catalog of your PrestaShop installation.
 
 ## Upgrade
 
@@ -208,7 +206,7 @@ Due to fact that OPC module builds its own checkout page, options `Card payment 
 [ext0]: README.md
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
-[ext3]: https://github.com/PayU/plugin_prestashop
+[ext3]: https://github.com/PayU-EMEA/plugin_prestashop/releases
 [ext4]: https://www.payu.pl/en/commercial-offer
 [ext5]: https://secure.snd.payu.com/boarding/#/form&pk_campaign=Plugin-Github&pk_kwd=Prestashop
 [ext6]: http://developers.payu.com/en/overview.html#paymethods
