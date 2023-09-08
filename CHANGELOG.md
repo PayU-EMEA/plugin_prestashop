@@ -1,3 +1,7 @@
+## 3.2.16
+* Fixed payment without bank list
+* Added save info about selected method
+
 ## 3.2.15
 * IP address from Prestashop Tools
 * SDK update
