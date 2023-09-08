@@ -47,6 +47,7 @@
                         <th><span class="title_box ">{l s='Update date' mod='payu'}</span></th>
                         <th><span class="title_box ">PayU - OrderId</span></th>
                         <th><span class="title_box ">PayU - ExtOrderId</span></th>
+                        <th><span class="title_box ">M</span></th>
                         <th><span class="title_box ">Payu - {l s='Status' mod='payu'}</span></th>
                     </tr>
                     </thead>
@@ -58,6 +59,7 @@
                                 <td>{dateFormat date=$payuOrder.update_at full=true}</td>
                                 <td>{$payuOrder.id_session}</td>
                                 <td>{$payuOrder.ext_order_id}</td>
+                                <td>{$payuOrder.method}</td>
                                 <td>{$payuOrder.status}</td>
                             </tr>
                         {/foreach}

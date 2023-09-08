@@ -46,14 +46,14 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $payMethod === 'dpt' ||
             $payMethod === 'dpp'
         ) {
-            $this->pay($payMethod);
+            $this->pay($payMethod, [], $payMethod);
         }
         elseif ($payMethod === 'transfer') {
             $paymentGateway = Tools::getValue('transferGateway');
             $paymentId = Tools::getValue('payment_id');
 
             if ($paymentGateway) {
-                $this->pay($paymentGateway);
+                $this->pay($paymentGateway, [], 'pbl / ' . $paymentGateway);
             } else {
                 $this->payuNotification[$payMethod] = $this->module->l('Select a payment channel', 'payment');
 
@@ -83,7 +83,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $paymentId = Tools::getValue('payment_id');
 
             if ($cardToken) {
-                $this->pay($payMethod, ['cardToken' => $cardToken]);
+                $this->pay($payMethod, ['cardToken' => $cardToken], $payMethod);
             } else {
                 $this->payuNotification[$payMethod] = $this->module->l('Card token is empty', 'payment');
 
@@ -143,7 +143,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         $this->setTemplate($this->payu->buildTemplatePath('error'));
     }
 
-    private function pay($payMethod = null, $parameters = [])
+    private function pay($payMethod = null, $parameters = [], $method = '')
     {
         if (Tools::getValue('id_order') !== false && Tools::getValue('order_reference') !== false) {
             $order = new Order(Tools::getValue('id_order'));
@@ -151,8 +151,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         } else {
             $orderTotal = $this->context->cart->getOrderTotal(true, Cart::BOTH);
         }
-        SimplePayuLogger::addLog('check', __FUNCTION__, $orderTotal, '');
-
 
         if (!$this->hasRetryPayment) {
             $this->payu->validateOrder(
@@ -175,7 +173,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         try {
             $result = $this->payu->orderCreateRequestByOrder($orderTotal, $payMethod, $parameters);
             $this->payu->payu_order_id = $result['orderId'];
-            $this->postOCR();
+
+            $this->postOCR($method);
 
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . $result['redirectUri'], $result['orderId']);
 
@@ -269,7 +268,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
     }
 
-    private function postOCR()
+    private function postOCR($method)
     {
 
         if ($this->hasRetryPayment) {
@@ -286,7 +285,8 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 $orders,
                 OpenPayuOrderStatus::STATUS_NEW,
                 $this->payu->payu_order_id,
-                $this->payu->getExtOrderId()
+                $this->payu->getExtOrderId(),
+                $method
             );
         }
     }

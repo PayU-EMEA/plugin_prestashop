@@ -36,7 +36,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.2.15';
+        $this->version = '3.2.16';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -1694,7 +1694,7 @@ class PayU extends PaymentModule
      *
      * @return mixed
      */
-    public function addOrdersSessionId($orders, $status, $payuIdOrder, $extOrderId)
+    public function addOrdersSessionId($orders, $status, $payuIdOrder, $extOrderId, $method)
     {
         $data = [];
         if (is_array($orders) && $orders) {
@@ -1705,6 +1705,7 @@ class PayU extends PaymentModule
                     'id_cart' => (int)$o['id_cart'],
                     'id_session' => pSQL($payuIdOrder),
                     'ext_order_id' => pSQL($extOrderId),
+                    'method' => pSQL($method),
                     'status' => pSQL($status),
                     'create_at' => date('Y-m-d H:i:s'),
                 ];
@@ -1761,10 +1762,15 @@ class PayU extends PaymentModule
     private function createInitialDbTable()
     {
         if (Db::getInstance()->ExecuteS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'order_payu_payments"')) {
+            $alter_ext_order_id = true;
+            $alter_method = true;
             if (Db::getInstance()->ExecuteS('SHOW COLUMNS FROM ' . _DB_PREFIX_ . 'order_payu_payments LIKE "ext_order_id"') == false) {
-                return Db::getInstance()->Execute('ALTER TABLE ' . _DB_PREFIX_ . 'order_payu_payments ADD ext_order_id VARCHAR(64) NOT NULL AFTER id_session');
+                $alter_ext_order_id = Db::getInstance()->Execute('ALTER TABLE ' . _DB_PREFIX_ . 'order_payu_payments ADD ext_order_id VARCHAR(64) NOT NULL AFTER id_session');
             }
-            return true;
+            if (Db::getInstance()->ExecuteS('SHOW COLUMNS FROM ' . _DB_PREFIX_ . 'order_payu_payments LIKE "method"') == false) {
+                $alter_method = Db::getInstance()->Execute('ALTER TABLE ' . _DB_PREFIX_ . 'order_payu_payments ADD method VARCHAR(64) NOT NULL AFTER id_session');
+            }
+            return $alter_ext_order_id && $alter_method;
         } else {
             return Db::getInstance()->Execute('CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'order_payu_payments` (
 					`id_payu_payment` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -1772,6 +1778,7 @@ class PayU extends PaymentModule
 					`id_cart` INT(10) UNSIGNED NOT NULL,
 					`id_session` varchar(64) NOT NULL,
 					`ext_order_id` VARCHAR(64) NOT NULL,
+					`method` varchar(64) NOT NULL,
 					`status` varchar(64) NOT NULL,
 					`create_at` datetime,
 					`update_at` datetime
@@ -1808,7 +1815,7 @@ class PayU extends PaymentModule
         $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments
         WHERE id_order = ' . (int)$id_order;
 
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $sql, $this->payu_order_id);
+        SimplePayuLogger::addLog('order', __FUNCTION__, $sql, $this->payu_order_id);
 
         return Db::getInstance()->getRow($sql, false);
     }
@@ -1950,7 +1957,7 @@ class PayU extends PaymentModule
         $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments WHERE id_order = ' . (int)$id_order . '
 			ORDER BY create_at DESC';
 
-        SimplePayuLogger::addLog('notification', __FUNCTION__, $sql, $this->payu_order_id);
+        SimplePayuLogger::addLog('order', __FUNCTION__, $sql, $this->payu_order_id);
         return Db::getInstance()->executeS($sql, true, false);
     }
 
