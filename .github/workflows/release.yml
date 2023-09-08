@@ -5,16 +5,28 @@
           description: 'Plugin Version'
           type: string
           required: true
+
+  env:
+    PLUGIN_VERSION: ${{ inputs.pluginVersion }}
+
   jobs:
     build:
       runs-on: ubuntu-latest
+      permissions:
+        contents: write
       steps:
-        - uses: actions/checkout@master
-        - name: Archive Release
-          env:
-            PLUGIN_VERSION: ${{ inputs.logLevel }}
+        - uses: actions/checkout@v4
+        - name: Create archive
           uses: thedoctor0/zip-release@0.7.1
           with:
             type: 'zip'
             directory: 'payu'
-            filename: 'payu_prestashop_plugin_${{ inputs.logLevel }}.zip'
+            filename: 'payu_prestashop_plugin_${{ env.PLUGIN_VERSION }}.zip'
+        - name: Release
+          uses: ncipollo/release-action@v1
+          with:
+            name: '${{ env.PLUGIN_VERSION }}'
+            artifacts: 'payu/payu_prestashop_plugin_${{ env.PLUGIN_VERSION }}.zip'
+            tag: 'v${{ env.PLUGIN_VERSION }}'
+            commit: 'master'
+            generateReleaseNotes: true
