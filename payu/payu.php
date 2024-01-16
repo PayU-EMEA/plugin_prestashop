@@ -746,16 +746,13 @@ class PayU extends PaymentModule
                 'is_retry' => true,
                 'paymentMethods' => $payMethods
             ];
+
             $this->context->smarty->assign(
                 [
                     'payuImage' => $this->getPayuLogo(),
                     'payMethods' => $payMethods,
-                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment', ['id_order' => $params['order']->id, 'order_reference' => $params['order']->reference]),
                     'conditionUrl' => $this->getPayConditionUrl(),
-                    'gateways' => $this->hookPaymentOptions($retry_params, true),
-                    'payuActionUrl' => $this->context->link->getModuleLink(
-                        'payu', 'payment', ['id_order' => $params['order']->id, 'order_reference' => $params['order']->reference]
-                    )
+                    'gateways' => $this->hookPaymentOptions($retry_params, true)
                 ]
             );
 

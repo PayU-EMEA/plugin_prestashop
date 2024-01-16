@@ -1,14 +1,5 @@
 <?php
 
-/**
- * OpenPayU
- *
- * @author    PayU
- * @copyright Copyright (c) 2016 PayU
- *
- * http://www.payu.com
- */
-
 class PayUPaymentModuleFrontController extends ModuleFrontController
 {
     /** @var PayU */
@@ -35,7 +26,16 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
     public function initContent()
     {
-        parent::initContent();
+        // for retry payment use grandparent initContent
+        if ($this->hasRetryPayment) {
+            FrontController::initContent();
+        } else {
+            parent::initContent();
+        }
+    }
+
+    public function process()
+    {
         SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  ' . phpversion(), '');
         $payMethod = Tools::getValue('payMethod', 'pbl');
 
@@ -232,40 +232,6 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function checkHasRetryPayment()
     {
         $this->hasRetryPayment = Tools::getValue('id_order') !== false && Tools::getValue('order_reference') !== false;
-    }
-
-    private function getShowPayMethodsParameters()
-    {
-        $currency = $this->hasRetryPayment ? (int)$this->order->id_currency : (int)$this->context->cart->id_currency;
-        $total = $this->hasRetryPayment ? $this->order->total_paid : $this->context->cart->getOrderTotal();
-
-        $this->payu->initializeOpenPayU(Currency::getCurrency($currency)['iso_code']);
-
-        $parameters = [
-            'posId' => OpenPayU_Configuration::getMerchantPosId(),
-            'orderCurrency' => $currency,
-            'payMethods' => $this->payu->getPaymethods(Currency::getCurrency($currency), $total),
-            'retryPayment' => $this->hasRetryPayment,
-            'lang' => Language::getIsoById($this->context->language->id)
-        ];
-
-        if ($this->hasRetryPayment) {
-            return $parameters + [
-                    'total' => Tools::displayPrice($this->order->total_paid, $currency),
-                    'payuPayAction' => $this->context->link->getModuleLink(
-                        'payu',
-                        'payment',
-                        ['id_order' => $this->order->id, 'order_reference' => $this->order->reference]
-                    ),
-                    'payuOrderInfo' => $this->module->l('Retry pay for your order', 'payment') . ' ' . $this->order->reference
-                ];
-        } else {
-            return $parameters + [
-                    'total' => Tools::displayPrice($this->context->cart->getOrderTotal(true, Cart::BOTH)),
-                    'payuPayAction' => $this->context->link->getModuleLink('payu', 'payment'),
-                    'payuOrderInfo' => $this->module->l('The total amount of your order is', 'payment')
-                ];
-        }
     }
 
     private function postOCR($method)
