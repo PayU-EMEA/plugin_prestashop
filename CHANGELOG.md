@@ -1,3 +1,8 @@
+## 3.2.17
+* Fixed repayment when PS_PURCHASE_MINIMUM non zero
+* Update logos
+* Cleanup
+
 ## 3.2.16
 * Fixed payment without bank list
 * Added save info about selected method
