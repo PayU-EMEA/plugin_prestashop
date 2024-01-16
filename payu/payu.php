@@ -930,14 +930,14 @@ class PayU extends PaymentModule
                     'CallToActionText' => $this->l('Pay later'),
                     'AdditionalInformation' => '<span class="payment-name" data-pm="dpt"></span>',
                     'ModuleName' => $this->name,
-                    'Logo' => $this->getPayuLogo('payu_later_twisto_logo_small.png')
+                    'Logo' => $this->getPayuLogo('payu_later_twisto_logo.png')
                 ];
             } else {
                 $payLaterTwistoOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $payLaterTwistoOption
                     ->setCallToActionText($this->l('Pay later'))
                     ->setModuleName($this->name)
-                    ->setLogo($this->getPayuLogo('payu_later_twisto_logo_small.png'))
+                    ->setLogo($this->getPayuLogo('payu_later_twisto_logo.png'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         [
                             'payMethod' => 'dpt'
@@ -995,7 +995,6 @@ class PayU extends PaymentModule
 
         $this->context->smarty->assign([
                 'image' => $this->getPayuLogo(),
-                'creditImage' => $this->getPayuLogo('raty_small.png'),
                 'payu_logo_img' => $this->getPayuLogo(),
                 'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
                 'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
