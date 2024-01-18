@@ -1693,27 +1693,25 @@ class PayU extends PaymentModule
     public function addOrdersSessionId($orders, $status, $payuIdOrder, $extOrderId, $method)
     {
         $data = [];
-        if (is_array($orders) && $orders) {
-            foreach ($orders as $o) {
+        foreach ($orders as $o) {
 
-                $data[] = [
-                    'id_order' => (int)$o['id_order'],
-                    'id_cart' => (int)$o['id_cart'],
-                    'id_session' => pSQL($payuIdOrder),
-                    'ext_order_id' => pSQL($extOrderId),
-                    'method' => pSQL($method),
-                    'status' => pSQL($status),
-                    'create_at' => date('Y-m-d H:i:s'),
-                ];
-                $this->insertPayuPaymentHistory($status, (int)$o['id_order'], $payuIdOrder);
+            $data[] = [
+                'id_order' => $o->id,
+                'id_cart' => $o->id_cart,
+                'id_session' => pSQL($payuIdOrder),
+                'ext_order_id' => pSQL($extOrderId),
+                'method' => pSQL($method),
+                'status' => pSQL($status),
+                'create_at' => date('Y-m-d H:i:s'),
+            ];
+            $this->insertPayuPaymentHistory($status, $o->id, $payuIdOrder);
 
-                SimplePayuLogger::addLog(
-                    'order',
-                    __FUNCTION__,
-                    'DB Insert ' . $o['id_order'],
-                    $payuIdOrder
-                );
-            }
+            SimplePayuLogger::addLog(
+                'order',
+                __FUNCTION__,
+                'DB Insert ' . $o->id,
+                $payuIdOrder
+            );
         }
 
         return Db::getInstance()->insert('order_payu_payments', $data);
@@ -1726,14 +1724,9 @@ class PayU extends PaymentModule
      */
     public function getOrderPaymentBySessionId($id_session)
     {
-        SimplePayuLogger::addLog('notification', __FUNCTION__, 'DB query: SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments WHERE `id_session`="' . addslashes($id_session) . '"', $this->payu_order_id);
-        $result = Db::getInstance()->executeS('
-			SELECT * FROM `' . _DB_PREFIX_ . 'order_payu_payments`
-			WHERE `id_session`="' . addslashes($id_session) . '"', true, false);
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . "order_payu_payments WHERE id_session = '" . pSQL($id_session) . "'";
 
-        SimplePayuLogger::addLog('notification', __FUNCTION__, print_r($result, true), $this->payu_order_id, 'DB query result ');
-
-        return $result;
+        return Db::getInstance()->executeS($sql, true, false);
     }
 
     /**
@@ -1743,10 +1736,8 @@ class PayU extends PaymentModule
      */
     public function getOrderPaymentByExtOrderId($extOrderId)
     {
-        $result = Db::getInstance()->getRow('
-			SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments
-			WHERE ext_order_id = "' . pSQL($extOrderId) . '"
-		');
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . "order_payu_payments WHERE ext_order_id = '" . pSQL($extOrderId) . "'";
+        $result = Db::getInstance()->getRow($sql);
 
         return $result ?: false;
     }
@@ -1808,8 +1799,7 @@ class PayU extends PaymentModule
      */
     private function getOrderByOrderId($id_order)
     {
-        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments
-        WHERE id_order = ' . (int)$id_order;
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'order_payu_payments WHERE id_order = ' . (int)$id_order;
 
         SimplePayuLogger::addLog('order', __FUNCTION__, $sql, $this->payu_order_id);
 
@@ -1954,22 +1944,6 @@ class PayU extends PaymentModule
 			ORDER BY create_at DESC';
 
         SimplePayuLogger::addLog('order', __FUNCTION__, $sql, $this->payu_order_id);
-        return Db::getInstance()->executeS($sql, true, false);
-    }
-
-    /**
-     * @param $id_cart
-     *
-     * @return array
-     */
-    public function getAllOrdersByCartId($id_cart)
-    {
-
-        $sql = new DbQuery();
-        $sql->select('id_order, id_cart');
-        $sql->from('orders');
-        $sql->where('id_cart = ' . (int)($id_cart));
-
         return Db::getInstance()->executeS($sql, true, false);
     }
 
@@ -2198,8 +2172,6 @@ class PayU extends PaymentModule
         $extOrder = Tools::getValue('ext_order');
 
         if ($extOrder) {
-            $order_payment = $this->getOrderPaymentByExtOrderId($extOrder);
-
             if (isset($params['order'])) {
                 $order = $params['order'];
             } elseif (isset($params['objOrder'])) {
@@ -2207,6 +2179,8 @@ class PayU extends PaymentModule
             } else {
                 return '';
             }
+
+            $order_payment = $this->getOrderPaymentByExtOrderId($extOrder);
 
             if ($order->id === (int)$order_payment['id_order'] && $order_payment['status'] !== OpenPayuOrderStatus::STATUS_COMPLETED) {
                 $this->id_order = $order->id;

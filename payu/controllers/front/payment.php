@@ -173,10 +173,10 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         try {
             $result = $this->payu->orderCreateRequestByOrder($orderTotal, $payMethod, $parameters);
             $this->payu->payu_order_id = $result['orderId'];
-
             $this->postOCR($method);
 
             SimplePayuLogger::addLog('order', __FUNCTION__, 'Process redirect to ' . $result['redirectUri'], $result['orderId']);
+
 
             Tools::redirect($result['redirectUri']);
 
@@ -243,18 +243,18 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $history->changeIdOrderState(Configuration::get('PAYU_PAYMENT_STATUS_PENDING'), $this->order->id);
             $history->addWithemail(true);
         }
-
-        $orders = $this->module->getAllOrdersByCartId($this->order->id_cart);
-
-        if ($orders) {
-            $this->payu->addOrdersSessionId(
-                $orders,
-                OpenPayuOrderStatus::STATUS_NEW,
-                $this->payu->payu_order_id,
-                $this->payu->getExtOrderId(),
-                $method
-            );
+        $orders[] = $this->order;
+        foreach ($this->order->getBrother() as $linkedOrder) {
+            $orders[] = $linkedOrder;
         }
+
+        $this->payu->addOrdersSessionId(
+            $orders,
+            OpenPayuOrderStatus::STATUS_NEW,
+            $this->payu->payu_order_id,
+            $this->payu->getExtOrderId(),
+            $method
+        );
     }
 
     public function payuRedirectWithNotifications($notifications)
