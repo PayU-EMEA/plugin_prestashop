@@ -1056,12 +1056,17 @@ class PayU extends PaymentModule
 
     /**
      * @return null|string
-     * @throws PrestaShopDatabaseException
      */
     public function hookAdminOrder($params)
     {
-        $order = new Order((int)$params['id_order']);
         $output = '';
+
+        try {
+            $order = new Order((int)$params['id_order']);
+        } catch (PrestaShopException $e) {
+            return $output;
+        }
+
         $this->id_order = $order->id;
         if ($order->module !== 'payu') {
             return $output;
@@ -1074,17 +1079,26 @@ class PayU extends PaymentModule
         $refund_errors = [];
         $refundable = $order_payment['status'] === OpenPayuOrderStatus::STATUS_COMPLETED;
 
-        $refund_amount = (float)$order->total_paid;
-
+        $refund_amount = $order->total_paid;
         $refund_type = Tools::getValue('payu_refund_type', 'full');
-        $get_refund_amount = $refund_type === 'full' ? $refund_amount : (float)Tools::getValue('payu_refund_amount');
 
         if ($refundable && Tools::getValue('submitPayuRefund')) {
 
-            if ($get_refund_amount > $order->total_paid) {
+
+            if ($refund_type === 'full') {
+                $get_refund_amount = $refund_amount;
+            } else {
+                $val = str_replace(",", ".", Tools::getValue('payu_refund_amount', ''));
+                $isNumber = preg_match('/^[0-9]+(\\.[0-9]+)?$/', $val);
+                $get_refund_amount = $isNumber ? (float)$val : null;
+            }
+
+            if ($get_refund_amount === null) {
+                $refund_errors[] = $this->l('The refund amount you entered is invalid.');
+            } else if ($get_refund_amount > $order->total_paid) {
                 $refund_errors[] = $this->l('The refund amount you entered is greater than paid amount.');
             } else {
-                $refund = $this->payuOrderRefund($get_refund_amount, $order_payment['id_session'], $order->id);
+                $refund = $this->payuOrderRefund($get_refund_amount, $order_payment['id_session'], $order);
 
                 if (!empty($refund)) {
                     if ($refund[0] !== true) {
@@ -1093,6 +1107,7 @@ class PayU extends PaymentModule
                 } else {
                     $refund_errors[] = $this->l('Refund error...');
                 }
+
                 if (empty($refund_errors)) {
                     $history = new OrderHistory();
                     $history->id_order = $order->id;
@@ -1100,9 +1115,7 @@ class PayU extends PaymentModule
                     $history->changeIdOrderState(Configuration::get('PS_OS_REFUND'), $order->id);
                     $history->addWithemail(true, []);
 
-                    Tools::redirectAdmin('index.php?tab=AdminOrders&id_order=' . (int)$order->id . '&vieworder' .
-                        '&token=' . Tools::getAdminTokenLite('AdminOrders'));
-
+                    Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminOrders', true, [], ['id_order' => (int)$order->id]));
                 }
             }
         }
@@ -1122,10 +1135,8 @@ class PayU extends PaymentModule
             'REFUND_AMOUNT' => $refund_amount
         ]);
 
-        $show_confirm_payment_form = false;
         if (!$this->repaymentEnabled()) {
             if ($this->payu_order_id = $this->orderIsWFC($order->id)) {
-                $show_confirm_payment_form = true;
                 if (Tools::isSubmit('manual_change_state') && $this->payu_order_id && trim(Tools::getValue('PAYU_PAYMENT_STATUS'))) {
 
                     $updateOrderStatus = $this->sendPaymentUpdate(Tools::getValue('PAYU_PAYMENT_STATUS'));
@@ -1140,7 +1151,7 @@ class PayU extends PaymentModule
                 $this->context->smarty->assign([
                     'PAYU_PAYMENT_STATUS_OPTIONS' => $this->getPaymentAcceptanceStatusesList(),
                     'PAYU_PAYMENT_STATUS' => $order_payment['status'],
-                    'PAYU_PAYMENT_ACCEPT' => $show_confirm_payment_form,
+                    'PAYU_PAYMENT_ACCEPT' => true,
                 ]);
             }
         }
@@ -1947,6 +1958,12 @@ class PayU extends PaymentModule
         return Db::getInstance()->executeS($sql, true, false);
     }
 
+    /**
+     * @param int $idOrder
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     private function configureOpuByIdOrder($idOrder)
     {
         $order = new Order($idOrder);
@@ -2361,14 +2378,22 @@ class PayU extends PaymentModule
         return $order_state->id;
     }
 
-    private function payuOrderRefund($value, $ref_no, $id_order)
+
+    /**
+     * @param float $value
+     * @param string $payuOrderId
+     * @param object $order
+     *
+     * @return array
+     */
+    private function payuOrderRefund($value, $payuOrderId, $order)
     {
-        $this->configureOpuByIdOrder($id_order);
+        $this->configureOpuByIdOrder($order->id);
 
         try {
             $refund = OpenPayU_Refund::create(
-                $ref_no,
-                'PayU Refund',
+                $payuOrderId,
+                'Refund to order ' . $order->reference . ' ('. $order->id .')',
                 round($value * 100)
             );
 
@@ -2382,7 +2407,7 @@ class PayU extends PaymentModule
         } catch (OpenPayU_Exception_Request $e) {
             $response = $e->getOriginalResponse()->getResponse()->status;
             Logger::addLog($this->displayName . ' Order Refund error: ' . $response->codeLiteral . ' [' . $response->code . ']', 1);
-            return [false, $response->codeLiteral . ' [' . $response->code . '] - <a target="_blank" href="http://developers.payu.com/pl/restapi.html#refunds">developers.payu.com</a>'];
+            return [false, $response->codeLiteral . ' [' . $response->code . '] - <a target="_blank" href="https://developers.payu.com/europe/pl/docs/payment-flows/refunds/#error-codes">developers.payu.com</a>'];
         } catch (OpenPayU_Exception $e) {
             Logger::addLog($this->displayName . ' Order Refund error: ' . $e->getMessage(), 1);
             return [false, $e->getMessage()];
