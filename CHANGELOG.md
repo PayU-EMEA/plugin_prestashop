@@ -1,3 +1,7 @@
+## 3.2.18
+* Fixed #323 - added validation when creating refunds
+* Fixed multiple assignment payu order to Presta order
+
 ## 3.2.17
 * Fixed repayment when PS_PURCHASE_MINIMUM non zero
 * Update logos
