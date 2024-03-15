@@ -33,6 +33,14 @@
 				    pay-methods__hide
 			    {/if}
 
+			    {if $separateKlarna && $payment->value == 'dpkl'}
+				    pay-methods__hide
+			    {/if}
+
+			    {if $separatePaypo && $payment->value == 'dpp'}
+				    pay-methods__hide
+			    {/if}
+
 			    {if $separateTwisto && $payment->value == 'dpt'}
 				    pay-methods__hide
 			    {/if}

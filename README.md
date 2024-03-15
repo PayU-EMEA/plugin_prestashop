@@ -41,6 +41,8 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Wielowalutowość                                                                | :white_check_mark:  | :white_check_mark: |
 | Kolejność metod płatności                                                      | :white_check_mark:  | :white_check_mark: |
 | Promowanie [PayU Raty][ext10] i [PayU Płacę Później][ext9]                     | :white_check_mark:  | :white_check_mark: |
+| Płatność Klarna jako osobna metoda płatności                                   | :white_check_mark: | :white_check_mark: |
+| Płatność PayPo jako osobna metoda płatności                                    | :white_check_mark: | :white_check_mark: |
 | Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark:  | :white_check_mark: |
 | Prezentacja kalkulacji ratalnej przy produkcie i listingu                      | :white_check_mark:  | :white_check_mark: |
 | Prezentacja kalkulacji ratalnej na podsumowaniu                                | :white_check_mark:  | :white_check_mark: |
@@ -175,7 +177,7 @@ Od wersji 3.0.10 plugin udostępnia opcję promowania [płatności ratalnych i o
 Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez przełącznik "Promuj płatności ratalne" w panelu
  admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i
  Kompatybilność](#cechy-i-kompatybilność).
- > Prezentacja kalkulacji zależna jest od dostępności bramek "ai" oraz "dpt" na danym punkcie płatności i sprawdzana
+ > Prezentacja kalkulacji zależna jest od dostępności bramek "ai", "dpt", "dpp" oraz "dpkl" na danym punkcie płatności i sprawdzana
  jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie
  zaprezentowana pomimo włączonej opcji w pluginie.
 
@@ -188,6 +190,8 @@ Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez pr
 |1.7|Karta produktu|<img src="readme_images/credit-1-7-product.png" width="100">|
 |1.7|Koszyk| <img src="readme_images/credit-1-7-cart.png" width="100">|
 |1.7|Promowanie płatności ratalnych|<img src="readme_images/credit-1-7-checkout-promote-credit.png" width="100">|
+|1.7|Wydzielenie Klarna jako metody płatności | <img src="readme_images/credit-1-7-checkout-separate-klarna.png" width="100"> |
+|1.7|Wydzielenie PayPo jako metody płatności | <img src="readme_images/credit-1-7-checkout-separate-paypo.png" width="100">  |
 |1.7|Wydzielenie Twisto jako metody płatności|<img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">|
 |1.6|Listing produktów|<img src="readme_images/credit-1-6-listing.png" width="100">|
 |1.6|Karta produktu|<img src="readme_images/credit-1-6-product.png" width="100">|
