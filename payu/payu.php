@@ -842,6 +842,8 @@ class PayU extends PaymentModule
             'paymentMethods' => $paymentMethods['payByLinks'],
             'separateBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
             'separateTwisto' => Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO'),
+            'separateKlarna' => Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA'),
+            'separatePaypo' => Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO'),
             'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
             'lang' => Language::getIsoById($this->context->language->id),
