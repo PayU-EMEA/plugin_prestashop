@@ -1000,14 +1000,14 @@ class PayU extends PaymentModule
                     'CallToActionText' => $this->l('Pay later'),
                     'AdditionalInformation' => '<span class="payment-name" data-pm="dpp"></span>',
                     'ModuleName' => $this->name,
-                    'Logo' => $this->getPayuLogo('payu_later_paypo_logo.png')
+                    'Logo' => $this->getPayuLogo('payu_later_paypo_logo.svg')
                 ];
             } else {
                 $payLaterPaypoOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $payLaterPaypoOption
                     ->setCallToActionText($this->l('Pay later'))
                     ->setModuleName($this->name)
-                    ->setLogo($this->getPayuLogo('payu_later_paypo_logo.png'))
+                    ->setLogo($this->getPayuLogo('payu_later_paypo_logo.svg'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         [
                             'payMethod' => 'dpp'
@@ -1025,14 +1025,14 @@ class PayU extends PaymentModule
                     'CallToActionText' => $this->l('Pay later'),
                     'AdditionalInformation' => '<span class="payment-name" data-pm="dpt"></span>',
                     'ModuleName' => $this->name,
-                    'Logo' => $this->getPayuLogo('payu_later_twisto_logo.png')
+                    'Logo' => $this->getPayuLogo('payu_later_twisto_logo.svg')
                 ];
             } else {
                 $payLaterTwistoOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
                 $payLaterTwistoOption
                     ->setCallToActionText($this->l('Pay later'))
                     ->setModuleName($this->name)
-                    ->setLogo($this->getPayuLogo('payu_later_twisto_logo.png'))
+                    ->setLogo($this->getPayuLogo('payu_later_twisto_logo.svg'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment',
                         [
                             'payMethod' => 'dpt'
