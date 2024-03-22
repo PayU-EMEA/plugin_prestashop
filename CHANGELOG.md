@@ -1,3 +1,7 @@
+## 3.2.19
+* Klarna as separate payment method
+* PayPo as separate payment method
+
 ## 3.2.18
 * Fixed #323 - added validation when creating refunds
 * Fixed multiple assignment payu order to Presta order
