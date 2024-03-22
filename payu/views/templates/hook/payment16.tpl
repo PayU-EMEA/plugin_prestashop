@@ -100,6 +100,32 @@
 		</div>
     {/if}
 
+    {if $payu_later_klarna_available == true}
+		<div class="row">
+			<div class="col-xs-12">
+				<p class="payment_module">
+					<a class="payu payu_klarna" href="{$creditPayLaterKlarnaActionUrl|escape:'htmlall':'UTF-8'}"
+					   title="{l s='Pay later with Klarna' mod='payu'}">
+						{l s='Pay later with Klarna' mod='payu'}
+					</a>
+				</p>
+			</div>
+		</div>
+    {/if}
+
+    {if $payu_later_paypo_available == true}
+		<div class="row">
+			<div class="col-xs-12">
+				<p class="payment_module">
+					<a class="payu paypo" href="{$creditPayLaterPaypoActionUrl|escape:'htmlall':'UTF-8'}"
+					   title="{l s='Pay later with PayPo' mod='payu'}">
+						{l s='Pay later with PayPo' mod='payu'}
+					</a>
+				</p>
+			</div>
+		</div>
+    {/if}
+
     {if $payu_later_twisto_available == true}
 		<div class="row">
 			<div class="col-xs-12">

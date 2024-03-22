@@ -27,23 +27,25 @@ The PayU payments Prestashop plugin adds the PayU payment option and enables you
 
 Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 
-| Feature                                                         |   PrestaShop 1.6    |    PrestaShop 1.7    |
-|-----------------------------------------------------------------|:-------------------:|:--------------------:|
-| Creating a payment order (with discounts included)              | :white_check_mark:  | :white_check_mark:   |
-| Capturing a payment order (when auto-capture is disabled)       | :white_check_mark:  |  :white_check_mark:  |
-| Conducting a refund operation (whole or partial)                | :white_check_mark:  |  :white_check_mark:  |
-| Displaying payment methods on Presta checkout summary page      | :white_check_mark:  |  :white_check_mark:  |
-| Card payment as separate method                                 | :white_check_mark:  |  :white_check_mark:  |
-| Card payment via widget on summary page                         | :white_check_mark:  |  :white_check_mark:  |
-| Payment retry for cancelled payments                            | :white_check_mark:  |  :white_check_mark:  |
-| Repayment                                                       | :white_check_mark:  |  :white_check_mark:  |
-| Multi-currency support                                          | :white_check_mark:  |  :white_check_mark:  |
-| Payment method order                                            | :white_check_mark:  |  :white_check_mark:  |
-| Promoting [PayU Installments][ext10] and [PayU Later][ext9]     | :white_check_mark:  |  :white_check_mark:  |
-| Twisto payment as separate method                               | :white_check_mark:  |  :white_check_mark:  |
-| Present installment estimated value on product and listing page | :white_check_mark:  |  :white_check_mark:  |
-| Present installment estimated value in checkout view            | :white_check_mark:  |  :white_check_mark:  |
-| Present installment estimated value in cart view                |         :x:         |  :white_check_mark:  |
+| Feature                                                         |   PrestaShop 1.6   |   PrestaShop 1.7   |
+|-----------------------------------------------------------------|:------------------:|:------------------:|
+| Creating a payment order (with discounts included)              | :white_check_mark: | :white_check_mark: |
+| Capturing a payment order (when auto-capture is disabled)       | :white_check_mark: | :white_check_mark: |
+| Conducting a refund operation (whole or partial)                | :white_check_mark: | :white_check_mark: |
+| Displaying payment methods on Presta checkout summary page      | :white_check_mark: | :white_check_mark: |
+| Card payment as separate method                                 | :white_check_mark: | :white_check_mark: |
+| Card payment via widget on summary page                         | :white_check_mark: | :white_check_mark: |
+| Payment retry for cancelled payments                            | :white_check_mark: | :white_check_mark: |
+| Repayment                                                       | :white_check_mark: | :white_check_mark: |
+| Multi-currency support                                          | :white_check_mark: | :white_check_mark: |
+| Payment method order                                            | :white_check_mark: | :white_check_mark: |
+| Promoting [PayU Installments][ext10] and [PayU Later][ext9]     | :white_check_mark: | :white_check_mark: |
+| Klarna payment as separate method                               | :white_check_mark: | :white_check_mark: |
+| PayPo payment as separate method                                | :white_check_mark: | :white_check_mark: |
+| Twisto payment as separate method                               | :white_check_mark: | :white_check_mark: |
+| Present installment estimated value on product and listing page | :white_check_mark: | :white_check_mark: |
+| Present installment estimated value in checkout view            | :white_check_mark: | :white_check_mark: |
+| Present installment estimated value in cart view                |        :x:         | :white_check_mark: |
 
 More information on the features can be found in the [More on features](#more-on-features) section
 
@@ -171,7 +173,7 @@ Plugin version 3.0.10 introduced functionality of promoting [credit payment meth
 Functionality is enabled by default. It can be deactivated using "Promote credit" switch in admin panel.
 Support for given functionalities has been described in [Features](#features) section.
  > Presenting credit widgets is dependent on gateways availability for given point of sale (POS).
- Plugin automatically checks whether "ai" or "dpt" gateways are enabled.
+ Plugin automatically checks whether "ai", "dpt", "dpp" or "dpkl" gateways are enabled.
  If used POS doesn't have credit agreement activated functionality will not work, and widget presentation will be
  supressed (even if flag in admin panel is enabled).
 
@@ -184,6 +186,8 @@ Support for given functionalities has been described in [Features](#features) se
 |1.7|Product page|<img src="readme_images/credit-1-7-product.png" width="100">|
 |1.7|Cart| <img src="readme_images/credit-1-7-cart.png" width="100">|
 |1.7|Promote credit payment methods|<img src="readme_images/credit-1-7-checkout-promote-credit.png" width="100">|
+|1.7|PayPo payment as separate method |<img src="readme_images/credit-1-7-checkout-separate-paypo.png" width="100">|
+|1.7|Klarna payment as separate method |<img src="readme_images/credit-1-7-checkout-separate-klarna.png" width="100">|
 |1.7|Twisto payment as separate method|<img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">|
 |1.6|Products listing|<img src="readme_images/credit-1-6-listing.png" width="100">|
 |1.6|Product page|<img src="readme_images/credit-1-6-product.png" width="100">|

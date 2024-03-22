@@ -44,6 +44,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $payMethod === 'blik' ||
             $payMethod === 'dp' ||
             $payMethod === 'dpt' ||
+            $payMethod === 'dpkl' ||
             $payMethod === 'dpp'
         ) {
             $this->pay($payMethod, [], $payMethod);
