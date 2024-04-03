@@ -84,6 +84,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
             Configuration::updateValue('PAYU_REPAY', 0) &&
             Configuration::updateValue('PAYU_SANDBOX', 0) &&
+            Configuration::updateValue('PAYU_LOGGER', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', 0) &&
             Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', 0) &&
             Configuration::updateValue('PAYU_PAYMENT_METHODS_ORDER', '') &&
@@ -119,6 +120,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET') ||
             !Configuration::deleteByName('PAYU_REPAY') ||
             !Configuration::deleteByName('PAYU_SANDBOX') ||
+            !Configuration::deleteByName('PAYU_LOGGER') ||
             !Configuration::deleteByName('PAYU_SEPARATE_CARD_PAYMENT') ||
             !Configuration::deleteByName('PAYU_CARD_PAYMENT_WIDGET') ||
             !Configuration::deleteByName('PAYU_PAYMENT_METHODS_ORDER') ||
@@ -188,6 +190,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
                 !Configuration::updateValue('PAYU_REPAY', (Tools::getValue('PAYU_REPAY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_LOGGER', (Tools::getValue('PAYU_LOGGER') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_CARD_PAYMENT', (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', (Tools::getValue('PAYU_SEPARATE_BLIK_PAYMENT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_CARD_PAYMENT_WIDGET', (Tools::getValue('PAYU_CARD_PAYMENT_WIDGET') ? 1 : 0)) ||
@@ -329,6 +332,23 @@ class PayU extends PaymentModule
                         'type' => 'switch',
                         'label' => $this->l('SANDBOX mode'),
                         'name' => 'PAYU_SANDBOX',
+                        'values' => [
+                            [
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ],
+                            [
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            ]
+                        ],
+                    ],
+                    [
+                        'type' => 'switch',
+                        'label' => $this->l('Save logs'),
+                        'name' => 'PAYU_LOGGER',
                         'values' => [
                             [
                                 'id' => 'active_on',
@@ -637,6 +657,7 @@ class PayU extends PaymentModule
             'PAYU_PAYMENT_STATUS_CANCELED' => Configuration::get('PAYU_PAYMENT_STATUS_CANCELED'),
             'PAYU_REPAY' => Configuration::get('PAYU_REPAY'),
             'PAYU_SANDBOX' => Configuration::get('PAYU_SANDBOX'),
+            'PAYU_LOGGER' => Configuration::get('PAYU_LOGGER'),
             'PAYU_SEPARATE_CARD_PAYMENT' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
             'PAYU_SEPARATE_BLIK_PAYMENT' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
             'PAYU_CARD_PAYMENT_WIDGET' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET'),

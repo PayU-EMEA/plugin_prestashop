@@ -8,7 +8,7 @@ class SimplePayuLogger
 
     public static function addLog($type, $function, $message, $order_id = '', $comment = '')
     {
-        if (_PS_MODE_DEV_) {
+        if (_PS_MODE_DEV_ || Configuration::get('PAYU_LOGGER') === '1') {
             if (!self::$correlationId) {
                 self::$correlationId = uniqid('', true);
             }
