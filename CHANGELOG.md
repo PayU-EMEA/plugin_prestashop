@@ -1,3 +1,8 @@
+## 3.2.20
+* Fixed credit logotypes
+* Added credit logotypes for Prestashop 1.6
+* Added option "Save logs"
+
 ## 3.2.19
 * Klarna as separate payment method
 * PayPo as separate payment method
