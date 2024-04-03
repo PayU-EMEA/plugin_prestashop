@@ -33,8 +33,41 @@ p.payment_module a.payu_main {
 }
 
 p.payment_module a.payu_main {
-    padding: 33px 40px 34px 80px;
+    padding: 33px 40px 34px 75px;
 }
+
+p.payment_module a.payu_klarna {
+    background: url('../img/payu_later_klarna_logo.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_klarna {
+    padding: 33px 40px 34px 90px;
+}
+
+p.payment_module a.payu_paypo {
+    background: url('../img/payu_later_paypo_logo.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_paypo {
+    padding: 33px 40px 34px 115px;
+}
+
+p.payment_module a.payu_twisto {
+    background: url('../img/payu_later_twisto_logo.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_twisto {
+    padding: 33px 40px 34px 110px;
+}
+
+p.payment_module a.payu_installment {
+    background: url('../img/payu_installment.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_installment {
+    padding: 33px 40px 34px 120px;
+}
+
 
 p.payment_module a.payu:after, .payu-payment-credit-tile:after {
     display: block;

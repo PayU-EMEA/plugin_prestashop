@@ -117,7 +117,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">
-					<a class="payu paypo" href="{$creditPayLaterPaypoActionUrl|escape:'htmlall':'UTF-8'}"
+					<a class="payu payu_paypo" href="{$creditPayLaterPaypoActionUrl|escape:'htmlall':'UTF-8'}"
 					   title="{l s='Pay later with PayPo' mod='payu'}">
 						{l s='Pay later with PayPo' mod='payu'}
 					</a>
