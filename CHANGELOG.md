@@ -1,3 +1,8 @@
+## 3.2.21
+* Update Klarna logo
+* Update Twisto logo
+* Remove load unnecessary script
+
 ## 3.2.20
 * Fixed credit logotypes
 * Added credit logotypes for Prestashop 1.6
