@@ -34,15 +34,23 @@
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateKlarna && $payment->value == 'dpkl'}
+				{if $separateInstallments && $payment->value == 'ai'}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separatePaypo && $payment->value == 'dpp'}
+			    {if $separateKlarna && in_array($payment->value, ['dpkl', 'dpklczk', 'dpkleur', 'dpklhuf'])}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateTwisto && $payment->value == 'dpt'}
+			    {if $separatePaypo && in_array($payment->value, ['dpp', 'dppron'])}
+				    pay-methods__hide
+			    {/if}
+
+			    {if $separateTwisto && in_array($payment->value, ['dpt', 'dpcz'])}
+				    pay-methods__hide
+			    {/if}
+
+			    {if $separateTwistoSlice && $payment->value == 'dpts'}
 				    pay-methods__hide
 			    {/if}
 		        ">

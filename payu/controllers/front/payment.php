@@ -1,5 +1,7 @@
 <?php
 
+include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/OpenPayU/Model/CreditPaymentMethod.php');
+
 class PayUPaymentModuleFrontController extends ModuleFrontController
 {
     /** @var PayU */
@@ -39,14 +41,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         SimplePayuLogger::addLog('order', __FUNCTION__, 'payment.php entrance. PHP version:  ' . phpversion(), '');
         $payMethod = Tools::getValue('payMethod', 'pbl');
 
-        if ($payMethod === 'ai' ||
-            $payMethod === 'c' ||
-            $payMethod === 'blik' ||
-            $payMethod === 'dp' ||
-            $payMethod === 'dpt' ||
-            $payMethod === 'dpkl' ||
-            $payMethod === 'dpp'
-        ) {
+        if (in_array($payMethod, array_merge(['c', 'blik'], CreditPaymentMethod::getAll()))) {
             $this->pay($payMethod, [], $payMethod);
         }
         elseif ($payMethod === 'transfer') {

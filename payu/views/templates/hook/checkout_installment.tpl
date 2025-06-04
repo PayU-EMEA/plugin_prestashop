@@ -2,26 +2,12 @@
  * PayU
  *
  * @author    PayU
- * @copyright Copyright (c) 2016 PayU
+ * @copyright Copyright (c) 2016-2025 PayU
  *
  * http://www.payu.com
 *}
 <span class="payment-name" data-pm="ai"></span>
-<div class="payu-method-description payu-checkout-installment">
-    <p>
-        <span id='payu-installments-mini-cart'></span>
-        <script type='text/javascript' class="payu-script-tag" >
-            document.addEventListener("DOMContentLoaded", function(event) {
-                var options = {
-                    creditAmount: {$total_price},
-                    posId: '{$credit_pos}',
-                    key: '{$credit_pos_key}',
-                    showLongDescription: true
-                };
-                window.OpenPayU.Installments.miniInstallment('#payu-installments-mini-cart', options);
-            });
-        </script>
-    </p>
+<div>
     <p>
         {l s='Order will be done after positive decision' mod='payu'}
     </p>
