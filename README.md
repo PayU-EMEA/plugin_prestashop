@@ -28,25 +28,27 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 
 Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 
-| Cecha                                                                          |   PrestaShop 1.6    |  PrestaShop 1.7    |
-|--------------------------------------------------------------------------------|:-------------------:|:------------------:|
-| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark:  | :white_check_mark: |
-| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark:  | :white_check_mark: |
-| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark:  | :white_check_mark: |
-| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark:  | :white_check_mark: |
-| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark:  | :white_check_mark: |
-| Płatność kartą jako widżet                                                     | :white_check_mark:  | :white_check_mark: |
-| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark:  | :white_check_mark: |
-| Ponowienie płatności                                                           | :white_check_mark:  | :white_check_mark: |
-| Wielowalutowość                                                                | :white_check_mark:  | :white_check_mark: |
-| Kolejność metod płatności                                                      | :white_check_mark:  | :white_check_mark: |
-| Promowanie [PayU Raty][ext10] i [PayU Płacę Później][ext9]                     | :white_check_mark:  | :white_check_mark: |
+| Cecha                                                                          |   PrestaShop 1.6   |   PrestaShop 1.7   |
+|--------------------------------------------------------------------------------|:------------------:|:------------------:|
+| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark: | :white_check_mark: |
+| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark: | :white_check_mark: |
+| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: | :white_check_mark: |
+| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: | :white_check_mark: |
+| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: | :white_check_mark: |
+| Płatność kartą jako widżet                                                     | :white_check_mark: | :white_check_mark: |
+| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: | :white_check_mark: |
+| Ponowienie płatności                                                           | :white_check_mark: | :white_check_mark: |
+| Wielowalutowość                                                                | :white_check_mark: | :white_check_mark: |
+| Kolejność metod płatności                                                      | :white_check_mark: | :white_check_mark: |
+| Płatność [PayU Raty][ext10] jako osobna metoda płatności                       | :white_check_mark: | :white_check_mark: |
 | Płatność Klarna jako osobna metoda płatności                                   | :white_check_mark: | :white_check_mark: |
 | Płatność PayPo jako osobna metoda płatności                                    | :white_check_mark: | :white_check_mark: |
-| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark:  | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej przy produkcie i listingu                      | :white_check_mark:  | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej na podsumowaniu                                | :white_check_mark:  | :white_check_mark: |
-| Prezentacja kalkulacji ratalnej w koszyku                                      |         :x:         | :white_check_mark: |
+| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark: | :white_check_mark: |
+| Płatność Twisto podziel na 3 jako osobna metoda płatności                      | :white_check_mark: | :white_check_mark: |
+| Prezentacja widgetu kredytowego przy produkcie i listingu                      | :white_check_mark: | :white_check_mark: |
+| Prezentacja widgetu kredytowego na podsumowaniu                                | :white_check_mark: | :white_check_mark: |
+| Prezentacja widgetu kredytowego w koszyku                                      |        :x:         | :white_check_mark: |
+| Wykluczenie metod płatności kredytowych z widgetu                              | :white_check_mark: | :white_check_mark: |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach)
 
@@ -105,7 +107,6 @@ Gdy sklep Prestashop przełączymy w tryb debugowania lub włączymy opcję `Zap
 | Płatność kartą jako osobna metoda płatności             | Określa czy płatność kartą będzie dostępna jako osobna metoda [więcej informacji](#płatność-kartą).                                                                                                                                                                                                                                               |
 | Płatność kartą w widżecie                               | Określa czy płatność kartą będzie dostępna jako widżet [więcej informacji](#widżet-do-płatności-kartą).                                                                                                                                                                                                                                           |
 | Płatność BLIK jako osobna metoda płatności              | Określa czy BLIK będzie dostępna jako osobna metoda płatności.                                                                                                                                                                                                                                                                                    |
-         |
 | Tryb testowy (Sandbox)                                  | `Tak` - transakcje będą procesowane przez system Sandbox PayU.<br>`Nie` - transakcje będą procesowane przez system produkcyjny PayU.                                                                                                                                                                                                              |
 | Zapisuj logi                                            | Specifies whether the plugin will save information to logs.                                                                                                                                                                                                                                                                                       |
 
@@ -174,37 +175,41 @@ Ponowienie płatności umożliwia zakładanie wielu płatności w PayU do jedneg
 
 
 ### Promowanie płatności ratalnych i odroczonych
-Od wersji 3.0.10 plugin udostępnia opcję promowania [płatności ratalnych i odroczonych][ext7].
-Funkcjonalność jest domyślnie włączona. Można ją dezaktywować poprzez przełącznik "Promuj płatności ratalne" w panelu
- admińskim. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i
+Plugin udostępnia opcje promowania [płatności ratalnych i odroczonych][ext7] (nazywanych również zamiennie "płatnościami kredytowymi") poprzez wydzielanie poszczególnych metod płatności na podsumowaniu oraz wyświetlanie widgetu kredytowego przy produktach, w koszyku czy na podsumowaniu. 
+Promowaniem płatości ratalnych i odroczonych można sterować w sekcji "Płatności kredytowe" panelu administracyjnego pluginu. Wydzielanie PayU Raty oraz wyświetlanie widgetu kredytowego są domyślnie włączone. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i
  Kompatybilność](#cechy-i-kompatybilność).
- > Prezentacja kalkulacji zależna jest od dostępności bramek "ai", "dpt", "dpp" oraz "dpkl" na danym punkcie płatności i sprawdzana
- jest automatycznie przez plugin. Jeśli na punkcie płatności nie zostały aktywowane Raty PayU kalkulacja nie zostanie
- zaprezentowana pomimo włączonej opcji w pluginie.
+ > Prezentacja metod płatności i widgetu zależna jest od dostępności bramek "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron" na danym punkcie płatności i sprawdzana
+ jest automatycznie przez plugin. Jeśli dana metoda płatności kredytowych nie została aktywowana na punkcie płatności, nie zostanie
+ zaprezentowana na podsumowaniu lub widgecie pomimo włączonej opcji w pluginie.
 
-<img src="readme_images/credit-1-7-admin.png" width="400">
+<img src="readme_images/credit-1-7-admin.png" width="600">
 
-#### Prezentacja kalkulacji w zależności od wersji PrestaShop
-|Wersja PrestaShop|Kategoria|Prezentacja|
-|---------|-----------|-----------|
-|1.7|Listing produktów| <img src="readme_images/credit-1-7-listing.png" width="100"> |
-|1.7|Karta produktu|<img src="readme_images/credit-1-7-product.png" width="100">|
-|1.7|Koszyk| <img src="readme_images/credit-1-7-cart.png" width="100">|
-|1.7|Promowanie płatności ratalnych|<img src="readme_images/credit-1-7-checkout-promote-credit.png" width="100">|
-|1.7|Wydzielenie Klarna jako metody płatności | <img src="readme_images/credit-1-7-checkout-separate-klarna.png" width="100"> |
-|1.7|Wydzielenie PayPo jako metody płatności | <img src="readme_images/credit-1-7-checkout-separate-paypo.png" width="100">  |
-|1.7|Wydzielenie Twisto jako metody płatności|<img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">|
-|1.6|Listing produktów|<img src="readme_images/credit-1-6-listing.png" width="100">|
-|1.6|Karta produktu|<img src="readme_images/credit-1-6-product.png" width="100">|
+#### Prezentacja płatności ratalnych i odroczonych w zależności od wersji PrestaShop
+|Wersja PrestaShop| Kategoria                                              | Prezentacja                                                                         |
+|---------|--------------------------------------------------------|-------------------------------------------------------------------------------------|
+|1.7| Listing produktów                                      | <img src="readme_images/credit-1-7-listing.png" width="100">                        |
+|1.7| Karta produktu                                         | <img src="readme_images/credit-1-7-product.png" width="100">                        |
+|1.7| Koszyk                                                 | <img src="readme_images/credit-1-7-cart.png" width="100">                           |
+|1.7| Wyświetlanie płatności ratalnych jako metody płatności | <img src="readme_images/credit-1-7-checkout-separate-installments.png" width="100"> |
+|1.7| Wydzielenie Klarna jako metody płatności               | <img src="readme_images/credit-1-7-checkout-separate-klarna.png" width="100">       |
+|1.7| Wydzielenie PayPo jako metody płatności                | <img src="readme_images/credit-1-7-checkout-separate-paypo.png" width="100">        |
+|1.7| Wydzielenie Twisto jako metody płatności               | <img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">       |
+|1.7| Wydzielenie Twisto podziel na 3 jako metody płatności  | <img src="readme_images/credit-1-7-checkout-separate-twisto-slice.png" width="100"> |
+|1.6| Listing produktów                                      | <img src="readme_images/credit-1-6-listing.png" width="100">                        |
+|1.6| Karta produktu                                         | <img src="readme_images/credit-1-6-product.png" width="100">                        |
 
 
-#### Prezentacja kalkulacji po kliknięciu w link "Rata już od:"
-Plugin do kalkulacji kredytu używa najnowszej wersji elementu "miniratka" wchodzącego w skład pakietu [PayU Raty -
+#### Prezentacja widgetu kredytowego
+W zależności od dostępnych metod płatności kredytowych, w powyższych sekcjach strony pojawiają się linki: "Rata już od", "Rata 0% już od" lub "Zapłać później". Po kliknięciu w link pojawia się najnowsza wersja widgetu kredytowego wchodzącego w skład pakietu [PayU Raty -
 dobre praktyki][ext12], który znajduje się w [oficjalnej dokumentacji technicznej][ext8].
 
-Widget z kalkulacją ratalną wygląda następująco:
+Widget kredytowy wygląda następująco:
 
 <img src="readme_images/credit-installment-widget.png" width="300">
+
+Możliwe jest wykluczenie wskazanych metod płatności kredytowych z wyświetlania w widgecie za pośrednictwem pola "Wyklucz metody płatności kredytowych z widgetu" w konfiguracji pluginu. Na przykład, wpisanie we wspomnianym polu następującej wartości: dpp,dpkl,dpt sprawi, iż metody Klarna, Paypo oraz Twisto znikną z widgetu:
+
+<img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
 ## Znane problemy
 ### PrestaShop 1.6 i moduł OPC

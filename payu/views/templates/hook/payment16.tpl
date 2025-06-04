@@ -139,7 +139,20 @@
 		</div>
     {/if}
 
-    {if $credit_available == true}
+	{if $payu_later_twisto_slice_available == true}
+		<div class="row">
+			<div class="col-xs-12">
+				<p class="payment_module">
+					<a class="payu payu_twisto_slice" href="{$creditPayLaterTwistoSliceActionUrl|escape:'htmlall':'UTF-8'}"
+					   title="{l s='Pay with Twisto pay in 3' mod='payu'}">
+						{l s='Pay with Twisto pay in 3' mod='payu'}
+					</a>
+				</p>
+			</div>
+		</div>
+	{/if}
+
+	{if $payu_installments_available == true}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">
@@ -147,29 +160,6 @@
 					   title="{l s='Pay online in installments' mod='payu'}">
 						{l s='Pay online in installments' mod='payu'}
 					</a>
-					<span id="payu-installment-cart-summary" class="payu-installment-cart-summary"></span>
-					<script type="text/javascript" class="payu-script-tag">
-						document.addEventListener("DOMContentLoaded", function (event) {
-							var options = {
-								creditAmount: {$cart_total_amount|floatval},
-								posId: '{$credit_pos}',
-								key: '{$credit_pos_key}',
-								showLongDescription: true
-							};
-							window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
-						});
-						if (document.getElementById("payu-installment-cart-summary").childNodes.length == 0 &&
-								typeof window.OpenPayU !== 'undefined' &&
-								window.OpenPayU != null) {
-							var options = {
-								creditAmount: {$cart_total_amount|floatval},
-								posId: '{$credit_pos}',
-								key: '{$credit_pos_key}',
-								showLongDescription: true
-							};
-							window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-summary', options);
-						}
-					</script>
 				</p>
 			</div>
 		</div>

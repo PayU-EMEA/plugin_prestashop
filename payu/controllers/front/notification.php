@@ -3,7 +3,7 @@
  * PayU notification
  *
  * @author    PayU
- * @copyright Copyright (c) 2014-2018 PayU
+ * @copyright Copyright (c) 2014-2025 PayU
  *
  * http://www.payu.com
  */
