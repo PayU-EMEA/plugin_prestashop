@@ -2,7 +2,7 @@
 class CreditPaymentMethod {
     const INSTALLMENT = 'ai';
     const DELAYED_PAYMENT_KLARNA_PLN = 'dpkl';
-    const DELAYED_PAYMENT_KLARNA_CZK    = 'dpklczk';
+    const DELAYED_PAYMENT_KLARNA_CZK = 'dpklczk';
     const DELAYED_PAYMENT_KLARNA_EUR = 'dpkleur';
     const DELAYED_PAYMENT_KLARNA_HUF = 'dpklhuf';
     const DELAYED_PAYMENT_TWISTO_PLN = 'dpt';

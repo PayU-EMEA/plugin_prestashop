@@ -34,7 +34,7 @@
 				    pay-methods__hide
 			    {/if}
 
-				{if $separateInstallments && $payment->value == 'ai'}
+			    {if $separateInstallments && $payment->value == 'ai'}
 				    pay-methods__hide
 			    {/if}
 

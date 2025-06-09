@@ -29,7 +29,7 @@
 				    pay-methods__hide
 			    {/if}
 
-				{if $separateInstallments && $payment->value == 'ai'}
+			    {if $separateInstallments && $payment->value == 'ai'}
 				    pay-methods__hide
 			    {/if}
 
@@ -45,7 +45,7 @@
 				    pay-methods__hide
 			    {/if}
 
-				{if $separateTwistoSlice && $payment->value == 'dpts'}
+			    {if $separateTwistoSlice && $payment->value == 'dpts'}
 				    pay-methods__hide
 			    {/if}
 		        ">

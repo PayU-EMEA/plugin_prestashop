@@ -7,9 +7,12 @@ if (!defined('_PS_VERSION_')) {
 include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/openpayu.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/PayUSDKInitializer.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
+include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/OpenPayU/Model/CreditPaymentMethod.php');
 
 class PayMethodsCache
 {
+    const RETRIEVE_SUCCESS = 'SUCCESS';
+    const PAY_BY_LINK_ENABLED = 'ENABLED';
     const PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX = 'PAYU_PAY_METHODS_';
 
     private static $retrieveCache = [];
@@ -46,6 +49,29 @@ class PayMethodsCache
         static::$retrieveCache[$posId] = OpenPayU_Retrieve::payMethods($lang);
         return static::$retrieveCache[$posId];
 
+    }
+
+    /**
+     * @param array $currency
+     * @param string $lang
+     * @param string $version
+     *
+     * @return bool
+     */
+    public static function isAnyCreditPaytypeEnabled($currency, $lang, $version)
+    {
+        $init = static::initializeOpenPayU($currency, $version);
+        if (!$init) {
+            return false;
+        }
+        $retrieve = static::getPaymethods($currency, $lang, $version);
+        if ($retrieve->getStatus() == self::RETRIEVE_SUCCESS) {
+            $creditPaytypes = array_filter($retrieve->getResponse()->payByLinks, function($pbl) {
+                return $pbl->status === self::PAY_BY_LINK_ENABLED && in_array($pbl->value, CreditPaymentMethod::getAll());
+            });
+            return count($creditPaytypes) > 0;
+        }
+        return false;
     }
 
     /**
@@ -89,14 +115,14 @@ class PayMethodsCache
         $cachedValue = self::get($cacheKey);
 
         if ($noCache !== true && isset($cachedValue['paytype']) && $cachedValue['valid_to'] > $currentTime) {
-            $payTypeEnabled = $cachedValue['paytype']->status === "ENABLED" && static::checkMinMax($cachedValue['paytype'], $amount);
+            $payTypeEnabled = $cachedValue['paytype']->status === self::PAY_BY_LINK_ENABLED && static::checkMinMax($cachedValue['paytype'], $amount);
         } else {
             try {
                 $retrieve = static::getPaymethods($currency, $lang, $version);
-                if ($retrieve->getStatus() == 'SUCCESS') {
+                if ($retrieve->getStatus() == self::RETRIEVE_SUCCESS) {
                     foreach ($retrieve->getResponse()->payByLinks as $payType) {
                         if ($payType->value === $payTypeStringValue) {
-                            $payTypeEnabled = $payType->status === "ENABLED" && static::checkMinMax($payType, $amount);
+                            $payTypeEnabled = $payType->status === self::PAY_BY_LINK_ENABLED && static::checkMinMax($payType, $amount);
 
                             $validityTime = $currentTime;
                             $validityTime->add(new DateInterval('PT10M')); // paymethods are cached for 10m

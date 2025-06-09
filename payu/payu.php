@@ -1260,13 +1260,18 @@ class PayU extends PaymentModule
             'payu_installments_available' => $this->isAvailableSeparateInstallments($totalPrice),
             'payu_later_twisto_slice_available' => $this->isAvailableSeparateTwistoSlice($totalPrice),
             'separateInstallments' => Configuration::get('PAYU_SEPARATE_INSTALLMENTS'),
-            'separateTwistoSlice' => Configuration::get('PAYU_SEPARATE_TWISTO_SLICE'),
-            'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
-            'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2),
-            'credit_widget_currency_code' => $this->getCurrencyIsoCodeForCreditWidget(),
-            'credit_widget_lang' => $this->getLanguage(),
-            'credit_widget_excluded_paytypes' => $this->getCreditWidgetExcludedPaytypes()
+            'separateTwistoSlice' => Configuration::get('PAYU_SEPARATE_TWISTO_SLICE')
         ]);
+
+        if ($this->isAnyCreditPaytypeEnabled()) {
+            $this->context->smarty->assign([
+                'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2),
+                'credit_widget_currency_code' => $this->getCurrencyIsoCodeForCreditWidget(),
+                'credit_widget_lang' => $this->getLanguage(),
+                'credit_widget_excluded_paytypes' => $this->getCreditWidgetExcludedPaytypes()
+            ]);
+        }
     }
 
     /**
@@ -2526,7 +2531,7 @@ class PayU extends PaymentModule
 
     public function hookDisplayCheckoutSubtotalDetails($params)
     {
-        if ($this->initializeOpenPayU($this->getCurrencyIsoCodeForCreditWidget())
+        if ($this->isAnyCreditPaytypeEnabled()
             && Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1') {
             $this->context->smarty->assign([
                 'cart_total_amount' => $params['cart']->getOrderTotal(),
@@ -2542,7 +2547,7 @@ class PayU extends PaymentModule
 
     public function hookDisplayCheckoutSummaryTop($params)
     {
-        if ($this->initializeOpenPayU($this->getCurrencyIsoCodeForCreditWidget())
+        if ($this->isAnyCreditPaytypeEnabled()
             && Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1') {
             $this->context->smarty->assign([
                 'cart_total_amount' => $params['cart']->getOrderTotal(),
@@ -2558,7 +2563,7 @@ class PayU extends PaymentModule
 
     public function hookDisplayProductPriceBlock($params)
     {
-        if (!$this->initializeOpenPayU($this->getCurrencyIsoCodeForCreditWidget())
+        if (!$this->isAnyCreditPaytypeEnabled()
             || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '0') {
             return;
         }
@@ -2947,11 +2952,24 @@ class PayU extends PaymentModule
         return Configuration::get($enableSeparateFlagKey) === '1' && $availablePayMethod != null;
     }
 
+    /**
+     * @return bool
+     */
+    private function isAnyCreditPaytypeEnabled()
+    {
+        return PayMethodsCache::isAnyCreditPaytypeEnabled(
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $this->getVersion()
+        );
+    }
+
     private function isCreditWidgetEnabled()
     {
-        return ($this->is17()
+        $isEnabledInConfig = ($this->is17()
                 && (Configuration::get('PAYU_PROMOTE_CREDIT_CART') === '1' || Configuration::get('PAYU_PROMOTE_CREDIT_SUMMARY') === '1'))
             || Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT') === '1';
+        return $isEnabledInConfig && $this->isAnyCreditPaytypeEnabled();
     }
 
     private function setPayuNotification()

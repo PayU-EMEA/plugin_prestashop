@@ -38,6 +38,7 @@ class OpenPayU_Retrieve extends OpenPayU
         }
 
         $response = self::verifyResponse(OpenPayU_Http::doGet($pathUrl, $authType));
+
         return $response;
     }
 
