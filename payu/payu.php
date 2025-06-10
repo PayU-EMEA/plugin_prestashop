@@ -2419,7 +2419,8 @@ class PayU extends PaymentModule
      */
     private function getCreditWidgetExcludedPaytypes()
     {
-        return explode(',', str_replace(' ', '', Configuration::get('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', null, null, null, '')));
+        $excludedPayTypes = Configuration::get('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES');
+        return empty($excludedPayTypes) ? [] : explode(',', str_replace(' ', '', $excludedPayTypes));
     }
 
     /**
