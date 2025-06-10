@@ -871,7 +871,7 @@ class PayU extends PaymentModule
         $creditPaymentOptions = [];
 
         $availablePayLaterKlarna = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_KLARNA_GROUP, $totalPrice);
-        if (Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1' && $availablePayLaterKlarna != null) {
+        if ($availablePayLaterKlarna != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1') {
             if ($retry16) {
                 $payLaterKlarnaOption = [
                     'CallToActionText' => $this->l('Pay later'),
@@ -902,7 +902,7 @@ class PayU extends PaymentModule
         }
 
         $availablePayLaterPaypo = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_PAYPO_GROUP, $totalPrice);
-        if (Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1' && $availablePayLaterPaypo != null) {
+        if ($availablePayLaterPaypo != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1') {
             if ($retry16) {
                 $payLaterPaypoOption = [
                     'CallToActionText' => $this->l('Pay later'),
@@ -933,7 +933,7 @@ class PayU extends PaymentModule
         }
 
         $availablePayLaterTwisto = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_TWISTO_GROUP, $totalPrice);
-        if (Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1' && $availablePayLaterTwisto != null) {
+        if ($availablePayLaterTwisto != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1') {
             if ($retry16) {
                 $payLaterTwistoOption = [
                     'CallToActionText' => $this->l('Pay later'),
@@ -1204,7 +1204,7 @@ class PayU extends PaymentModule
         $availablePayLaterTwisto = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_TWISTO_GROUP, $totalPrice);
         if ($availablePayLaterTwisto != null) {
             $this->context->smarty->assign([
-                'separateTwisto' => Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1' && $availablePayLaterTwisto != null,
+                'separateTwisto' => $availablePayLaterTwisto != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1',
                 'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => $availablePayLaterTwisto
                 ]),
@@ -1214,7 +1214,7 @@ class PayU extends PaymentModule
         $availablePayLaterKlarna = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_KLARNA_GROUP, $totalPrice);
         if ($availablePayLaterKlarna != null) {
             $this->context->smarty->assign([
-                'separateKlarna' => Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1' && $availablePayLaterKlarna != null,
+                'separateKlarna' => $availablePayLaterKlarna != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1',
                 'creditPayLaterKlarnaActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => $availablePayLaterKlarna
                 ]),
@@ -1224,7 +1224,7 @@ class PayU extends PaymentModule
         $availablePayLaterPaypo = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_PAYPO_GROUP, $totalPrice);
         if ($availablePayLaterPaypo != null) {
             $this->context->smarty->assign([
-                'separatePaypo' => Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1' && $availablePayLaterPaypo != null,
+                'separatePaypo' => $availablePayLaterPaypo != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1',
                 'creditPayLaterPaypoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => $availablePayLaterPaypo
                 ]),
