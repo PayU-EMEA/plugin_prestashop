@@ -21,7 +21,6 @@
             };
             window.OpenPayU?.Installments?.miniInstallment('#payu-installment-cart-total', options);
         });
-
     </script>
 </div>
 <hr class="separator payu-separator-reset">

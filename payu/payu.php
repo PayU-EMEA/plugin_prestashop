@@ -2545,16 +2545,18 @@ class PayU extends PaymentModule
                     $productId = $product->reference;
                 }
 
-                $this->context->smarty->assign([
-                    'product_price' => $price,
-                    'product_id' => $productId,
-                    'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
-                    'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2),
-                    'credit_widget_currency_code' => $this->getCurrencyIsoCodeForCreditWidget(),
-                    'credit_widget_lang' => $this->getLanguage(),
-                    'credit_widget_excluded_paytypes' => $this->getCreditWidgetExcludedPaytypes()
-                ]);
-                return $this->display(__FILE__, 'product.tpl');
+                if (is_numeric($price)) {
+                    $this->context->smarty->assign([
+                        'product_price' => $price,
+                        'product_id' => $productId,
+                        'credit_pos' => OpenPayU_Configuration::getMerchantPosId(),
+                        'credit_pos_key' => substr(OpenPayU_Configuration::getOauthClientSecret(), 0, 2),
+                        'credit_widget_currency_code' => $this->getCurrencyIsoCodeForCreditWidget(),
+                        'credit_widget_lang' => $this->getLanguage(),
+                        'credit_widget_excluded_paytypes' => $this->getCreditWidgetExcludedPaytypes()
+                    ]);
+                    return $this->display(__FILE__, 'product.tpl');
+                }
             }
         } else {
             $product = $params['product'];
