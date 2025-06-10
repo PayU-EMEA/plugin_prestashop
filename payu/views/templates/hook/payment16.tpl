@@ -100,7 +100,7 @@
 		</div>
     {/if}
 
-    {if $payu_later_klarna_available == true}
+    {if $separateKlarna == true}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">
@@ -113,7 +113,7 @@
 		</div>
     {/if}
 
-    {if $payu_later_paypo_available == true}
+    {if $separatePaypo == true}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">
@@ -126,7 +126,7 @@
 		</div>
     {/if}
 
-    {if $payu_later_twisto_available == true}
+    {if $separateTwisto == true}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">
@@ -139,7 +139,7 @@
 		</div>
     {/if}
 
-	{if $payu_later_twisto_slice_available == true}
+	{if $separateTwistoSlice == true}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">
@@ -152,7 +152,7 @@
 		</div>
 	{/if}
 
-	{if $payu_installments_available == true}
+	{if $separateInstallments == true}
 		<div class="row">
 			<div class="col-xs-12">
 				<p class="payment_module">

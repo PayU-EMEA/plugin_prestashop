@@ -1,6 +1,6 @@
 <?php
 
-include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/OpenPayU/Model/CreditPaymentMethod.php');
+include_once(_PS_MODULE_DIR_ . '/payu/tools/PayMethods/CreditPaymentMethod.php');
 
 class PayUPaymentModuleFrontController extends ModuleFrontController
 {

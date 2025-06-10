@@ -23,7 +23,7 @@
 {if isset($credit_widget_lang)}            lang: '{$credit_widget_lang}',{"\n"}{/if}
             excludedPaytypes: {$credit_widget_excluded_paytypes|@json_encode nofilter}
         };
-        window.OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id|md5}', options);
+        window.OpenPayU?.Installments?.miniInstallment('.payu-installment-mini-{$product_id|md5}', options);
     });
     if (typeof window.OpenPayU !== 'undefined') {
         var options = {
@@ -35,6 +35,6 @@
 {if isset($credit_widget_lang)}            lang: '{$credit_widget_lang}',{"\n"}{/if}
             excludedPaytypes: {$credit_widget_excluded_paytypes|@json_encode nofilter}
         };
-        window.OpenPayU.Installments.miniInstallment('.payu-installment-mini-{$product_id|md5}', options);
+        window.OpenPayU?.Installments?.miniInstallment('.payu-installment-mini-{$product_id|md5}', options);
     }
 </script>

@@ -7,13 +7,14 @@ if (!defined('_PS_VERSION_')) {
 include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/openpayu.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/PayUSDKInitializer.php');
 include_once(_PS_MODULE_DIR_ . '/payu/tools/SimplePayuLogger/SimplePayuLogger.php');
-include_once(_PS_MODULE_DIR_ . '/payu/tools/sdk/OpenPayU/Model/CreditPaymentMethod.php');
+include_once(_PS_MODULE_DIR_ . '/payu/tools/PayMethods/CreditPaymentMethod.php');
 
 class PayMethodsCache
 {
     const RETRIEVE_SUCCESS = 'SUCCESS';
     const PAY_BY_LINK_ENABLED = 'ENABLED';
     const PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX = 'PAYU_PAY_METHODS_';
+    const ANY_CREDIT_ENABLED_PREFIX = 'ANY_CREDIT_ENABLED_';
 
     private static $retrieveCache = [];
 
@@ -64,14 +65,32 @@ class PayMethodsCache
         if (!$init) {
             return false;
         }
-        $retrieve = static::getPaymethods($currency, $lang, $version);
-        if ($retrieve->getStatus() == self::RETRIEVE_SUCCESS) {
-            $creditPaytypes = array_filter($retrieve->getResponse()->payByLinks, function($pbl) {
-                return $pbl->status === self::PAY_BY_LINK_ENABLED && in_array($pbl->value, CreditPaymentMethod::getAll());
-            });
-            return count($creditPaytypes) > 0;
+
+        $currentTime = new DateTime();
+        $cacheKey = self::ANY_CREDIT_ENABLED_PREFIX . OpenPayU_Configuration::getMerchantPosId();
+        $cachedValue = self::get($cacheKey);
+
+        if (isset($cachedValue['enabled']) && $cachedValue['valid_to'] > $currentTime) {
+            return $cachedValue['enabled'];
+        } else {
+            try {
+                $retrieve = static::getPaymethods($currency, $lang, $version);
+                $creditPaytypeFound = false;
+                if ($retrieve->getStatus() == self::RETRIEVE_SUCCESS) {
+                    foreach ($retrieve->getResponse()->payByLinks as $payType) {
+                        if ($payType->status === self::PAY_BY_LINK_ENABLED && in_array($payType->value, CreditPaymentMethod::getAll())) {
+                            $creditPaytypeFound = true;
+                            break;
+                        }
+                    }
+                }
+                $toBeCached = array('enabled' => $creditPaytypeFound, 'valid_to' => static::getValidityTime($currentTime));
+                self::set($cacheKey, $toBeCached);
+                return $creditPaytypeFound;
+            } catch (OpenPayU_Exception $e) {
+                return false;
+            }
         }
-        return false;
     }
 
     /**
@@ -123,10 +142,7 @@ class PayMethodsCache
                     foreach ($retrieve->getResponse()->payByLinks as $payType) {
                         if ($payType->value === $payTypeStringValue) {
                             $payTypeEnabled = $payType->status === self::PAY_BY_LINK_ENABLED && static::checkMinMax($payType, $amount);
-
-                            $validityTime = $currentTime;
-                            $validityTime->add(new DateInterval('PT10M')); // paymethods are cached for 10m
-                            $toBeCached = array('paytype' => $payType, 'valid_to' => $validityTime);
+                            $toBeCached = array('paytype' => $payType, 'valid_to' => static::getValidityTime($currentTime));
                             self::set($cacheKey, $toBeCached);
                             break;
                         }
@@ -152,6 +168,18 @@ class PayMethodsCache
     private static function set($key, $value)
     {
         return Configuration::updateValue(self::PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX . $key, serialize($value));
+    }
+
+    /**
+     * @param DateTime $currentTime
+     *
+     * @return DateTime
+     */
+    private static function getValidityTime($currentTime)
+    {
+        $validityTime = $currentTime;
+        $validityTime->add(new DateInterval('PT10M')); // values are cached for 10m
+        return $validityTime;
     }
 
 }

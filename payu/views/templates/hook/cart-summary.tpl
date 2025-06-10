@@ -19,7 +19,7 @@
 {if isset($credit_widget_lang)}                lang: '{$credit_widget_lang}',{"\n"}{/if}
                 excludedPaytypes: {$credit_widget_excluded_paytypes|@json_encode nofilter}
             };
-            window.OpenPayU.Installments.miniInstallment('#payu-installment-cart-total', options);
+            window.OpenPayU?.Installments?.miniInstallment('#payu-installment-cart-total', options);
         });
 
     </script>

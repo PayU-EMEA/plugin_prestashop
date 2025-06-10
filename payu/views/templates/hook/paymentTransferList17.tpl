@@ -29,23 +29,23 @@
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateInstallments && $payment->value == 'ai'}
+			    {if $separateInstallments && $payment->value == CreditPaymentMethod::INSTALLMENT}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateKlarna && in_array($payment->value, ['dpkl', 'dpklczk', 'dpkleur', 'dpklhuf'])}
+			    {if $separateKlarna && in_array($payment->value, CreditPaymentMethod::DELAYED_PAYMENT_KLARNA_GROUP)}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separatePaypo && in_array($payment->value, ['dpp', 'dppron'])}
+			    {if $separatePaypo && in_array($payment->value, CreditPaymentMethod::DELAYED_PAYMENT_PAYPO_GROUP)}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateTwisto && in_array($payment->value, ['dpt', 'dpcz'])}
+			    {if $separateTwisto && in_array($payment->value, CreditPaymentMethod::DELAYED_PAYMENT_TWISTO_GROUP)}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateTwistoSlice && $payment->value == 'dpts'}
+			    {if $separateTwistoSlice && $payment->value == CreditPaymentMethod::INSTALLMENT_TWISTO_SLICE}
 				    pay-methods__hide
 			    {/if}
 		        ">
