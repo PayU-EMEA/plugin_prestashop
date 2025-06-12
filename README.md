@@ -207,7 +207,7 @@ Widget kredytowy wygląda następująco:
 
 <img src="readme_images/credit-installment-widget.png" width="300">
 
-Od wersji 3.2.22 pluginu możliwe jest wykluczenie wskazanych metod płatności kredytowych z wyświetlania w widgecie za pośrednictwem pola "Wyklucz metody płatności kredytowych z widgetu" w konfiguracji pluginu. Na przykład, wpisanie we wspomnianym polu następującej wartości: dpp,dpkl,dpt sprawi, iż metody PayPo, Klarna oraz Twisto znikną z widgetu:
+Od wersji 3.2.22 możliwe jest wykluczenie wskazanych metod płatności kredytowych z wyświetlania w widgecie za pośrednictwem pola "Wyklucz metody płatności kredytowych z widgetu" w konfiguracji pluginu. Na przykład, wpisanie we wspomnianym polu następującej wartości: dpp,dpkl,dpt sprawi, iż metody PayPo, Klarna oraz Twisto znikną z widgetu:
 
 <img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
