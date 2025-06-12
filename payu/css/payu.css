@@ -60,6 +60,14 @@ p.payment_module a.payu_twisto {
     padding: 33px 40px 34px 110px;
 }
 
+p.payment_module a.payu_twisto_slice {
+    background: url('../img/payu_twisto_pay_in_3.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_twisto_slice {
+    padding: 33px 40px 34px 115px;
+}
+
 p.payment_module a.payu_installment {
     background: url('../img/payu_installment.svg') 15px 33px no-repeat #fbfbfb;
 }
@@ -276,16 +284,12 @@ p.payment_module a.payu-payment-credit-tile {
     background: #fbfbfb none;
 }
 
-.payu-widget-installments-mini, .payu-installment-cart-summary, .payu-widget-installments-mini-amount {
+.payu-widget-installments-mini, .payu-widget-installments-mini-amount {
     font-size: 14px;
 }
 
 .payu-widget-installments-mini-separator {
     color: #777777;
-}
-
-.payu-installment-cart-summary {
-    margin-left: 20px;
 }
 
 .payu-separator-reset {
@@ -322,18 +326,6 @@ p.payment_module a.payu-widget-installments-mini {
 
 body#checkout #payu-methods-grouped .additional-information {
     margin:0;
-}
-
-.payu-method-description {
-    margin-top: 1.25rem;
-}
-
-.payu-method-description > p:not(:last-child) {
-    margin-bottom: 10px;
-}
-
-.payu-checkout-installment {
-    margin-bottom: -10px;
 }
 
 .payu-card-form-container {
@@ -426,12 +418,6 @@ body#checkout #payu-methods-grouped .additional-information {
 }
 
 @media only screen and (max-width: 460px) {
-    .payu-installment-cart-summary {
-        display: block;
-        margin-left: 0px;
-        margin-top: 5px;
-    }
-
     .payu-card-form-container {
         width: 100%;
         margin: 5px auto 15px;
@@ -472,6 +458,7 @@ body#checkout #payu-methods-grouped .additional-information {
     cursor: pointer;
     border: 0;
     border-radius: 5px;
+    margin: 8px 0 15px 0;
 }
 #payuForm #payMethods > div{
     position: relative;

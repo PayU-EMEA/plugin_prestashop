@@ -1,3 +1,16 @@
+## 3.2.22
+* Added credit widget excluded pay types configuration option
+* Added credit widget currency and language parameters
+* Removed credit widget amount and pay method type presentation conditions
+* Changed configuration labels and their translations to accommodate BNPL payment methods
+* Added new credit payment widget screenshot and other credit payment-related updates in README
+* Removed the credit widget from checkout payment methods list
+* Added support for Klarna CZK, Klarna EUR, Klarna HUF, Twisto CZK, Twisto Pay in 3, and PayPo RO payment methods
+* Added an ability to display Twisto Pay in 3 as a separate payment method
+* Separated credit promotion configuration toggle into credit widget and separate installments toggles
+* Removed an unused dp payment method
+* Added margin and a translation to the payment button on the retry payment page
+
 ## 3.2.21
 * Update Klarna logo
 * Update Twisto logo

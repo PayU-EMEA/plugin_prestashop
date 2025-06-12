@@ -40,7 +40,7 @@
 
 		<input type="hidden" name="payMethod" value="" />
 		<input type="hidden" name="transferGateway" />
-		<input type="submit" value="Zapłać z PayU" />
+		<input type="submit" value="{l s='Pay with PayU' mod='payu'}" />
 	</form>
 </div>
 <script>

@@ -33,15 +33,23 @@
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateKlarna && $payment->value == 'dpkl'}
+			    {if $separateInstallments && $payment->value == CreditPaymentMethod::INSTALLMENT}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separatePaypo && $payment->value == 'dpp'}
+			    {if $separateKlarna && in_array($payment->value, CreditPaymentMethod::DELAYED_PAYMENT_KLARNA_GROUP)}
 				    pay-methods__hide
 			    {/if}
 
-			    {if $separateTwisto && $payment->value == 'dpt'}
+			    {if $separatePaypo && in_array($payment->value, CreditPaymentMethod::DELAYED_PAYMENT_PAYPO_GROUP)}
+				    pay-methods__hide
+			    {/if}
+
+			    {if $separateTwisto && in_array($payment->value, CreditPaymentMethod::DELAYED_PAYMENT_TWISTO_GROUP)}
+				    pay-methods__hide
+			    {/if}
+
+			    {if $separateTwistoSlice && $payment->value == CreditPaymentMethod::INSTALLMENT_TWISTO_SLICE}
 				    pay-methods__hide
 			    {/if}
 		        ">
