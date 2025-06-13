@@ -203,7 +203,7 @@ The credit payments widget ("miniInstallment" component) looks as below:
 
 <img src="readme_images/credit-installment-widget.png" width="300">
 
-Since version 3.2.22 it's possible to exclude the specified credit payment methods from the widget using the "Exclude credit payment methods from widget" field in the plugin's configuration. For example, filling the field with these values: dpp,dpkl,dpt will result in PayPo, Klarna, and Twisto disappearing from the widget:
+Since version 3.3.0 it's possible to exclude the specified credit payment methods from the widget using the "Exclude credit payment methods from widget" field in the plugin's configuration. For example, filling the field with these values: dpp,dpkl,dpt will result in PayPo, Klarna, and Twisto disappearing from the widget:
 
 <img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
