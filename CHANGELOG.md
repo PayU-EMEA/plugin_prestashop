@@ -1,4 +1,4 @@
-## 3.2.22
+## 3.3.0
 * Added credit widget excluded pay types configuration option
 * Added credit widget currency and language parameters
 * Removed credit widget amount and pay method type presentation conditions
