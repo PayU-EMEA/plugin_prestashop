@@ -55,6 +55,7 @@ class PayMethodsCache
     }
 
     /**
+     * Safe measure against an empty JSON array being parsed to bool(false)
      * @param array $retrieve
      * @return array
      */
