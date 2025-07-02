@@ -1207,30 +1207,42 @@ class PayU extends PaymentModule
         $availablePayLaterTwisto = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_TWISTO_GROUP, $totalPrice);
         if ($availablePayLaterTwisto != null) {
             $this->context->smarty->assign([
-                'separateTwisto' => $availablePayLaterTwisto != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1',
+                'separateTwisto' => Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1',
                 'creditPayLaterTwistoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => $availablePayLaterTwisto
                 ]),
+            ]);
+        } else {
+            $this->context->smarty->assign([
+                'separateTwisto' => false
             ]);
         }
 
         $availablePayLaterKlarna = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_KLARNA_GROUP, $totalPrice);
         if ($availablePayLaterKlarna != null) {
             $this->context->smarty->assign([
-                'separateKlarna' => $availablePayLaterKlarna != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1',
+                'separateKlarna' => Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1',
                 'creditPayLaterKlarnaActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => $availablePayLaterKlarna
                 ]),
+            ]);
+        } else {
+            $this->context->smarty->assign([
+                'separateKlarna' => false
             ]);
         }
 
         $availablePayLaterPaypo = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_PAYPO_GROUP, $totalPrice);
         if ($availablePayLaterPaypo != null) {
             $this->context->smarty->assign([
-                'separatePaypo' => $availablePayLaterPaypo != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1',
+                'separatePaypo' => Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1',
                 'creditPayLaterPaypoActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => $availablePayLaterPaypo
                 ]),
+            ]);
+        } else {
+            $this->context->smarty->assign([
+                'separatePaypo' => false
             ]);
         }
 
