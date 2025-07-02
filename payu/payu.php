@@ -37,7 +37,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.3.0';
+        $this->version = '3.3.1';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -871,6 +871,7 @@ class PayU extends PaymentModule
         $creditPaymentOptions = [];
 
         $availablePayLaterKlarna = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_KLARNA_GROUP, $totalPrice);
+        $separateKlarna = false;
         if ($availablePayLaterKlarna != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA') === '1') {
             if ($retry16) {
                 $payLaterKlarnaOption = [
@@ -895,13 +896,14 @@ class PayU extends PaymentModule
                 }
             }
             $creditPaymentOptions[] = $payLaterKlarnaOption;
-
-            $this->context->smarty->assign([
-                'separateKlarna' => true,
-            ]);
+            $separateKlarna = true;
         }
+        $this->context->smarty->assign([
+            'separateKlarna' => $separateKlarna
+        ]);
 
         $availablePayLaterPaypo = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_PAYPO_GROUP, $totalPrice);
+        $separatePaypo = false;
         if ($availablePayLaterPaypo != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO') === '1') {
             if ($retry16) {
                 $payLaterPaypoOption = [
@@ -926,13 +928,14 @@ class PayU extends PaymentModule
                 }
             }
             $creditPaymentOptions[] = $payLaterPaypoOption;
-
-            $this->context->smarty->assign([
-                'separatePaypo' => true,
-            ]);
+            $separatePaypo = true;
         }
+        $this->context->smarty->assign([
+            'separatePaypo' => $separatePaypo
+        ]);
 
         $availablePayLaterTwisto = $this->findAvailableCreditPayMethod(CreditPaymentMethod::DELAYED_PAYMENT_TWISTO_GROUP, $totalPrice);
+        $separateTwisto = false;
         if ($availablePayLaterTwisto != null && Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO') === '1') {
             if ($retry16) {
                 $payLaterTwistoOption = [
@@ -957,11 +960,11 @@ class PayU extends PaymentModule
                 }
             }
             $creditPaymentOptions[] = $payLaterTwistoOption;
-
-            $this->context->smarty->assign([
-                'separateTwisto' => true,
-            ]);
+            $separateTwisto = true;
         }
+        $this->context->smarty->assign([
+            'separateTwisto' => $separateTwisto
+        ]);
 
         if ($this->isAvailableSeparateTwistoSlice($totalPrice)) {
             if ($retry16) {
@@ -1910,12 +1913,11 @@ class PayU extends PaymentModule
     public function getPaymethods($currency, $totalPrice)
     {
         try {
-            $retrieve = PayMethodsCache::getPaymethods($currency, $this->getLanguage(), $this->getVersion());
+            $retrieve = PayMethodsCache::getPayMethods($currency, $this->getLanguage(), $this->getVersion());
 
-            if ($retrieve->getStatus() == 'SUCCESS') {
-                $response = $retrieve->getResponse();
+            if ($retrieve->getStatus() == PayMethodsCache::RETRIEVE_SUCCESS) {
                 return [
-                    'payByLinks' => $this->reorderPaymentMethods($response->payByLinks, $totalPrice)
+                    'payByLinks' => $this->reorderPaymentMethods(PayMethodsCache::extractPayByLinks($retrieve), $totalPrice)
                 ];
             } else {
                 return [
