@@ -15,6 +15,7 @@ class PayMethodsCache
     const PAY_BY_LINK_ENABLED = 'ENABLED';
     const PAYU_PAY_METHODS_CACHE_CONFIG_PREFIX = 'PAYU_PAY_METHODS_';
     const ANY_CREDIT_ENABLED_PREFIX = 'ANY_CREDIT_ENABLED_';
+    const NO_PAY_METHODS_FOUND = 'No pay methods found on POS: ';
 
     private static $retrieveCache = [];
 
@@ -35,7 +36,8 @@ class PayMethodsCache
      * @throws OpenPayU_Exception
      * @throws OpenPayU_Exception_Configuration
      */
-    public static function getPaymethods($currency, $lang, $version) {
+    public static function getPayMethods($currency, $lang, $version)
+    {
         $init = static::initializeOpenPayU($currency, $version);
         if (!$init) {
             throw new \Exception('OPU not properly configured for currency: ' . $currency);
@@ -50,6 +52,21 @@ class PayMethodsCache
         static::$retrieveCache[$posId] = OpenPayU_Retrieve::payMethods($lang);
         return static::$retrieveCache[$posId];
 
+    }
+
+    /**
+     * Safe measure against an empty JSON array being parsed to bool(false)
+     * @param array $retrieve
+     * @return array
+     */
+    public static function extractPayByLinks($retrieve)
+    {
+        if (!empty($retrieve->getResponse()->payByLinks)) {
+            return $retrieve->getResponse()->payByLinks;
+        }
+        SimplePayuLogger::addLog('retrieve', __FUNCTION__, self::NO_PAY_METHODS_FOUND . OpenPayU_Configuration::getMerchantPosId());
+        Logger::addLog('PayU - ' . self::NO_PAY_METHODS_FOUND . OpenPayU_Configuration::getMerchantPosId(), 1);
+        return [];
     }
 
     /**
@@ -74,10 +91,10 @@ class PayMethodsCache
             return $cachedValue['enabled'];
         } else {
             try {
-                $retrieve = static::getPaymethods($currency, $lang, $version);
+                $retrieve = static::getPayMethods($currency, $lang, $version);
                 $creditPaytypeFound = false;
                 if ($retrieve->getStatus() == self::RETRIEVE_SUCCESS) {
-                    foreach ($retrieve->getResponse()->payByLinks as $payType) {
+                    foreach (static::extractPayByLinks($retrieve) as $payType) {
                         if ($payType->status === self::PAY_BY_LINK_ENABLED && in_array($payType->value, CreditPaymentMethod::getAll())) {
                             $creditPaytypeFound = true;
                             break;
@@ -137,9 +154,9 @@ class PayMethodsCache
             $payTypeEnabled = $cachedValue['paytype']->status === self::PAY_BY_LINK_ENABLED && static::checkMinMax($cachedValue['paytype'], $amount);
         } else {
             try {
-                $retrieve = static::getPaymethods($currency, $lang, $version);
+                $retrieve = static::getPayMethods($currency, $lang, $version);
                 if ($retrieve->getStatus() == self::RETRIEVE_SUCCESS) {
-                    foreach ($retrieve->getResponse()->payByLinks as $payType) {
+                    foreach (static::extractPayByLinks($retrieve) as $payType) {
                         if ($payType->value === $payTypeStringValue) {
                             $payTypeEnabled = $payType->status === self::PAY_BY_LINK_ENABLED && static::checkMinMax($payType, $amount);
                             $toBeCached = array('paytype' => $payType, 'valid_to' => static::getValidityTime($currentTime));
@@ -147,10 +164,7 @@ class PayMethodsCache
                             break;
                         }
                     }
-                } else {
-                    return false;
                 }
-
             } catch (OpenPayU_Exception $e) {
                 return false;
             }

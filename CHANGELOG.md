@@ -1,3 +1,7 @@
+## 3.3.1
+* Fix empty array handling on pay methods retrieval
+* Fix PHP notice when trying to read empty value in templates
+
 ## 3.3.0
 * Added credit widget excluded pay types configuration option
 * Added credit widget currency and language parameters
