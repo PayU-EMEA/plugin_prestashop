@@ -29,19 +29,25 @@ class PayU extends PaymentModule
     public $payu_order_id = '';
     public $id_order = null;
 
-    /** @var string */
-    private $extOrderId = '';
+	/** @var string */
+	private $extOrderId = '';
+
+	/** @var int */
+	public $is_eu_compatible;
 
     public function __construct()
     {
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.3.1';
+        $this->version = '3.3.2';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
-        $this->ps_versions_compliancy = ['min' => '1.6.0', 'max' => '8.999'];
+        $this->ps_versions_compliancy = [
+			'min' => '1.6.0',
+			'max' => _PS_VERSION_
+        ];
 
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
@@ -49,10 +55,9 @@ class PayU extends PaymentModule
 
         parent::__construct();
 
-        $this->displayName = $this->l('PayU');
+		$this->displayName = $this->l('PayU');
         $this->description = $this->l('Accepts payments by PayU');
-
-        $this->confirm_uninstall = $this->l('Are you sure you want to uninstall? You will lose all your settings!');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall? You will lose all your settings!');
     }
 
     /**

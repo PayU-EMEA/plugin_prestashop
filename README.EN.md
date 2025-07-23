@@ -1,6 +1,6 @@
 [**Wersja polska**][ext0]
 
-# PayU plugin for Prestashop 1.6, 1.7 and 1.8
+# PayU plugin for Prestashop 1.6, 1.7, 8 and 9
 
 **If you have any questions or issues, feel free to contact our [technical support][ext13].**
 
@@ -27,31 +27,31 @@ The PayU payments Prestashop plugin adds the PayU payment option and enables you
 
 Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 
-| Feature                                                    |   PrestaShop 1.6   |   PrestaShop 1.7   |
-|------------------------------------------------------------|:------------------:|:------------------:|
-| Creating a payment order (with discounts included)         | :white_check_mark: | :white_check_mark: |
-| Capturing a payment order (when auto-capture is disabled)  | :white_check_mark: | :white_check_mark: |
-| Conducting a refund operation (whole or partial)           | :white_check_mark: | :white_check_mark: |
-| Displaying payment methods on Presta checkout summary page | :white_check_mark: | :white_check_mark: |
-| Card payment as separate method                            | :white_check_mark: | :white_check_mark: |
-| Card payment via widget on summary page                    | :white_check_mark: | :white_check_mark: |
-| Payment retry for cancelled payments                       | :white_check_mark: | :white_check_mark: |
-| Repayment                                                  | :white_check_mark: | :white_check_mark: |
-| Multi-currency support                                     | :white_check_mark: | :white_check_mark: |
-| Payment method order                                       | :white_check_mark: | :white_check_mark: |
-| [PayU Installments][ext10] payment as separate method      | :white_check_mark: | :white_check_mark: |
-| Klarna payment as separate method                          | :white_check_mark: | :white_check_mark: |
-| PayPo payment as separate method                           | :white_check_mark: | :white_check_mark: |
-| Twisto payment as separate method                          | :white_check_mark: | :white_check_mark: |
-| Twisto Pay in 3 payment as separate method                 | :white_check_mark: | :white_check_mark: |
-| Present credit widget on product and listing page          | :white_check_mark: | :white_check_mark: |
-| Present credit widget in checkout view                     | :white_check_mark: | :white_check_mark: |
-| Present credit widget in cart view                         |        :x:         | :white_check_mark: |
-| Excluding credit payment methods from credit widget        |        :white_check_mark:         | :white_check_mark: |
+| Feature                                                    |   PrestaShop 1.6   | PrestaShop 1.7 / 8 / 9 |
+|------------------------------------------------------------|:------------------:|:----------------------:|
+| Creating a payment order (with discounts included)         | :white_check_mark: |   :white_check_mark:   |
+| Capturing a payment order (when auto-capture is disabled)  | :white_check_mark: |   :white_check_mark:   |
+| Conducting a refund operation (whole or partial)           | :white_check_mark: |   :white_check_mark:   |
+| Displaying payment methods on Presta checkout summary page | :white_check_mark: |   :white_check_mark:   |
+| Card payment as separate method                            | :white_check_mark: |   :white_check_mark:   |
+| Card payment via widget on summary page                    | :white_check_mark: |   :white_check_mark:   |
+| Payment retry for cancelled payments                       | :white_check_mark: |   :white_check_mark:   |
+| Repayment                                                  | :white_check_mark: |   :white_check_mark:   |
+| Multi-currency support                                     | :white_check_mark: |   :white_check_mark:   |
+| Payment method order                                       | :white_check_mark: |   :white_check_mark:   |
+| [PayU Installments][ext10] payment as separate method      | :white_check_mark: |   :white_check_mark:   |
+| Klarna payment as separate method                          | :white_check_mark: |   :white_check_mark:   |
+| PayPo payment as separate method                           | :white_check_mark: |   :white_check_mark:   |
+| Twisto payment as separate method                          | :white_check_mark: |   :white_check_mark:   |
+| Twisto Pay in 3 payment as separate method                 | :white_check_mark: |   :white_check_mark:   |
+| Present credit widget on product and listing page          | :white_check_mark: |   :white_check_mark:   |
+| Present credit widget in checkout view                     | :white_check_mark: |   :white_check_mark:   |
+| Present credit widget in cart view                         |        :x:         |   :white_check_mark:   |
+| Excluding credit payment methods from credit widget        |        :white_check_mark:         |   :white_check_mark:   |
 
 More information on the features can be found in the [More on features](#more-on-features) section
 
-**All instructions regard PrestaShop 1.6, for versions 1.7 corresponding options should be used**.
+**All instructions regard PrestaShop 1.7, for other versions corresponding options should be used**.
 
 ## Prerequisites
 
@@ -65,7 +65,7 @@ The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 ### Option 1
 **recommended for users without FTP access to their PrestShop installation**
 
-1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases](https://github.com/PayU/plugin_prestashop)
+1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases][ext3]
 2. Go to the PrestaShop administration page [http://adres-sklepu/adminxxx].
 3. Go to 'Modules and Services' > 'Modules and Services'.
 4. Use 'Add a new module' option and point the archive containing the plugin (downloaded in step 1)
@@ -74,7 +74,7 @@ The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 ### Option 2
 **recommended for users with FTP access to their PrestaShop installation**
 
-1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases](https://github.com/PayU/plugin_prestashop)
+1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases][ext3]
 2. Unzip locally downloaded file
 3. Upload all unzipped files from your computer to `modules/payu` catalog of your PrestaShop installation.
 
@@ -208,9 +208,8 @@ Since version 3.3.0 it's possible to exclude the specified credit payment method
 <img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
 ## Known issues
-### PrestaShop 1.6 and OPC module
-In case of using OPC module (by X13), you have to disable `Bank List` option.
-Due to fact that OPC module builds its own checkout page, options `Card payment as separate method`, `BLIK payment as separate method` do not work and separation of installment methods.
+### PrestaShop and OPC modules
+Due to fact that OPC modules builds its own checkout page, some options e.g. `Card payment as separate method`, `BLIK payment as separate method` and separation of installment methods may not work.
 <!--LINKS-->
 
 <!--external links:-->
@@ -223,9 +222,7 @@ Due to fact that OPC module builds its own checkout page, options `Card payment 
 [ext6]: http://developers.payu.com/en/overview.html#paymethods
 [ext7]: https://developers.payu.com/en/installments.html
 [ext8]: https://developers.payu.com/en/installments.html#installments_best_practices_mini
-[ext9]: https://www.payu.pl/en/payment-methods/pay-later
 [ext10]: https://www.payu.pl/en/payment-methods-business/payu-installments
-[ext11]: https://developers.payu.com/en/installments.html#dp_best_practices_mini
 [ext12]: https://developers.payu.com/en/installments.html#best_practices_title
 [ext13]: https://www.payu.pl/en/help
 

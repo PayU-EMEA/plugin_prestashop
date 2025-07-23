@@ -1,6 +1,6 @@
 [**English version**][ext0]
 
-# Moduł PayU dla PrestaShop 1.6, 1.7 i 8
+# Moduł PayU dla PrestaShop 1.6, 1.7, 8 i 9
 
 **Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z naszym [wsparciem technicznym][ext13].**
 
@@ -28,31 +28,31 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 
 Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 
-| Cecha                                                                          |   PrestaShop 1.6   |   PrestaShop 1.7   |
-|--------------------------------------------------------------------------------|:------------------:|:------------------:|
-| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark: | :white_check_mark: |
-| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark: | :white_check_mark: |
-| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: | :white_check_mark: |
-| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: | :white_check_mark: |
-| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: | :white_check_mark: |
-| Płatność kartą jako widżet                                                     | :white_check_mark: | :white_check_mark: |
-| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: | :white_check_mark: |
-| Ponowienie płatności                                                           | :white_check_mark: | :white_check_mark: |
-| Wielowalutowość                                                                | :white_check_mark: | :white_check_mark: |
-| Kolejność metod płatności                                                      | :white_check_mark: | :white_check_mark: |
-| Płatność [PayU Raty][ext10] jako osobna metoda płatności                       | :white_check_mark: | :white_check_mark: |
-| Płatność Klarna jako osobna metoda płatności                                   | :white_check_mark: | :white_check_mark: |
-| Płatność PayPo jako osobna metoda płatności                                    | :white_check_mark: | :white_check_mark: |
-| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark: | :white_check_mark: |
-| Płatność Twisto podziel na 3 jako osobna metoda płatności                      | :white_check_mark: | :white_check_mark: |
-| Prezentacja widgetu kredytowego przy produkcie i listingu                      | :white_check_mark: | :white_check_mark: |
-| Prezentacja widgetu kredytowego na podsumowaniu                                | :white_check_mark: | :white_check_mark: |
-| Prezentacja widgetu kredytowego w koszyku                                      |        :x:         | :white_check_mark: |
-| Wykluczenie metod płatności kredytowych z widgetu                              | :white_check_mark: | :white_check_mark: |
+| Cecha                                                                          |   PrestaShop 1.6   | PrestaShop 1.7 / 8 /9 |
+|--------------------------------------------------------------------------------|:------------------:|:---------------------:|
+| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark: |  :white_check_mark:   |
+| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark: |  :white_check_mark:   |
+| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: |  :white_check_mark:   |
+| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: |  :white_check_mark:   |
+| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: |  :white_check_mark:   |
+| Płatność kartą jako widżet                                                     | :white_check_mark: |  :white_check_mark:   |
+| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: |  :white_check_mark:   |
+| Ponowienie płatności                                                           | :white_check_mark: |  :white_check_mark:   |
+| Wielowalutowość                                                                | :white_check_mark: |  :white_check_mark:   |
+| Kolejność metod płatności                                                      | :white_check_mark: |  :white_check_mark:   |
+| Płatność [PayU Raty][ext10] jako osobna metoda płatności                       | :white_check_mark: |  :white_check_mark:   |
+| Płatność Klarna jako osobna metoda płatności                                   | :white_check_mark: |  :white_check_mark:   |
+| Płatność PayPo jako osobna metoda płatności                                    | :white_check_mark: |  :white_check_mark:   |
+| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark: |  :white_check_mark:   |
+| Płatność Twisto podziel na 3 jako osobna metoda płatności                      | :white_check_mark: |  :white_check_mark:   |
+| Prezentacja widgetu kredytowego przy produkcie i listingu                      | :white_check_mark: |  :white_check_mark:   |
+| Prezentacja widgetu kredytowego na podsumowaniu                                | :white_check_mark: |  :white_check_mark:   |
+| Prezentacja widgetu kredytowego w koszyku                                      |        :x:         |  :white_check_mark:   |
+| Wykluczenie metod płatności kredytowych z widgetu                              | :white_check_mark: |  :white_check_mark:   |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach)
 
-**Wszyskie opisy w tej instrukcji odnoszą się do PrestaShop 1.6, w wersji 1.7 należy używać opcji analogicznych**.
+**Wszyskie opisy w tej instrukcji odnoszą się do PrestaShop 1.7 w innych wersjach należy używać opcji analogicznych**.
 
 ## Wymagania
 
@@ -212,9 +212,9 @@ Od wersji 3.3.0 możliwe jest wykluczenie wskazanych metod płatności kredytowy
 <img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
 ## Znane problemy
-### PrestaShop 1.6 i moduł OPC
-W przypadku korzystania z modułu OPC (autorstwa firmy X13) należy wyłączyć opcję `Lista banków`.
-Z uwagi na to, że moduł OPC buduje własną stronę zamówienia nie działają opcje `Płatność kartą jako osobna metoda płatności`, `Płatność BLIK jako osobna metoda płatności` oraz wydzielenie metod ratalnych.
+### PrestaShop i modułu OPC
+Z uwagi na to, że moduły OPC budują własną stronę zamówienia mogą nie działać niektóre opcje np. `Lista banków`, `Płatność kartą jako osobna metoda płatności`, `Płatność BLIK jako osobna metoda płatności` oraz wydzielenie metod ratalnych. 
+Problemy należy zgłaszać do twórców modułu OPC.
 
 <!--LINKS-->
 
@@ -228,9 +228,7 @@ Z uwagi na to, że moduł OPC buduje własną stronę zamówienia nie działają
 [ext6]: http://developers.payu.com/pl/overview.html#paymethods
 [ext7]: https://developers.payu.com/pl/installments.html
 [ext8]: https://developers.payu.com/pl/installments.html#installments_best_practices_mini
-[ext9]: https://placepozniej.payu.pl/
 [ext10]: https://www.payu.pl/metody-platnosci-dla-biznesu/payu-raty
-[ext11]: https://developers.payu.com/pl/installments.html#dp_best_practices_mini
 [ext12]: https://developers.payu.com/pl/installments.html#best_practices_title
 [ext13]: https://www.payu.pl/pomoc
 

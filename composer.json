@@ -1,18 +1,17 @@
 {
-  "name": "payu/plugin_prestashop",
-  "description": "Payu Prestashop plugin",
+  "name": "payu/prestashop",
+  "description": "PayU Payment module for Prestashop",
+  "type": "prestashop-module",
   "minimum-stability": "stable",
-  "license": "apache-2.0",
+  "license": "Apache License 2.0",
   "authors": [
     {
-      "name": "PayU",
-      "homepage": "https://developers.payu.com/"
+      "name": "PayU"
     }
   ],
   "support": {
     "docs": "https://developers.payu.com/",
     "issues": "https://github.com/PayU-EMEA/plugin_prestashop/issues",
     "source": "https://github.com/PayU-EMEA/plugin_prestashop"
-  },
-  "type": "prestashop-module"
+  }
 }

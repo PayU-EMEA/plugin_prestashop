@@ -1,3 +1,6 @@
+## 3.3.2
+* Added compatibility with Prestashop 9
+
 ## 3.3.1
 * Fix empty array handling on pay methods retrieval
 * Fix PHP notice when trying to read empty value in templates
