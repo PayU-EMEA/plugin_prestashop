@@ -559,10 +559,8 @@ class PayU extends PaymentModule
                         [
                             'type' => 'text',
                             'label' => $this->l('Exclude credit payment methods from widget'),
-                            'desc' => sprintf($this->l('Excludes the given credit payment methods from the credit payment widget. '
-                                . 'The value must be a comma-separated list of %s, for example: dpt,dpkl,dpp.'),
-                                '<a href="https://developers.payu.com/europe/pl/docs/get-started/integration-overview/references/#installments-and-pay-later" target="_blank" rel="nofollow">'
-                                . $this->l('credit payment method codes') . '</a>'),
+                            'desc' => $this->l('Excludes the given credit payment methods from the credit payment widget. The value must be a comma-separated list of') . ' <a href="https://developers.payu.com/europe/pl/docs/get-started/integration-overview/references/#installments-and-pay-later" target="_blank" rel="nofollow">'
+                                . $this->l('credit payment method codes') . '</a>, ' . $this->l('for example') . ': dpt,dpkl,dpp.',
                             'name' => 'PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES'
                         ]
                     ]),
