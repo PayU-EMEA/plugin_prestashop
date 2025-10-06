@@ -40,7 +40,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.3.2';
+        $this->version = '3.3.3';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -100,6 +100,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', 1) &&
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_TWISTO', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_TWISTO_SLICE', 0) &&
+            Configuration::updateValue('PAYU_SEPARATE_PRAGMA_PAY', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_KLARNA', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', 0) &&
@@ -138,6 +139,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_PROMOTE_CREDIT_PRODUCT') ||
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_TWISTO') ||
             !Configuration::deleteByName('PAYU_SEPARATE_TWISTO_SLICE') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_PRAGMA_PAY') ||
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_KLARNA') ||
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_PAYPO') ||
             !Configuration::deleteByName('PAYU_SEPARATE_BLIK_PAYMENT') ||
@@ -211,6 +213,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PROMOTE_CREDIT_PRODUCT', (Tools::getValue('PAYU_PROMOTE_CREDIT_PRODUCT') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_TWISTO', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_TWISTO') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_TWISTO_SLICE', (Tools::getValue('PAYU_SEPARATE_TWISTO_SLICE') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SEPARATE_PRAGMA_PAY', (Tools::getValue('PAYU_SEPARATE_PRAGMA_PAY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_KLARNA', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_KLARNA') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_PAYPO') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_GRID', (Tools::getValue('PAYU_PAYMENT_METHODS_GRID') ? 1 : 0)) ||
@@ -476,6 +479,24 @@ class PayU extends PaymentModule
                                 'label' => $this->l('Disabled')
                             ]
                         ],
+                    ],
+                    [
+                        'type' => 'switch',
+                        'label' => $this->l('Separate PragmaPay'),
+                        'desc' => $this->l('Shows separate PragmaPay payment method'),
+                        'name' => 'PAYU_SEPARATE_PRAGMA_PAY',
+                        'values' => [
+                            [
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ],
+                            [
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            ]
+                        ],
                     ]
                 ],
                     $this->is17() ? [
@@ -538,10 +559,8 @@ class PayU extends PaymentModule
                         [
                             'type' => 'text',
                             'label' => $this->l('Exclude credit payment methods from widget'),
-                            'desc' => sprintf($this->l('Excludes the given credit payment methods from the credit payment widget. '
-                                . 'The value must be a comma-separated list of %s, for example: dpt,dpkl,dpp.'),
-                                '<a href="https://developers.payu.com/europe/pl/docs/get-started/integration-overview/references/#installments-and-pay-later" target="_blank" rel="nofollow">'
-                                . $this->l('credit payment method codes') . '</a>'),
+                            'desc' => $this->l('Excludes the given credit payment methods from the credit payment widget. The value must be a comma-separated list of') . ' <a href="https://developers.payu.com/europe/pl/docs/get-started/integration-overview/references/#installments-and-pay-later" target="_blank" rel="nofollow">'
+                                . $this->l('credit payment method codes') . '</a>, ' . $this->l('for example') . ': dpt,dpkl,dpp.',
                             'name' => 'PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES'
                         ]
                     ]),
@@ -705,6 +724,7 @@ class PayU extends PaymentModule
             'PAYU_PROMOTE_CREDIT_PRODUCT' => Configuration::get('PAYU_PROMOTE_CREDIT_PRODUCT'),
             'PAYU_SEPARATE_PAY_LATER_TWISTO' => Configuration::get('PAYU_SEPARATE_PAY_LATER_TWISTO'),
             'PAYU_SEPARATE_TWISTO_SLICE' => Configuration::get('PAYU_SEPARATE_TWISTO_SLICE'),
+            'PAYU_SEPARATE_PRAGMA_PAY' => Configuration::get('PAYU_SEPARATE_PRAGMA_PAY'),
             'PAYU_SEPARATE_PAY_LATER_KLARNA' => Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA'),
             'PAYU_SEPARATE_PAY_LATER_PAYPO' => Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO'),
             'PAYU_PAYMENT_METHODS_GRID' => Configuration::get('PAYU_PAYMENT_METHODS_GRID'),
@@ -997,6 +1017,30 @@ class PayU extends PaymentModule
             $creditPaymentOptions[] = $twistoSliceOption;
         }
 
+        if ($this->isAvailableSeparatePragmaPay($totalPrice)) {
+            if ($retry16) {
+                $pragmaPayOption = [
+                    'CallToActionText' => $this->l('Pay with PragmaPay'),
+                    'AdditionalInformation' => $this->fetchTemplate('checkout_pragma_pay.tpl'),
+                    'ModuleName' => $this->name,
+                    'Logo' => $this->getPayuLogo('payu_pragma_pay.svg')
+                ];
+            } else {
+                $pragmaPayOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+                $pragmaPayOption
+                    ->setCallToActionText($this->l('Pay with PragmaPay'))
+                    ->setModuleName($this->name)
+                    ->setLogo($this->getPayuLogo('payu_pragma_pay.svg'))
+                    ->setAdditionalInformation($this->fetchTemplate('checkout_pragma_pay.tpl'))
+                    ->setAction($this->context->link->getModuleLink($this->name, 'payment',
+                        [
+                            'payMethod' => CreditPaymentMethod::PRAGMA_PAY
+                        ]
+                    ));
+            }
+            $creditPaymentOptions[] = $pragmaPayOption;
+        }
+
         if ($this->isAvailableSeparateInstallments($totalPrice)) {
             $this->context->smarty->assign([
                 'total_price' => $totalPrice,
@@ -1073,6 +1117,7 @@ class PayU extends PaymentModule
             'separateBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
             'separateInstallments' => Configuration::get('PAYU_SEPARATE_INSTALLMENTS'),
             'separateTwistoSlice' => Configuration::get('PAYU_SEPARATE_TWISTO_SLICE'),
+            'separatePragmaPay' => Configuration::get('PAYU_SEPARATE_PRAGMA_PAY'),
             'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
             'lang' => Language::getIsoById($this->context->language->id),
@@ -1258,8 +1303,12 @@ class PayU extends PaymentModule
             'creditPayLaterTwistoSliceActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                 'payMethod' => CreditPaymentMethod::INSTALLMENT_TWISTO_SLICE
             ]),
+            'creditPragmaPayActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
+                'payMethod' => CreditPaymentMethod::PRAGMA_PAY
+            ]),
             'separateInstallments' => $this->isAvailableSeparateInstallments($totalPrice),
             'separateTwistoSlice' => $this->isAvailableSeparateTwistoSlice($totalPrice),
+            'separatePragmaPay' => $this->isAvailableSeparatePragmaPay($totalPrice),
         ]);
 
         if ($this->isAnyCreditPaytypeEnabled()) {
@@ -2845,6 +2894,17 @@ class PayU extends PaymentModule
     {
         return Configuration::get('PAYU_SEPARATE_TWISTO_SLICE') === '1'
             && $this->isPaymentMethodAvailable(CreditPaymentMethod::INSTALLMENT_TWISTO_SLICE, $amount);
+    }
+
+    /**
+     * @param float $amount
+     *
+     * @return bool
+     */
+    private function isAvailableSeparatePragmaPay($amount)
+    {
+        return Configuration::get('PAYU_SEPARATE_PRAGMA_PAY') === '1'
+            && $this->isPaymentMethodAvailable(CreditPaymentMethod::PRAGMA_PAY, $amount);
     }
 
     /**

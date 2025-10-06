@@ -68,6 +68,19 @@ p.payment_module a.payu_twisto_slice {
     padding: 33px 40px 34px 115px;
 }
 
+p.payment_module a.payu_pragma_pay {
+    background: url('../img/payu_pragma_pay.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_pragma_pay {
+    padding: 33px 40px 34px 145px;
+}
+
+p.payment_module span.payu_payment_module_badge {
+    font-weight: normal;
+    font-size: 80%;
+}
+
 p.payment_module a.payu_installment {
     background: url('../img/payu_installment.svg') 15px 33px no-repeat #fbfbfb;
 }
