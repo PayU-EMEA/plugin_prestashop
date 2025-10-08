@@ -2245,7 +2245,10 @@ class PayU extends PaymentModule
     {
         $order = new Order($idOrder);
         $currency = Currency::getCurrency($order->id_currency);
-        $this->initializeOpenPayU($currency['iso_code']);
+
+        if (!$this->initializeOpenPayU($currency['iso_code'])) {
+            throw new \Exception('OPU not properly configured for currency: ' . $currency['iso_code']);
+        }
     }
 
     /**

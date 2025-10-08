@@ -18,7 +18,17 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         $body = Tools::file_get_contents('php://input');
         $data = trim($body);
         $payu = new PayU();
-        $payu->initializeOpenPayU($this->extractCurrencyCode($data));
+        $currency = $this->extractCurrencyCode($data);
+
+        if (!$payu->initializeOpenPayU($currency)) {
+            header('HTTP/1.1 400 Bad Request', true, 400);
+            die('OPU not properly configured for currency: ' . $currency);
+        }
+
+        if (OpenPayU_Configuration::getSignatureKey() === '') {
+            header('HTTP/1.1 400 Bad Request', true, 400);
+            die('Missing signature key');
+        }
 
         try {
             $result = OpenPayU_Order::consumeNotification($data);
