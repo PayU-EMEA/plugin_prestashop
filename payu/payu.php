@@ -766,7 +766,6 @@ class PayU extends PaymentModule
      */
     public function hookBackOfficeHeader()
     {
-        $output = '<link type="text/css" rel="stylesheet" href="' . _MODULE_DIR_ . $this->name . '/css/payu.css" />';
 
         return $output;
     }
@@ -795,12 +794,14 @@ class PayU extends PaymentModule
                     'order_reference' => $params['template_vars']['{order_name}']
                 ];
                 $url = $this->context->link->getPageLink('guest-tracking', null, null, $urlParams);
+                $url = str_replace(' ', '%20', $url);
 
             } else {
                 $urlParams = [
                     'id_order' => $id_order
                 ];
                 $url = $this->context->link->getPageLink('order-detail', null, null, $urlParams);
+                $url = str_replace(' ', '%20', $url);
             }
 
             $params['extra_template_vars']['{payment}'] = $params['template_vars']['{payment}'] . ', <a href="' . $url . '#repayment">' . $this->l('Repay by PayU') . '</a>';
@@ -1832,6 +1833,8 @@ class PayU extends PaymentModule
         ];
         $continueUrl = $this->context->link->getPageLink('order-confirmation', null, null, $params);
 
+        $continueUrl = str_replace(' ', '%20', $continueUrl);
+
         $ocreq = [
             'merchantPosId' => OpenPayU_Configuration::getMerchantPosId(),
             'description' => $this->l('Order:') . ' ' . $this->order->id . ' - ' . $this->order->reference . ', ' . $this->l('Store:') . ' ' . Configuration::get('PS_SHOP_NAME'),
@@ -2267,7 +2270,7 @@ class PayU extends PaymentModule
     {
         $iso = Language::getIsoById($this->context->language->id);
 
-        return $iso === 'gb' ? 'en' : $iso;
+        return in_array($iso, ['gb', 'si']) ? 'en' : $iso;
     }
 
     /**
