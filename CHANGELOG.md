@@ -1,3 +1,6 @@
+## 3.4.0
+* Check non exist currency configuration
+
 ## 3.3.3
 * Added support and an ability to display PragmaPay as a separate payment method
 

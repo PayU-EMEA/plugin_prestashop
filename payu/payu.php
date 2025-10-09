@@ -40,7 +40,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.3.3';
+        $this->version = '3.4.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -2294,7 +2294,10 @@ class PayU extends PaymentModule
     {
         $order = new Order($idOrder);
         $currency = Currency::getCurrency($order->id_currency);
-        $this->initializeOpenPayU($currency['iso_code']);
+
+        if (!$this->initializeOpenPayU($currency['iso_code'])) {
+            throw new \Exception('OPU not properly configured for currency: ' . $currency['iso_code']);
+        }
     }
 
     /**
