@@ -10,6 +10,7 @@ class CreditPaymentMethod {
     const INSTALLMENT_TWISTO_SLICE = 'dpts';
     const DELAYED_PAYMENT_PAYPO_PLN = 'dpp';
     const DELAYED_PAYMENT_PAYPO_RON = 'dppron';
+    const PRAGMA_PAY = 'ppf';
 
     const DELAYED_PAYMENT_TWISTO_GROUP = [
         self::DELAYED_PAYMENT_TWISTO_PLN,
@@ -38,7 +39,8 @@ class CreditPaymentMethod {
             self::DELAYED_PAYMENT_TWISTO_CZK,
             self::INSTALLMENT_TWISTO_SLICE,
             self::DELAYED_PAYMENT_PAYPO_PLN,
-            self::DELAYED_PAYMENT_PAYPO_RON
+            self::DELAYED_PAYMENT_PAYPO_RON,
+            self::PRAGMA_PAY
         ];
     }
 }

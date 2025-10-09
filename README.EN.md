@@ -44,6 +44,7 @@ Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 | PayPo payment as separate method                           | :white_check_mark: |   :white_check_mark:   |
 | Twisto payment as separate method                          | :white_check_mark: |   :white_check_mark:   |
 | Twisto Pay in 3 payment as separate method                 | :white_check_mark: |   :white_check_mark:   |
+| PragmaPay as separate method                               | :white_check_mark: |   :white_check_mark:   |
 | Present credit widget on product and listing page          | :white_check_mark: |   :white_check_mark:   |
 | Present credit widget in checkout view                     | :white_check_mark: |   :white_check_mark:   |
 | Present credit widget in cart view                         |        :x:         |   :white_check_mark:   |
@@ -176,7 +177,7 @@ Plugin provides a functionality of promoting [installments and Buy Now Pay Later
 Promoting installment and Buy Now Pay Later payment methods is configured in the "Credit payments" section of the plugin's configuration page. Separating PayU Installments and credit payments widget are enabled by default. 
 Support for given functionalities has been described in [Features](#features) section.
  > Presenting credit widgets is dependent on gateways availability for the given point of sale (POS).
- The plugin automatically checks whether "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron" gateways are enabled.
+ The plugin automatically checks whether "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron", "ppf" gateways are enabled.
  If a given credit payment method hasn't been enabled on the configured POS, it won't be presented in the checkout view or the credit payments widget even if it is enabled in the plugin's configuration.
 
 <img src="readme_images/credit-1-7-admin.png" width="400">
@@ -192,6 +193,7 @@ Support for given functionalities has been described in [Features](#features) se
 |1.7| Klarna payment as separate method          |<img src="readme_images/credit-1-7-checkout-separate-klarna.png" width="100">|
 |1.7| Twisto payment as separate method          |<img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">|
 |1.7| Twisto Pay in 3 payment as separate method |<img src="readme_images/credit-1-7-checkout-separate-twisto-slice.png" width="100">|
+|1.7| PragmaPay payment as separate method       |<img src="readme_images/credit-1-7-checkout-separate-pragma-pay.png" width="100">|
 |1.6| Products listing                           |<img src="readme_images/credit-1-6-listing.png" width="100">|
 |1.6| Product page                               |<img src="readme_images/credit-1-6-product.png" width="100">|
 

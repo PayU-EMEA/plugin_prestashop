@@ -152,6 +152,20 @@
 		</div>
 	{/if}
 
+	{if $separatePragmaPay == true}
+		<div class="row">
+			<div class="col-xs-12">
+				<p class="payment_module">
+					<a class="payu payu_pragma_pay" href="{$creditPragmaPayActionUrl|escape:'htmlall':'UTF-8'}"
+					   title="{l s='Pay with PragmaPay' mod='payu'}">
+						{l s='Pay with PragmaPay' mod='payu'}
+						<span class="payu_payment_module_badge">({l s='only for companies' mod='payu'})</span>
+					</a>
+				</p>
+			</div>
+		</div>
+	{/if}
+
 	{if $separateInstallments == true}
 		<div class="row">
 			<div class="col-xs-12">

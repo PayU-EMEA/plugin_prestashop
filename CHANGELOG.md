@@ -1,3 +1,6 @@
+## 3.3.3
+* Added support and an ability to display PragmaPay as a separate payment method
+
 ## 3.3.2
 * Added compatibility with Prestashop 9
 

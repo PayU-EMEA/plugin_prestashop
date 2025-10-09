@@ -28,27 +28,28 @@ Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala n
 
 Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 
-| Cecha                                                                          |   PrestaShop 1.6   | PrestaShop 1.7 / 8 /9 |
-|--------------------------------------------------------------------------------|:------------------:|:---------------------:|
-| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark: |  :white_check_mark:   |
-| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark: |  :white_check_mark:   |
-| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: |  :white_check_mark:   |
-| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: |  :white_check_mark:   |
-| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: |  :white_check_mark:   |
-| Płatność kartą jako widżet                                                     | :white_check_mark: |  :white_check_mark:   |
-| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: |  :white_check_mark:   |
-| Ponowienie płatności                                                           | :white_check_mark: |  :white_check_mark:   |
-| Wielowalutowość                                                                | :white_check_mark: |  :white_check_mark:   |
-| Kolejność metod płatności                                                      | :white_check_mark: |  :white_check_mark:   |
-| Płatność [PayU Raty][ext10] jako osobna metoda płatności                       | :white_check_mark: |  :white_check_mark:   |
-| Płatność Klarna jako osobna metoda płatności                                   | :white_check_mark: |  :white_check_mark:   |
-| Płatność PayPo jako osobna metoda płatności                                    | :white_check_mark: |  :white_check_mark:   |
-| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark: |  :white_check_mark:   |
-| Płatność Twisto podziel na 3 jako osobna metoda płatności                      | :white_check_mark: |  :white_check_mark:   |
-| Prezentacja widgetu kredytowego przy produkcie i listingu                      | :white_check_mark: |  :white_check_mark:   |
-| Prezentacja widgetu kredytowego na podsumowaniu                                | :white_check_mark: |  :white_check_mark:   |
-| Prezentacja widgetu kredytowego w koszyku                                      |        :x:         |  :white_check_mark:   |
-| Wykluczenie metod płatności kredytowych z widgetu                              | :white_check_mark: |  :white_check_mark:   |
+| Cecha                                                                          |   PrestaShop 1.6   | PrestaShop 1.7 / 8 / 9 |
+|--------------------------------------------------------------------------------|:------------------:|:----------------------:|
+| Utworzenie płatności (wraz z rabatami)                                         | :white_check_mark: |   :white_check_mark:   |
+| Odebranie lub odrzucenie płatności (w przypadku wyłączonego autoodbioru)       | :white_check_mark: |   :white_check_mark:   |
+| Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: |   :white_check_mark:   |
+| Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: |   :white_check_mark:   |
+| Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: |   :white_check_mark:   |
+| Płatność kartą jako widżet                                                     | :white_check_mark: |   :white_check_mark:   |
+| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: |   :white_check_mark:   |
+| Ponowienie płatności                                                           | :white_check_mark: |   :white_check_mark:   |
+| Wielowalutowość                                                                | :white_check_mark: |   :white_check_mark:   |
+| Kolejność metod płatności                                                      | :white_check_mark: |   :white_check_mark:   |
+| Płatność [PayU Raty][ext10] jako osobna metoda płatności                       | :white_check_mark: |   :white_check_mark:   |
+| Płatność Klarna jako osobna metoda płatności                                   | :white_check_mark: |   :white_check_mark:   |
+| Płatność PayPo jako osobna metoda płatności                                    | :white_check_mark: |   :white_check_mark:   |
+| Płatność Twisto jako osobna metoda płatności                                   | :white_check_mark: |   :white_check_mark:   |
+| Płatność Twisto podziel na 3 jako osobna metoda płatności                      | :white_check_mark: |   :white_check_mark:   |
+| Płatność PragmaPay jako osobna metoda płatności                                | :white_check_mark: |   :white_check_mark:   |
+| Prezentacja widgetu kredytowego przy produkcie i listingu                      | :white_check_mark: |   :white_check_mark:   |
+| Prezentacja widgetu kredytowego na podsumowaniu                                | :white_check_mark: |   :white_check_mark:   |
+| Prezentacja widgetu kredytowego w koszyku                                      |        :x:         |   :white_check_mark:   |
+| Wykluczenie metod płatności kredytowych z widgetu                              | :white_check_mark: |   :white_check_mark:   |
 
 Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach)
 
@@ -178,7 +179,7 @@ Ponowienie płatności umożliwia zakładanie wielu płatności w PayU do jedneg
 Plugin udostępnia opcje promowania [płatności ratalnych i odroczonych][ext7] (nazywanych również zamiennie "płatnościami kredytowymi") poprzez wydzielanie poszczególnych metod płatności na podsumowaniu oraz wyświetlanie widgetu kredytowego przy produktach, w koszyku czy na podsumowaniu. 
 Promowaniem płatości ratalnych i odroczonych można sterować w sekcji "Płatności kredytowe" panelu administracyjnego pluginu. Wydzielanie PayU Raty oraz wyświetlanie widgetu kredytowego są domyślnie włączone. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w tabeli [Cechy i
  Kompatybilność](#cechy-i-kompatybilność).
- > Prezentacja metod płatności i widgetu zależna jest od dostępności bramek "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron" na danym punkcie płatności i sprawdzana
+ > Prezentacja metod płatności i widgetu zależna jest od dostępności bramek "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron", "ppf" na danym punkcie płatności i sprawdzana
  jest automatycznie przez plugin. Jeśli dana metoda płatności kredytowych nie została aktywowana na punkcie płatności, nie zostanie
  zaprezentowana na podsumowaniu lub widgecie pomimo włączonej opcji w pluginie.
 
@@ -195,6 +196,7 @@ Promowaniem płatości ratalnych i odroczonych można sterować w sekcji "Płatn
 |1.7| Wydzielenie PayPo jako metody płatności                | <img src="readme_images/credit-1-7-checkout-separate-paypo.png" width="100">        |
 |1.7| Wydzielenie Twisto jako metody płatności               | <img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">       |
 |1.7| Wydzielenie Twisto podziel na 3 jako metody płatności  | <img src="readme_images/credit-1-7-checkout-separate-twisto-slice.png" width="100"> |
+|1.7| Wydzielenie PragmaPay jako metody płatności            | <img src="readme_images/credit-1-7-checkout-separate-pragma-pay.png" width="100">   |
 |1.6| Listing produktów                                      | <img src="readme_images/credit-1-6-listing.png" width="100">                        |
 |1.6| Karta produktu                                         | <img src="readme_images/credit-1-6-product.png" width="100">                        |
 

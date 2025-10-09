@@ -48,6 +48,10 @@
 			    {if $separateTwistoSlice && $payment->value == CreditPaymentMethod::INSTALLMENT_TWISTO_SLICE}
 				    pay-methods__hide
 			    {/if}
+
+				{if $separatePragmaPay && $payment->value == CreditPaymentMethod::PRAGMA_PAY}
+				    pay-methods__hide
+			    {/if}
 		        ">
 
 			<div class="pay-methods__item-inner required">
