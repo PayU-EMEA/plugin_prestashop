@@ -43,11 +43,4 @@
 		<input type="submit" value="{l s='Pay with PayU' mod='payu'}" />
 	</form>
 </div>
-<script>
-	{if $paymentId}
-	document.addEventListener("DOMContentLoaded", function () {
-		openPayment({$paymentId});
-	});
-	{/if}
-</script>
 

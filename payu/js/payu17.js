@@ -18,12 +18,6 @@ $(document).ready(function () {
     }
 });
 
-function openPayment(paymentId) {
-    setTimeout(function () {
-        $('body').find('#payment-option-' + paymentId).click();
-    }, 500);
-}
-
 (function () {
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -33,7 +27,8 @@ function openPayment(paymentId) {
 
         document.querySelectorAll('[name=payment-option][data-module-name=payu]').forEach(function (element) {
             element.addEventListener('click', function (ev) {
-                var paymentId = ev.target.id.replace('payment-option-', '');
+                var paymentElementId = ev.target.id;
+                var paymentId = paymentElementId.replace('payment-option-', '');
                 var poaiElement = document.getElementById('payment-option-' + paymentId + '-additional-information');
                 var pwpofElement = document.getElementById('pay-with-payment-option-' + paymentId + '-form');
                 var pocElement = document.getElementById('payment-option-' + paymentId + '-container');
@@ -74,7 +69,7 @@ function openPayment(paymentId) {
                 }
 
                 if (paymentIdElement) {
-                    paymentIdElement.value = paymentId;
+                    paymentIdElement.value = paymentElementId;
                 }
 
             }, true);

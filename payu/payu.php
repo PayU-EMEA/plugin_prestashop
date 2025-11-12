@@ -1108,7 +1108,6 @@ class PayU extends PaymentModule
         // credit payment options definition must stay on top, because it assigns smarty variables,
         // which are used by paymentTransferList17.tpl
         $creditPaymentOptions = $this->getCreditPaymentOptions($retry, $retry16, $totalPrice);
-
         $this->smarty->assign([
             'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
             'conditionUrl' => $this->getPayConditionUrl(),
@@ -1121,7 +1120,6 @@ class PayU extends PaymentModule
             'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
             'lang' => Language::getIsoById($this->context->language->id),
-            'paymentId' => Tools::getValue('payment_id'),
             'params' => $params,
             'grid' => Configuration::get('PAYU_PAYMENT_METHODS_GRID'),
             'retryPayment' => $retry,
@@ -1140,7 +1138,7 @@ class PayU extends PaymentModule
                     'jsSdk' => $this->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk',
                     'posId' => OpenPayU_Configuration::getMerchantPosId(),
                     'lang' => Language::getIsoById($this->context->language->id),
-                    'paymentId' => Tools::getValue('payment_id'),
+                    'paymentId' => $paymentId,
                     'has_sf' => true
                 ]);
             }

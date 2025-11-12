@@ -32,11 +32,6 @@ $(document).ready(function () {
 	})
 });
 
-function openPayment(paymentId) {
-	setTimeout(function () {
-		$('body').find('#payment-option-' + paymentId).click();
-	}, 500);
-}
 function doubleClickPrevent(object) {
 	if ($(object).data('clicked')) {
 		return false;

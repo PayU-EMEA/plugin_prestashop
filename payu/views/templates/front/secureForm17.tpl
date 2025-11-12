@@ -45,13 +45,6 @@
                 </div>
             </div>
         </form>
-        <script>
-            {if $paymentId}
-            document.addEventListener("DOMContentLoaded", function () {
-                openPayment({$paymentId});
-            });
-            {/if}
-        </script>
     {else}
         <div action="{$payuPayAction|escape:'html'}" method="post" id="payu-card-form">
             <input type="hidden" name="payment_id" value="">

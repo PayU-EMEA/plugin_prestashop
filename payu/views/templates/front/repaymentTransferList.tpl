@@ -90,8 +90,5 @@
         } else {
             applePayContainer.parentNode.removeChild(applePayContainer);
         }
-        {if $paymentId}
-            openPayment({$paymentId});
-        {/if}
     });
 </script>
