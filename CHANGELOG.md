@@ -1,3 +1,6 @@
+## 3.4.1
+* Improve payment method selection for unprocessed payment
+
 ## 3.4.0
 * Check non exist currency configuration
 
