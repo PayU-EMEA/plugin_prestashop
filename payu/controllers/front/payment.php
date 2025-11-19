@@ -46,8 +46,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
         elseif ($payMethod === 'transfer') {
             $paymentGateway = Tools::getValue('transferGateway');
-            $paymentId = Tools::getValue('payment_id');
-
+            $paymentId = Tools::getValue($this->hasRetryPayment ? 'payment-option': 'payment_id');
             if ($paymentGateway) {
                 $this->pay($paymentGateway, [], 'pbl / ' . $paymentGateway);
             } else {
@@ -56,7 +55,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 if ($this->hasRetryPayment) {
                     $params = [
                         'id_order' => Tools::getValue('id_order'),
-                        'payment_id' => $paymentId
+                        'select_payment_option' => $paymentId
                     ];
                     $this->payuRedirectWithNotifications(
                         $this->context->link->getPageLink('order-detail', null, null, $params)
@@ -67,7 +66,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                             null,
                             null,
                             [
-                                'payment_id' => $paymentId
+                                'select_payment_option' => $paymentId
                             ]
                         )
                     );
@@ -86,7 +85,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                 if ($this->hasRetryPayment) {
                     $params = [
                         'id_order' => Tools::getValue('id_order'),
-                        'payment_id' => $paymentId
+                        'select_payment_option' => $paymentId
                     ];
                     $this->payuRedirectWithNotifications(
                         $this->context->link->getPageLink('order-detail', null, null, $params)
@@ -97,7 +96,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                             null,
                             null,
                             [
-                                'payment_id' => $paymentId
+                                'select_payment_option' => $paymentId
                             ]
 
                         )
