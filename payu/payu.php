@@ -872,6 +872,7 @@ class PayU extends PaymentModule
 
             $this->context->smarty->assign(
                 [
+                    'selected_payment_option' => Tools::getValue('select_payment_option', ''),
                     'payuImage' => $this->getPayuLogo(),
                     'payMethods' => $payMethods,
                     'conditionUrl' => $this->getPayConditionUrl(),

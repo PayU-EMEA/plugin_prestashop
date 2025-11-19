@@ -22,7 +22,9 @@
 			<div>
 				<div id="payment-option-{$gateway@iteration}-container" class="clearfix repayment-single">
 					<span class="custom-radio float-xs-left">
-						<input  class="ps-shown-by-js " id="payment-option-{$gateway@iteration}" data-module-name="payu" name="payment-option" type="radio" required="">
+						<input  class="ps-shown-by-js " id="payment-option-{$gateway@iteration}" value="payment-option-{$gateway@iteration}" data-module-name="payu" name="payment-option" type="radio" required=""
+                         {if ($selected_payment_option == "payment-option-{$gateway@iteration}")} checked {/if}
+                        >
 						<span></span>
 					</span>
 					<label for="payment-option-{$gateway@iteration}">

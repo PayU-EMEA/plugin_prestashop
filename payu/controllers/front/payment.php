@@ -46,7 +46,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
         }
         elseif ($payMethod === 'transfer') {
             $paymentGateway = Tools::getValue('transferGateway');
-            $paymentId = Tools::getValue('payment_id');
+            $paymentId = Tools::getValue($this->hasRetryPayment ? 'payment-option': 'payment_id');
             if ($paymentGateway) {
                 $this->pay($paymentGateway, [], 'pbl / ' . $paymentGateway);
             } else {
