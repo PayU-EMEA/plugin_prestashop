@@ -136,7 +136,7 @@ class PayMethodsCache
     private static function initializeOpenPayU($currency, $version)
     {
         $sdkInitializer = new PayUSDKInitializer();
-        return $sdkInitializer->initializeOpenPayU($currency['iso_code'], $version);
+        return $sdkInitializer->initializeOpenPayU($currency->iso_code, $version);
     }
 
     private static function isPayTypeEnabled($payTypeStringValue, $currency, $lang, $amount, $version, $noCache)

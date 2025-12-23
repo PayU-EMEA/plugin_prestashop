@@ -178,14 +178,14 @@ class PayU extends PaymentModule
             $SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET = [];
 
             foreach (Currency::getCurrencies() as $currency) {
-                $PAYU_MC_POS_ID[$currency['iso_code']] = Tools::getValue('PAYU_MC_POS_ID|' . $currency['iso_code']);
-                $PAYU_MC_SIGNATURE_KEY[$currency['iso_code']] = Tools::getValue('PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']);
-                $PAYU_MC_OAUTH_CLIENT_ID[$currency['iso_code']] = Tools::getValue('PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']);
-                $PAYU_MC_OAUTH_CLIENT_SECRET[$currency['iso_code']] = Tools::getValue('PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']);
-                $SANDBOX_PAYU_MC_POS_ID[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_POS_ID|' . $currency['iso_code']);
-                $SANDBOX_PAYU_MC_SIGNATURE_KEY[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']);
-                $SANDBOX_PAYU_MC_OAUTH_CLIENT_ID[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']);
-                $SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET[$currency['iso_code']] = Tools::getValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']);
+                $PAYU_MC_POS_ID[$currency->iso_code] = Tools::getValue('PAYU_MC_POS_ID|' . $currency->iso_code);
+                $PAYU_MC_SIGNATURE_KEY[$currency->iso_code] = Tools::getValue('PAYU_MC_SIGNATURE_KEY|' . $currency->iso_code);
+                $PAYU_MC_OAUTH_CLIENT_ID[$currency->iso_code] = Tools::getValue('PAYU_MC_OAUTH_CLIENT_ID|' . $currency->iso_code);
+                $PAYU_MC_OAUTH_CLIENT_SECRET[$currency->iso_code] = Tools::getValue('PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency->iso_code);
+                $SANDBOX_PAYU_MC_POS_ID[$currency->iso_code] = Tools::getValue('SANDBOX_PAYU_MC_POS_ID|' . $currency->iso_code);
+                $SANDBOX_PAYU_MC_SIGNATURE_KEY[$currency->iso_code] = Tools::getValue('SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency->iso_code);
+                $SANDBOX_PAYU_MC_OAUTH_CLIENT_ID[$currency->iso_code] = Tools::getValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency->iso_code);
+                $SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET[$currency->iso_code] = Tools::getValue('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency->iso_code);
             }
 
             if (
@@ -571,32 +571,32 @@ class PayU extends PaymentModule
         ];
 
         foreach (Currency::getCurrencies() as $currency) {
-            $form['pos_' . $currency['iso_code']] = [
+            $form['pos_' . $currency->iso_code] = [
                 'form' => [
                     'legend' => [
-                        'title' => $this->l('POS settings - currency: ') . $currency['name'] . ' (' . $currency['iso_code'] . ')',
+                        'title' => $this->l('POS settings - currency: ') . $currency->name . ' (' . $currency->iso_code . ')',
                         'icon' => 'icon-cog'
                     ],
                     'input' => [
                         [
                             'type' => 'text',
                             'label' => $this->l('POS ID'),
-                            'name' => 'PAYU_MC_POS_ID|' . $currency['iso_code']
+                            'name' => 'PAYU_MC_POS_ID|' . $currency->iso_code
                         ],
                         [
                             'type' => 'text',
                             'label' => $this->l('Second key (MD5)'),
-                            'name' => 'PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']
+                            'name' => 'PAYU_MC_SIGNATURE_KEY|' . $currency->iso_code
                         ],
                         [
                             'type' => 'text',
                             'label' => $this->l('OAuth - client_id'),
-                            'name' => 'PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']
+                            'name' => 'PAYU_MC_OAUTH_CLIENT_ID|' . $currency->iso_code
                         ],
                         [
                             'type' => 'text',
                             'label' => $this->l('OAuth - client_secret'),
-                            'name' => 'PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']
+                            'name' => 'PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency->iso_code
                         ],
                     ],
                     'submit' => [
@@ -604,32 +604,32 @@ class PayU extends PaymentModule
                     ]
                 ]
             ];
-            $form['sandbox_pos_' . $currency['iso_code']] = [
+            $form['sandbox_pos_' . $currency->iso_code] = [
                 'form' => [
                     'legend' => [
-                        'title' => '<span style="color: red">' . $this->l('SANDBOX - ') . '</span>' . $this->l('POS settings - currency: ') . $currency['name'] . ' (' . $currency['iso_code'] . ')',
+                        'title' => '<span style="color: red">' . $this->l('SANDBOX - ') . '</span>' . $this->l('POS settings - currency: ') . $currency->name . ' (' . $currency->iso_code . ')',
                         'icon' => 'icon-cog'
                     ],
                     'input' => [
                         [
                             'type' => 'text',
                             'label' => $this->l('POS ID'),
-                            'name' => 'SANDBOX_PAYU_MC_POS_ID|' . $currency['iso_code']
+                            'name' => 'SANDBOX_PAYU_MC_POS_ID|' . $currency->iso_code
                         ],
                         [
                             'type' => 'text',
                             'label' => $this->l('Second key (MD5)'),
-                            'name' => 'SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']
+                            'name' => 'SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency->iso_code
                         ],
                         [
                             'type' => 'text',
                             'label' => $this->l('OAuth - client_id'),
-                            'name' => 'SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']
+                            'name' => 'SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency->iso_code
                         ],
                         [
                             'type' => 'text',
                             'label' => $this->l('OAuth - client_secret'),
-                            'name' => 'SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']
+                            'name' => 'SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency->iso_code
                         ],
                     ],
                     'submit' => [
@@ -732,14 +732,14 @@ class PayU extends PaymentModule
         ];
 
         foreach (Currency::getCurrencies() as $currency) {
-            $config['PAYU_MC_POS_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_POS_ID', $currency);
-            $config['PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_SIGNATURE_KEY', $currency);
-            $config['PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_OAUTH_CLIENT_ID', $currency);
-            $config['PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']] = $this->ParseConfigByCurrency('PAYU_MC_OAUTH_CLIENT_SECRET', $currency);
-            $config['SANDBOX_PAYU_MC_POS_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_POS_ID', $currency);
-            $config['SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_SIGNATURE_KEY', $currency);
-            $config['SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID', $currency);
-            $config['SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency['iso_code']] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET', $currency);
+            $config['PAYU_MC_POS_ID|' . $currency->iso_code] = $this->ParseConfigByCurrency('PAYU_MC_POS_ID', $currency);
+            $config['PAYU_MC_SIGNATURE_KEY|' . $currency->iso_code] = $this->ParseConfigByCurrency('PAYU_MC_SIGNATURE_KEY', $currency);
+            $config['PAYU_MC_OAUTH_CLIENT_ID|' . $currency->iso_code] = $this->ParseConfigByCurrency('PAYU_MC_OAUTH_CLIENT_ID', $currency);
+            $config['PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency->iso_code] = $this->ParseConfigByCurrency('PAYU_MC_OAUTH_CLIENT_SECRET', $currency);
+            $config['SANDBOX_PAYU_MC_POS_ID|' . $currency->iso_code] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_POS_ID', $currency);
+            $config['SANDBOX_PAYU_MC_SIGNATURE_KEY|' . $currency->iso_code] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_SIGNATURE_KEY', $currency);
+            $config['SANDBOX_PAYU_MC_OAUTH_CLIENT_ID|' . $currency->iso_code] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_OAUTH_CLIENT_ID', $currency);
+            $config['SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET|' . $currency->iso_code] = $this->ParseConfigByCurrency('SANDBOX_PAYU_MC_OAUTH_CLIENT_SECRET', $currency);
         }
 
         return $config;
@@ -748,7 +748,7 @@ class PayU extends PaymentModule
     private function ParseConfigByCurrency($key, $currency)
     {
         $data = Tools::unSerialize(Configuration::get($key));
-        return is_array($data) && array_key_exists($currency['iso_code'], $data) ? $data[$currency['iso_code']] : '';
+        return is_array($data) && array_key_exists($currency->iso_code, $data) ? $data[$currency->iso_code] : '';
     }
 
     /**
@@ -1812,11 +1812,11 @@ class PayU extends PaymentModule
         SimplePayuLogger::addLog('order', __FUNCTION__, 'Entrance: ', $this->payu_order_id);
         $currency = Currency::getCurrency($this->order->id_currency);
 
-        if (!$this->initializeOpenPayU($currency['iso_code'])) {
-            SimplePayuLogger::addLog('order', __FUNCTION__, 'OPU not properly configured for currency: ' . $currency['iso_code']);
-            Logger::addLog($this->displayName . ' ' . 'OPU not properly configured for currency: ' . $currency['iso_code'], 1);
+        if (!$this->initializeOpenPayU($currency->iso_code)) {
+            SimplePayuLogger::addLog('order', __FUNCTION__, 'OPU not properly configured for currency: ' . $currency->iso_code);
+            Logger::addLog($this->displayName . ' ' . 'OPU not properly configured for currency: ' . $currency->iso_code, 1);
 
-            throw new \Exception('OPU not properly configured for currency: ' . $currency['iso_code']);
+            throw new \Exception('OPU not properly configured for currency: ' . $currency->iso_code);
         }
 
         $cart = new Cart($this->order->id_cart);
@@ -1837,7 +1837,7 @@ class PayU extends PaymentModule
             'customerIp' => Tools::getRemoteAddr(),
             'notifyUrl' => $this->context->link->getModuleLink('payu', 'notification'),
             'continueUrl' => $continueUrl,
-            'currencyCode' => $currency['iso_code'],
+            'currencyCode' => $currency->iso_code,
             'totalAmount' => $this->toAmount($orderTotal),
             'extOrderId' => $this->extOrderId,
             'buyer' => $this->getBuyer($customer, $this->order),
@@ -2294,8 +2294,8 @@ class PayU extends PaymentModule
         $order = new Order($idOrder);
         $currency = Currency::getCurrency($order->id_currency);
 
-        if (!$this->initializeOpenPayU($currency['iso_code'])) {
-            throw new \Exception('OPU not properly configured for currency: ' . $currency['iso_code']);
+        if (!$this->initializeOpenPayU($currency->iso_code)) {
+            throw new \Exception('OPU not properly configured for currency: ' . $currency->iso_code);
         }
     }
 
@@ -2498,7 +2498,7 @@ class PayU extends PaymentModule
      */
     private function getCurrencyIsoCodeForCreditWidget() {
         $currency = Currency::getCurrency($this->context->cart->id_currency);
-        return isset($currency) ? $currency['iso_code'] : null;
+        return isset($currency) ? $currency->iso_code : null;
     }
 
     /**
