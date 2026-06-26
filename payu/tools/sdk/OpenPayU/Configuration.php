@@ -10,7 +10,7 @@
 class OpenPayU_Configuration
 {
     private static $_availableEnvironment = array('custom', 'secure', 'sandbox');
-    private static $_availableHashAlgorithm = array('SHA', 'SHA-256', 'SHA-384', 'SHA-512');
+    private static $_availableHashAlgorithm = array('SHA-256', 'SHA-384', 'SHA-512');
 
     private static $env = 'secure';
 
@@ -85,7 +85,7 @@ class OpenPayU_Configuration
 
     const API_VERSION = '2.1';
     const COMPOSER_JSON = "/composer.json";
-    const DEFAULT_SDK_VERSION = 'PHP SDK 2.3.6';
+    const DEFAULT_SDK_VERSION = 'PHP SDK 2.4.3';
     const OAUTH_CONTEXT = 'pl/standard/user/oauth/authorize';
 
     /**
@@ -97,7 +97,7 @@ class OpenPayU_Configuration
     }
 
     /**
-     * @param string
+     * @param string $value
      * @throws OpenPayU_Exception_Configuration
      */
     public static function setHashAlgorithm($value)
@@ -172,7 +172,7 @@ class OpenPayU_Configuration
     }
 
     /**
-     * @param string
+     * @param string $value
      */
     public static function setMerchantPosId($value)
     {
@@ -188,7 +188,7 @@ class OpenPayU_Configuration
     }
 
     /**
-     * @param string
+     * @param string $value
      */
     public static function setSignatureKey($value)
     {
