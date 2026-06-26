@@ -3,7 +3,6 @@ openpayu.options = openpayu.options || {};
 
 $(document).ready(function () {
 	$('#payuRetryPayment').insertAfter($('.info-order').first());
-
 	$('body').on('click', '.payu-read-more', function () {
 		$(this).hide();
 		var elementToShow = $(this).data('more');
@@ -81,6 +80,7 @@ function doubleClickPrevent(object) {
 		document.querySelectorAll('.payu-payment-fieldset-1-6 .payment_module, .repayment-options').forEach(function (elm) {
 			validateBeforeSubmitCardForm();
 			validateBeforeSubmitGatewaysForm();
+			validateBeforeSubmitGooglePay();
 		});
 
 
@@ -116,6 +116,7 @@ function doubleClickPrevent(object) {
 		function validateBeforeSubmitCardForm() {
 			if($('.repayment-options').length > 0 && $('.repayment-options').hasClass('has-sf') && $('[name="payMethod"]').val() == 'card' || $('.repayment-options').length == 0) {
 				var paymentCardSubmit = document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"], #secure-form-pay');
+
 				if (paymentCardSubmit !== null) {
 					paymentCardSubmit.addEventListener('click', function (e) {
 						if($('#card-form-container').is(':visible')) {
@@ -131,7 +132,20 @@ function doubleClickPrevent(object) {
 			}
 		}
 
+		function validateBeforeSubmitGooglePay() {
+			var paymentGooglePaySubmit = document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"], #google-pay-submit');
 
+			if(paymentGooglePaySubmit !== null) {
+            paymentGooglePaySubmit.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    payuGooglePayValidate();
+
+                    return false;
+                });
+			}
+        }
 		function payuGatewaysValidate() {
 			var validateResponse = document.getElementById('transfer-response-box');
 			var btn = document.querySelector('.pay-transfer-accept button');
@@ -188,12 +202,13 @@ function doubleClickPrevent(object) {
 				init_sf();
 				validateBeforeSubmitCardForm();
 				validateBeforeSubmitGatewaysForm();
+				validateBeforeSubmitGooglePay();
 			}, 4000)
 		});
 
 		function payuCardValidate() {
 
-			hideMessageBox();
+			hideMessageBoxSecureForm();
 			window.cardTokenInput.value = '';
 			window.secureFormNumber.update({disabled: true});
 			window.secureFormDate.update({disabled: true});
@@ -229,7 +244,7 @@ function doubleClickPrevent(object) {
 							errorMessage += '<strong>' + error.message + '<strong><br>';
 						});
 
-						showMessageBox(errorMessage);
+						showMessageBoxSecureForm(errorMessage);
 
 						window.secureFormNumber.update({disabled: false});
 						window.secureFormDate.update({disabled: false});
@@ -237,8 +252,88 @@ function doubleClickPrevent(object) {
 					}
 				});
 			} catch (e) {
-				showMessageBox(e.message);
+				showMessageBoxSecureForm(e.message);
 			}
+		}
+
+		function payuGooglePayValidate(){
+			hideMessageBoxGooglePay();
+            if (!window.google?.payments?.api?.PaymentsClient) {
+                showMessageBoxGooglePay(googlePayErrorMessage);
+                return false;
+            }
+            var googleToken = document.getElementById('payu-google-token');
+
+			if(googleToken.value === ''){
+                const paymentsClient =
+                    new google.payments.api.PaymentsClient({environment: env});
+
+                const isReadyToPayRequest = {
+                    apiVersion: 2,
+                    apiVersionMinor: 0,
+                    allowedPaymentMethods: [
+                        {
+                            type: 'CARD',
+                            parameters: {
+                                allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                                allowedCardNetworks: ['MASTERCARD', 'VISA']
+                            }
+                        }
+                    ]
+                }
+
+                const paymentDataRequest = {
+                    apiVersion: 2,
+                    apiVersionMinor: 0,
+                    merchantInfo: {
+                        merchantName,
+                        merchantId,
+                    },
+                    allowedPaymentMethods: [
+                    {
+                        type: 'CARD',
+                        parameters: {
+                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                            allowedCardNetworks: ['MASTERCARD', 'VISA'],
+                            billingAddressRequired: false
+                        },
+                        tokenizationSpecification: {
+                            type: 'PAYMENT_GATEWAY',
+                            parameters: {
+                                gateway: 'payu',
+                                gatewayMerchantId: posId
+                            }
+                        }
+                    }
+                    ],
+                    transactionInfo: {
+                        totalPriceStatus: 'FINAL',
+                        countryCode: 'PL',
+                        totalPrice,
+                        currencyCode: currency
+                    }
+                }
+
+                paymentsClient.isReadyToPay(isReadyToPayRequest)
+                    .then(function(response) {
+                        if (response.result) {
+                            paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData){
+                                paymentToken = paymentData.paymentMethodData.tokenizationData.token;
+                                googleToken.value = btoa(paymentToken);
+                                document.getElementById('payu-google-pay-form').submit();
+                            }).catch(function(err){
+                                console.error(err);
+                            });
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error(err);
+                        showMessageBoxGooglePay(googlePayErrorMessage);
+                    });
+
+                return false;
+			}
+			else return true;
 		}
 	});
 })();
@@ -332,14 +427,26 @@ function secureFormResize() {
 	}
 }
 
-function showMessageBox(message) {
-	var responseBox = document.getElementById('response-box');
-	responseBox.innerHTML = message;
-	responseBox.style.display = '';
+function showMessageBoxSecureForm(message) {
+	var responseBoxSecureForm = document.getElementById('response-box-secure-form');
+	responseBoxSecureForm.innerHTML = message;
+	responseBoxSecureForm.style.display = '';
 }
 
-function hideMessageBox() {
-	var responseBox = document.getElementById('response-box');
-	responseBox.innerHTML = '';
-	responseBox.style.display = 'none';
+function hideMessageBoxSecureForm() {
+	var responseBoxSecureForm = document.getElementById('response-box-secure-form');
+	responseBoxSecureForm.innerHTML = '';
+	responseBoxSecureForm.style.display = 'none';
+}
+
+function showMessageBoxGooglePay(message) {
+	var responseBoxGooglePay = document.getElementById('response-box-google-pay');
+    responseBoxGooglePay.innerHTML = message;
+    responseBoxGooglePay.style.display = '';
+}
+
+function hideMessageBoxGooglePay(){
+	var responseBoxGooglePay = document.getElementById('response-box-google-pay');
+    responseBoxGooglePay.innerHTML = '';
+    responseBoxGooglePay.style.display = 'none';
 }

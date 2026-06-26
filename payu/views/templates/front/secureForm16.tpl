@@ -86,7 +86,7 @@
 						<h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>
 					{else}
 						<div id="payMethods" style="padding-bottom: 5px">
-							<div id="response-box" class="alert alert-warning"
+							<div id="response-box-secure-form" class="alert alert-warning"
 								 style="display: none; margin-bottom: 10px"></div>
 							{include file="$modulePath/views/templates/front/payuCardForm.tpl"}
 						</div>

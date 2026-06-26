@@ -27,6 +27,12 @@ $(document).ready(function () {
 
         document.querySelectorAll('[name=payment-option][data-module-name=payu]').forEach(function (element) {
             element.addEventListener('click', function (ev) {
+
+                var submitButton = document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"], #secure-form-pay');
+
+                submitButton.removeEventListener('click', validateBeforeSubmitGooglePay);
+                submitButton.removeEventListener('click', validateBeforeSubmitCardForm);
+
                 var paymentElementId = ev.target.id;
                 var paymentId = paymentElementId.replace('payment-option-', '');
                 var poaiElement = document.getElementById('payment-option-' + paymentId + '-additional-information');
@@ -63,7 +69,13 @@ $(document).ready(function () {
                     var paymentIdElement = pwpofElement?.querySelector('input[name=payment_id]');
 
                 } else if (payment === 'card') {
-                    validateBeforeSubmitCardForm();
+                    document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"]')
+                        .addEventListener('click', validateBeforeSubmitCardForm);
+
+                    var paymentIdElement = poaiElement?.querySelector('input[name=payment_id]');
+                } else if (payment === 'ap') {
+                    document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"]')
+                        .addEventListener('click', validateBeforeSubmitGooglePay);
 
                     var paymentIdElement = poaiElement?.querySelector('input[name=payment_id]');
                 }
@@ -75,20 +87,26 @@ $(document).ready(function () {
             }, true);
         });
 
-        function validateBeforeSubmitCardForm() {
-            document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"], #secure-form-pay')
-                .addEventListener('click', function (e) {
-                    if($('.pay-card-init').is(':visible')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
+        function validateBeforeSubmitGooglePay(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-                        payuCardValidate();
-                    }
-                    return false;
-                });
+            payuGooglePayValidate();
+
+            return false;
         }
 
+        function validateBeforeSubmitCardForm(e) {
+            if($('.pay-card-init').is(':visible')) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                payuCardValidate();
+            }
+            return false;
+        }
 
         function activatePaymentButton() {
             var paymentSubmit = document.querySelector('.pay-transfer-accept button');
@@ -106,7 +124,6 @@ $(document).ready(function () {
 		        currentGateway.value = '';
 	        }
         }
-
 
         if (transferGateways.length > 0) {
             transferGateways.forEach(function (gateway) {
@@ -250,14 +267,13 @@ $(document).ready(function () {
 		    secureFormCvv.render(secureFormOptions.elementFormCvv);
 		    window.addEventListener('resize', secureFormResize);
 
-		    var responseBox = document.getElementById('response-box');
+		    var responseBoxSecureForm = document.getElementById('response-box');
 		    var cardTokenInput = document.getElementById('card-token');
 		}
 
-
         function payuCardValidate() {
 
-            hideMessageBox();
+            hideMessageBoxSecureForm();
             cardTokenInput.value = '';
             secureFormNumber.update({disabled: true});
             secureFormDate.update({disabled: true});
@@ -299,7 +315,7 @@ $(document).ready(function () {
                             errorMessage += '<strong>' + error.message + '<strong><br>';
                         });
 
-                        showMessageBox(errorMessage);
+                        showMessageBoxSecureForm(errorMessage);
 
                         secureFormNumber.update({disabled: false});
                         secureFormDate.update({disabled: false});
@@ -307,8 +323,93 @@ $(document).ready(function () {
                     }
                 });
             } catch (e) {
-                showMessageBox(e.message);
+                showMessageBoxSecureForm(e.message);
             }
+        }
+
+        function payuGooglePayValidate(){
+            hideMessageBoxGooglePay();
+            if (!window.google?.payments?.api?.PaymentsClient) {
+                showMessageBoxGooglePay(googlePayErrorMessage);
+                return false;
+            }
+
+            var googleToken = document.getElementById('payu-google-token');
+            if (googleToken.value === '') {
+
+                const paymentsClient =
+                    new google.payments.api.PaymentsClient({environment: env});
+
+                const isReadyToPayRequest = {
+                    apiVersion: 2,
+                    apiVersionMinor: 0,
+                    allowedPaymentMethods: [
+                        {
+                            type: 'CARD',
+                            parameters: {
+                                allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                                allowedCardNetworks: ['MASTERCARD', 'VISA']
+                            }
+                        }
+                    ]
+                }
+
+                const paymentDataRequest = {
+                    apiVersion: 2,
+                    apiVersionMinor: 0,
+                    merchantInfo: {
+                        merchantName,
+                        merchantId,
+                    },
+                    allowedPaymentMethods: [
+                    {
+                        type: 'CARD',
+                        parameters: {
+                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                            allowedCardNetworks: ['MASTERCARD', 'VISA'],
+                            billingAddressRequired: false
+                        },
+                        tokenizationSpecification: {
+                            type: 'PAYMENT_GATEWAY',
+                            parameters: {
+                                gateway: 'payu',
+                                gatewayMerchantId: posId
+                            }
+                        }
+                    }
+                    ],
+                    transactionInfo: {
+                        totalPriceStatus: 'FINAL',
+                        countryCode: 'PL',
+                        totalPrice,
+                        currencyCode: currency
+                    }
+                }
+
+                paymentsClient.isReadyToPay(isReadyToPayRequest)
+                    .then(function(response) {
+                        if (response.result) {
+                            paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData){
+                                paymentToken = paymentData.paymentMethodData.tokenizationData.token;
+                                googleToken.value = btoa(paymentToken);
+                                if ($('.repayment-options').length > 0) {
+                                    $('.repayment-options').submit();
+                                } else {
+                                    document.getElementById('payu-google-pay-form').submit();
+                                }
+                            }).catch(function(err){
+                                console.error(err);
+                            });
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error(err);
+                        showMessageBoxGooglePay(googlePayErrorMessage);
+                    });
+
+                return false;
+            }
+            else return true;
         }
 
         function calculateProfile() {
@@ -332,14 +433,26 @@ $(document).ready(function () {
             }
         }
 
-        function showMessageBox(message) {
-            responseBox.innerHTML = message;
-            responseBox.style.display = '';
+        function showMessageBoxSecureForm(message) {
+            responseBoxSecureForm.innerHTML = message;
+            responseBoxSecureForm.style.display = '';
         }
 
-        function hideMessageBox() {
-            responseBox.innerHTML = '';
-            responseBox.style.display = 'none';
+        var responseBoxGooglePay = document.getElementById('response-box-google-pay');
+
+        function showMessageBoxGooglePay(message) {
+            responseBoxGooglePay.innerHTML = message;
+            responseBoxGooglePay.style.display = '';
+        }
+
+        function hideMessageBoxGooglePay(){
+            responseBoxGooglePay.innerHTML = '';
+            responseBoxGooglePay.style.display = 'none';
+        }
+
+        function hideMessageBoxSecureForm() {
+            responseBoxSecureForm.innerHTML = '';
+            responseBoxSecureForm.style.display = 'none';
         }
     })
 })();

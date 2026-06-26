@@ -28,6 +28,13 @@ p.payment_module a.payu_blik {
     padding: 33px 40px 34px 80px;
 }
 
+p.payment_module a.payu_google_pay {
+    background: url('../img/payu_google_pay.svg') 15px 33px no-repeat #fbfbfb;
+}
+
+p.payment_module a.payu_google_pay {
+    padding: 33px 40px 34px 80px;
+}
 p.payment_module a.payu_main {
     background: url('../img/logo-payu.svg') 15px 33px no-repeat #fbfbfb;
 }

@@ -33,7 +33,7 @@
                     <h4 class="error">{l s='Error has occurred' mod='payu'}: {$payMethods.error}</h4>
                 {else}
                     <div id="payMethods" style="padding-bottom: 5px">
-                        <div id="response-box" class="alert alert-warning" style="display: none; margin-bottom: 10px"></div>
+                        <div id="response-box-secure-form" class="alert alert-warning" style="display: none; margin-bottom: 10px"></div>
                         {include file='module:payu/views/templates/front/payuCardForm.tpl'}
                     </div>
                     {include file='module:payu/views/templates/front/conditions17.tpl'}

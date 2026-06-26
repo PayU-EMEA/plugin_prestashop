@@ -103,6 +103,37 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     );
                 }
             }
+        }
+        elseif ($payMethod === 'ap') {
+            $googlePayToken = Tools::getValue('payuGoogleToken');
+            $paymentId = Tools::getValue('payment_id');
+
+            if ($googlePayToken) {
+                $this->pay($payMethod, ['googlePayToken' => $googlePayToken], $payMethod);
+            } else{
+                $this->payuNotification[$payMethod] = $this->module->l('Google Pay token is empty', 'payment');
+
+                 if ($this->hasRetryPayment) {
+                    $params = [
+                        'id_order' => Tools::getValue('id_order'),
+                        'select_payment_option' => $paymentId
+                    ];
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order-detail', null, null, $params)
+                    );
+                } else {
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order',
+                            null,
+                            null,
+                            [
+                                'select_payment_option' => $paymentId
+                            ]
+
+                        )
+                    );
+                }
+            }
         } else  {
             $this->pay();
         }
