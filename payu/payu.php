@@ -1147,7 +1147,7 @@ class PayU extends PaymentModule
             $cart = $params['cart'];
             $totalPrice = $cart->getOrderTotal(true, Cart::BOTH);
         } else {
-            $totalPrice = round($params['order_total'], 2);
+            $totalPrice = Tools::ps_round($params['order_total'], (int)Configuration::get('PS_PRICE_DISPLAY_PRECISION'));
         }
 
         $paymentId = Tools::getValue('payment_id', '');
