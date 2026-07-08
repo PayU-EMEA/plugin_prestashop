@@ -29,6 +29,10 @@
 				    pay-methods__hide
 			    {/if}
 
+				{if $separateGooglePay && $payment->value == 'ap'}
+                    pay-methods__hide
+                {/if}
+
 			    {if $separateInstallments && $payment->value == CreditPaymentMethod::INSTALLMENT}
 				    pay-methods__hide
 			    {/if}

@@ -34,8 +34,7 @@
 				</div>
 			</div>
 			{if $gateway->getAdditionalInformation()}
-				<div id="payment-option-{$gateway@iteration}-additional-information" class="js-additional-information definition-list additional-information ps-hidden">
-					{$gateway->getAdditionalInformation() nofilter}
+				<div id="payment-option-{$gateway@iteration}-additional-information" class="repayment-single js-additional-information definition-list additional-information ps-hidden">					{$gateway->getAdditionalInformation() nofilter}
 				</div>
 			{/if}
 		{/foreach}
