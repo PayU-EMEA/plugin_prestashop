@@ -1147,7 +1147,7 @@ class PayU extends PaymentModule
             $cart = $params['cart'];
             $totalPrice = $cart->getOrderTotal(true, Cart::BOTH);
         } else {
-            $totalPrice = Tools::ps_round($params['order_total'], (int)Configuration::get('PS_PRICE_DISPLAY_PRECISION'));
+            $totalPrice = Tools::ps_round($params['order_total'], 2);
         }
 
         $paymentId = Tools::getValue('payment_id', '');
@@ -1241,7 +1241,7 @@ class PayU extends PaymentModule
             if ($retry16) {
                 $googlePayPaymentOption = [
                     'CallToActionText' => $this->l('Pay with Google Pay'),
-                    'AdditionalInformation' => $this->fetchTemplate('googlePay16.tpl') . '<span class="payment-name" data-pm="apž"></span>',
+                    'AdditionalInformation' => $this->fetchTemplate('googlePay16.tpl') . '<span class="payment-name" data-pm="ap"></span>',
                     'ModuleName' => $this->name,
                     'Logo' => $this->getPayuLogo('payu_google_pay.svg')
                 ];
@@ -2956,22 +2956,20 @@ class PayU extends PaymentModule
      */
     private function isBlikAvailable($amount)
     {
-        return Configuration::get('PAYU_PAYMENT_METHODS_GRID') !== '1'
-            || PayMethodsCache::isPaytypeAvailable('blik',
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getLanguage(),
-                $amount,
-                $this->getVersion(), true);
+        return PayMethodsCache::isPaytypeAvailable('blik',
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $amount,
+            $this->getVersion(), true);
     }
 
     private function isGooglePayAvailable($amount)
     {
-        return Configuration::get('PAYU_PAYMENT_METHODS_GRID') !== '1'
-            || PayMethodsCache::isPaytypeAvailable('ap',
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getLanguage(),
-                $amount,
-                $this->getVersion(), true);
+        return PayMethodsCache::isPaytypeAvailable('ap',
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $amount,
+            $this->getVersion(), true);
     }
 
     /**

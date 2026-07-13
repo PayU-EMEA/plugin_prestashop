@@ -30,11 +30,7 @@
             <button class="button btn btn-default button-medium center-block"
                     style="margin: 0 auto;display: table; float:none" type="submit" id="google-pay-submit">
                 <span>
-                    {if !$retryPayment}
-                        {l s='I confirm my order' mod='payu'}
-                    {else}
-                        {l s='Pay' mod='payu'}
-                    {/if}
+                    {l s='I confirm my order' mod='payu'}
                     <i class="icon-chevron-right right"></i>
                 </span>
             </button>
