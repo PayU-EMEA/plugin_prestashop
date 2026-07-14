@@ -40,7 +40,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.4.1';
+        $this->version = '3.5.0';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -1460,7 +1460,6 @@ class PayU extends PaymentModule
                     'merchantName' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME'),
                     'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code']
                 ],
-                'lang' => $this->context->language->iso_code,
                 'lang' => $this->getLanguage(),
                 'retryPayment' => false,
                 'jsSdk' => $this->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk',

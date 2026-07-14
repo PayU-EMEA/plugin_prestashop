@@ -1,3 +1,8 @@
+## 3.5.0
+* Added GooglePay support
+* Removed product cache
+* Improved calculating lang parameter
+
 ## 3.4.1
 * Improve payment method selection for unprocessed payment
 
