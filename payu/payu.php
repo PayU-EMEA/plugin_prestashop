@@ -606,12 +606,16 @@ class PayU extends PaymentModule
                     [
                         'type' => 'text',
                         'label' => $this->l('Google Merchant Id'),
-                        'name' => 'PAYU_GOOGLE_PAY_MERCHANT_ID'
+                        'name' => 'PAYU_GOOGLE_PAY_MERCHANT_ID',
+                        'desc' => $this->l('Your Google Merchant Id. You need to verify your shop in Google, following ') 
+                            . ' <a href="https://developers.google.com/pay/api/web/guides/test-and-deploy/publish-your-integration#create-your-profile" target="_blank" rel="nofollow">'
+                            . $this->l('the instructions') . '</a>.',
                     ],
                     [
                         'type' => 'text',
                         'label' => $this->l('Google Merchant Name'),
-                        'name' => 'PAYU_GOOGLE_PAY_MERCHANT_NAME'
+                        'name' => 'PAYU_GOOGLE_PAY_MERCHANT_NAME',
+                        'desc' => $this->l('Your Google Merchant name, visible for customers.')
                     ]
                 ],
                 'submit' => [
