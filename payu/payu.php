@@ -852,7 +852,7 @@ class PayU extends PaymentModule
             }
 
             Media::addJsDef([
-                'payuLangId' => $this->context->language->iso_code,
+                'payuLangId' => $this->getLanguage(),
                 'payuSFEnabled' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' ? true : false,
             ]);
         }
@@ -1355,7 +1355,7 @@ class PayU extends PaymentModule
                 'paymentMethods' => $paymentMethods['payByLinks'],
                 'modulePath' => _PS_MODULE_DIR_ . 'payu',
                 'posId' => OpenPayU_Configuration::getMerchantPosId(),
-                'lang' => $this->context->language->iso_code,
+                'lang' => $this->getLanguage(),
                 'retryPayment' => false,
                 'jsSdk' => $this->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk',
                 'secureFormJsTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/secureFormJs.tpl',
@@ -2264,9 +2264,9 @@ class PayU extends PaymentModule
 
     private function getLanguage()
     {
-        $iso = Language::getIsoById($this->context->language->id);
+        $languageCode = substr($this->context->language->language_code ?? '', 0, 2);
 
-        return $iso === 'gb' ? 'en' : $iso;
+        return empty($languageCode) || strlen($languageCode) !== 2 ? 'en' : $languageCode;
     }
 
     /**
