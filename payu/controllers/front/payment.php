@@ -103,39 +103,37 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     );
                 }
             }
+        }
+        elseif ($payMethod === 'ap') {
+            $googlePayToken = Tools::getValue('payuGoogleToken');
+            $paymentId = Tools::getValue('payment_id');
+
+            if ($googlePayToken) {
+                $this->pay($payMethod, ['googlePayToken' => $googlePayToken], $payMethod);
+            } else{
+                $this->payuNotification[$payMethod] = $this->module->l('Google Pay token is empty', 'payment');
+
+                if ($this->hasRetryPayment) {
+                    $this->payuRedirectWithNotifications($this->getRetryPaymentReturnUrl());
+                } else {
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order',
+                            null,
+                            null,
+                            [
+                                'select_payment_option' => $paymentId
+                            ]
+
+                        )
+                    );
+                }
+            }
         } else  {
             $this->pay();
         }
 
-        if ($this->hasRetryPayment) {
-            $this->payuNotification['error'] = $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment');
-            $params = [
-                'id_order' => Tools::getValue('id_order')
-            ];
-
-            $this->payuRedirectWithNotifications(
-                $this->context->link->getPageLink('order-detail',null,null, $params)
-            );
-        } else {
-            $this->showPaymentError();
-        }
-
-    }
-
-    private function showPaymentError()
-    {
-        $this->context->smarty->assign(
-            [
-                'image' => $this->payu->getPayuLogo(),
-                'total' => Tools::displayPrice($this->order->total_paid, (int)$this->order->id_currency),
-                'orderCurrency' => (int)$this->order->id_currency,
-                'buttonAction' => $this->context->link->getModuleLink('payu', 'payment', ['id_order' => $this->order->id, 'order_reference' => $this->order->reference]),
-                'payuOrderInfo' => $this->module->l('Pay for your order', 'payment') . ' [' . $this->order->reference . ']',
-                'payuError' => $this->module->l('An error occurred while processing your payment.', 'payment')
-            ]
-        );
-
-        $this->setTemplate($this->payu->buildTemplatePath('error'));
+        $this->payuNotification['error'] = $this->module->l('An error occurred while processing your payment. Please try again or contact the store.', 'payment');
+        $this->payuRedirectWithNotifications($this->getRetryPaymentReturnUrl());
     }
 
     private function pay($payMethod = null, $parameters = [], $method = '')
@@ -191,12 +189,12 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
     private function postProcessPayment()
     {
         if ($this->context->cart->id_customer == 0 || $this->context->cart->id_address_delivery == 0 || $this->context->cart->id_address_invoice == 0 || !count($this->context->cart->getProducts())) {
-            Tools::redirectLink(__PS_BASE_URI__ . 'order.php?step=1');
+            Tools::redirect(__PS_BASE_URI__ . 'order.php?step=1');
         }
 
         $customer = new Customer($this->context->cart->id_customer);
         if (!Validate::isLoadedObject($customer)) {
-            Tools::redirectLink(__PS_BASE_URI__ . 'order.php?step=1');
+            Tools::redirect(__PS_BASE_URI__ . 'order.php?step=1');
         }
     }
 
@@ -250,6 +248,27 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
             $this->payu->getExtOrderId(),
             $method
         );
+    }
+
+    private function getRetryPaymentReturnUrl()
+    {
+        if (!Validate::isLoadedObject($this->order)) {
+            return $this->context->link->getPageLink('history');
+        }
+
+        $customer = new Customer($this->order->id_customer);
+        $params = [];
+
+        if ($customer->is_guest) {
+            $params['email'] = $customer->email;
+            $params['order_reference'] = $this->order->reference;
+
+            return $this->context->link->getPageLink('guest-tracking', null, null, $params);
+        }
+
+        $params['id_order'] = $this->order->id;
+
+        return $this->context->link->getPageLink('order-detail', null, null, $params);
     }
 
     public function payuRedirectWithNotifications($notifications)

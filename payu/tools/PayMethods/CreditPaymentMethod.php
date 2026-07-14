@@ -24,7 +24,7 @@ class CreditPaymentMethod {
         self::DELAYED_PAYMENT_KLARNA_PLN,
         self::DELAYED_PAYMENT_KLARNA_EUR,
         self::DELAYED_PAYMENT_KLARNA_CZK,
-        self::DELAYED_PAYMENT_KLARNA_HUF,
+        self::DELAYED_PAYMENT_KLARNA_HUF
     ];
 
     public static function getAll()

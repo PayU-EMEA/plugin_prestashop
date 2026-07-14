@@ -104,8 +104,11 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_KLARNA', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', 0) &&
+            Configuration::updateValue('PAYU_SEPARATE_GOOGLE_PAY', 0) &&
             Configuration::updateValue('PAYU_PAYMENT_METHODS_GRID', 0) &&
-            Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', '')
+            Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', '') &&
+            Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_ID', '') &&
+            Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_NAME', '')
         );
     }
 
@@ -143,8 +146,11 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_KLARNA') ||
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_PAYPO') ||
             !Configuration::deleteByName('PAYU_SEPARATE_BLIK_PAYMENT') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_GOOGLE_PAY') ||
             !Configuration::deleteByName('PAYU_PAYMENT_METHODS_GRID', 0) ||
-            !Configuration::deleteByName('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES')
+            !Configuration::deleteByName('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES') ||
+            !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_ID') ||
+            !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_NAME')
         ) {
             return false;
         }
@@ -214,10 +220,13 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_TWISTO', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_TWISTO') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_TWISTO_SLICE', (Tools::getValue('PAYU_SEPARATE_TWISTO_SLICE') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PRAGMA_PAY', (Tools::getValue('PAYU_SEPARATE_PRAGMA_PAY') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SEPARATE_GOOGLE_PAY', (Tools::getValue('PAYU_SEPARATE_GOOGLE_PAY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_KLARNA', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_KLARNA') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_PAYPO') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_GRID', (Tools::getValue('PAYU_PAYMENT_METHODS_GRID') ? 1 : 0)) ||
-                !Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', Tools::getValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES'))
+                !Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', Tools::getValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES')) ||
+                !Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_ID', Tools::getValue('PAYU_GOOGLE_PAY_MERCHANT_ID')) ||
+                !Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_NAME', Tools::getValue('PAYU_GOOGLE_PAY_MERCHANT_NAME'))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -570,6 +579,51 @@ class PayU extends PaymentModule
             ]
         ];
 
+        $form['google_pay'] = [
+            'form' => [
+                'legend' => [
+                    'title' => $this->l('Google Pay'),
+                    'icon' => 'icon-tag'
+                ],
+                'input' => [
+                    [
+                        'type' => 'switch',
+                        'label' => $this->l('Enable Google Pay'),
+                        'name' => 'PAYU_SEPARATE_GOOGLE_PAY',
+                        'values' => [
+                            [
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ],
+                            [
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            ]
+                        ]
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Google Merchant Id'),
+                        'name' => 'PAYU_GOOGLE_PAY_MERCHANT_ID',
+                        'desc' => $this->l('Your Google Merchant Id. You need to verify your shop in Google, following ')
+                            . ' <a href="https://developers.google.com/pay/api/web/guides/test-and-deploy/publish-your-integration#create-your-profile" target="_blank" rel="nofollow">'
+                            . $this->l('the instructions') . '</a>.',
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Google Merchant Name'),
+                        'name' => 'PAYU_GOOGLE_PAY_MERCHANT_NAME',
+                        'desc' => $this->l('Your Google Merchant name, visible for customers.')
+                    ]
+                ],
+                'submit' => [
+                    'title' => $this->l('Save')
+                ]
+            ]
+        ];
+
         foreach (Currency::getCurrencies() as $currency) {
             $form['pos_' . $currency['iso_code']] = [
                 'form' => [
@@ -728,7 +782,10 @@ class PayU extends PaymentModule
             'PAYU_SEPARATE_PAY_LATER_KLARNA' => Configuration::get('PAYU_SEPARATE_PAY_LATER_KLARNA'),
             'PAYU_SEPARATE_PAY_LATER_PAYPO' => Configuration::get('PAYU_SEPARATE_PAY_LATER_PAYPO'),
             'PAYU_PAYMENT_METHODS_GRID' => Configuration::get('PAYU_PAYMENT_METHODS_GRID'),
-            'PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES' => Configuration::get('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES')
+            'PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES' => Configuration::get('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES'),
+            'PAYU_SEPARATE_GOOGLE_PAY' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY'),
+            'PAYU_GOOGLE_PAY_MERCHANT_ID' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_ID'),
+            'PAYU_GOOGLE_PAY_MERCHANT_NAME' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME')
         ];
 
         foreach (Currency::getCurrencies() as $currency) {
@@ -1092,11 +1149,12 @@ class PayU extends PaymentModule
                 return;
             }
             $cart = $params['cart'];
-            $totalPrice = $cart->getOrderTotal();
+            $totalPrice = $cart->getOrderTotal(true, Cart::BOTH);
         } else {
-            $totalPrice = $params['order_total'];
+            $totalPrice = Tools::ps_round($params['order_total'], 2);
         }
 
+        $paymentId = Tools::getValue('payment_id', '');
         $paymentOptions = [];
         $retry16 = !$this->is17() && $retry;
 
@@ -1119,6 +1177,7 @@ class PayU extends PaymentModule
             'separateTwistoSlice' => Configuration::get('PAYU_SEPARATE_TWISTO_SLICE'),
             'separatePragmaPay' => Configuration::get('PAYU_SEPARATE_PRAGMA_PAY'),
             'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
+            'separateGooglePay' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY'),
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
             'lang' => Language::getIsoById($this->context->language->id),
             'params' => $params,
@@ -1167,6 +1226,39 @@ class PayU extends PaymentModule
             }
 
             $paymentOptions[] = $cardPaymentOption;
+        }
+
+        if (Configuration::get('PAYU_SEPARATE_GOOGLE_PAY') === '1' && $this->isGooglePayAvailable($totalPrice)) {
+            $this->smarty->assign([
+                'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
+                'googlePayTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/googlePay17.tpl',
+                'conditionUrl' => $this->getPayConditionUrl(),
+                'posId' => OpenPayU_Configuration::getMerchantPosId(),
+                'lang' => Language::getIsoById($this->context->language->id),
+                'totalPrice' => $totalPrice,
+                'paymentId' => $paymentId,
+                'env' => Configuration::get('PAYU_SANDBOX') ? 'TEST' : 'PRODUCTION',
+                'merchantId' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_ID'),
+                'merchantName' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME'),
+                'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code']
+            ]);
+            if ($retry16) {
+                $googlePayPaymentOption = [
+                    'CallToActionText' => $this->l('Pay with Google Pay'),
+                    'AdditionalInformation' => $this->fetchTemplate('googlePay16.tpl') . '<span class="payment-name" data-pm="ap"></span>',
+                    'ModuleName' => $this->name,
+                    'Logo' => $this->getPayuLogo('payu_google_pay.svg')
+                ];
+            } else {
+                $googlePayPaymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+                $googlePayPaymentOption->setCallToActionText($this->l('Pay with Google Pay'))
+                    ->setAdditionalInformation($this->fetchTemplate('googlePay17.tpl'))
+                    ->setModuleName($this->name)
+                    ->setLogo($this->getPayuLogo('payu_google_pay.svg'))
+                    ->setAction($this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'ap']));
+            }
+
+            $paymentOptions[] = $googlePayPaymentOption;
         }
 
         if (Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($totalPrice)) {
@@ -1307,7 +1399,7 @@ class PayU extends PaymentModule
             ]),
             'separateInstallments' => $this->isAvailableSeparateInstallments($totalPrice),
             'separateTwistoSlice' => $this->isAvailableSeparateTwistoSlice($totalPrice),
-            'separatePragmaPay' => $this->isAvailableSeparatePragmaPay($totalPrice),
+            'separatePragmaPay' => $this->isAvailableSeparatePragmaPay($totalPrice)
         ]);
 
         if ($this->isAnyCreditPaytypeEnabled()) {
@@ -1338,6 +1430,7 @@ class PayU extends PaymentModule
                 'showCardPayment' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
                 'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
                 'showBlikPayment' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($params['cart']->getOrderTotal()),
+                'showGooglePayPayment' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY') === '1' && $this->isGooglePayAvailable($params['cart']->getOrderTotal()),
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment', ['payMethod' => 'pbl']),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
@@ -1345,9 +1438,13 @@ class PayU extends PaymentModule
                 'blikActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => 'blik'
                 ]),
+                'googlePayActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
+                    'payMethod' => 'ap'
+                ]),
                 'cart_total_amount' => $params['cart']->getOrderTotal(),
                 'separateBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
                 'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
+                'separateGooglePay' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY'),
                 'paymentGrid' => Configuration::get('PAYU_PAYMENT_METHODS_GRID'),
                 'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
                 'conditionUrl' => $this->getPayConditionUrl(),
@@ -1355,6 +1452,15 @@ class PayU extends PaymentModule
                 'paymentMethods' => $paymentMethods['payByLinks'],
                 'modulePath' => _PS_MODULE_DIR_ . 'payu',
                 'posId' => OpenPayU_Configuration::getMerchantPosId(),
+                'googlePay' => [
+                    'posId' => OpenPayU_Configuration::getMerchantPosId(),
+                    'totalPrice' => $params['cart']->getOrderTotal(),
+                    'env' => Configuration::get('PAYU_SANDBOX') ? 'TEST' : 'PRODUCTION',
+                    'merchantId' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_ID'),
+                    'merchantName' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME'),
+                    'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code']
+                ],
+                'lang' => $this->context->language->iso_code,
                 'lang' => $this->getLanguage(),
                 'retryPayment' => false,
                 'jsSdk' => $this->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk',
@@ -1866,6 +1972,14 @@ class PayU extends PaymentModule
                     'payMethod' => [
                         'type' => 'CARD_TOKEN',
                         'value' => $parameters['cardToken']
+                    ]
+                ];
+            } elseif ($payMethod === 'ap') {
+                $ocreq['payMethods'] = [
+                    'payMethod' => [
+                        'type' => 'PBL',
+                        'value' => 'ap',
+                        'authorizationCode' => $parameters['googlePayToken']
                     ]
                 ];
             } else {
@@ -2847,12 +2961,20 @@ class PayU extends PaymentModule
      */
     private function isBlikAvailable($amount)
     {
-        return Configuration::get('PAYU_PAYMENT_METHODS_GRID') !== '1'
-            || PayMethodsCache::isPaytypeAvailable('blik',
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getLanguage(),
-                $amount,
-                $this->getVersion(), true);
+        return PayMethodsCache::isPaytypeAvailable('blik',
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $amount,
+            $this->getVersion(), true);
+    }
+
+    private function isGooglePayAvailable($amount)
+    {
+        return PayMethodsCache::isPaytypeAvailable('ap',
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $amount,
+            $this->getVersion(), true);
     }
 
     /**
