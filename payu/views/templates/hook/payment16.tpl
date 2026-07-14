@@ -57,6 +57,22 @@
 			</div>
 		</div>
     {/if}
+	{if $showGooglePayPayment == true}
+		<div class="row">
+			<div class="col-xs-12">
+				<p class="payment_module">
+					<a class="payu payu_google_pay payment_open" data-payment="ap" href=""
+						title="{l s='Pay by Google Pay' mod='payu'}">
+						{l s='Pay by Google Pay' mod='payu'}
+					</a>
+				</p>
+
+				<div class="payment_module_content" style="display:none" data-payment-open="ap">
+					{include file="$modulePath/views/templates/front/googlePay16.tpl"}
+				</div>
+			</div>
+		</div>
+	{/if}
     {if $paymentGrid == true}
 		{if isset($payuNotifications.transfer)}
 			<div id="transfer-response-box" class="alert alert-warning" style="margin-bottom: 10px;">
