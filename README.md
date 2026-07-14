@@ -18,6 +18,7 @@ Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) s
     * [Payment method display](#payment-method-display)
     * [Card payment](#card-payment)
     * [Card payment - widget](#card-payment-widget)
+    * [Google Pay](#google-pay)
     * [Payment retry](#payment-retry)
     * [Promote credit payment methods](#promote-credit-payment-methods)
 * [Known issues](#known-issues)
