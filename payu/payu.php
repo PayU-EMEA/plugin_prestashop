@@ -2763,7 +2763,7 @@ class PayU extends PaymentModule
                     'credit_widget_lang' => $this->getLanguage(),
                     'credit_widget_excluded_paytypes' => $this->getCreditWidgetExcludedPaytypes()
                 ]);
-                return $this->display(__FILE__, 'product.tpl', $this->getCacheId($product['price_amount'] . $product['id_product']));
+                return $this->display(__FILE__, 'product.tpl');
             }
         }
     }
