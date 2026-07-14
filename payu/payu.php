@@ -607,7 +607,7 @@ class PayU extends PaymentModule
                         'type' => 'text',
                         'label' => $this->l('Google Merchant Id'),
                         'name' => 'PAYU_GOOGLE_PAY_MERCHANT_ID',
-                        'desc' => $this->l('Your Google Merchant Id. You need to verify your shop in Google, following ') 
+                        'desc' => $this->l('Your Google Merchant Id. You need to verify your shop in Google, following ')
                             . ' <a href="https://developers.google.com/pay/api/web/guides/test-and-deploy/publish-your-integration#create-your-profile" target="_blank" rel="nofollow">'
                             . $this->l('the instructions') . '</a>.',
                     ],
@@ -909,7 +909,7 @@ class PayU extends PaymentModule
             }
 
             Media::addJsDef([
-                'payuLangId' => $this->context->language->iso_code,
+                'payuLangId' => $this->getLanguage(),
                 'payuSFEnabled' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' ? true : false,
             ]);
         }
@@ -1257,7 +1257,7 @@ class PayU extends PaymentModule
                     ->setLogo($this->getPayuLogo('payu_google_pay.svg'))
                     ->setAction($this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'ap']));
             }
-            
+
             $paymentOptions[] = $googlePayPaymentOption;
         }
 
@@ -1461,6 +1461,7 @@ class PayU extends PaymentModule
                     'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code']
                 ],
                 'lang' => $this->context->language->iso_code,
+                'lang' => $this->getLanguage(),
                 'retryPayment' => false,
                 'jsSdk' => $this->getPayuUrl(Configuration::get('PAYU_SANDBOX') === '1') . 'javascript/sdk',
                 'secureFormJsTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/secureFormJs.tpl',
@@ -2377,9 +2378,9 @@ class PayU extends PaymentModule
 
     private function getLanguage()
     {
-        $iso = Language::getIsoById($this->context->language->id);
+        $languageCode = substr($this->context->language->language_code ?? '', 0, 2);
 
-        return $iso === 'gb' ? 'en' : $iso;
+        return empty($languageCode) || strlen($languageCode) !== 2 ? 'en' : $languageCode;
     }
 
     /**
