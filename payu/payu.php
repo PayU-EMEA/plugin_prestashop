@@ -29,11 +29,11 @@ class PayU extends PaymentModule
     public $payu_order_id = '';
     public $id_order = null;
 
-	/** @var string */
-	private $extOrderId = '';
+    /** @var string */
+    private $extOrderId = '';
 
-	/** @var int */
-	public $is_eu_compatible;
+    /** @var int */
+    public $is_eu_compatible;
 
     public function __construct()
     {
@@ -45,8 +45,8 @@ class PayU extends PaymentModule
         $this->need_instance = 1;
         $this->bootstrap = true;
         $this->ps_versions_compliancy = [
-			'min' => '1.6.0',
-			'max' => _PS_VERSION_
+            'min' => '1.6.0',
+            'max' => _PS_VERSION_
         ];
 
         $this->currencies = true;
@@ -55,7 +55,7 @@ class PayU extends PaymentModule
 
         parent::__construct();
 
-		$this->displayName = $this->l('PayU');
+        $this->displayName = $this->l('PayU');
         $this->description = $this->l('Accepts payments by PayU');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall? You will lose all your settings!');
     }
@@ -105,10 +105,13 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_GOOGLE_PAY', 0) &&
+            Configuration::updateValue('PAYU_SEPARATE_APPLEY_PAY', 0) &&
             Configuration::updateValue('PAYU_PAYMENT_METHODS_GRID', 0) &&
             Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', '') &&
             Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_ID', '') &&
-            Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_NAME', '')
+            Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_NAME', '') &&
+            Configuration::updateValue('PAYU_APPLE_PAY_DOMAIN_NAME', '') &&
+            Configuration::updateValue('PAYU_APPLE_PAY_DISPLAY_NAME', '')
         );
     }
 
@@ -147,10 +150,13 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_PAYPO') ||
             !Configuration::deleteByName('PAYU_SEPARATE_BLIK_PAYMENT') ||
             !Configuration::deleteByName('PAYU_SEPARATE_GOOGLE_PAY') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_APPLEY_PAY') ||
             !Configuration::deleteByName('PAYU_PAYMENT_METHODS_GRID', 0) ||
             !Configuration::deleteByName('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES') ||
             !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_ID') ||
-            !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_NAME')
+            !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_NAME') ||
+            !Configuration::deleteByName('PAYU_APPLE_PAY_DOMAIN_NAME') ||
+            !Configuration::deleteByName('PAYU_APPLE_PAY_DISPLAY_NAME')
         ) {
             return false;
         }
@@ -221,12 +227,15 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_SEPARATE_TWISTO_SLICE', (Tools::getValue('PAYU_SEPARATE_TWISTO_SLICE') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PRAGMA_PAY', (Tools::getValue('PAYU_SEPARATE_PRAGMA_PAY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_GOOGLE_PAY', (Tools::getValue('PAYU_SEPARATE_GOOGLE_PAY') ? 1 : 0)) ||
+                !Configuration::updateValue('PAYU_SEPARATE_APPLE_PAY', (Tools::getValue('PAYU_SEPARATE_APPLE_PAY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_KLARNA', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_KLARNA') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', (Tools::getValue('PAYU_SEPARATE_PAY_LATER_PAYPO') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_PAYMENT_METHODS_GRID', (Tools::getValue('PAYU_PAYMENT_METHODS_GRID') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', Tools::getValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES')) ||
                 !Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_ID', Tools::getValue('PAYU_GOOGLE_PAY_MERCHANT_ID')) ||
-                !Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_NAME', Tools::getValue('PAYU_GOOGLE_PAY_MERCHANT_NAME'))
+                !Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_NAME', Tools::getValue('PAYU_GOOGLE_PAY_MERCHANT_NAME')) ||
+                !Configuration::updateValue('PAYU_APPLE_PAY_DOMAIN_NAME', Tools::getValue('PAYU_APPLE_PAY_DOMAIN_NAME')) ||
+                !Configuration::updateValue('PAYU_APPLE_PAY_DISPLAY_NAME', Tools::getValue('PAYU_APPLE_PAY_DISPLAY_NAME'))
             ) {
                 $errors[] = $this->l('Can not save configuration');
             }
@@ -624,6 +633,55 @@ class PayU extends PaymentModule
             ]
         ];
 
+        $form['apple_pay'] = [
+            'form' => [
+                'title' => $this->l('Apple Pay'),
+                'legend' => [
+                    'title' => $this->l('Apple Pay'),
+                    'icon' => 'icon-tag'
+                ],
+                'input' => [
+                    [
+                        'type' => 'switch',
+                        'label' => $this->l('Enable Apple Pay'),
+                        'name' => 'PAYU_SEPARATE_APPLE_PAY',
+                        'values' => [
+                            [
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ],
+                            [
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            ]
+                        ]
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Domain Name'),
+                        'name' => 'PAYU_APPLE_PAY_DOMAIN_NAME',
+                        'desc' => $this->l('Domain name registered in Apple. To register the domain follow the') .
+                            ' <a href="https://developers.payu.com/europe/docs/payment-solutions/cards/digital-wallets/apple-pay/" target="_blank" rel="nofollow">' .
+                            $this->l('instructions') .
+                            '</a>.<br /> <b>' .
+                            $this->l('IMPORTANT') .
+                            '</b>: The domain must match the checkout page domain, otherwise Apple will reject the payment request.',
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Display Name'),
+                        'name' => 'PAYU_APPLE_PAY_DISPLAY_NAME',
+                        'desc' => $this->l('Apple Pay display name. A string of 64 or fewer UTF-8 characters containing the canonical name for your store, suitable for display.')
+                    ]
+                ],
+                'submit' => [
+                    'title' => $this->l('Save')
+                ]
+            ]
+        ];
+
         foreach (Currency::getCurrencies() as $currency) {
             $form['pos_' . $currency['iso_code']] = [
                 'form' => [
@@ -785,7 +843,10 @@ class PayU extends PaymentModule
             'PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES' => Configuration::get('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES'),
             'PAYU_SEPARATE_GOOGLE_PAY' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY'),
             'PAYU_GOOGLE_PAY_MERCHANT_ID' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_ID'),
-            'PAYU_GOOGLE_PAY_MERCHANT_NAME' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME')
+            'PAYU_GOOGLE_PAY_MERCHANT_NAME' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME'),
+            'PAYU_SEPARATE_APPLE_PAY' => Configuration::get('PAYU_SEPARATE_APPLE_PAY'),
+            'PAYU_APPLE_PAY_DOMAIN_NAME' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
+            'PAYU_APPLE_PAY_DISPLAY_NAME' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME'),
         ];
 
         foreach (Currency::getCurrencies() as $currency) {
@@ -831,7 +892,7 @@ class PayU extends PaymentModule
     public function hookActionGetExtraMailTemplateVars(array &$params)
     {
         if (isset($params['template_vars']['{payment}'])
-            && $this->displayName === substr($params['template_vars']['{payment}'],0, strlen($this->displayName))
+            && $this->displayName === substr($params['template_vars']['{payment}'], 0, strlen($this->displayName))
             && $this->repaymentEnabled()
             && $params['template'] == 'order_conf'
         ) {
@@ -885,7 +946,7 @@ class PayU extends PaymentModule
             }
         }
 
-        if($controller === 'order-opc' ||
+        if ($controller === 'order-opc' ||
             $controller === 'order' ||
             $controller === 'cart' ||
             $controller === 'product' ||
@@ -1178,6 +1239,7 @@ class PayU extends PaymentModule
             'separatePragmaPay' => Configuration::get('PAYU_SEPARATE_PRAGMA_PAY'),
             'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
             'separateGooglePay' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY'),
+            'separateApplePay' => Configuration::get('PAYU_SEPARATE_APPLE_PAY'),
             'posId' => OpenPayU_Configuration::getMerchantPosId(),
             'lang' => Language::getIsoById($this->context->language->id),
             'params' => $params,
@@ -1304,7 +1366,7 @@ class PayU extends PaymentModule
             $paymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
             $paymentOption
                 ->setModuleName($this->name)
-                ->setAction($this->context->link->getModuleLink($this->name,'payment', ['payMethod' => Configuration::get('PAYU_PAYMENT_METHODS_GRID') === '1' ? 'transfer' : 'pbl']))
+                ->setAction($this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => Configuration::get('PAYU_PAYMENT_METHODS_GRID') === '1' ? 'transfer' : 'pbl']))
                 ->setLogo($this->getPayuLogo())
                 ->setCallToActionText(empty($paymentOptions)
                     ? $this->l('Pay by online transfer or card')
@@ -1709,7 +1771,7 @@ class PayU extends PaymentModule
             foreach ($rules as $rule) {
                 $list[] = [
                     'name' => mb_substr('Discount' . ' [' . $rule['name'] . ']', 0, 255),
-                    'unitPrice' => $this->toAmount(Tools::ps_round($rule['value'],2) * -1),
+                    'unitPrice' => $this->toAmount(Tools::ps_round($rule['value'], 2) * -1),
                     'quantity' => 1
                 ];
             }
@@ -2609,7 +2671,8 @@ class PayU extends PaymentModule
     /**
      * @return string|null
      */
-    private function getCurrencyIsoCodeForCreditWidget() {
+    private function getCurrencyIsoCodeForCreditWidget()
+    {
         $currency = Currency::getCurrency($this->context->cart->id_currency);
         return isset($currency) ? $currency['iso_code'] : null;
     }
@@ -2860,7 +2923,7 @@ class PayU extends PaymentModule
         try {
             $refund = OpenPayU_Refund::create(
                 $payuOrderId,
-                'Refund to order ' . $order->reference . ' ('. $order->id .')',
+                'Refund to order ' . $order->reference . ' (' . $order->id . ')',
                 round($value * 100)
             );
 
@@ -2932,10 +2995,10 @@ class PayU extends PaymentModule
     private function isPaymentMethodAvailable($paymentMethod, $amount)
     {
         return PayMethodsCache::isPaytypeAvailable($paymentMethod,
-                Currency::getCurrency($this->context->cart->id_currency),
-                $this->getLanguage(),
-                $amount,
-                $this->getVersion());
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $amount,
+            $this->getVersion());
     }
 
     /**
@@ -2984,7 +3047,7 @@ class PayU extends PaymentModule
      */
     private function findAvailableCreditPayMethod($payMethods, $amount)
     {
-        $availablePayMethods = array_filter($payMethods, function($pm) use ($amount) {
+        $availablePayMethods = array_filter($payMethods, function ($pm) use ($amount) {
             return $this->isPaymentMethodAvailable($pm, $amount);
         });
         if (count($availablePayMethods) > 1) {
