@@ -37,6 +37,10 @@
                     pay-methods__hide
                 {/if}
 
+                {if $separateApplePay && $payment->value == 'jp'}
+                    pay-methods__hide
+                {/if}
+
 			    {if $separateInstallments && $payment->value == CreditPaymentMethod::INSTALLMENT}
 				    pay-methods__hide
 			    {/if}
@@ -88,6 +92,9 @@
         }
 
         var applePayContainer = document.getElementById('payMethodContainer-jp');
+        if (!applePayContainer) {
+            return;
+        }
 
         if (applePayAvailable) {
             applePayContainer.style.display = 'block';

@@ -40,7 +40,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.5.0';
+        $this->version = '3.5.1';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -105,7 +105,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_SEPARATE_PAY_LATER_PAYPO', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_BLIK_PAYMENT', 0) &&
             Configuration::updateValue('PAYU_SEPARATE_GOOGLE_PAY', 0) &&
-            Configuration::updateValue('PAYU_SEPARATE_APPLEY_PAY', 0) &&
+            Configuration::updateValue('PAYU_SEPARATE_APPLE_PAY', 0) &&
             Configuration::updateValue('PAYU_PAYMENT_METHODS_GRID', 0) &&
             Configuration::updateValue('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES', '') &&
             Configuration::updateValue('PAYU_GOOGLE_PAY_MERCHANT_ID', '') &&
@@ -150,6 +150,7 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_SEPARATE_PAY_LATER_PAYPO') ||
             !Configuration::deleteByName('PAYU_SEPARATE_BLIK_PAYMENT') ||
             !Configuration::deleteByName('PAYU_SEPARATE_GOOGLE_PAY') ||
+            !Configuration::deleteByName('PAYU_SEPARATE_APPLE_PAY') ||
             !Configuration::deleteByName('PAYU_SEPARATE_APPLEY_PAY') ||
             !Configuration::deleteByName('PAYU_PAYMENT_METHODS_GRID', 0) ||
             !Configuration::deleteByName('PAYU_CREDIT_WIDGET_EXCLUDED_PAYTYPES') ||
@@ -1323,6 +1324,41 @@ class PayU extends PaymentModule
             $paymentOptions[] = $googlePayPaymentOption;
         }
 
+        if ($this->shouldShowApplePay($totalPrice)) {
+            $this->smarty->assign([
+                'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
+                'applePayTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/applePay17.tpl',
+                'conditionUrl' => $this->getPayConditionUrl(),
+                'posId' => OpenPayU_Configuration::getMerchantPosId(),
+                'lang' => Language::getIsoById($this->context->language->id),
+                'totalPrice' => $totalPrice,
+                'paymentId' => $paymentId,
+                'env' => Configuration::get('PAYU_SANDBOX') ? 'TEST' : 'PRODUCTION',
+                'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code'],
+                'countryCode' => Country::getIsoById((int)Configuration::get('PS_COUNTRY_DEFAULT')),
+                'domainName' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
+                'displayName' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME'),
+                'applePaySessionUrl' => $this->context->link->getModuleLink($this->name, 'applepay')
+            ]);
+            if ($retry16) {
+                $applePayPaymentOption = [
+                    'CallToActionText' => $this->l('Pay with Apple Pay'),
+                    'AdditionalInformation' => $this->fetchTemplate('applePay16.tpl') . '<span class="payment-name" data-pm="jp"></span>',
+                    'ModuleName' => $this->name,
+                    'Logo' => $this->getPayuLogo('payu_apple_pay.svg')
+                ];
+            } else {
+                $applePayPaymentOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
+                $applePayPaymentOption->setCallToActionText($this->l('Pay with Apple Pay'))
+                    ->setAdditionalInformation($this->fetchTemplate('applePay17.tpl'))
+                    ->setModuleName($this->name)
+                    ->setLogo($this->getPayuLogo('payu_apple_pay.svg'))
+                    ->setAction($this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'jp']));
+            }
+
+            $paymentOptions[] = $applePayPaymentOption;
+        }
+
         if (Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($totalPrice)) {
             if ($retry16) {
                 $blikPaymentOption = [
@@ -1482,7 +1518,9 @@ class PayU extends PaymentModule
      */
     public function hookPayment($params)
     {
-        $paymentMethods = $this->getPaymethods(Currency::getCurrency($this->context->cart->id_currency), $params['cart']->getOrderTotal());
+        $totalPrice = $params['cart']->getOrderTotal();
+        $currency = Currency::getCurrency($this->context->cart->id_currency);
+        $paymentMethods = $this->getPaymethods($currency, $totalPrice);
 
         $this->assignCreditPaymentVariablesForPaymentHook($params['cart']->getOrderTotal());
 
@@ -1493,6 +1531,7 @@ class PayU extends PaymentModule
                 'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
                 'showBlikPayment' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($params['cart']->getOrderTotal()),
                 'showGooglePayPayment' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY') === '1' && $this->isGooglePayAvailable($params['cart']->getOrderTotal()),
+                'showApplePayPayment' => $this->shouldShowApplePay($totalPrice),
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment', ['payMethod' => 'pbl']),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
@@ -1503,10 +1542,14 @@ class PayU extends PaymentModule
                 'googlePayActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
                     'payMethod' => 'ap'
                 ]),
+                'applePayActionUrl' => $this->context->link->getModuleLink('payu', 'payment', [
+                    'payMethod' => 'jp'
+                ]),
                 'cart_total_amount' => $params['cart']->getOrderTotal(),
                 'separateBlik' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT'),
                 'separateCard' => Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'),
                 'separateGooglePay' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY'),
+                'separateApplePay' => Configuration::get('PAYU_SEPARATE_APPLE_PAY'),
                 'paymentGrid' => Configuration::get('PAYU_PAYMENT_METHODS_GRID'),
                 'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
                 'conditionUrl' => $this->getPayConditionUrl(),
@@ -1514,6 +1557,13 @@ class PayU extends PaymentModule
                 'paymentMethods' => $paymentMethods['payByLinks'],
                 'modulePath' => _PS_MODULE_DIR_ . 'payu',
                 'posId' => OpenPayU_Configuration::getMerchantPosId(),
+                'totalPrice' => $totalPrice,
+                'env' => Configuration::get('PAYU_SANDBOX') ? 'TEST' : 'PRODUCTION',
+                'currency' => $currency['iso_code'],
+                'countryCode' => Country::getIsoById((int)Configuration::get('PS_COUNTRY_DEFAULT')),
+                'domainName' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
+                'displayName' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME'),
+                'applePaySessionUrl' => $this->context->link->getModuleLink($this->name, 'applepay'),
                 'googlePay' => [
                     'posId' => OpenPayU_Configuration::getMerchantPosId(),
                     'totalPrice' => $params['cart']->getOrderTotal(),
@@ -1521,6 +1571,10 @@ class PayU extends PaymentModule
                     'merchantId' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_ID'),
                     'merchantName' => Configuration::get('PAYU_GOOGLE_PAY_MERCHANT_NAME'),
                     'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code']
+                ],
+                'applePay' => [
+                    'domainName' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
+                    'displayName' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME')
                 ],
                 'lang' => $this->getLanguage(),
                 'retryPayment' => false,
@@ -2041,6 +2095,14 @@ class PayU extends PaymentModule
                         'type' => 'PBL',
                         'value' => 'ap',
                         'authorizationCode' => $parameters['googlePayToken']
+                    ]
+                ];
+            } elseif ($payMethod === 'jp') {
+                $ocreq['payMethods'] = [
+                    'payMethod' => [
+                        'type' => 'PBL',
+                        'value' => 'jp',
+                        'authorizationCode' => $parameters['payuApplePayToken']
                     ]
                 ];
             } else {
@@ -3037,6 +3099,37 @@ class PayU extends PaymentModule
             $this->getLanguage(),
             $amount,
             $this->getVersion(), true);
+    }
+
+    private function isApplePayAvailable($amount)
+    {
+        return PayMethodsCache::isPaytypeAvailable('jp',
+            Currency::getCurrency($this->context->cart->id_currency),
+            $this->getLanguage(),
+            $amount,
+            $this->getVersion(), true);
+    }
+
+    private function shouldShowApplePay($amount)
+    {
+        if (Configuration::get('PAYU_SEPARATE_APPLE_PAY') !== '1') {
+            return false;
+        }
+
+        $available = $this->isApplePayAvailable($amount);
+        if (!$available) {
+            $currency = Currency::getCurrency($this->context->cart->id_currency);
+            SimplePayuLogger::addLog(
+                'error',
+                __FUNCTION__,
+                'Apple Pay is enabled in the module, but PayU did not return payment method jp as ENABLED. '
+                . 'POS: ' . OpenPayU_Configuration::getMerchantPosId()
+                . ', currency: ' . (isset($currency['iso_code']) ? $currency['iso_code'] : 'unknown')
+                . ', amount: ' . $amount
+            );
+        }
+
+        return $available;
     }
 
     /**
