@@ -440,7 +440,7 @@ function doubleClickPrevent(object) {
             }
 
             var applePayPaymentRequest = {
-                countryCode: applePayCountryCode,
+                countryCode: 'PL',
                 currencyCode: currency,
                 total: {
                     type: 'final',

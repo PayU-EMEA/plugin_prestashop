@@ -451,7 +451,7 @@ $(document).ready(function () {
             }
 
             const applePayPaymentRequest = {
-                countryCode: applePayCountryCode,
+                countryCode: 'PL',
                 currencyCode: currency,
                 total: {
                     type: 'final',

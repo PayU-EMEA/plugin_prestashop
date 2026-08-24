@@ -1335,7 +1335,6 @@ class PayU extends PaymentModule
                 'paymentId' => $paymentId,
                 'env' => Configuration::get('PAYU_SANDBOX') ? 'TEST' : 'PRODUCTION',
                 'currency' => Currency::getCurrency($this->context->cart->id_currency)['iso_code'],
-                'countryCode' => Country::getIsoById((int)Configuration::get('PS_COUNTRY_DEFAULT')),
                 'domainName' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
                 'displayName' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME'),
                 'applePaySessionUrl' => $this->context->link->getModuleLink($this->name, 'applepay')
@@ -1560,7 +1559,6 @@ class PayU extends PaymentModule
                 'totalPrice' => $totalPrice,
                 'env' => Configuration::get('PAYU_SANDBOX') ? 'TEST' : 'PRODUCTION',
                 'currency' => $currency['iso_code'],
-                'countryCode' => Country::getIsoById((int)Configuration::get('PS_COUNTRY_DEFAULT')),
                 'domainName' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
                 'displayName' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME'),
                 'applePaySessionUrl' => $this->context->link->getModuleLink($this->name, 'applepay'),

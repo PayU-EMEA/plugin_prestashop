@@ -6,7 +6,6 @@
     var posId = "{$posId}";
     var totalPrice = "{$totalPrice|escape:'javascript'}";
     var currency = "{$currency|escape:'javascript'}";
-    var applePayCountryCode = "{$countryCode|escape:'javascript'}";
     var applePaySessionUrl = "{$applePaySessionUrl|escape:'javascript'}";
     var domainName = "{$domainName|escape:'javascript'}";
     var displayName = "{$displayName|escape:'javascript'}";
