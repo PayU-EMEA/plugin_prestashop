@@ -4,7 +4,8 @@
 
 **If you have any questions or issues, feel free to contact our [technical support][ext13].**
 
-Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) supports PrestaShop versions 1.4 and 1.5, but is not developed anymore.
+Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) supports PrestaShop versions 1.4 and 1.5,
+but is not developed anymore.
 
 ## Table of Contents
 
@@ -19,12 +20,15 @@ Note: Plugin [version 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) s
     * [Card payment](#card-payment)
     * [Card payment - widget](#card-payment-widget)
     * [Google Pay](#google-pay)
+    * [Apple Pay](#apple-pay)
     * [Payment retry](#payment-retry)
     * [Promote credit payment methods](#promote-installments-and-buy-now-pay-later-payment-methods)
 * [Known issues](#known-issues)
 
 ## Features
-The PayU payments PrestaShop plugin adds the PayU payment option and enables you to process the following operations in your e-shop:
+
+The PayU payments PrestaShop plugin adds the PayU payment option and enables you to process the following operations in
+your e-shop:
 
 Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 
@@ -36,6 +40,7 @@ Plugin version 3.x supports PrestaShop versions 1.6 and 1.7
 | Displaying payment methods on Presta checkout summary page | :white_check_mark: |   :white_check_mark:   |
 | Card payment as separate method                            | :white_check_mark: |   :white_check_mark:   |
 | Card payment via widget on summary page                    | :white_check_mark: |   :white_check_mark:   |
+| Apple Pay as separate method                               | :white_check_mark: |   :white_check_mark:   |
 | Payment retry for cancelled payments                       | :white_check_mark: |   :white_check_mark:   |
 | Repayment                                                  | :white_check_mark: |   :white_check_mark:   |
 | Multi-currency support                                     | :white_check_mark: |   :white_check_mark:   |
@@ -57,14 +62,15 @@ More information on the features can be found in the [More on features](#more-on
 
 ## Prerequisites
 
-**Important:** This plugin works only with 'REST API' (Checkout) points of sale (POS).
-If you do not already have PayU merchant account, [**please register in Production**][ext4] or [**please register in Sandbox**][ext5]
+**Important:** This plugin works only with 'REST API' (Checkout) points of sale (POS). If you do not already have PayU
+merchant account, [**please register in Production**][ext4] or [**please register in Sandbox**][ext5]
 
 The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 
 ## Installation
 
 ### Option 1
+
 **recommended for users without FTP access to their PrestaShop installation**
 
 1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases][ext3]
@@ -74,6 +80,7 @@ The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 5. Load the plugin
 
 ### Option 2
+
 **recommended for users with FTP access to their PrestaShop installation**
 
 1. Download file `payu_prestashop_plugin_X.Y.Z.zip` from [releases][ext3]
@@ -106,7 +113,8 @@ The following PHP extensions are required: [cURL][ext1] and [hash][ext2].
 
 #### POS Parameters
 
-For each currency defined in Presta please configure the below parameters (separately for sandbox and production environment).
+For each currency defined in Presta please configure the below parameters (separately for sandbox and production
+environment).
 
 |       Parameter       |            Description             |
 |:---------------------:|:----------------------------------:|
@@ -116,52 +124,71 @@ For each currency defined in Presta please configure the below parameters (separ
 | OAuth - client_secret |      client_secret for OAuth       |
 
 ### Payment status mapping
+
 Mapping PayU payment statuses to PrestaShop order statuses
 
-| Name                                  | PayU payment status | Default value in Presta |
-|---------------------------------------|---------------------|-------------------------|
-| Started - status after placing order  |                     | PayU payment started    |
-| Complete status                       | `COMPLETED`         | Payment accepted        |
-| Canceled status                       | `CANCELED`          | PayU payment canceled   |
+| Name                                 | PayU payment status | Default value in Presta |
+|--------------------------------------|---------------------|-------------------------|
+| Started - status after placing order |                     | PayU payment started    |
+| Complete status                      | `COMPLETED`         | Payment accepted        |
+| Canceled status                      | `CANCELED`          | PayU payment canceled   |
 
-If the `Control of status changes` option is enabled for statuses "Complete" and "Canceled", it is possible to switch only from statuses "Pending" and "Waiting For Confirmation".
+If the `Control of status changes` option is enabled for statuses "Complete" and "Canceled", it is possible to switch
+only from statuses "Pending" and "Waiting For Confirmation".
 
 ## More on features
 
 ### Payment method order
- Applies only to  **Payment methods displayed on Presta checkout summary page** switched to `Yes`
- To set the order of the payment method icons enter payment method values separated by comma.
- [Payment method values][ext6].
+
+Applies only to **Payment methods displayed on Presta checkout summary page** switched to `Yes`
+To set the order of the payment method icons enter payment method values separated by comma.
+[Payment method values][ext6].
 
 ### Multi-currency
-POS in PayU system has only one currency defined. Therefore to accept payments in more currencies, POS for each currency has to be separately configured.
-Error ERROR_INCONSISTENT_CURRENCIES means an unsupported currency by POS. Contact with PayU service is required when approving the payment option in a different currency for the sandbox mode and a separate agreement for the production mode.
+
+POS in PayU system has only one currency defined. Therefore to accept payments in more currencies, POS for each currency
+has to be separately configured. Error ERROR_INCONSISTENT_CURRENCIES means an unsupported currency by POS. Contact with
+PayU service is required when approving the payment option in a different currency for the sandbox mode and a separate
+agreement for the production mode.
 
 ### Payment method display
-When the **Payment methods displayed on Presta checkout summary page** parameter is set to `Yes`, payment method icons will be displayed directly within the PrestaShop page when the 'PayU with PayU' button is clicked.
-The icons are displayed basing on POS configuration.  
+
+When the **Payment methods displayed on Presta checkout summary page** parameter is set to `Yes`, payment method icons
+will be displayed directly within the PrestaShop page when the 'PayU with PayU' button is clicked. The icons are
+displayed basing on POS configuration.
 
 ![payment_methods][img3]
 
-After payment method icon is selected and 'I confirm my order' button clicked, the buyer is redirected to bank or PayU card form.  
+After payment method icon is selected and 'I confirm my order' button clicked, the buyer is redirected to bank or PayU
+card form.
 
 ### Card payment
-If **Card payment as separate method** option is enabled, a method named `Pay by card` will be displayed in PrestaShop checkout process.
 
-If the **Payment methods displayed on PrestaShop checkout summary page** option is set to `Yes`, then `Pay by card` will be displayed only if card payments are configured on your POS ID. If this option is set to `No`, then `Pay by card` will always be visible, but may fail if card payments are not configured.
+If **Card payment as separate method** option is enabled, a method named `Pay by card` will be displayed in PrestaShop
+checkout process.
+
+If the **Payment methods displayed on PrestaShop checkout summary page** option is set to `Yes`, then `Pay by card` will
+be displayed only if card payments are configured on your POS ID. If this option is set to `No`, then `Pay by card` will
+always be visible, but may fail if card payments are not configured.
 
 ![payment_methods][img6]
 
 ### Card payment widget
-**IMPORTANT** - this feature will work only if "tokenization" is enabled on your POS ID in PayU. To enable it, please contact our [technical support][ext13].
 
-If **Card payment as separate method** and **Payment methods displayed on Presta checkout summary page** are set to `Yes` then the `Pay by card` option will render a widget to collect card data instead of redirection to PayU card form page.
+**IMPORTANT** - this feature will work only if "tokenization" is enabled on your POS ID in PayU. To enable it, please
+contact our [technical support][ext13].
+
+If **Card payment as separate method** and **Payment methods displayed on Presta checkout summary page** are set to
+`Yes` then the `Pay by card` option will render a widget to collect card data instead of redirection to PayU card form
+page.
 
 ![widget][img5]
 
 ### Google Pay
 
-If the `Enable Google Pay` option is enabled in the configuration, the `Pay with Google Pay` method will appear in the list of payment methods during the PrestaShop checkout process. After selecting this method, the buyer will be redirected to the Google Pay payment window.
+If the `Enable Google Pay` option is enabled in the configuration, the `Pay with Google Pay` method will appear in the
+list of payment methods during the PrestaShop checkout process. After selecting this method, the buyer will be
+redirected to the Google Pay payment window.
 
 ![google_pay][img7]
 
@@ -172,13 +199,37 @@ Parameters available for `Google Pay`:
 | Google Merchant Id   | Merchant identifier in Google. You need to verify your shop in Google, following the [instructions][ext14]. |
 | Google Merchant name | Merchant name is rendered in the payment sheet.                                                             |
 
+### Apple Pay
+
+If the `Enable Apple Pay` option is enabled, `Pay with Apple Pay` will appear as a separate payment method during
+checkout, provided that Apple Pay is enabled for the configured PayU POS. After the buyer confirms the order on a
+supported Apple device and browser, the Apple Pay payment sheet will open.
+
+![apple_pay][img8]
+
+Before enabling this option, register the checkout domain for Apple Pay by following
+the [PayU Apple Pay instructions][ext15]. The registered domain must exactly match the domain on which the checkout page
+is displayed; otherwise Apple will reject the payment request.
+
+Parameters available for `Apple Pay`:
+
+| Parameter    | Description                                                                                            |
+|--------------|--------------------------------------------------------------------------------------------------------|
+| Domain Name  | Checkout domain registered for Apple Pay. Enter the domain name only, without a protocol or path.      |
+| Display Name | Store name displayed in the Apple Pay payment sheet. It must contain no more than 64 UTF-8 characters. |
+
 ### Payment retry
 
 This feature enables the payer to create a new payment for the same order if the previous payment was not successful.
 
-To use this feature, you need to properly configure your POS in PayU by disabling "Automatic collection" (it is enabled by default). This option is available in the PayU panel. Go to Online payments, then My shops, and then POS. Automatic collection is configured for every payment type, but to disable all at once you can use the button at the very bottom, under the payment type list.
+To use this feature, you need to properly configure your POS in PayU by disabling "Automatic collection" (it is enabled
+by default). This option is available in the PayU panel. Go to Online payments, then My shops, and then POS. Automatic
+collection is configured for every payment type, but to disable all at once you can use the button at the very bottom,
+under the payment type list.
 
-Repayment allows creating multiple payments in PayU for a single PrestaShop order. The plugin will automatically collect the first successful payment, all others will be canceled. From the user point of view, repayment is possible:
+Repayment allows creating multiple payments in PayU for a single PrestaShop order. The plugin will automatically collect
+the first successful payment, all others will be canceled. From the user point of view, repayment is possible:
+
 * by clicking a link in the order confirmation email
 * in order details
 
@@ -187,16 +238,22 @@ Repayment allows creating multiple payments in PayU for a single PrestaShop orde
 All PayU payments created for a PrestaShop order are displayed on the Order screen in the PrestaShop admin panel.
 
 ### Promote installments and Buy Now Pay Later payment methods
-Plugin provides a functionality of promoting [installments and Buy Now Pay Later payment methods][ext7] (also called "credit payments") by separating individual payment methods in the checkout view and displaying a credit payments widget on product and listing pages, in the checkout, and cart views.
-Promoting installment and Buy Now Pay Later payment methods is configured in the "Credit payments" section of the plugin's configuration page. Separating PayU Installments and credit payments widget are enabled by default. 
-Support for given functionalities has been described in [Features](#features) section.
- > Presenting credit widgets is dependent on gateways availability for the given point of sale (POS).
- The plugin automatically checks whether "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron", "ppf" gateways are enabled.
- If a given credit payment method hasn't been enabled on the configured POS, it won't be presented in the checkout view or the credit payments widget even if it is enabled in the plugin's configuration.
+
+Plugin provides a functionality of promoting [installments and Buy Now Pay Later payment methods][ext7] (also called
+"credit payments") by separating individual payment methods in the checkout view and displaying a credit payments widget
+on product and listing pages, in the checkout, and cart views. Promoting installment and Buy Now Pay Later payment
+methods is configured in the "Credit payments" section of the plugin's configuration page. Separating PayU Installments
+and credit payments widget are enabled by default. Support for given functionalities has been described
+in [Features](#features) section.
+> Presenting credit widgets is dependent on gateways availability for the given point of sale (POS). The plugin
+> automatically checks whether "ai", "dpt", "dpcz", "dpts", "dpkl", "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron",
+> "ppf" gateways are enabled. If a given credit payment method hasn't been enabled on the configured POS, it won't be
+> presented in the checkout view or the credit payments widget even if it is enabled in the plugin's configuration.
 
 <img src="readme_images/credit-1-7-admin.png" width="400">
 
 #### Presentation of installments and Buy Now Pay Later payment methods depending on PrestaShop version
+
 | PrestaShop Version | Category                                   | How it looks                                                                        |
 |--------------------|--------------------------------------------|-------------------------------------------------------------------------------------|
 | 1.7                | Products listing                           | <img src="readme_images/credit-1-7-listing.png" width="100">                        |
@@ -211,25 +268,34 @@ Support for given functionalities has been described in [Features](#features) se
 | 1.6                | Products listing                           | <img src="readme_images/credit-1-6-listing.png" width="100">                        |
 | 1.6                | Product page                               | <img src="readme_images/credit-1-6-product.png" width="100">                        |
 
-    
 #### Presentation of the credit payments widget
-Depending on the available credit payment methods, hyperlinks appear in the above-mentioned site sections in one of three variants: "Installment from", "0% installment from" or "Pay later". After clicking such a hyperlink, the newest version of the "miniInstallment" component will appear on the screen. It comes with the [PayU Installments - best practices][ext12] package, which can be found in the [official documentation][ext8].
+
+Depending on the available credit payment methods, hyperlinks appear in the above-mentioned site sections in one of
+three variants: "Installment from", "0% installment from" or "Pay later". After clicking such a hyperlink, the newest
+version of the "miniInstallment" component will appear on the screen. It comes with
+the [PayU Installments - best practices][ext12] package, which can be found in the [official documentation][ext8].
 
 The credit payments widget ("miniInstallment" component) looks as below:
 
 <img src="readme_images/credit-installment-widget.png" width="300">
 
-Since version 3.3.0 it's possible to exclude the specified credit payment methods from the widget using the "Exclude credit payment methods from widget" field in the plugin's configuration. For example, filling the field with these values: dpp,dpkl,dpt will result in PayPo, Klarna, and Twisto disappearing from the widget:
+Since version 3.3.0 it's possible to exclude the specified credit payment methods from the widget using the "Exclude
+credit payment methods from widget" field in the plugin's configuration. For example, filling the field with these
+values: dpp,dpkl,dpt will result in PayPo, Klarna, and Twisto disappearing from the widget:
 
 <img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
 ## Known issues
+
 ### PrestaShop and OPC modules
-Due to the fact that OPC modules build their own checkout page, some options (e.g. `Card payment as separate method`, `BLIK payment as separate method`, and separation of installment methods) may not work.
+
+Due to the fact that OPC modules build their own checkout page, some options (e.g. `Card payment as separate method`,
+`BLIK payment as separate method`, and separation of installment methods) may not work.
 
 <!--LINKS-->
 
 <!--external links:-->
+
 [ext0]: README.PL.md
 [ext1]: http://php.net/manual/en/book.curl.php
 [ext2]: http://php.net/manual/en/book.hash.php
@@ -243,10 +309,13 @@ Due to the fact that OPC modules build their own checkout page, some options (e.
 [ext12]: https://developers.payu.com/en/installments.html#best_practices_title
 [ext13]: https://www.payu.pl/en/help
 [ext14]: https://developers.google.com/pay/api/web/guides/test-and-deploy/publish-your-integration#create-your-profile
+[ext15]: https://developers.payu.com/europe/docs/payment-solutions/cards/digital-wallets/apple-pay/
 
 <!--images:-->
+
 [img3]: readme_images/bramki_platnosci.png
 [img4]: readme_images/ponow_platnosc.png
 [img5]: readme_images/widget.png
 [img6]: readme_images/separate_card.png
 [img7]: readme_images/google-pay.png
+[img8]: readme_images/apple-pay.png
