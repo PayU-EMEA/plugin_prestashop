@@ -20,7 +20,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
         $payu = new PayU();
         $currency = $this->extractCurrencyCode($data);
 
-        if (!$payu->initializelog($currency)) {
+        if (!$payu->initializeOpenPayU($currency)) {
             header('HTTP/1.1 400 Bad Request', true, 400);
             die('OPU not properly configured for currency: ' . $currency);
         }

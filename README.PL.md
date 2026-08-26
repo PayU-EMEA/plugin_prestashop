@@ -323,9 +323,9 @@ ratalnych. Problemy należy zgłaszać do twórców modułu OPC.
 
 <!--images:-->
 
-[img3]: readme_images/bramki_platnosci.png
-[img4]: readme_images/ponow_platnosc.png
-[img5]: readme_images/widget.png
-[img6]: readme_images/separate_card.png
-[img7]: readme_images/google-pay.png
-[img8]: readme_images/apple-pay.png
+[img3]: readme_images/pl/bramki_platnosci.png
+[img4]: readme_images/pl/ponow_platnosc.png
+[img5]: readme_images/pl/widget.png
+[img6]: readme_images/pl/separate_card.png
+[img7]: readme_images/pl/google-pay.png
+[img8]: readme_images/pl/apple-pay.png

@@ -2,12 +2,12 @@
 
 class PayuApplepayModuleFrontController extends ModuleFrontController
 {
-
-    public function initContent()
+    public function __construct()
     {
+        parent::__construct();
+
         // Tell PrestaShop not to load header, footer, or layout templates
         $this->ajax = true;
-        parent::initContent();
     }
 
     public function displayAjax()

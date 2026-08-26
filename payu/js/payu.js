@@ -217,62 +217,6 @@ function doubleClickPrevent(object) {
             activatePaymentButton();
         });
 
-
-        // Polyfill from https://developer.mozilla.org/pl/docs/Web/JavaScript/Referencje/Obiekty/Object/assign
-        "function" != typeof Object.assign && (Object.assign = function (n, t) {
-            "use strict";
-            if (null == n) throw new TypeError("Cannot convert undefined or null to object");
-            for (var r = Object(n), e = 1; e < arguments.length; e++) {
-                var o = arguments[e];
-                if (null != o) for (var c in o) Object.prototype.hasOwnProperty.call(o, c) && (r[c] = o[c])
-            }
-            return r
-        });
-
-        // Polyfill Array.from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#polyfill
-        Array.from || (Array.from = function () {
-            var r;
-            try {
-                r = Symbol.iterator ? Symbol.iterator : "Symbol(Symbol.iterator)"
-            } catch (t) {
-                r = "Symbol(Symbol.iterator)"
-            }
-            var t = Object.prototype.toString, n = function (r) {
-                return "function" == typeof r || "[object Function]" === t.call(r)
-            }, o = Math.pow(2, 53) - 1, e = function (r) {
-                var t = function (r) {
-                    var t = Number(r);
-                    return isNaN(t) ? 0 : 0 !== t && isFinite(t) ? (t > 0 ? 1 : -1) * Math.floor(Math.abs(t)) : t
-                }(r);
-                return Math.min(Math.max(t, 0), o)
-            };
-            return function (t) {
-                var o = Object(t), a = n(o[r]);
-                if (null == t && !a) throw new TypeError("Array.from requires an array-like object or iterator - not null or undefined");
-                var i, u = arguments.length > 1 ? arguments[1] : void 0;
-                if (void 0 !== u) {
-                    if (!n(u)) throw new TypeError("Array.from: when provided, the second argument must be a function");
-                    arguments.length > 2 && (i = arguments[2])
-                }
-                var f = e(o.length);
-                return function (r, t, n, o, e, a) {
-                    for (var i = 0; i < n || e;) {
-                        var u = o(i), f = e ? u.value : u;
-                        if (e && u.done) return t;
-                        t[i] = a ? void 0 === r ? a(f, i) : a.call(r, f, i) : f, i += 1
-                    }
-                    if (e) throw new TypeError("Array.from: provided arrayLike or iterator has length more then 2 ** 52 - 1");
-                    return t.length = n, t
-                }(i, n(this) ? Object(new this(f)) : new Array(f), f, function (t, n) {
-                    var o = t && n[r]();
-                    return function (r) {
-                        return t ? o.next() : n[r]
-                    }
-                }(a, o), a, u)
-            }
-        }());
-
-
         init_sf();
         $('body').on('click', '.history_detail a', function () {
             setTimeout(function () {

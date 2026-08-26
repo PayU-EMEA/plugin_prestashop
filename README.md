@@ -313,9 +313,9 @@ Due to the fact that OPC modules build their own checkout page, some options (e.
 
 <!--images:-->
 
-[img3]: readme_images/bramki_platnosci.png
-[img4]: readme_images/ponow_platnosc.png
-[img5]: readme_images/widget.png
-[img6]: readme_images/separate_card.png
-[img7]: readme_images/google-pay.png
-[img8]: readme_images/apple-pay.png
+[img3]: readme_images/en/bramki_platnosci.png
+[img4]: readme_images/en/ponow_platnosc.png
+[img5]: readme_images/en/widget.png
+[img6]: readme_images/en/separate_card.png
+[img7]: readme_images/en/google-pay.png
+[img8]: readme_images/en/apple-pay.png
