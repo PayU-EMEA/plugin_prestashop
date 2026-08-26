@@ -2,7 +2,22 @@ var openpayu = openpayu || {};
 openpayu.options = openpayu.options || {};
 
 $(document).ready(function () {
-    $('#payuRetryPayment').insertAfter($('.info-order').first());
+    function moveRetryPayment() {
+        var $retryPayment = $('#payuRetryPayment');
+        var $infoOrder = $('.info-order').first();
+
+        if ($retryPayment.length > 0 && $infoOrder.length > 0 && !$infoOrder.next().is($retryPayment)) {
+            $retryPayment.insertAfter($infoOrder);
+        }
+    }
+
+    var orderDetailObserver = new MutationObserver(moveRetryPayment);
+    orderDetailObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+    moveRetryPayment();
+
     $('body').on('click', '.payu-read-more', function () {
         $(this).hide();
         var elementToShow = $(this).data('more');

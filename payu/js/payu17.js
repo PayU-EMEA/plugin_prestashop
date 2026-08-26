@@ -2,7 +2,16 @@ var openpayu = openpayu || {};
 openpayu.options = openpayu.options || {};
 
 $(document).ready(function () {
-    $('#payuRetryPayment17').insertBefore($('#order-history'));
+    var $orderHistory = $('#order-history');
+    var $retryPayment = $('#payuRetryPayment17');
+
+    if ($orderHistory.length > 0) {
+        $retryPayment.insertBefore($orderHistory);
+    } else {
+        var $retryPaymentTarget = $('.order-status').first();
+        $retryPayment.insertBefore($retryPaymentTarget);
+        $retryPayment.after('<hr class="order-separator"/>');
+    }
 
     $('body').on('click', '.payu-read-more', function () {
         $(this).hide();
