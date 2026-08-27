@@ -430,12 +430,9 @@ $(document).ready(function () {
                 applePaySession.abort();
             }
 
-            applePaySession.onvalidatemerchant = async (event) => {
+            applePaySession.onvalidatemerchant = async () => {
                 try {
-                    const url = new URL(applePaySessionUrl);
-                    url.searchParams.set('ajax', '1');
-
-                    let sessionResponse = await fetch(url, {
+                    let sessionResponse = await fetch(applePaySessionUrl, {
                         headers: {'Content-Type': 'application/json'},
                     });
 

@@ -15,7 +15,7 @@ class OpenPayU_ApplePay extends OpenPayU
      * @throws OpenPayU_Exception
      * @throws OpenPayU_Exception_Configuration
      */
-    public static function createSession(string $domain, string $displayName): OpenPayU_Result
+    public static function createSession($domain, $displayName): OpenPayU_Result
     {
         try {
             $authType = self::getAuth();

@@ -1324,7 +1324,7 @@ class PayU extends PaymentModule
             $paymentOptions[] = $googlePayPaymentOption;
         }
 
-        if ($this->shouldShowApplePay($totalPrice)) {
+        if (Configuration::get('PAYU_SEPARATE_APPLE_PAY') === '1' && $this->isApplePayAvailable($totalPrice)) {
             $this->smarty->assign([
                 'conditionTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/conditions17.tpl',
                 'applePayTemplate' => _PS_MODULE_DIR_ . 'payu/views/templates/front/applePay17.tpl',
@@ -1530,7 +1530,7 @@ class PayU extends PaymentModule
                 'showWidget' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' && $this->isCardAvailable($params['cart']->getOrderTotal()),
                 'showBlikPayment' => Configuration::get('PAYU_SEPARATE_BLIK_PAYMENT') === '1' && $this->isBlikAvailable($params['cart']->getOrderTotal()),
                 'showGooglePayPayment' => Configuration::get('PAYU_SEPARATE_GOOGLE_PAY') === '1' && $this->isGooglePayAvailable($params['cart']->getOrderTotal()),
-                'showApplePayPayment' => $this->shouldShowApplePay($totalPrice),
+                'showApplePayPayment' => Configuration::get('PAYU_SEPARATE_APPLE_PAY') === '1' && $this->isApplePayAvailable($params['cart']->getOrderTotal()),
                 'actionUrl' => $this->context->link->getModuleLink('payu', 'payment', ['payMethod' => 'pbl']),
                 'cardActionUrl' => (Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1'
                     ? $this->context->link->getModuleLink($this->name, 'payment', ['payMethod' => 'card'])
@@ -3106,28 +3106,6 @@ class PayU extends PaymentModule
             $this->getLanguage(),
             $amount,
             $this->getVersion(), true);
-    }
-
-    private function shouldShowApplePay($amount)
-    {
-        if (Configuration::get('PAYU_SEPARATE_APPLE_PAY') !== '1') {
-            return false;
-        }
-
-        $available = $this->isApplePayAvailable($amount);
-        if (!$available) {
-            $currency = Currency::getCurrency($this->context->cart->id_currency);
-            SimplePayuLogger::addLog(
-                'error',
-                __FUNCTION__,
-                'Apple Pay is enabled in the module, but PayU did not return payment method jp as ENABLED. '
-                . 'POS: ' . OpenPayU_Configuration::getMerchantPosId()
-                . ', currency: ' . (isset($currency['iso_code']) ? $currency['iso_code'] : 'unknown')
-                . ', amount: ' . $amount
-            );
-        }
-
-        return $available;
     }
 
     /**

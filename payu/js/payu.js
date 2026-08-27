@@ -421,10 +421,7 @@ function doubleClickPrevent(object) {
             };
 
             applePaySession.onvalidatemerchant = function () {
-                var url = new URL(applePaySessionUrl);
-                url.searchParams.set('ajax', '1');
-
-                fetch(url.toString(), {
+                fetch(applePaySessionUrl, {
                     headers: {'Content-Type': 'application/json'},
                 })
                     .then(function (sessionResponse) {
