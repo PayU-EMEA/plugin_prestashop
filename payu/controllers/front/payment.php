@@ -43,10 +43,9 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
 
         if (in_array($payMethod, array_merge(['c', 'blik'], CreditPaymentMethod::getAll()))) {
             $this->pay($payMethod, [], $payMethod);
-        }
-        elseif ($payMethod === 'transfer') {
+        } elseif ($payMethod === 'transfer') {
             $paymentGateway = Tools::getValue('transferGateway');
-            $paymentId = Tools::getValue($this->hasRetryPayment ? 'payment-option': 'payment_id');
+            $paymentId = Tools::getValue($this->hasRetryPayment ? 'payment-option' : 'payment_id');
             if ($paymentGateway) {
                 $this->pay($paymentGateway, [], 'pbl / ' . $paymentGateway);
             } else {
@@ -72,8 +71,7 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     );
                 }
             }
-        }
-        elseif ($payMethod === 'card') {
+        } elseif ($payMethod === 'card') {
             $cardToken = Tools::getValue('cardToken');
             $paymentId = Tools::getValue('payment_id');
 
@@ -103,14 +101,13 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     );
                 }
             }
-        }
-        elseif ($payMethod === 'ap') {
+        } elseif ($payMethod === 'ap') {
             $googlePayToken = Tools::getValue('payuGoogleToken');
             $paymentId = Tools::getValue('payment_id');
 
             if ($googlePayToken) {
                 $this->pay($payMethod, ['googlePayToken' => $googlePayToken], $payMethod);
-            } else{
+            } else {
                 $this->payuNotification[$payMethod] = $this->module->l('Google Pay token is empty', 'payment');
 
                 if ($this->hasRetryPayment) {
@@ -128,7 +125,30 @@ class PayUPaymentModuleFrontController extends ModuleFrontController
                     );
                 }
             }
-        } else  {
+        } elseif ($payMethod === 'jp') {
+            $token = Tools::getValue('payuApplePayToken');
+            if ($token) {
+                $this->pay($payMethod, ['payuApplePayToken' => $token], $payMethod);
+            } else {
+                $this->payuNotification[$payMethod] = $this->module->l('Apple Pay token is empty', 'payment');
+
+                if ($this->hasRetryPayment) {
+                    $this->payuRedirectWithNotifications($this->getRetryPaymentReturnUrl());
+                } else {
+                    $paymentId = Tools::getValue('payment_id');
+                    $this->payuRedirectWithNotifications(
+                        $this->context->link->getPageLink('order',
+                            null,
+                            null,
+                            [
+                                'select_payment_option' => $paymentId
+                            ]
+
+                        )
+                    );
+                }
+            }
+        } else {
             $this->pay();
         }
 

@@ -2,7 +2,10 @@
 
 class OauthCacheFile implements OauthCacheInterface
 {
-    private ?string $directory;
+    /**
+     * @var string
+     */
+    private $directory;
 
     /**
      * @throws OpenPayU_Exception_Configuration

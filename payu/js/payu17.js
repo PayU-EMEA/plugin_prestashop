@@ -2,7 +2,16 @@ var openpayu = openpayu || {};
 openpayu.options = openpayu.options || {};
 
 $(document).ready(function () {
-    $('#payuRetryPayment17').insertBefore($('#order-history'));
+    var $orderHistory = $('#order-history');
+    var $retryPayment = $('#payuRetryPayment17');
+
+    if ($orderHistory.length > 0) {
+        $retryPayment.insertBefore($orderHistory);
+    } else {
+        var $retryPaymentTarget = $('.order-status').first();
+        $retryPayment.insertBefore($retryPaymentTarget);
+        $retryPayment.after('<hr class="order-separator"/>');
+    }
 
     $('body').on('click', '.payu-read-more', function () {
         $(this).hide();
@@ -32,6 +41,7 @@ $(document).ready(function () {
 
                 submitButton.removeEventListener('click', validateBeforeSubmitGooglePay);
                 submitButton.removeEventListener('click', validateBeforeSubmitCardForm);
+                submitButton.removeEventListener('click', validateBeforeSubmitApplePay);
 
                 var paymentElementId = ev.target.id;
                 var paymentId = paymentElementId.replace('payment-option-', '');
@@ -58,7 +68,7 @@ $(document).ready(function () {
                 }
 
                 if (payment === 'transfer') {
-                    if (currentGateway !== null){
+                    if (currentGateway !== null) {
                         currentGateway.value = '';
                     }
 
@@ -76,6 +86,11 @@ $(document).ready(function () {
                 } else if (payment === 'ap') {
                     document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"]')
                         .addEventListener('click', validateBeforeSubmitGooglePay);
+
+                    var paymentIdElement = poaiElement?.querySelector('input[name=payment_id]');
+                } else if (payment === "jp") {
+                    document.querySelector('#payment-confirmation .btn, .repayment-options input[type="submit"]')
+                        .addEventListener('click', validateBeforeSubmitApplePay);
 
                     var paymentIdElement = poaiElement?.querySelector('input[name=payment_id]');
                 }
@@ -97,8 +112,18 @@ $(document).ready(function () {
             return false;
         }
 
+        function validateBeforeSubmitApplePay(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+
+            payuApplePayValidate();
+
+            return false;
+        }
+
         function validateBeforeSubmitCardForm(e) {
-            if($('.pay-card-init').is(':visible')) {
+            if ($('.pay-card-init').is(':visible')) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -120,9 +145,9 @@ $(document).ready(function () {
                 el.classList.remove('payMethodActive');
             });
 
-	        if (currentGateway !== null) {
-		        currentGateway.value = '';
-	        }
+            if (currentGateway !== null) {
+                currentGateway.value = '';
+            }
         }
 
         if (transferGateways.length > 0) {
@@ -135,7 +160,7 @@ $(document).ready(function () {
                         var gatewayItem = document.querySelector('#payMethodContainer-' + gatewayValue);
                         gatewayItem.classList.add('payMethodActive');
 
-	                    if (gatewayValue !== null && currentGateway !== null) {
+                        if (gatewayValue !== null && currentGateway !== null) {
                             currentGateway.value = gatewayValue;
                         }
 
@@ -150,125 +175,70 @@ $(document).ready(function () {
             });
         }
 
-        // Polyfill from https://developer.mozilla.org/pl/docs/Web/JavaScript/Referencje/Obiekty/Object/assign
-        "function" != typeof Object.assign && (Object.assign = function (n, t) {
-            "use strict";
-            if (null == n) throw new TypeError("Cannot convert undefined or null to object");
-            for (var r = Object(n), e = 1; e < arguments.length; e++) {
-                var o = arguments[e];
-                if (null != o) for (var c in o) Object.prototype.hasOwnProperty.call(o, c) && (r[c] = o[c])
-            }
-            return r
-        });
-
-        // Polyfill Array.from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from#polyfill
-        Array.from || (Array.from = function () {
-            var r;
-            try {
-                r = Symbol.iterator ? Symbol.iterator : "Symbol(Symbol.iterator)"
-            } catch (t) {
-                r = "Symbol(Symbol.iterator)"
-            }
-            var t = Object.prototype.toString, n = function (r) {
-                return "function" == typeof r || "[object Function]" === t.call(r)
-            }, o = Math.pow(2, 53) - 1, e = function (r) {
-                var t = function (r) {
-                    var t = Number(r);
-                    return isNaN(t) ? 0 : 0 !== t && isFinite(t) ? (t > 0 ? 1 : -1) * Math.floor(Math.abs(t)) : t
-                }(r);
-                return Math.min(Math.max(t, 0), o)
-            };
-            return function (t) {
-                var o = Object(t), a = n(o[r]);
-                if (null == t && !a) throw new TypeError("Array.from requires an array-like object or iterator - not null or undefined");
-                var i, u = arguments.length > 1 ? arguments[1] : void 0;
-                if (void 0 !== u) {
-                    if (!n(u)) throw new TypeError("Array.from: when provided, the second argument must be a function");
-                    arguments.length > 2 && (i = arguments[2])
+        if (payuSFEnabled === true && typeof PayU !== 'undefined') {
+            var secureFormOptions = {
+                elementFormNumber: '#payu-card-number',
+                elementFormDate: '#payu-card-date',
+                elementFormCvv: '#payu-card-cvv',
+                element: '#secure-form',
+                profile: 'widthGt300',
+                profiles: {
+                    widthLt290: {
+                        cardIcon: false,
+                        style: {
+                            basic: {
+                                fontSize: '14px',
+                            }
+                        },
+                    },
+                    widthLt340: {
+                        cardIcon: true,
+                        style: {
+                            basic: {
+                                fontSize: '14px',
+                            }
+                        },
+                    },
+                    widthGt340: {
+                        cardIcon: true,
+                        style: {
+                            basic: {
+                                fontSize: '18px',
+                            }
+                        },
+                    }
+                },
+                config: {
+                    cardIcon: true,
+                    placeholder: {
+                        number: '',
+                        cvv: ''
+                    },
+                    style: {
+                        basic: {
+                            fontSize: '18px',
+                        }
+                    },
+                    lang: payuLangId
                 }
-                var f = e(o.length);
-                return function (r, t, n, o, e, a) {
-                    for (var i = 0; i < n || e;) {
-                        var u = o(i), f = e ? u.value : u;
-                        if (e && u.done) return t;
-                        t[i] = a ? void 0 === r ? a(f, i) : a.call(r, f, i) : f, i += 1
-                    }
-                    if (e) throw new TypeError("Array.from: provided arrayLike or iterator has length more then 2 ** 52 - 1");
-                    return t.length = n, t
-                }(i, n(this) ? Object(new this(f)) : new Array(f), f, function (t, n) {
-                    var o = t && n[r]();
-                    return function (r) {
-                        return t ? o.next() : n[r]
-                    }
-                }(a, o), a, u)
-            }
-        }());
+            };
 
+            secureFormOptions.profile = calculateProfile();
+            secureFormOptions.config = Object.assign({}, secureFormOptions.config, secureFormOptions.profiles[secureFormOptions.profile]);
 
-		if(payuSFEnabled === true && typeof PayU !== 'undefined') {
-		    var secureFormOptions = {
-			    elementFormNumber: '#payu-card-number',
-			    elementFormDate: '#payu-card-date',
-			    elementFormCvv: '#payu-card-cvv',
-			    element: '#secure-form',
-			    profile: 'widthGt300',
-			    profiles: {
-				    widthLt290: {
-					    cardIcon: false,
-					    style: {
-						    basic: {
-							    fontSize: '14px',
-						    }
-					    },
-				    },
-				    widthLt340: {
-					    cardIcon: true,
-					    style: {
-						    basic: {
-							    fontSize: '14px',
-						    }
-					    },
-				    },
-				    widthGt340: {
-					    cardIcon: true,
-					    style: {
-						    basic: {
-							    fontSize: '18px',
-						    }
-					    },
-				    }
-			    },
-			    config: {
-				    cardIcon: true,
-				    placeholder: {
-					    number: '',
-					    cvv: ''
-				    },
-				    style: {
-					    basic: {
-						    fontSize: '18px',
-					    }
-				    },
-				    lang: payuLangId
-			    }
-		    };
+            var payu = PayU(payuPosId, {dev: true});
 
-		    secureFormOptions.profile = calculateProfile();
-		    secureFormOptions.config = Object.assign({}, secureFormOptions.config, secureFormOptions.profiles[secureFormOptions.profile]);
+            var secureForms = payu.secureForms();
+            var secureFormNumber = secureForms.add('number', secureFormOptions.config);
+            secureFormNumber.render(secureFormOptions.elementFormNumber);
+            var secureFormDate = secureForms.add('date', secureFormOptions.config);
+            secureFormDate.render(secureFormOptions.elementFormDate);
+            var secureFormCvv = secureForms.add('cvv', secureFormOptions.config);
+            secureFormCvv.render(secureFormOptions.elementFormCvv);
+            window.addEventListener('resize', secureFormResize);
 
-		    var payu = PayU(payuPosId, {dev: true});
-
-		    var secureForms = payu.secureForms();
-		    var secureFormNumber = secureForms.add('number', secureFormOptions.config);
-		    secureFormNumber.render(secureFormOptions.elementFormNumber);
-		    var secureFormDate = secureForms.add('date', secureFormOptions.config);
-		    secureFormDate.render(secureFormOptions.elementFormDate);
-		    var secureFormCvv = secureForms.add('cvv', secureFormOptions.config);
-		    secureFormCvv.render(secureFormOptions.elementFormCvv);
-		    window.addEventListener('resize', secureFormResize);
-
-		    var cardTokenInput = document.getElementById('card-token');
-		}
+            var cardTokenInput = document.getElementById('card-token');
+        }
 
         function payuCardValidate() {
 
@@ -305,7 +275,7 @@ $(document).ready(function () {
 
                     } else {
                         var errorMessage = errorTitle;
-                        if($('#payment-confirmation .btn').hasClass('disabled-by-payu')) {
+                        if ($('#payment-confirmation .btn').hasClass('disabled-by-payu')) {
                             $('#payment-confirmation .btn')
                                 .removeAttr('disabled', 'disabled')
                                 .removeClass('disabled');
@@ -326,7 +296,7 @@ $(document).ready(function () {
             }
         }
 
-        function payuGooglePayValidate(){
+        function payuGooglePayValidate() {
             hideMessageBoxGooglePay();
             if (!window.google?.payments?.api?.PaymentsClient) {
                 showMessageBoxGooglePay(googlePayErrorMessage);
@@ -361,21 +331,21 @@ $(document).ready(function () {
                         merchantId,
                     },
                     allowedPaymentMethods: [
-                    {
-                        type: 'CARD',
-                        parameters: {
-                            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
-                            allowedCardNetworks: ['MASTERCARD', 'VISA'],
-                            billingAddressRequired: false
-                        },
-                        tokenizationSpecification: {
-                            type: 'PAYMENT_GATEWAY',
+                        {
+                            type: 'CARD',
                             parameters: {
-                                gateway: 'payu',
-                                gatewayMerchantId: posId
+                                allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                                allowedCardNetworks: ['MASTERCARD', 'VISA'],
+                                billingAddressRequired: false
+                            },
+                            tokenizationSpecification: {
+                                type: 'PAYMENT_GATEWAY',
+                                parameters: {
+                                    gateway: 'payu',
+                                    gatewayMerchantId: posId
+                                }
                             }
                         }
-                    }
                     ],
                     transactionInfo: {
                         totalPriceStatus: 'FINAL',
@@ -386,9 +356,9 @@ $(document).ready(function () {
                 }
 
                 paymentsClient.isReadyToPay(isReadyToPayRequest)
-                    .then(function(response) {
+                    .then(function (response) {
                         if (response.result) {
-                            paymentsClient.loadPaymentData(paymentDataRequest).then(function(paymentData){
+                            paymentsClient.loadPaymentData(paymentDataRequest).then(function (paymentData) {
                                 paymentToken = paymentData.paymentMethodData.tokenizationData.token;
                                 googleToken.value = btoa(paymentToken);
                                 if ($('.repayment-options').length > 0) {
@@ -396,19 +366,102 @@ $(document).ready(function () {
                                 } else {
                                     document.getElementById('payu-google-pay-form').submit();
                                 }
-                            }).catch(function(err){
+                            }).catch(function (err) {
                                 console.error(err);
                             });
                         }
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                         console.error(err);
                         showMessageBoxGooglePay(googlePayErrorMessage);
                     });
 
                 return false;
+            } else return true;
+        }
+
+        function payuApplePayValidate() {
+            const APPLE_PAY_API_MIN_VERSION = 1;
+            const APPLE_PAY_API_MAX_VERSION = 14;
+
+            hideMessageBoxApplePay();
+
+            if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
+                showMessageBoxApplePay(applePayErrorMessage);
+                return false;
             }
-            else return true;
+
+            let applePayToken = document.getElementById('payu-apple-token');
+            if (applePayToken.value !== '') {
+                return true;
+            }
+
+            let applePayApiVersion = APPLE_PAY_API_MIN_VERSION;
+            for (let i = APPLE_PAY_API_MAX_VERSION; i >= APPLE_PAY_API_MIN_VERSION; i--) {
+                if (ApplePaySession.supportsVersion(i)) {
+                    applePayApiVersion = i;
+                    break;
+                }
+            }
+
+            const applePayPaymentRequest = {
+                countryCode: 'PL',
+                currencyCode: currency,
+                total: {
+                    type: 'final',
+                    label: displayName,
+                    amount: totalPrice
+                },
+                supportedNetworks: ['visa', 'masterCard'],
+                merchantCapabilities: [
+                    'supports3DS',
+                    'supportsCredit',
+                    'supportsDebit'
+                ]
+            };
+
+            const applePaySession = new ApplePaySession(
+                applePayApiVersion,
+                applePayPaymentRequest
+            );
+
+            const abortSession = () => {
+                showMessageBoxApplePay(applePayErrorMessage);
+                applePaySession.abort();
+            }
+
+            applePaySession.onvalidatemerchant = async () => {
+                try {
+                    let sessionResponse = await fetch(applePaySessionUrl, {
+                        headers: {'Content-Type': 'application/json'},
+                    });
+
+                    if (sessionResponse.ok) {
+                        const session = await sessionResponse.json();
+                        applePaySession.completeMerchantValidation(session);
+                    } else {
+                        abortSession();
+                    }
+                } catch (error) {
+                    console.error("PayU Apple Pay session validation failed:", error);
+                    abortSession()
+                }
+            }
+
+            applePaySession.onpaymentauthorized = (event) => {
+                applePaySession.completePayment(ApplePaySession.STATUS_SUCCESS);
+                applePayToken.value = btoa(
+                    JSON.stringify(event.payment.token.paymentData)
+                );
+                if ($('.repayment-options').length > 0) {
+                    $('.repayment-options').submit();
+                } else {
+                    document.getElementById('payu-apple-pay-form').submit();
+                }
+            };
+
+            applePaySession.begin();
+            return false;
         }
 
         function calculateProfile() {
@@ -437,23 +490,35 @@ $(document).ready(function () {
             responseBox.innerHTML = message;
             responseBox.style.display = '';
         }
+
         function hideMessageBox(elementId) {
             var responseBox = document.getElementById(elementId);
             responseBox.innerHTML = '';
             responseBox.style.display = 'none';
         }
+
         function showMessageBoxSecureForm(message) {
             showMessageBox('response-box-secure-form', message);
         }
+
         function hideMessageBoxSecureForm() {
             hideMessageBox('response-box-secure-form');
         }
+
         function showMessageBoxGooglePay(message) {
             showMessageBox('response-box-google-pay', message);
         }
-        function hideMessageBoxGooglePay(){
+
+        function hideMessageBoxGooglePay() {
             hideMessageBox('response-box-google-pay');
+        }
+
+        function showMessageBoxApplePay(message) {
+            showMessageBox('response-box-apple-pay', message);
+        }
+
+        function hideMessageBoxApplePay() {
+            hideMessageBox('response-box-apple-pay');
         }
     })
 })();
-
