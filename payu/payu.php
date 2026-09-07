@@ -2091,18 +2091,24 @@ class PayU extends PaymentModule
                 $ocreq['payMethods'] = [
                     'payMethod' => [
                         'type' => 'PBL',
-                        'value' => 'ap',
-                        'authorizationCode' => $parameters['googlePayToken']
+                        'value' => 'ap'
                     ]
                 ];
+
+                if (isset($parameters['googlePayToken'])) {
+                    $ocreq['payMethods']['payMethod']['authorizationCode'] = $parameters['googlePayToken'];
+                }
             } elseif ($payMethod === 'jp') {
                 $ocreq['payMethods'] = [
                     'payMethod' => [
                         'type' => 'PBL',
-                        'value' => 'jp',
-                        'authorizationCode' => $parameters['payuApplePayToken']
+                        'value' => 'jp'
                     ]
                 ];
+
+                if (isset($parameters['payuApplePayToken'])) {
+                    $ocreq['payMethods']['payMethod']['authorizationCode'] = $parameters['payuApplePayToken'];
+                }
             } else {
                 $ocreq['payMethods'] = [
                     'payMethod' => [

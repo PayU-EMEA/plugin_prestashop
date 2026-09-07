@@ -34,6 +34,14 @@
 				    pay-methods__hide
 			    {/if}
 
+				{if $separateGooglePay && $payment->value == 'ap'}
+                    pay-methods__hide
+                {/if}
+
+				{if $separateApplePay && $payment->value == 'jp'}
+                    pay-methods__hide
+                {/if}
+
 			    {if $separateInstallments && $payment->value == CreditPaymentMethod::INSTALLMENT}
 				    pay-methods__hide
 			    {/if}
@@ -99,7 +107,9 @@
             return;
         }
 
-        if (applePayAvailable) {
+        const isHidden = applePayContainer.classList.contains("pay-methods__hide");
+
+        if (applePayAvailable && !isHidden) {
             applePayContainer.style.display = 'block';
         } else {
             applePayContainer.parentNode.removeChild(applePayContainer);

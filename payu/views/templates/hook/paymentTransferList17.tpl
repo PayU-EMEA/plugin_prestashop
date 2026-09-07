@@ -92,7 +92,8 @@
             return;
         }
 
-        if (applePayAvailable) {
+        const isHidden = applePayContainer.classList.contains("pay-methods__hide");
+        if (applePayAvailable && !isHidden) {
             applePayContainer.style.display = 'block';
         } else {
             applePayContainer.parentNode.removeChild(applePayContainer);
