@@ -2,7 +2,10 @@
 
 class OauthCacheMemcached implements OauthCacheInterface
 {
-    private \Memcached $memcached;
+    /**
+     * @var \Memcached
+     */
+    private $memcached;
 
     /**
      * @throws OpenPayU_Exception_Configuration

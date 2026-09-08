@@ -18,6 +18,7 @@
 	<form method="post" action="{$payuPayAction|escape:'html'}" class="repayment-options has-grid-{$grid} {if $has_sf} has-sf {/if} ">
 		<input type="hidden" name="id_order" value="{$params['id_order']}" />
 		<input type="hidden" name="order_reference" value="{$params['order_reference']}" />
+		<input type="hidden" name="payMethod" value="" />
 		{foreach $gateways as $gateway}
 			<div>
 				<div id="payment-option-{$gateway@iteration}-container" class="clearfix repayment-single">
@@ -40,9 +41,7 @@
 			{/if}
 		{/foreach}
 
-		<input type="hidden" name="payMethod" value="" />
 		<input type="hidden" name="transferGateway" />
 		<input type="submit" value="{l s='Pay with PayU' mod='payu'}" />
 	</form>
 </div>
-

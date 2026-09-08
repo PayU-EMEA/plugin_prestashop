@@ -32,6 +32,12 @@ p.payment_module a.payu_google_pay {
     background: url('../img/payu_google_pay.svg') 15px 33px no-repeat #fbfbfb;
     padding: 33px 40px 34px 80px;
 }
+
+p.payment_module a.payu_apple_pay {
+    background: url('../img/payu_apple_pay.svg') 15px 33px no-repeat #fbfbfb;
+    padding: 33px 40px 34px 80px;
+}
+
 p.payment_module a.payu_main {
     background: url('../img/logo-payu.svg') 15px 33px no-repeat #fbfbfb;
 }
@@ -131,8 +137,6 @@ p.payment_module a.payu:hover {
 }
 
 
-
-
 .pay-methods {
     display: flex;
     flex-wrap: wrap;
@@ -176,7 +180,7 @@ p.payment_module a.payu:hover {
     font-size: inherit !important;
     padding: 14px 5px !important;
     display: flex !important;
-    justify-content: center  !important;
+    justify-content: center !important;
     align-items: center !important;
 }
 
@@ -248,8 +252,6 @@ p.payment_module a.payu:hover {
     max-width: 100%;
     max-height: 100%;
 }
-
-
 
 
 .payuConditions {
@@ -342,7 +344,7 @@ p.payment_module a.payu-widget-installments-mini {
 }
 
 body#checkout #payu-methods-grouped .additional-information {
-    margin:0;
+    margin: 0;
 }
 
 .payu-card-form-container {
@@ -367,7 +369,7 @@ body#checkout #payu-methods-grouped .additional-information {
     margin-bottom: 6px;
 }
 
-.wb-16{
+.wb-16 {
     background-color: #d9edf7;
     color: #31708f;
     padding: 0.75rem 1.25rem;
@@ -375,9 +377,11 @@ body#checkout #payu-methods-grouped .additional-information {
     border: 1px solid transparent;
     border-radius: 0;
 }
-.payuConditions .checkbox{
+
+.payuConditions .checkbox {
     display: none;
 }
+
 .payu-card-form {
     margin: 0 auto 0 auto;
     background-color: #ffffff;
@@ -389,16 +393,20 @@ body#checkout #payu-methods-grouped .additional-information {
     width: 50%;
     float: left;
 }
+
 .card-details .cvv {
     width: 45%;
     float: right;
 }
+
 .payu-card-clearfix:before, .payu-card-clearfix:after {
     content: "";
     display: table;
 }
 
-.payu-card-clearfix:after { clear: both; }
+.payu-card-clearfix:after {
+    clear: both;
+}
 
 .payu-card-clearfix {
     margin-top: 10px;
@@ -410,16 +418,20 @@ body#checkout #payu-methods-grouped .additional-information {
     font-weight: bold;
     overflow: auto
 }
+
 .payu-card-legend-container > div {
     float: left;
 }
+
 .payu-card-legend-container > .payu-card-legend-number {
     width: 220px;
     margin-left: 45px
 }
+
 .payu-card-legend-container > .payu-card-legend-valid {
     width: 85px
 }
+
 #secure-form {
     background-color: #F4F9F9;
     border-radius: 8px;
@@ -430,6 +442,7 @@ body#checkout #payu-methods-grouped .additional-information {
     cursor: pointer;
     text-decoration: underline;
 }
+
 .payu-more-hidden {
     display: none;
 }
@@ -441,34 +454,40 @@ body#checkout #payu-methods-grouped .additional-information {
     }
 }
 
-#_form-payu{
+#_form-payu {
     background: #fff;
     padding: 15px;
     margin-bottom: 20px;
 }
-#_form-payu legend{
+
+#_form-payu legend {
     margin-bottom: 20px;
 }
-#_form-payu .form-group{
+
+#_form-payu .form-group {
     display: none;
 }
-.repay-action{
+
+.repay-action {
     border: 0;
     border-radius: 5px;
 }
-.accept-payment{
+
+.accept-payment {
     background: #a6c307;
     color: #fff;
     padding: 8px 15px;
     cursor: pointer;
 }
-.discard-payment{
+
+.discard-payment {
     background: red;
     color: #fff;
     padding: 8px 15px;
     cursor: pointer;
 }
-.repayment-options input[type="submit"]{
+
+.repayment-options input[type="submit"] {
     background: #a6c307;
     color: #fff;
     padding: 8px 15px;
@@ -477,16 +496,18 @@ body#checkout #payu-methods-grouped .additional-information {
     border-radius: 5px;
     margin: 8px 0 15px 0;
 }
-#payuForm #payMethods > div{
+
+#payuForm #payMethods > div {
     position: relative;
     overflow: hidden;
 }
-#payuForm #payMethods > div label{
+
+#payuForm #payMethods > div label {
     position: relative;
     z-index: 1;
 }
 
-#payuForm > div input:checked + label::before{
+#payuForm > div input:checked + label::before {
     content: '';
     width: 100vw;
     height: 100vh;
@@ -497,6 +518,6 @@ body#checkout #payu-methods-grouped .additional-information {
     z-index: -1;
 }
 
-.repayment-options .additional-information{
+.repayment-options .additional-information {
     display: none;
 }

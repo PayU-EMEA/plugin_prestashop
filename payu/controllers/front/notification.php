@@ -50,7 +50,7 @@ class PayUNotificationModuleFrontController extends ModuleFrontController
             $order_payment = $payu->getOrderPaymentBySessionId($payu->payu_order_id);
 
             if ($order_payment) {
-                foreach($order_payment as $payment) {
+                foreach ($order_payment as $payment) {
                     $payu->id_order = (int)$payment['id_order'];
                     $payu->updateOrderData($response);
                 }
