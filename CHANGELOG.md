@@ -1,3 +1,6 @@
+## 3.6.0
+* Added ApplePay support
+
 ## 3.5.0
 * Added GooglePay support (thanks to @antonikakolewski)
 * Removed product cache
