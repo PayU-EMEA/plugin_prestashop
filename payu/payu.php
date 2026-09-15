@@ -1621,6 +1621,9 @@ class PayU extends PaymentModule
         $updateOrderStatusMessage = '';
 
         $order_payment = $this->getOrderByOrderId($order->id);
+        if (!$order_payment) {
+            return $output;
+        }
 
         $refund_errors = [];
         $refundable = $order_payment['status'] === OpenPayuOrderStatus::STATUS_COMPLETED;
@@ -2785,6 +2788,10 @@ class PayU extends PaymentModule
             }
 
             $order_payment = $this->getOrderPaymentByExtOrderId($extOrder);
+
+            if(!$order_payment) {
+                return '';
+            }
 
             if ($order->id === (int)$order_payment['id_order'] && $order_payment['status'] !== OpenPayuOrderStatus::STATUS_COMPLETED) {
                 $this->id_order = $order->id;
