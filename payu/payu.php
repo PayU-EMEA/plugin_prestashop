@@ -88,6 +88,7 @@ class PayU extends PaymentModule
             Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', $this->addNewOrderState('PAYU_PAYMENT_STATUS_CANCELED',
                 ['en' => 'PayU payment canceled', 'pl' => 'Płatność PayU anulowana', 'cs' => 'Transakce PayU zrušena'])) &&
             Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', 2) &&
+            Configuration::updateValue('PAYU_PAYMENT_SHOW_STATUS', $this->is17() ? 1 : 0) &&
             Configuration::updateValue('PAYU_REPAY', 0) &&
             Configuration::updateValue('PAYU_SANDBOX', 0) &&
             Configuration::updateValue('PAYU_LOGGER', 0) &&
@@ -157,7 +158,8 @@ class PayU extends PaymentModule
             !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_ID') ||
             !Configuration::deleteByName('PAYU_GOOGLE_PAY_MERCHANT_NAME') ||
             !Configuration::deleteByName('PAYU_APPLE_PAY_DOMAIN_NAME') ||
-            !Configuration::deleteByName('PAYU_APPLE_PAY_DISPLAY_NAME')
+            !Configuration::deleteByName('PAYU_APPLE_PAY_DISPLAY_NAME') ||
+            !Configuration::deleteByName('PAYU_PAYMENT_SHOW_STATUS')
         ) {
             return false;
         }
@@ -213,6 +215,7 @@ class PayU extends PaymentModule
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_PENDING', (int)Tools::getValue('PAYU_PAYMENT_STATUS_PENDING')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_COMPLETED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_COMPLETED')) ||
                 !Configuration::updateValue('PAYU_PAYMENT_STATUS_CANCELED', (int)Tools::getValue('PAYU_PAYMENT_STATUS_CANCELED')) ||
+                !Configuration::updateValue('PAYU_PAYMENT_SHOW_STATUS', (Tools::getValue('PAYU_PAYMENT_SHOW_STATUS') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_REPAY', (Tools::getValue('PAYU_REPAY') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_SANDBOX', (Tools::getValue('PAYU_SANDBOX') ? 1 : 0)) ||
                 !Configuration::updateValue('PAYU_LOGGER', (Tools::getValue('PAYU_LOGGER') ? 1 : 0)) ||
@@ -395,6 +398,23 @@ class PayU extends PaymentModule
                             ]
                         ],
                     ],
+                    $this->is17() ? [
+                        'type' => 'switch',
+                        'label' => $this->l('Show status info after payment'),
+                        'name' => 'PAYU_PAYMENT_SHOW_STATUS',
+                        'values' => [
+                            [
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Enabled')
+                            ],
+                            [
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('Disabled')
+                            ]
+                        ]
+                    ] : []
                 ],
                 'submit' => [
                     'title' => $this->l('Save'),
@@ -848,6 +868,7 @@ class PayU extends PaymentModule
             'PAYU_SEPARATE_APPLE_PAY' => Configuration::get('PAYU_SEPARATE_APPLE_PAY'),
             'PAYU_APPLE_PAY_DOMAIN_NAME' => Configuration::get('PAYU_APPLE_PAY_DOMAIN_NAME'),
             'PAYU_APPLE_PAY_DISPLAY_NAME' => Configuration::get('PAYU_APPLE_PAY_DISPLAY_NAME'),
+            'PAYU_PAYMENT_SHOW_STATUS' => Configuration::get('PAYU_PAYMENT_SHOW_STATUS')
         ];
 
         foreach (Currency::getCurrencies() as $currency) {
@@ -955,7 +976,6 @@ class PayU extends PaymentModule
             $controller === 'guest-tracking' ||
             $controller === 'history'
         ) {
-
             if ($this->is17()) {
                 $this->context->controller->registerStylesheet(
                     'payu-css',
@@ -974,6 +994,16 @@ class PayU extends PaymentModule
                 'payuLangId' => $this->getLanguage(),
                 'payuSFEnabled' => Configuration::get('PAYU_CARD_PAYMENT_WIDGET') === '1' ? true : false,
             ]);
+        }
+        else if ($controller === 'order-confirmation' && $this->is17()) {
+            $this->context->controller->registerStylesheet(
+                'preloader-css',
+                'modules/' . $this->name . '/css/preloader.css'
+            );
+            $this->context->controller->registerJavascript(
+                'payment-return-js',
+                'modules/' . $this->name . '/js/paymentReturn.js'
+            );
         }
     }
 
@@ -2799,9 +2829,17 @@ class PayU extends PaymentModule
                 $this->updateOrderData();
             }
         }
-
+        if (Configuration::get('PAYU_PAYMENT_SHOW_STATUS') === '1'){
+            $this->context->smarty->assign([
+                'url' => $this->context->link->getModuleLink($this->name, 'status', [
+                    'id_order' => Tools::getValue('id_order'),
+                    'key' => Tools::getValue('key')
+                ]),
+            ]);
+        }
         $this->context->smarty->assign([
-            'payuLogo' => $this->getPayuLogo()
+            'payuLogo' => $this->getPayuLogo(),
+            'show_status' => $this->is17() ? Configuration::get('PAYU_PAYMENT_SHOW_STATUS') : '0'
         ]);
 
         return $this->fetchTemplate('views/templates/hook/paymentReturn.tpl');

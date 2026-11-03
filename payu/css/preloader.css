@@ -1,0 +1,33 @@
+#payu-preloader {
+    text-align: center;
+}
+
+#payu-preloader > output {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+}
+
+#payu-preloader > output > img {
+    animation: loader-rotate 0.5s linear infinite;
+    transform-origin: 50% 50%;
+    width: 25px;
+    height: 25px;
+}
+#status-waiting > h2{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+@keyframes loader-rotate {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
