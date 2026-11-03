@@ -6,15 +6,14 @@ class PayuStatusModuleFrontController extends ModuleFrontController
     {
         parent::__construct();
         $this->ajax = true;
-    }   
+    }
 
 
     public function displayAjax()
     {
         $order = new Order(Tools::getValue('id_order'));
-        $status = '';
 
-        if ($order->secure_key === Tools::getValue('key')){            
+        if ($order->secure_key === Tools::getValue('key')) {
             switch ($order->current_state){
                 case Configuration::get('PAYU_PAYMENT_STATUS_COMPLETED'):
                     $status = 'COMPLETED';
@@ -26,8 +25,7 @@ class PayuStatusModuleFrontController extends ModuleFrontController
                     $status = 'PENDING';
                     break;
             }
-        }
-        else{
+        } else {
             $status = 'PENDING';
         }
 
@@ -36,8 +34,7 @@ class PayuStatusModuleFrontController extends ModuleFrontController
         ];
 
         header('Content-Type: application/json');
-        echo json_encode(
-           $params
-        );
+
+        echo json_encode($params, JSON_THROW_ON_ERROR);
     }
 }
