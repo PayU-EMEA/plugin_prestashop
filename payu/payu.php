@@ -2273,6 +2273,11 @@ class PayU extends PaymentModule
 
     public function getPayuLogo($file = 'logo-payu.svg')
     {
+        return $this->getPayuImage($file);
+    }
+
+    public function getPayuImage($file)
+    {
         return Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/img/' . $file);
     }
 
@@ -2835,6 +2840,7 @@ class PayU extends PaymentModule
                     'id_order' => Tools::getValue('id_order'),
                     'key' => Tools::getValue('key')
                 ]),
+                'spinner_url' => $this->getPayuImage('spinner.svg')
             ]);
         }
         $this->context->smarty->assign([
