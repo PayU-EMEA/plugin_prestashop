@@ -1,3 +1,7 @@
+## 3.6.1
+* [Fix] hookAdminOrder crashes order view
+* [Add] Show payment status on thank you page
+
 ## 3.6.0
 * Added ApplePay support
 
