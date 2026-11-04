@@ -40,7 +40,7 @@ class PayU extends PaymentModule
         $this->name = 'payu';
         $this->displayName = 'PayU';
         $this->tab = 'payments_gateways';
-        $this->version = '3.6.0';
+        $this->version = '3.6.1';
         $this->author = 'PayU';
         $this->need_instance = 1;
         $this->bootstrap = true;
@@ -313,7 +313,7 @@ class PayU extends PaymentModule
                     [
                         'type' => 'switch',
                         'label' => $this->l('Card payment on widget'),
-                        'desc' => $this->l('Card tokenization must be enabled - https://github.com/PayU-EMEA/plugin_prestashop/blob/master/README.EN.md#card-widget'),
+                        'desc' => $this->l('Card tokenization must be enabled - https://github.com/PayU-EMEA/plugin_prestashop#card-payment-widget'),
                         'name' => 'PAYU_CARD_PAYMENT_WIDGET',
                         'disabled' => (Tools::getValue('PAYU_SEPARATE_CARD_PAYMENT', Configuration::get('PAYU_SEPARATE_CARD_PAYMENT'))) ? false : true,
                         'values' => [
@@ -350,7 +350,7 @@ class PayU extends PaymentModule
                         'type' => 'switch',
                         'label' => $this->l('PayU repayment'),
                         'name' => 'PAYU_REPAY',
-                        'desc' => $this->l('Before enabling repayment, read https://github.com/PayU-EMEA/plugin_prestashop#ponawianie-płatności and disable automatic collection in POS configuration.'),
+                        'desc' => $this->l('Before enabling repayment, read https://github.com/PayU-EMEA/plugin_prestashop#payment-retry and disable automatic collection in POS configuration.'),
                         'values' => [
                             [
                                 'id' => 'active_on',
