@@ -15,9 +15,9 @@
       permissions:
         contents: write
       steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v7
         - name: Create archive
-          uses: thedoctor0/zip-release@0.7.1
+          uses: thedoctor0/zip-release@0.7.6
           with:
             type: 'zip'
             path: 'payu'
