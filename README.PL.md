@@ -2,11 +2,8 @@
 
 # Moduł PayU dla PrestaShop 1.6, 1.7, 8 i 9
 
-**Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd zapraszamy do kontaktu z
+**Jeżeli masz jakiekolwiek pytania lub chcesz zgłosić błąd, zapraszamy do kontaktu z
 naszym [wsparciem technicznym][ext13].**
-
-Uwaga: plugin w [wersji 2.x](https://github.com/PayU/plugin_prestashop/tree/2.x) wspiera PrestaShop w wersji 1.4 i 1.5,
-ale nie jest dalej rozwijany.
 
 ## Spis treści
 
@@ -15,23 +12,29 @@ ale nie jest dalej rozwijany.
 * [Instalacja](#instalacja)
 * [Aktualizacja](#aktualizacja)
 * [Konfiguracja](#konfiguracja)
+    * [Sposób integracji](#sposób-integracji)
+    * [Płatności kredytowe](#płatności-kredytowe)
+    * [Google Pay i Apple Pay](#google-pay-i-apple-pay)
+    * [Parametry POS-ów](#parametry-pos-ów)
+    * [Statusy płatności](#statusy-płatności)
 * [Logowanie](#logowanie)
 * [Więcej o cechach](#więcej-o-cechach)
+    * [Kolejność metod płatności](#kolejność-metod-płatności)
     * [Wielowalutowość](#wielowalutowość)
     * [Wyświetlenie metod płatności](#wyświetlenie-metod-płatności)
     * [Płatność kartą](#płatność-kartą)
-    * [Płatność kartą - widżet](#widżet-do-płatności-kartą)
+    * [Płatność kartą - widget](#widget-do-płatności-kartą)
     * [Google Pay](#google-pay)
     * [Apple Pay](#apple-pay)
     * [Ponawianie płatności](#ponawianie-płatności)
+    * [Status płatności na stronie potwierdzenia zamówienia](#status-płatności-na-stronie-potwierdzenia-zamówienia)
     * [Promowanie płatności ratalnych i odroczonych](#promowanie-płatności-ratalnych-i-odroczonych)
 * [Znane problemy](#znane-problemy)
 
 ## Cechy i kompatybilność
 
-Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU i pozwala na następujące operacje:
-
-Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
+Moduł płatności PayU dodaje do PrestaShop opcję płatności PayU. Moduł w wersji 3.x wspiera PrestaShop w wersji 1.6, 1.7,
+8 i 9 i pozwala na następujące operacje:
 
 | Cecha                                                                          |   PrestaShop 1.6   | PrestaShop 1.7 / 8 / 9 |
 |--------------------------------------------------------------------------------|:------------------:|:----------------------:|
@@ -40,10 +43,12 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Utworzenie zwrotu (pełnego lub częściowego)                                    | :white_check_mark: |   :white_check_mark:   |
 | Wyświetlenie metod płatności i wybranie metody na stronie składania zamówienia | :white_check_mark: |   :white_check_mark:   |
 | Płatność kartą jako osobna metoda płatności                                    | :white_check_mark: |   :white_check_mark:   |
-| Płatność kartą jako widżet                                                     | :white_check_mark: |   :white_check_mark:   |
+| Płatność kartą jako widget                                                     | :white_check_mark: |   :white_check_mark:   |
+| Google Pay jako osobna metoda płatności                                        | :white_check_mark: |   :white_check_mark:   |
 | Apple Pay jako osobna metoda płatności                                         | :white_check_mark: |   :white_check_mark:   |
-| Płatność Blik jako osobna metoda płatności                                     | :white_check_mark: |   :white_check_mark:   |
+| Płatność BLIK jako osobna metoda płatności                                     | :white_check_mark: |   :white_check_mark:   |
 | Ponowienie płatności                                                           | :white_check_mark: |   :white_check_mark:   |
+| Status płatności na stronie potwierdzenia zamówienia                           |        :x:         |   :white_check_mark:   |
 | Wielowalutowość                                                                | :white_check_mark: |   :white_check_mark:   |
 | Kolejność metod płatności                                                      | :white_check_mark: |   :white_check_mark:   |
 | Płatność [PayU Raty][ext10] jako osobna metoda płatności                       | :white_check_mark: |   :white_check_mark:   |
@@ -57,14 +62,14 @@ Plugin w wersji 3.x wspiera PrestaShop w wersji 1.6 i 1.7
 | Prezentacja widgetu kredytowego w koszyku                                      |        :x:         |   :white_check_mark:   |
 | Wykluczenie metod płatności kredytowych z widgetu                              | :white_check_mark: |   :white_check_mark:   |
 
-Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach)
+Więcej informacji o cechach można znaleźć w rozdziale [Więcej o cechach](#więcej-o-cechach).
 
-**Wszystkie opisy w tej instrukcji odnoszą się do PrestaShop 1.7, w innych wersjach należy używać opcji analogicznych**.
+**Wszystkie opisy w tej instrukcji odnoszą się do PrestaShop 1.7, w innych wersjach należy używać opcji analogicznych.**
 
 ## Wymagania
 
 **Ważne:** Moduł działa tylko z punktem płatności typu `REST API` (Checkout). Jeżeli nie posiadasz jeszcze konta w
-systemie PayU [**zarejestruj się w systemie produkcyjnym**][ext4] lub [**zarejestruj się w systemie sandbox**][ext5]
+systemie PayU, [**zarejestruj się w systemie produkcyjnym**][ext4] lub [**zarejestruj się w systemie sandbox**][ext5].
 
 Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia PHP: [cURL][ext1] i [hash][ext2].
 
@@ -72,55 +77,70 @@ Do prawidłowego funkcjonowania modułu wymagane są następujące rozszerzenia 
 
 ### Opcja 1
 
-**przeznaczona dla użytkowników bez dostępu poprzez FTP do instalacji PrestaShop**
+**przeznaczona dla użytkowników bez dostępu przez FTP do instalacji PrestaShop**
 
-1. Pobierz plik `payu_prestashop_plugin_X.Y.Z.zip` z najnowszej wersji modułu z [wydanych wersji][ext3]
+1. Pobierz plik `payu_prestashop_plugin_X.Y.Z.zip` z najnowszej wersji modułu z [wydań GitHub][ext3].
 2. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
-3. Przejdź do `Moduły` » `Moduły i usługi`
-4. Naciśnij przycisk `Dodaj nowy moduł` i wybierz plik z archiwum modułu (pobrany w punkcie 3)
-5. Naciśnij przycisk `Prześlij moduł`
+3. Przejdź do `Moduły` » `Menedżer modułów`.
+4. Naciśnij przycisk `Załaduj moduł` i wybierz plik z archiwum modułu (pobrany w punkcie 1).
 
 ### Opcja 2
 
-**przeznaczona dla użytkowników z dostępem poprzez FTP do instalacji PrestaShop**
+**przeznaczona dla użytkowników z dostępem przez FTP do instalacji PrestaShop**
 
-1. Pobierz plik `payu_prestashop_plugin_X.Y.Z.zip` z najnowszej wersji modułu z [wydań GitHub][ext3]
-2. Rozpakuj pobrany plik
-3. Połącz się z serwerem ftp i skopiuj zawartość rozpakowanego pliku do katalogu `modules/payu` swojego sklepu
-   PrestaShop
+1. Pobierz plik `payu_prestashop_plugin_X.Y.Z.zip` z najnowszej wersji modułu z [wydań GitHub][ext3].
+2. Rozpakuj pobrany plik.
+3. Połącz się z serwerem FTP i skopiuj zawartość rozpakowanego pliku do katalogu `modules/payu` swojego sklepu
+   PrestaShop.
 
 ## Aktualizacja
 
-1. Zaktualizuj plik modułu zgodnie z punktem [Instalacja](#instalacja)
-2. Przejdź do `Moduły` » `Menedżer modułów`
-3. W zakładce `Aktualizacje` wykonaj aktualizację modułu, jeżeli będzie dostępna
-4. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`
+1. Zaktualizuj pliki modułu zgodnie z punktem [Instalacja](#instalacja).
+2. Przejdź do `Moduły` » `Menedżer modułów`.
+3. W zakładce `Aktualizacje` wykonaj aktualizację modułu, jeżeli będzie dostępna.
+4. Przejdź do `Parametry zaawansowane` » `Wydajność` i naciśnij przycisk `Wyczyść pamięć podręczną`.
 
 ## Konfiguracja
 
 1. Przejdź do strony administracyjnej swojego sklepu PrestaShop [http://adres-sklepu/adminxxx].
-2. Przejdź do `Moduły` » `Moduły i usługi`
-3. Wyszukaj `PayU` i naciśnij `Konfiguruj`
-
-## Logowanie
-
-Gdy sklep PrestaShop przełączymy w tryb debugowania lub włączymy opcję `Zapisuj logi`, plugin zapisuje informacje do
-logów. Pliki logów znajdą się w katalogu:
-
-* PrestaShop 1.7 - `/var/logs`
-* PrestaShop 1.6 - `/log`
+2. Przejdź do `Moduły` » `Menedżer modułów`.
+3. Wyszukaj `PayU` i naciśnij `Konfiguruj`.
 
 ### Sposób integracji
 
-| Parametr                                               | Opis                                                                                                                                                                                                                                                                                                                                                 |
-|--------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Lista banków                                           | `Tak` wybór metody płatności PayU będzie możliwy na stronie składania zamówienia, gdy wybrana zostanie płatność *Zapłać przelewem online*<br>`Nie` po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU.<br>Nie włączaj tej opcji, jeżeli używasz PrestaShop i modułów OPC [więcej informacji](#prestashop-i-moduły-opc). |
-| Kolejność metod płatności (dotyczy tylko listy banków) | Określa kolejność wyświetlanych metod płatności [więcej informacji](#kolejność-metod-płatności).                                                                                                                                                                                                                                                     |
-| Płatność kartą jako osobna metoda płatności            | Określa czy płatność kartą będzie dostępna jako osobna metoda [więcej informacji](#płatność-kartą).                                                                                                                                                                                                                                                  |
-| Płatność kartą w widżecie                              | Określa czy płatność kartą będzie dostępna jako widżet [więcej informacji](#widżet-do-płatności-kartą).                                                                                                                                                                                                                                              |
-| Płatność BLIK jako osobna metoda płatności             | Określa czy BLIK będzie dostępna jako osobna metoda płatności.                                                                                                                                                                                                                                                                                       |
-| Tryb testowy (Sandbox)                                 | `Tak` - transakcje będą procesowane przez system Sandbox PayU.<br>`Nie` - transakcje będą procesowane przez system produkcyjny PayU.                                                                                                                                                                                                                 |
-| Zapisuj logi                                           | Określa, czy plugin będzie zapisywać informacje do logów.                                                                                                                                                                                                                                                                                            |
+| Parametr                                                 | Opis                                                                                                                                                                                                                                                                                                                                                   |
+|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lista banków                                             | `Tak` - wybór metody płatności PayU będzie możliwy na stronie składania zamówienia, gdy wybrana zostanie płatność *Zapłać przelewem online* [więcej informacji](#wyświetlenie-metod-płatności).<br>`Nie` - po złożeniu zamówienia w PrestaShop nastąpi automatyczne przekierowanie do PayU.<br>Nie włączaj tej opcji, jeżeli używasz modułu OPC [więcej informacji](#prestashop-i-moduły-opc). |
+| Kolejność metod płatności                                | Określa kolejność wyświetlanych metod płatności (dotyczy tylko opcji `Lista banków`) [więcej informacji](#kolejność-metod-płatności).                                                                                                                                                                                                                   |
+| Płatność kartą jako osobna metoda płatności              | Określa, czy płatność kartą będzie dostępna jako osobna metoda płatności [więcej informacji](#płatność-kartą).                                                                                                                                                                                                                                         |
+| Płatność kartą w widgecie                                | Określa, czy płatność kartą będzie dostępna jako widget [więcej informacji](#widget-do-płatności-kartą).                                                                                                                                                                                                                                               |
+| Płatność BLIK jako osobna metoda płatności               | Określa, czy płatność BLIK będzie dostępna jako osobna metoda płatności.                                                                                                                                                                                                                                                                               |
+| Ponowienie płatności                                     | Określa, czy kupujący będzie mógł ponowić nieudaną płatność [więcej informacji](#ponawianie-płatności).                                                                                                                                                                                                                                                |
+| Tryb testowy (Sandbox)                                   | `Tak` - transakcje będą procesowane przez system Sandbox PayU.<br>`Nie` - transakcje będą procesowane przez system produkcyjny PayU.                                                                                                                                                                                                                   |
+| Zapisuj logi                                             | Określa, czy moduł będzie zapisywać informacje do logów [więcej informacji](#logowanie).                                                                                                                                                                                                                                                               |
+| Wyświetl informację o statusie po zakończeniu płatności  | Określa, czy na stronie potwierdzenia zamówienia będzie wyświetlany aktualny status płatności (tylko PrestaShop 1.7 / 8 / 9) [więcej informacji](#status-płatności-na-stronie-potwierdzenia-zamówienia).                                                                                                                                                |
+
+### Płatności kredytowe
+
+| Parametr                                                   | Opis                                                                                                                                                                         |
+|------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Wyświetl Raty jako osobną metodę płatności                 | Określa, czy PayU Raty będą dostępne jako osobna metoda płatności.                                                                                                           |
+| Wyświetl Klarna jako osobną metodę płatności               | Określa, czy Klarna będzie dostępna jako osobna metoda płatności.                                                                                                            |
+| Wyświetl PayPo jako osobną metodę płatności                | Określa, czy PayPo będzie dostępne jako osobna metoda płatności.                                                                                                             |
+| Wyświetl Twisto jako osobną metodę płatności               | Określa, czy Twisto będzie dostępne jako osobna metoda płatności.                                                                                                            |
+| Wyświetl Twisto podziel na 3 jako osobną metodę płatności  | Określa, czy Twisto podziel na 3 będzie dostępne jako osobna metoda płatności.                                                                                               |
+| Wyświetl PragmaPay jako osobną metodę płatności            | Określa, czy PragmaPay będzie dostępne jako osobna metoda płatności.                                                                                                         |
+| Wyświetl widget kredytowy w koszyku                        | Określa, czy widget kredytowy będzie wyświetlany w koszyku (tylko PrestaShop 1.7 / 8 / 9).                                                                                   |
+| Wyświetl widget kredytowy na podsumowaniu                  | Określa, czy widget kredytowy będzie wyświetlany na podsumowaniu zamówienia.                                                                                                 |
+| Wyświetl widget kredytowy przy produktach                  | Określa, czy widget kredytowy będzie wyświetlany na karcie produktu i na listingu produktów.                                                                                 |
+| Wyklucz metody płatności kredytowych z widgetu             | Lista kodów metod płatności kredytowych oddzielonych przecinkami, które nie będą prezentowane w widgecie, np. `dpt,dpkl,dpp` [więcej informacji](#prezentacja-widgetu-kredytowego). |
+
+Więcej informacji w rozdziale [Promowanie płatności ratalnych i odroczonych](#promowanie-płatności-ratalnych-i-odroczonych).
+
+### Google Pay i Apple Pay
+
+Parametry metod płatności Google Pay i Apple Pay opisane są w rozdziałach [Google Pay](#google-pay)
+i [Apple Pay](#apple-pay).
 
 ### Parametry POS-ów
 
@@ -135,76 +155,83 @@ Dla każdej waluty dodanej w PrestaShop należy dodać parametry (osobno dla śr
 
 ### Statusy płatności
 
-Mapowanie statusów płatności w PayU na statusy w sklepie PrestaShop
+Mapowanie statusów płatności w PayU na statusy zamówień w sklepie PrestaShop. Każdy ze statusów można zmienić
+w sekcji `Statusy płatności` konfiguracji modułu.
 
-| Nazwa                                      | Status w PayU | Domyślny status w Presta |
-|--------------------------------------------|---------------|--------------------------|
-| Rozpoczęta - status po złożeniu zamówienia |               | Płatność PayU rozpoczęta |
-| Zakończona                                 | `COMPLETED`   | Płatność zaakceptowana   |
-| Anulowana                                  | `CANCELED`    | Płatność PayU anulowana  |
+| Parametr                                   | Status w PayU | Domyślny status w PrestaShop |
+|--------------------------------------------|---------------|------------------------------|
+| Rozpoczęta - status po złożeniu zamówienia |               | Płatność PayU rozpoczęta     |
+| Zakończona                                 | `COMPLETED`   | Płatność zaakceptowana       |
+| Anulowana                                  | `CANCELED`    | Płatność PayU anulowana      |
+
+## Logowanie
+
+Gdy sklep PrestaShop przełączymy w tryb debugowania lub włączymy opcję `Zapisuj logi`, moduł zapisuje informacje do
+logów. Pliki logów znajdą się w katalogu:
+
+* PrestaShop 1.7 / 8 / 9 - `/var/logs`
+* PrestaShop 1.6 - `/log`
 
 ## Więcej o cechach
 
 ### Kolejność metod płatności
 
-Ma zastosowanie tylko przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w
-PrestaShop** na `Tak`
+Ma zastosowanie tylko przy ustawionej opcji **Lista banków** na `Tak`.
 
-W celu ustalenia kolejności wyświetlanych ikon metod płatności należy podać symbole metod płatności oddzielając je
-przecinkiem. [Lista metod płatności][ext6].
+W celu ustalenia kolejności wyświetlanych ikon metod płatności należy podać symbole metod płatności, oddzielając je
+przecinkami. [Lista metod płatności][ext6].
 
 ### Wielowalutowość
 
 POS w systemie PayU ma jedną walutę. Jeżeli chcemy akceptować płatności w sklepie PrestaShop w wielu walutach, niezbędne
-jest dodanie konfiguracji POS-a dla każdej waluty z osobna. Błąd ERROR_INCONSISTENT_CURRENCIES oznacza nieobsługiwaną
-walutę przez POS. Kontakt z obsługą PayU jest wymagany przy zatwierdzeniu możliwości przyjmowania płatności w innej
-walucie dla trybu sandbox jak i osobnej umowy dla trybu produkcyjnego.
+jest dodanie konfiguracji POS-a dla każdej waluty z osobna. Błąd `ERROR_INCONSISTENT_CURRENCIES` oznacza, że waluta nie
+jest obsługiwana przez POS. Aby przyjmować płatności w innej walucie, należy skontaktować się z PayU – w środowisku
+sandbox w celu jej aktywacji, a w środowisku produkcyjnym w celu zawarcia osobnej umowy.
 
 ### Wyświetlenie metod płatności
 
-Przy ustawionej opcji **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** na `Tak` po
-wybraniu płatności przez PayU wyświetli się strona z ikonami banków bezpośrednio w sklepie PrestaShop. Ikony banków,
-które są wyświetlane pobierane są z konfiguracji POS-a w PayU w zależności od wybranej waluty.
+Przy ustawionej opcji **Lista banków** na `Tak`, po wybraniu płatności przez PayU wyświetli się strona z ikonami banków
+bezpośrednio w sklepie PrestaShop. Wyświetlane ikony banków są pobierane z konfiguracji POS-a w PayU w zależności od
+wybranej waluty.
 
 ![payment_methods][img3]
 
 ### Płatność kartą
 
-Przy ustawionej opcji **Płatność kartą jako osobna metoda płatności** na liście metod płatności w procesie zakupowym
-PrestaShop wyświetli się osobna metoda o nazwie `Zapłać kartą`.
+Przy ustawionej opcji **Płatność kartą jako osobna metoda płatności** na `Tak`, na liście metod płatności w procesie
+zakupowym PrestaShop wyświetli się osobna metoda o nazwie `Zapłać kartą`.
 
-Jeżeli **Wyświetlaj metody płatności na stronie podsumowania zamówienia w PrestaShop** jest ustawione na `Tak`, to
-metoda `Zapłać kartą` będzie wyświetlana, jeżeli na POS-ie jest dostępna płatność kartą. W przeciwnym wypadku metoda
-`Zapłać kartą` będzie wyświetlana zawsze, ale jeżeli na POS-ie brak jest metody płatności kartą, to płatność się nie
-powiedzie.
+Jeżeli opcja **Lista banków** jest ustawiona na `Tak`, to metoda `Zapłać kartą` będzie wyświetlana tylko wtedy, gdy na
+POS-ie jest dostępna płatność kartą. W przeciwnym wypadku metoda `Zapłać kartą` będzie wyświetlana zawsze, ale jeżeli
+na POS-ie nie ma dostępnej płatności kartą, płatność się nie powiedzie.
 
 ![payment_methods][img6]
 
-### Widżet do płatności kartą
+### Widget do płatności kartą
 
 **WAŻNE** - do prawidłowego działania niezbędne jest włączenie tokenizacji w konfiguracji POS-a. W tym celu należy się
 skontaktować z naszym [wsparciem technicznym][ext13].
 
-Przy ustawionej opcji **Płatność kartą jako osobna metoda płatności** oraz **Płatność kartą jako widżet na stronie
-podsumowania zamówienia** na `Tak` po wybraniu płatności `Zapłać kartą` zamiast przekierowania do PayU pojawi się widżet
-do wprowadzenia danych karty.
+Przy ustawionych opcjach **Płatność kartą jako osobna metoda płatności** oraz **Płatność kartą w widgecie** na `Tak`, po
+wybraniu płatności `Zapłać kartą` zamiast przekierowania do PayU pojawi się widget do wprowadzenia danych karty.
 
 ![widget][img5]
 
 ### Google Pay
 
-Jeżeli w konfiguracji włączona jest opcja `Włącz Google Pay` to w procesie zakupowym PrestaShop na liście metod
+Jeżeli w konfiguracji włączona jest opcja `Włącz Google Pay`, to w procesie zakupowym PrestaShop na liście metod
 płatności pojawi się metoda `Zapłać z Google Pay`. Po wybraniu tej metody kupujący zostanie przekierowany do okna
 płatności Google Pay.
 
 ![google_pay][img7]
 
-Parametry, które są dodatkowo dostępne dla metody płatności `Google Pay`:
+Parametry dostępne dla metody płatności `Google Pay`:
 
-| Parametr             | Opis                                                                                                                  |
-|----------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Google Merchant Id   | Identyfikator sprzedawcy w Google. Należy zweryfikować swoją stronę w Google postępując zgodnie z [instrukcją][ext14] |
-| Google Merchant name | Nazwa sprzedawcy, która jest wyświetlana w oknie płatności                                                            |
+| Parametr             | Opis                                                                                                                   |
+|----------------------|------------------------------------------------------------------------------------------------------------------------|
+| Włącz Google Pay     | Określa, czy Google Pay będzie dostępne jako osobna metoda płatności.                                                 |
+| Google Merchant Id   | Identyfikator sprzedawcy w Google. Należy zweryfikować swoją stronę w Google, postępując zgodnie z [instrukcją][ext14]. |
+| Google Merchant Name | Nazwa sprzedawcy wyświetlana w oknie płatności.                                                                        |
 
 ### Apple Pay
 
@@ -216,15 +243,16 @@ płatności Apple Pay.
 ![apple_pay][img8]
 
 Przed włączeniem tej opcji należy zarejestrować domenę strony zamówienia dla Apple Pay zgodnie
-z [instrukcją PayU][ext15]. Zarejestrowana domena musi być identyczna z domeną, w której wyświetlana jest strona
+z [instrukcją PayU][ext15]. Zarejestrowana domena musi być identyczna z domeną, pod którą wyświetlana jest strona
 zamówienia. W przeciwnym razie Apple odrzuci żądanie płatności.
 
 Parametry dostępne dla metody płatności `Apple Pay`:
 
-| Parametr     | Opis                                                                                                      |
-|--------------|-----------------------------------------------------------------------------------------------------------|
-| Domain Name  | Domena strony zamówienia zarejestrowana dla Apple Pay. Należy podać samą domenę, bez protokołu i ścieżki. |
-| Display Name | Nazwa sklepu wyświetlana w oknie płatności Apple Pay. Może zawierać maksymalnie 64 znaki UTF-8.           |
+| Parametr         | Opis                                                                                                      |
+|------------------|-----------------------------------------------------------------------------------------------------------|
+| Włącz Apple Pay  | Określa, czy Apple Pay będzie dostępne jako osobna metoda płatności.                                      |
+| Nazwa domeny     | Domena strony zamówienia zarejestrowana dla Apple Pay. Należy podać samą domenę, bez protokołu i ścieżki. |
+| Nazwa wyświetlana | Nazwa sklepu wyświetlana w oknie płatności Apple Pay. Może zawierać maksymalnie 64 znaki UTF-8.          |
 
 ### Ponawianie płatności
 
@@ -232,33 +260,38 @@ Dzięki tej opcji kupujący otrzymuje możliwość skutecznego opłacenia zamów
 nieudana (np. brak środków na karcie, problemy z logowaniem do banku itp.).
 
 Aby użyć tej opcji, należy również odpowiednio skonfigurować punkt płatności w PayU i wyłączyć automatyczne odbieranie
-płatności (domyślnie auto-odbiór jest włączony). W tym celu należy zalogować się do panelu PayU, wejść do zakładki
+płatności (domyślnie autoodbiór jest włączony). W tym celu należy zalogować się do panelu PayU, wejść do zakładki
 "Płatności elektroniczne", następnie wybrać "Moje sklepy" i punkt płatności na danym sklepie. Opcja "Automatyczny odbiór
 płatności" znajduje się na samym dole, pod listą typów płatności.
 
-Ponowienie płatności umożliwia zakładanie wielu płatności w PayU do jednego zamówienia w PrestaShop. Wtyczka
+Ponowienie płatności umożliwia zakładanie wielu płatności w PayU do jednego zamówienia w PrestaShop. Moduł
 automatycznie odbierze pierwszą udaną płatność, a pozostałe zostaną anulowane. Ponowienie płatności przez kupującego
 jest możliwe:
 
-* poprzez kliknięcie w link znajdujący się w mailu potwierdzającym zamówienie
-* w szczegółach zamówienia
+* poprzez kliknięcie linku znajdującego się w e-mailu potwierdzającym zamówienie,
+* w szczegółach zamówienia.
 
 ![retry_payment][img4]
 
+### Status płatności na stronie potwierdzenia zamówienia
+
+Przy ustawionej opcji **Wyświetl informację o statusie po zakończeniu płatności** na `Tak`, po powrocie z PayU na
+stronie potwierdzenia zamówienia wyświetlany jest aktualny status płatności. Opcja jest dostępna tylko w PrestaShop
+1.7 / 8 / 9 i jest domyślnie włączona dla nowych instalacji modułu.
+
 ### Promowanie płatności ratalnych i odroczonych
 
-Plugin udostępnia opcje promowania [płatności ratalnych i odroczonych][ext7] (nazywanych również zamiennie "płatnościami
+Moduł udostępnia opcje promowania [płatności ratalnych i odroczonych][ext7] (nazywanych również zamiennie "płatnościami
 kredytowymi") poprzez wydzielanie poszczególnych metod płatności na podsumowaniu oraz wyświetlanie widgetu kredytowego
 przy produktach, w koszyku czy na podsumowaniu. Promowaniem płatności ratalnych i odroczonych można sterować w sekcji
-"Płatności kredytowe" panelu administracyjnego pluginu. Wydzielanie PayU Raty oraz wyświetlanie widgetu kredytowego są
-domyślnie włączone. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w
+["Płatności kredytowe"](#płatności-kredytowe) panelu administracyjnego modułu. Wydzielanie PayU Raty oraz wyświetlanie
+widgetu kredytowego są domyślnie włączone. Wsparcie dla konkretnych funkcjonalności przedstawione zostało w
 tabeli [Cechy i kompatybilność](#cechy-i-kompatybilność).
+
 > Prezentacja metod płatności i widgetu zależna jest od dostępności bramek "ai", "dpt", "dpcz", "dpts", "dpkl",
 > "dpklczk", "dpkleur", "dpklhuf", "dpp", "dppron", "ppf" na danym punkcie płatności i sprawdzana jest automatycznie
-> przez
-> plugin. Jeśli dana metoda płatności kredytowych nie została aktywowana na punkcie płatności, nie zostanie
-> zaprezentowana
-> na podsumowaniu lub widgecie pomimo włączonej opcji w pluginie.
+> przez moduł. Jeśli dana metoda płatności kredytowych nie została aktywowana na punkcie płatności, nie zostanie
+> zaprezentowana na podsumowaniu ani w widgecie pomimo włączonej opcji w module.
 
 <img src="readme_images/credit-1-7-admin.png" width="600">
 
@@ -269,7 +302,7 @@ tabeli [Cechy i kompatybilność](#cechy-i-kompatybilność).
 | 1.7               | Listing produktów                                      | <img src="readme_images/credit-1-7-listing.png" width="100">                        |
 | 1.7               | Karta produktu                                         | <img src="readme_images/credit-1-7-product.png" width="100">                        |
 | 1.7               | Koszyk                                                 | <img src="readme_images/credit-1-7-cart.png" width="100">                           |
-| 1.7               | Wyświetlanie płatności ratalnych jako metody płatności | <img src="readme_images/credit-1-7-checkout-separate-installments.png" width="100"> |
+| 1.7               | Wydzielenie PayU Raty jako metody płatności            | <img src="readme_images/credit-1-7-checkout-separate-installments.png" width="100"> |
 | 1.7               | Wydzielenie Klarna jako metody płatności               | <img src="readme_images/credit-1-7-checkout-separate-klarna.png" width="100">       |
 | 1.7               | Wydzielenie PayPo jako metody płatności                | <img src="readme_images/credit-1-7-checkout-separate-paypo.png" width="100">        |
 | 1.7               | Wydzielenie Twisto jako metody płatności               | <img src="readme_images/credit-1-7-checkout-separate-twisto.png" width="100">       |
@@ -281,7 +314,7 @@ tabeli [Cechy i kompatybilność](#cechy-i-kompatybilność).
 #### Prezentacja widgetu kredytowego
 
 W zależności od dostępnych metod płatności kredytowych, w powyższych sekcjach strony pojawiają się linki: "Rata już od",
-"Rata 0% już od" lub "Zapłać później". Po kliknięciu w link pojawia się najnowsza wersja widgetu kredytowego wchodzącego
+"Rata 0% już od" lub "Zapłać później". Po kliknięciu linku pojawia się najnowsza wersja widgetu kredytowego wchodzącego
 w skład pakietu [PayU Raty - dobre praktyki][ext12], który znajduje się w [oficjalnej dokumentacji technicznej][ext8].
 
 Widget kredytowy wygląda następująco:
@@ -289,8 +322,8 @@ Widget kredytowy wygląda następująco:
 <img src="readme_images/credit-installment-widget.png" width="300">
 
 Od wersji 3.3.0 możliwe jest wykluczenie wskazanych metod płatności kredytowych z wyświetlania w widgecie za
-pośrednictwem pola "Wyklucz metody płatności kredytowych z widgetu" w konfiguracji pluginu. Na przykład, wpisanie we
-wspomnianym polu następującej wartości: dpp,dpkl,dpt sprawi, iż metody PayPo, Klarna oraz Twisto znikną z widgetu:
+pośrednictwem pola "Wyklucz metody płatności kredytowych z widgetu" w konfiguracji modułu. Na przykład wpisanie we
+wspomnianym polu wartości `dpp,dpkl,dpt` sprawi, że metody PayPo, Klarna oraz Twisto znikną z widgetu:
 
 <img src="readme_images/credit-installment-widget-excluded.png" width="300">
 
@@ -298,9 +331,9 @@ wspomnianym polu następującej wartości: dpp,dpkl,dpt sprawi, iż metody PayPo
 
 ### PrestaShop i moduły OPC
 
-Z uwagi na to, że moduły OPC budują własną stronę zamówienia mogą nie działać niektóre opcje np. `Lista banków`,
+Z uwagi na to, że moduły OPC budują własną stronę zamówienia, mogą nie działać niektóre opcje, np. `Lista banków`,
 `Płatność kartą jako osobna metoda płatności`, `Płatność BLIK jako osobna metoda płatności` oraz wydzielenie metod
-ratalnych. Problemy należy zgłaszać do twórców modułu OPC.
+płatności kredytowych. Problemy należy zgłaszać do twórców modułu OPC.
 
 <!--LINKS-->
 
